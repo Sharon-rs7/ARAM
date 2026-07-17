@@ -12,7 +12,22 @@ AUTHORITY_MAPPINGS = {
     "CRIMINAL_COMPLAINT": "Police Station",
     "FAMILY_DISPUTE": "Civil Court",
     "GOVERNMENT_SCHEME": "Government Grievance Cell",
-    "GENERAL_LEGAL_AID": "District Legal Services Authority"
+    "GENERAL_LEGAL_AID": "District Legal Services Authority",
+    "MOTOR_ACCIDENT_CLAIM": "Motor Accident Claims Tribunal",
+    "INSURANCE_CLAIM": "Insurance Ombudsman",
+    "BANKING_DISPUTE": "Banking Ombudsman",
+    "RENT_TENANT_DISPUTE": "Rent Controller Office",
+    "MEDICAL_NEGLIGENCE": "State Medical Council",
+    "EDUCATION_DISPUTE": "Education Department Office",
+    "WORKPLACE_HARASSMENT": "Internal Complaints Committee",
+    "SENIOR_CITIZEN_ABUSE": "Social Welfare Officer",
+    "CHILD_WELFARE": "Child Welfare Committee",
+    "DISABILITY_RIGHTS": "Differently Abled Commissioner Office",
+    "CASTE_DISCRIMINATION": "District Collector Office",
+    "POLICE_MISCONDUCT": "District Collector Office",
+    "CORRUPTION_BRIBERY": "Vigilance and Anti-Corruption Bureau",
+    "CIVIC_INFRASTRUCTURE": "Municipal Corporation Grievance Cell",
+    "RTI_APPLICATION": "Public Information Officer"
 }
 
 def recommend_authority(text: str, category: str, priority: str, district: str = "Coimbatore"):

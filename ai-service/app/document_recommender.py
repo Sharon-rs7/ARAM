@@ -11,7 +11,22 @@ DOCUMENT_MAPPINGS = {
     "CRIMINAL_COMPLAINT": ["Police Complaint Copy", "Aadhaar Card"],
     "GOVERNMENT_SCHEME": ["Ration Card", "Income Certificate"],
     "FAMILY_DISPUTE": ["Marriage Certificate", "Aadhaar Card"],
-    "GENERAL_LEGAL_AID": ["Aadhaar Card"]
+    "GENERAL_LEGAL_AID": ["Aadhaar Card"],
+    "MOTOR_ACCIDENT_CLAIM": ["FIR Copy", "Medical Report", "Aadhaar Card", "Insurance Policy"],
+    "INSURANCE_CLAIM": ["Insurance Policy", "Rejection Letter", "Premium Receipts", "Aadhaar Card"],
+    "BANKING_DISPUTE": ["Bank Statement", "Complaint Letter to Bank", "Passbook Copy", "Aadhaar Card"],
+    "RENT_TENANT_DISPUTE": ["Rent Agreement", "Rent Receipts", "Eviction Notice", "Aadhaar Card"],
+    "MEDICAL_NEGLIGENCE": ["Medical Report", "Treatment Bills", "Prescription Sheets", "Aadhaar Card"],
+    "EDUCATION_DISPUTE": ["Fee Receipts", "Admission Card", "Aadhaar Card"],
+    "WORKPLACE_HARASSMENT": ["Employment Contract", "Email/Chat Screenshots", "Aadhaar Card"],
+    "SENIOR_CITIZEN_ABUSE": ["Age Proof", "Aadhaar Card", "Medical Report"],
+    "CHILD_WELFARE": ["Child Identity Proof", "Guardian Aadhaar Card"],
+    "DISABILITY_RIGHTS": ["Disability Certificate", "Aadhaar Card"],
+    "CASTE_DISCRIMINATION": ["Community Certificate", "Aadhaar Card", "Complaint Copy"],
+    "POLICE_MISCONDUCT": ["FIR Copy", "Complaint Copy", "Aadhaar Card"],
+    "CORRUPTION_BRIBERY": ["Evidence (Audio/Video)", "Transaction Proof", "Aadhaar Card"],
+    "CIVIC_INFRASTRUCTURE": ["Grievance Letter", "Infrastructure Photos", "Aadhaar Card"],
+    "RTI_APPLICATION": ["RTI Draft Copy", "Aadhaar Card", "Fee Receipt"]
 }
 
 def recommend_documents(text: str, category: str, priority: str):

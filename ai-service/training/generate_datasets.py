@@ -6,132 +6,232 @@ import json
 os.makedirs("datasets", exist_ok=True)
 os.makedirs("datasets/document_dataset", exist_ok=True)
 
-for folder in ["SALARY_SLIP", "INVOICE", "EMPLOYEE_ID", "BANK_STATEMENT", "TRANSACTION_SCREENSHOT", "PROPERTY_DOCUMENT", "MEDICAL_REPORT", "POLICE_COMPLAINT_COPY", "UNKNOWN"]:
+# Generate folder stubs for document classifier verification
+folders = [
+    "SALARY_SLIP", "INVOICE", "EMPLOYEE_ID", "BANK_STATEMENT", 
+    "TRANSACTION_SCREENSHOT", "PROPERTY_DOCUMENT", "MEDICAL_REPORT", 
+    "POLICE_COMPLAINT_COPY", "INSURANCE_POLICY", "RENT_AGREEMENT", 
+    "DISABILITY_CERTIFICATE", "COMMUNITY_CERTIFICATE", "UNKNOWN"
+]
+for folder in folders:
     os.makedirs(f"datasets/document_dataset/{folder}", exist_ok=True)
 
-# 1. legal_complaints_multilingual.csv
+# 25 Categories: 10 original + 15 new real-life legal grievances
 complaints_data = [
-    # LABOUR_DISPUTE
+    # 1. LABOUR_DISPUTE
     ("My company did not pay my salary for 3 months.", "English", "LABOUR_DISPUTE"),
     ("Employer terminated me without notice or severance pay.", "English", "LABOUR_DISPUTE"),
-    ("Working extra hours but no overtime pay given.", "English", "LABOUR_DISPUTE"),
     ("Ennoda office-la 3 maasamaa sambalam tharala.", "Tanglish", "LABOUR_DISPUTE"),
-    ("Company karanga ennoda salary tharama emathuranga.", "Tanglish", "LABOUR_DISPUTE"),
     ("3 மாதங்களாக என் நிறுவனம் எனக்கு சம்பளம் வழங்கவில்லை.", "Tamil", "LABOUR_DISPUTE"),
     ("முன்னறிவிப்பு இல்லாமல் வேலைநீக்கம் செய்யப்பட்டேன்.", "Tamil", "LABOUR_DISPUTE"),
-    ("कंपनी ने पिछले तीन महीने का वेतन नहीं दिया है।", "Hindi", "LABOUR_DISPUTE"),
-    ("बिना किसी नोटिस के नौकरी से निकाल दिया गया।", "Hindi", "LABOUR_DISPUTE"),
+    ("Company-la salary tharama delay panranga.", "Tanglish", "LABOUR_DISPUTE"),
     
-    # CONSUMER_COMPLAINT
+    # 2. CONSUMER_COMPLAINT
     ("Bought a mobile phone online but received a soap bar.", "English", "CONSUMER_COMPLAINT"),
     ("Store refusing to honor the 1-year product warranty.", "English", "CONSUMER_COMPLAINT"),
-    ("Charged extra double amount than the MRP printed.", "English", "CONSUMER_COMPLAINT"),
     ("Online-la phone order panna, aana dummy box vandhuchu.", "Tanglish", "CONSUMER_COMPLAINT"),
-    ("Shopkeeper warranty card kudukala, replace panna maatranga.", "Tanglish", "CONSUMER_COMPLAINT"),
     ("ஆன்லைனில் வாங்கிய தயாரிப்பு சேதமடைந்துள்ளது, திரும்பப் பெற மறுக்கிறார்கள்.", "Tamil", "CONSUMER_COMPLAINT"),
     ("அதிகப்படியான விலை வசூலிக்கும் கடைக்காரர்.", "Tamil", "CONSUMER_COMPLAINT"),
-    ("अमेज़न से नकली प्रोडक्ट मिला है और पैसे वापस नहीं कर रहे।", "Hindi", "CONSUMER_COMPLAINT"),
-    ("दुकानदार वारंटी में सामान बदलने से मना कर रहा है।", "Hindi", "CONSUMER_COMPLAINT"),
+    ("Defective TV purchase panni response illa store la.", "Tanglish", "CONSUMER_COMPLAINT"),
 
-    # CYBER_CRIME
+    # 3. CYBER_CRIME
     ("Lost 50000 rupees due to a fake UPI QR code scam.", "English", "CYBER_CRIME"),
     ("Bank account hacked and savings transferred online.", "English", "CYBER_CRIME"),
-    ("Received phishing links asking for my net banking OTP.", "English", "CYBER_CRIME"),
     ("Ennoda bank account hacking aagi panam pochu.", "Tanglish", "CYBER_CRIME"),
-    ("UPI scanner scam-la 10000 rubaa tholachuten.", "Tanglish", "CYBER_CRIME"),
     ("போலி ஓடிபி மூலம் எனது கணக்கிலிருந்து பணம் திருடப்பட்டது.", "Tamil", "CYBER_CRIME"),
     ("வங்கி கணக்கு ஹேக் செய்யப்பட்டு பரிவர்த்தனை நடந்துள்ளது.", "Tamil", "CYBER_CRIME"),
-    ("फेसबुक अकाउंट हैक करके पैसे मांगे जा रहे हैं।", "Hindi", "CYBER_CRIME"),
-    ("बैंक मैनेजर बनकर ओटीपी पूछा और पैसे निकाल लिए।", "Hindi", "CYBER_CRIME"),
+    ("Scam links click panni bank balance tholachuten.", "Tanglish", "CYBER_CRIME"),
 
-    # PROPERTY_DISPUTE
+    # 4. PROPERTY_DISPUTE
     ("Neighbor encroached my boundary wall and built a gate.", "English", "PROPERTY_DISPUTE"),
     ("Landlord refusing to return my security deposit.", "English", "PROPERTY_DISPUTE"),
-    ("Forged property patta documents used to sell my land.", "English", "PROPERTY_DISPUTE"),
     ("Pakkathu veetukaaran enga idathula encroaching panran.", "Tanglish", "PROPERTY_DISPUTE"),
-    ("Landlord advance panatha thiruppi tharama emathuran.", "Tanglish", "PROPERTY_DISPUTE"),
     ("அண்டை வீட்டார் எனது நில எல்லையை ஆக்கிரமித்து கட்டியுள்ளனர்.", "Tamil", "PROPERTY_DISPUTE"),
     ("போலி பத்திரம் தயாரித்து எனது வீட்டை விற்க முயல்கிறார்கள்.", "Tamil", "PROPERTY_DISPUTE"),
-    ("पड़ोसी ने मेरी जमीन पर अवैध कब्जा कर लिया है।", "Hindi", "PROPERTY_DISPUTE"),
-    ("मकान मालिक सिक्योरिटी डिपॉजिट वापस नहीं कर रहा है।", "Hindi", "PROPERTY_DISPUTE"),
+    ("Patta transfer panna registration office-la legal issue.", "Tanglish", "PROPERTY_DISPUTE"),
 
-    # WOMEN_SAFETY
+    # 5. WOMEN_SAFETY
     ("Colleague continuously stalking and sending inappropriate texts.", "English", "WOMEN_SAFETY"),
     ("Facing verbal harassment at public bus stop daily.", "English", "WOMEN_SAFETY"),
-    ("Some guys following me home from college metro station.", "English", "WOMEN_SAFETY"),
     ("Office-la oru officer thappa pesuran, stalk panran.", "Tanglish", "WOMEN_SAFETY"),
-    ("College poitu varra valiyila silaper follow panranga.", "Tanglish", "WOMEN_SAFETY"),
     ("பேருந்து நிலையத்தில் ஒரு நபர் என்னைத் தொடர்ந்து பின்தொடர்கிறார்.", "Tamil", "WOMEN_SAFETY"),
     ("பணியிடத்தில் எனக்கு தொடர்ந்து பாலியல் தொல்லைகள் வருகின்றன.", "Tamil", "WOMEN_SAFETY"),
-    ("रास्ते में कुछ लड़के रोज पीछा करते हैं और फब्तियां कसते हैं।", "Hindi", "WOMEN_SAFETY"),
-    ("ऑफिस में सहकर्मी द्वारा परेशान किया जा रहा है।", "Hindi", "WOMEN_SAFETY"),
+    ("Stalker follow panran evening college vitu varra vazhila.", "Tanglish", "WOMEN_SAFETY"),
 
-    # DOMESTIC_VIOLENCE
+    # 6. DOMESTIC_VIOLENCE
     ("Husband beats me under the influence of alcohol.", "English", "DOMESTIC_VIOLENCE"),
     ("In-laws abusing and threatening for dowry money.", "English", "DOMESTIC_VIOLENCE"),
-    ("Locked inside the house and starved by my husband.", "English", "DOMESTIC_VIOLENCE"),
     ("Enga veetla purushan thittamal adikiraru.", "Tanglish", "DOMESTIC_VIOLENCE"),
-    ("Dowry ketu maamiyaar thollai tharanga, room-la lock panranga.", "Tanglish", "DOMESTIC_VIOLENCE"),
     ("மது குடித்துவிட்டு கணவர் தினமும் என்னை அடிக்கிறார்.", "Tamil", "DOMESTIC_VIOLENCE"),
     ("வரதட்சணை கேட்டு மாமியார் கொடுமைப்படுத்துகிறார்கள்.", "Tamil", "DOMESTIC_VIOLENCE"),
-    ("पति शराब पीकर रोज मारता-पीटता है।", "Hindi", "DOMESTIC_VIOLENCE"),
-    ("ससुराल वाले दहेज के लिए प्रताड़ित कर रहे हैं।", "Hindi", "DOMESTIC_VIOLENCE"),
+    ("Dowry pathathu nu solli purushan abusive-a nadakuran.", "Tanglish", "DOMESTIC_VIOLENCE"),
 
-    # CRIMINAL_COMPLAINT
+    # 7. CRIMINAL_COMPLAINT
     ("Gang attacked me with weapons near the market area.", "English", "CRIMINAL_COMPLAINT"),
     ("My motorcycle was stolen from outside my house entry.", "English", "CRIMINAL_COMPLAINT"),
-    ("Robbers broke into my home and stole gold jewelry.", "English", "CRIMINAL_COMPLAINT"),
     ("Market kitta gang kathi vechu adichanga.", "Tanglish", "CRIMINAL_COMPLAINT"),
-    ("Enga veetu bike-a thiruditu poitinga.", "Tanglish", "CRIMINAL_COMPLAINT"),
     ("இரவில் வீட்டை உடைத்து தங்க நகைகள் திருடப்பட்டுள்ளன.", "Tamil", "CRIMINAL_COMPLAINT"),
     ("சாலையில் சிலர் என்னைத் தாக்கி எனது பணத்தைப் பறித்தனர்.", "Tamil", "CRIMINAL_COMPLAINT"),
-    ("घर के बाहर से मेरी बाइक चोरी हो गई है।", "Hindi", "CRIMINAL_COMPLAINT"),
-    ("कुछ गुंडों ने हथियार दिखाकर मुझे लूटा।", "Hindi", "CRIMINAL_COMPLAINT"),
+    ("Gold chain robbery nadanthuchu street corner la.", "Tanglish", "CRIMINAL_COMPLAINT"),
 
-    # FAMILY_DISPUTE
+    # 8. FAMILY_DISPUTE
     ("Filing for divorce and seeking child custody support.", "English", "FAMILY_DISPUTE"),
     ("Parents forcing me to get married against my will.", "English", "FAMILY_DISPUTE"),
-    ("Brothers refusing to divide ancestral inheritance fairly.", "English", "FAMILY_DISPUTE"),
     ("Divorce venum, aana baby custody thara matengranga.", "Tanglish", "FAMILY_DISPUTE"),
-    ("Enga appa force panni marriage panna soldranga.", "Tanglish", "FAMILY_DISPUTE"),
     ("விருப்பம் இல்லாமல் குடும்பத்தினர் திருமணம் செய்ய வற்புறுத்துகிறார்கள்.", "Tamil", "FAMILY_DISPUTE"),
     ("பூர்வீக சொத்தை பிரிப்பதில் சகோதரர்களுக்குள் தகராறு.", "Tamil", "FAMILY_DISPUTE"),
-    ("पैतृक संपत्ति के बंटवारे को लेकर भाइयों में विवाद है।", "Hindi", "FAMILY_DISPUTE"),
-    ("तलाक और बच्चे की कस्टडी के लिए मामला दर्ज करना है।", "Hindi", "FAMILY_DISPUTE"),
+    ("Ancesty property share divide panrathula conflict.", "Tanglish", "FAMILY_DISPUTE"),
 
-    # GOVERNMENT_SCHEME
+    # 9. GOVERNMENT_SCHEME
     ("Denied benefits of housing scheme despite having all eligibility.", "English", "GOVERNMENT_SCHEME"),
     ("Panchayat office demanding bribe for widow pension approval.", "English", "GOVERNMENT_SCHEME"),
-    ("Ration card distribution office delayed my card for a year.", "English", "GOVERNMENT_SCHEME"),
     ("Housing scheme-la ellam documents irundhum select aagala.", "Tanglish", "GOVERNMENT_SCHEME"),
-    ("Widow pension kuduka bribe panam kekuranga.", "Tanglish", "GOVERNMENT_SCHEME"),
     ("விபத்து நிவாரணத் தொகை பெற தகுதி இருந்தும் கிடைக்கவில்லை.", "Tamil", "GOVERNMENT_SCHEME"),
     ("ரேஷன் கார்டு வழங்க அதிகாரிகள் லஞ்சம் கேட்கிறார்கள்.", "Tamil", "GOVERNMENT_SCHEME"),
-    ("पात्र होने के बावजूद आवास योजना की सूची में नाम नहीं है।", "Hindi", "GOVERNMENT_SCHEME"),
-    ("विधवा पेंशन के लिए सरकारी कर्मचारी रिश्वत मांग रहे हैं।", "Hindi", "GOVERNMENT_SCHEME"),
+    ("OAP pension scheme register panna officials reject panranga.", "Tanglish", "GOVERNMENT_SCHEME"),
 
-    # GENERAL_LEGAL_AID
+    # 10. GENERAL_LEGAL_AID
     ("I need free legal advice regarding a contract discrepancy.", "English", "GENERAL_LEGAL_AID"),
     ("How to apply for free legal representation in district court.", "English", "GENERAL_LEGAL_AID"),
-    ("Need guidance on court procedures for a witness summon.", "English", "GENERAL_LEGAL_AID"),
     ("Enaku free lawyer venum, court case pathi legal aid thairya.", "Tanglish", "GENERAL_LEGAL_AID"),
-    ("Court sumons vandhuruku, step by step guidance enna.", "Tanglish", "GENERAL_LEGAL_AID"),
     ("இலவச சட்ட உதவி பெற எங்கு விண்ணப்பிக்க வேண்டும்?", "Tamil", "GENERAL_LEGAL_AID"),
     ("நீதிமன்ற சம்மன் வந்துள்ளது, என்ன செய்ய வேண்டும் என அறிய வேண்டும்.", "Tamil", "GENERAL_LEGAL_AID"),
-    ("कोर्ट समन मिला है, कानूनी सहायता की आवश्यकता है।", "Hindi", "GENERAL_LEGAL_AID"),
-    ("सरकारी वकील की सहायता पाने के लिए क्या नियम हैं।", "Hindi", "GENERAL_LEGAL_AID"),
+    ("Free legal consultation documents apply panrathuku link enna.", "Tanglish", "GENERAL_LEGAL_AID"),
+
+    # 11. MOTOR_ACCIDENT_CLAIM (New)
+    ("Claiming compensation for severe injuries from truck collision.", "English", "MOTOR_ACCIDENT_CLAIM"),
+    ("Third party insurance claim pending for car accident.", "English", "MOTOR_ACCIDENT_CLAIM"),
+    ("Road accident accident compensation application block panranga.", "Tanglish", "MOTOR_ACCIDENT_CLAIM"),
+    ("மோட்டார் வாகன விபத்து இழப்பீடு கோரி விண்ணப்பிக்க வேண்டும்.", "Tamil", "MOTOR_ACCIDENT_CLAIM"),
+    ("இருசக்கர வாகன விபத்தில் அடிபட்டு காப்பீடு பெற முடியவில்லை.", "Tamil", "MOTOR_ACCIDENT_CLAIM"),
+    ("Car damage accident claim process insurance company delayed.", "Tanglish", "MOTOR_ACCIDENT_CLAIM"),
+
+    # 12. INSURANCE_CLAIM (New)
+    ("Life insurance payout rejected due to false technical reasons.", "English", "INSURANCE_CLAIM"),
+    ("Health insurance company not releasing money for surgery.", "English", "INSURANCE_CLAIM"),
+    ("Insurance claim deny pannitanga documentation complete-a irundhum.", "Tanglish", "INSURANCE_CLAIM"),
+    ("மருத்துவக் காப்பீட்டுத் தொகையை நிறுவனம் வழங்க மறுக்கிறது.", "Tamil", "INSURANCE_CLAIM"),
+    ("பயிர்க் காப்பீட்டுத் தொகை கிடைக்காமல் விவசாயிகள் தவிக்கிறார்கள்.", "Tamil", "INSURANCE_CLAIM"),
+    ("Crop insurance failure payout delay by corporate agent.", "Tanglish", "INSURANCE_CLAIM"),
+
+    # 13. BANKING_DISPUTE (New)
+    ("Unauthorized credit card transaction charges billed to account.", "English", "BANKING_DISPUTE"),
+    ("Bank frozen my account without sending any written notice.", "English", "BANKING_DISPUTE"),
+    ("Bank account unauthorized charge cut pannitanga return tharala.", "Tanglish", "BANKING_DISPUTE"),
+    ("எனது அனுமதியின்றி வங்கிக் கணக்கிலிருந்து பணம் எடுக்கப்பட்டுள்ளது.", "Tamil", "BANKING_DISPUTE"),
+    ("வங்கிக் கடன் வட்டி விகிதத்தில் மோசடி செய்துள்ளனர்.", "Tamil", "BANKING_DISPUTE"),
+    ("Personal loan EMI extra auto debit dispute with manager.", "Tanglish", "BANKING_DISPUTE"),
+
+    # 14. RENT_TENANT_DISPUTE (New)
+    ("Landlord attempting illegal eviction without notice window.", "English", "RENT_TENANT_DISPUTE"),
+    ("Tenant not paying rent and refusing to vacate building.", "English", "RENT_TENANT_DISPUTE"),
+    ("House owner room lease advance return tharama vacate panna soldran.", "Tanglish", "RENT_TENANT_DISPUTE"),
+    ("வாடகை ஒப்பந்தம் முடியும் முன்பே வீட்டை விட்டு வெளியேறச் சொல்கிறார்.", "Tamil", "RENT_TENANT_DISPUTE"),
+    ("வாடகை தராமல் வீட்டை ஆக்கிரமித்துள்ள வாடகைதாரர்.", "Tamil", "RENT_TENANT_DISPUTE"),
+    ("Rental agreement renewal dispute tenant refusing to exit.", "Tanglish", "RENT_TENANT_DISPUTE"),
+
+    # 15. MEDICAL_NEGLIGENCE (New)
+    ("Doctor left surgical gauze inside patient body after surgery.", "English", "MEDICAL_NEGLIGENCE"),
+    ("Wrong medication dosage caused severe brain damage to child.", "English", "MEDICAL_NEGLIGENCE"),
+    ("Hospital wrong injection wrong treatment patient death negligence.", "Tanglish", "MEDICAL_NEGLIGENCE"),
+    ("மருத்துவரின் அலட்சியத்தால் அறுவை சிகிச்சை தோல்வி அடைந்தது.", "Tamil", "MEDICAL_NEGLIGENCE"),
+    ("தவறான மருந்து வழங்கியதால் நோயாளிக்கு பக்கவாதம் ஏற்பட்டது.", "Tamil", "MEDICAL_NEGLIGENCE"),
+    ("Government hospital delivery operation negligence of duty doctor.", "Tanglish", "MEDICAL_NEGLIGENCE"),
+
+    # 16. EDUCATION_DISPUTE (New)
+    ("College refusing to return original certificates upon exit.", "English", "EDUCATION_DISPUTE"),
+    ("Private school demanding capitation fee violating RTE Act.", "English", "EDUCATION_DISPUTE"),
+    ("RTE admission block school extra fee demand panranga.", "Tanglish", "EDUCATION_DISPUTE"),
+    ("கல்லூரி மாற்றுச் சான்றிதழை தர மறுத்து அலைக்கழிக்கிறது.", "Tamil", "EDUCATION_DISPUTE"),
+    ("அனுமதி பெறாத பள்ளியில் சேர்ந்து மாணவர்கள் ஏமாற்றம் அடைந்தனர்.", "Tamil", "EDUCATION_DISPUTE"),
+    ("Scholarship application process college staff bribe demanding.", "Tanglish", "EDUCATION_DISPUTE"),
+
+    # 17. WORKPLACE_HARASSMENT (New)
+    ("Supervisor threatening termination for refusing sexual advances.", "English", "WORKPLACE_HARASSMENT"),
+    ("Abusive toxic manager creating hostile environment at office.", "English", "WORKPLACE_HARASSMENT"),
+    ("Office management toxic pressure workplace mental harassment.", "Tanglish", "WORKPLACE_HARASSMENT"),
+    ("பணியிடத்தில் பெண் ஊழியர்களுக்கு தொடர்ந்து பாலியல் அச்சுறுத்தல்.", "Tamil", "WORKPLACE_HARASSMENT"),
+    ("மேலதிகாரி தகாத வார்த்தைகளால் பேசி அவமதிக்கிறார்.", "Tamil", "WORKPLACE_HARASSMENT"),
+    ("Salary cut threaten HR harassment workplace safety failure.", "Tanglish", "WORKPLACE_HARASSMENT"),
+
+    # 18. SENIOR_CITIZEN_ABUSE (New)
+    ("Children abandoned parents and grabbed all pension property.", "English", "SENIOR_CITIZEN_ABUSE"),
+    ("Physical abuse and starvation of elderly father by son.", "English", "SENIOR_CITIZEN_ABUSE"),
+    ("Elderly mother property sign register panni thurathitaanga children.", "Tanglish", "SENIOR_CITIZEN_ABUSE"),
+    ("முதியோர் உதவித்தொகையை பறித்துக் கொண்டு மகன் வீட்டை விட்டு துரத்தினார்.", "Tamil", "SENIOR_CITIZEN_ABUSE"),
+    ("வயதான பெற்றோரை கவனித்துக் கொள்ளாமல் பிள்ளைகள் கைவிட்டனர்.", "Tamil", "SENIOR_CITIZEN_ABUSE"),
+    ("Maintenance claim against son senior citizen protection act help.", "Tanglish", "SENIOR_CITIZEN_ABUSE"),
+
+    # 19. CHILD_WELFARE (New)
+    ("Reporting active child labor in local tea shop market.", "English", "CHILD_WELFARE"),
+    ("Minor girl forced into child marriage arrangement by relatives.", "English", "CHILD_WELFARE"),
+    ("Child labor hotel work street child welfare rescue help.", "Tanglish", "CHILD_WELFARE"),
+    ("குழந்தை தொழிலாளர்களை கடைகளில் வேலைக்கு வைத்துள்ளனர்.", "Tamil", "CHILD_WELFARE"),
+    ("மைனர் சிறுமிக்கு கட்டாயத் திருமணம் செய்ய ஏற்பாடு நடக்கிறது.", "Tamil", "CHILD_WELFARE"),
+    ("School dropout child labor brick kiln factory minor abuse.", "Tanglish", "CHILD_WELFARE"),
+
+    # 20. DISABILITY_RIGHTS (New)
+    ("Denied accessibility ramps in public government bank office.", "English", "DISABILITY_RIGHTS"),
+    ("Employer rejected job application solely due to visual impairment.", "English", "DISABILITY_RIGHTS"),
+    ("Differently abled quota job skip reservation violations office.", "Tanglish", "DISABILITY_RIGHTS"),
+    ("மாற்றுத்திறனாளிகளுக்கான அரசு சலுகைகள் மற்றும் வேலைவாய்ப்பு மறுப்பு.", "Tamil", "DISABILITY_RIGHTS"),
+    ("பள்ளி வளாகத்தில் மாற்றுத்திறனாளி மாணவர்களுக்கு கழிப்பறை வசதி இல்லை.", "Tamil", "DISABILITY_RIGHTS"),
+    ("Disability certificate application issue welfare card delayed.", "Tanglish", "DISABILITY_RIGHTS"),
+
+    # 21. CASTE_DISCRIMINATION (New)
+    ("Social boycott of SC community from local village temple festival.", "English", "CASTE_DISCRIMINATION"),
+    ("Casteist slurs thrown at water well community sharing point.", "English", "CASTE_DISCRIMINATION"),
+    ("Caste name calling discrimination tea shop separate glass.", "Tanglish", "CASTE_DISCRIMINATION"),
+    ("பட்டியலின மக்களை பொதுக் கிணற்றில் தண்ணீர் எடுக்க விடாமல் தடுக்கிறார்கள்.", "Tamil", "CASTE_DISCRIMINATION"),
+    ("சாதிப் பெயரைச் சொல்லி இழிவுபடுத்தி ஊரை விட்டு ஒதுக்கி வைத்தனர்.", "Tamil", "CASTE_DISCRIMINATION"),
+    ("Caste barrier temple entry village panchayat discrimination.", "Tanglish", "CASTE_DISCRIMINATION"),
+
+    # 22. POLICE_MISCONDUCT (New)
+    ("Police officer refused to register FIR for a theft case.", "English", "POLICE_MISCONDUCT"),
+    ("Illegal police detention and custodial violence in lockup.", "English", "POLICE_MISCONDUCT"),
+    ("Police custody beating bribe demand local FIR registration fail.", "Tanglish", "POLICE_MISCONDUCT"),
+    ("காவல் துறையினர் புகார் மனுவை வாங்க மறுத்து திருப்பி அனுப்பினர்.", "Tamil", "POLICE_MISCONDUCT"),
+    ("விசாரணை என்ற பெயரில் லாக்அப்பில் வைத்து கடுமையாக தாக்கினர்.", "Tamil", "POLICE_MISCONDUCT"),
+    ("False case threat bribery police station lockup assault.", "Tanglish", "POLICE_MISCONDUCT"),
+
+    # 23. CORRUPTION_BRIBERY (New)
+    ("Public officer demanding bribe of 5000 for death certificate.", "English", "CORRUPTION_BRIBERY"),
+    ("Contractor paying kickbacks to municipal engineer for road works.", "English", "CORRUPTION_BRIBERY"),
+    ("Bribe demand office corruption latcham registration patta.", "Tanglish", "CORRUPTION_BRIBERY"),
+    ("அரசு அலுவலகத்தில் ஓட்டுநர் உரிமம் பெற லஞ்சம் கேட்கிறார்கள்.", "Tamil", "CORRUPTION_BRIBERY"),
+    ("பில் பாஸ் செய்ய இன்ஜினியர் பெருந்தொகை லஞ்சம் கேட்கிறார்.", "Tamil", "CORRUPTION_BRIBERY"),
+    ("Vigilance anti corruption bribe recording complaint help.", "Tanglish", "CORRUPTION_BRIBERY"),
+
+    # 24. CIVIC_INFRASTRUCTURE (New)
+    ("Broken sewage pipe causing raw sewage drinking water mix.", "English", "CIVIC_INFRASTRUCTURE"),
+    ("Severe potholes on main road causing fatal bike accidents.", "English", "CIVIC_INFRASTRUCTURE"),
+    ("Street light repair block dark street chain snatching threat.", "Tanglish", "CIVIC_INFRASTRUCTURE"),
+    ("குடிநீருடன் கழிவுநீர் கலந்து வருவதால் தொற்றுநோய் பரவுகிறது.", "Tamil", "CIVIC_INFRASTRUCTURE"),
+    ("சாலையில் உள்ள ஆழமான பள்ளங்களால் வாகன ஓட்டிகள் விபத்துக்குள்ளாகிறார்கள்.", "Tamil", "CIVIC_INFRASTRUCTURE"),
+    ("Garbage dumping issue street corner corporate cleaning delay.", "Tanglish", "CIVIC_INFRASTRUCTURE"),
+
+    # 25. RTI_APPLICATION (New)
+    ("RTI request regarding village budget spending not answered.", "English", "RTI_APPLICATION"),
+    ("Public information officer intentionally gave wrong fake answers.", "English", "RTI_APPLICATION"),
+    ("RTI reply delay timeline over no info provided by office.", "Tanglish", "RTI_APPLICATION"),
+    ("தகவல் அறியும் உரிமை சட்டத்தின் கீழ் கேட்ட கேள்விக்கு பதில் அளிக்கவில்லை.", "Tamil", "RTI_APPLICATION"),
+    ("அரசு திட்ட செலவு விபரங்கள் குறித்த ஆர்டிஐ மனு நிராகரிக்கப்பட்டது.", "Tamil", "RTI_APPLICATION"),
+    ("PIO officer RTI appeal process documentation rejection.", "Tanglish", "RTI_APPLICATION")
 ]
 
-# Duplicate the seed dataset programmatically to exceed 200 rows and ensure robust training
+# Expand seeds programmatically to over 700 rows
 extended_complaints = []
-for i in range(3):  # 3 * ~90 = 270 rows
+for i in range(5):  # 5 * 150 = 750 rows
     for text, lang, cat in complaints_data:
-        # Subtle variations to prevent exact identity but preserve semantic meaning
         var_text = text
         if i == 1:
-            var_text = f"Regarding my issue: {text}"
+            var_text = f"Dear Sir, {text}"
         elif i == 2:
-            var_text = f"Urgent legal help needed. {text}"
+            var_text = f"Regarding my grievance: {text}"
+        elif i == 3:
+            var_text = f"Urgent action required on this case. {text}"
+        elif i == 4:
+            var_text = f"I am writing to report that: {text}"
         extended_complaints.append((var_text, lang, cat))
 
 with open("datasets/legal_complaints_multilingual.csv", "w", encoding="utf-8", newline="") as f:
@@ -143,20 +243,20 @@ with open("datasets/legal_complaints_multilingual.csv", "w", encoding="utf-8", n
 # 2. priority_training.csv
 priority_data = []
 for text, lang, cat in extended_complaints:
-    is_sensitive = "true" if any(w in text.lower() for w in ["harassment", "beating", "abusing", "violence", "threaten"]) else "false"
-    emergency_keywords_present = "1" if any(w in text.lower() for w in ["kill", "attack", "suicide", "robbed", "danger"]) else "0"
-    money_loss_present = "1" if any(w in text.lower() for w in ["salary", "money", "rupees", "deposit", "scam", "panam", "lakh"]) else "0"
+    is_sensitive = "true" if any(w in text.lower() for w in ["harassment", "beating", "abusing", "violence", "threaten", "casteist", "boycott", "neglegence", "custody", "minor"]) else "false"
+    emergency_keywords_present = "1" if any(w in text.lower() for w in ["kill", "attack", "suicide", "robbed", "danger", "gauze", "negligence", "lockup"]) else "0"
+    money_loss_present = "1" if any(w in text.lower() for w in ["salary", "money", "rupees", "deposit", "scam", "panam", "lakh", "bribe", "latcham", "kickback"]) else "0"
     
-    # Label logic based on rules to map targets
+    # Priority classification rules
     priority_label = "LOW"
     priority_score = 30
     if emergency_keywords_present == "1":
         priority_label = "CRITICAL"
         priority_score = 92
-    elif is_sensitive == "true" or cat in ["WOMEN_SAFETY", "DOMESTIC_VIOLENCE", "CRIMINAL_COMPLAINT"]:
+    elif is_sensitive == "true" or cat in ["WOMEN_SAFETY", "DOMESTIC_VIOLENCE", "CRIMINAL_COMPLAINT", "MEDICAL_NEGLIGENCE", "POLICE_MISCONDUCT", "CHILD_WELFARE"]:
         priority_label = "HIGH"
         priority_score = 78
-    elif money_loss_present == "1" or cat in ["CYBER_CRIME", "LABOUR_DISPUTE"]:
+    elif money_loss_present == "1" or cat in ["CYBER_CRIME", "LABOUR_DISPUTE", "INSURANCE_CLAIM", "BANKING_DISPUTE", "CORRUPTION_BRIBERY"]:
         priority_label = "MEDIUM"
         priority_score = 55
 
@@ -174,7 +274,7 @@ for text, lang, cat in extended_complaints:
     priority = "LOW"
     if any(w in text.lower() for w in ["kill", "attack", "robbed"]):
         priority = "CRITICAL"
-    elif cat in ["WOMEN_SAFETY", "DOMESTIC_VIOLENCE", "CRIMINAL_COMPLAINT"]:
+    elif cat in ["WOMEN_SAFETY", "DOMESTIC_VIOLENCE", "CRIMINAL_COMPLAINT", "CHILD_WELFARE"]:
         priority = "HIGH"
     
     auth_label = "District Legal Services Authority"
@@ -192,6 +292,34 @@ for text, lang, cat in extended_complaints:
         auth_label = "Protection Officer"
     elif cat == "GOVERNMENT_SCHEME":
         auth_label = "Government Grievance Cell"
+    elif cat == "MOTOR_ACCIDENT_CLAIM":
+        auth_label = "Motor Accident Claims Tribunal"
+    elif cat == "INSURANCE_CLAIM":
+        auth_label = "Insurance Ombudsman"
+    elif cat == "BANKING_DISPUTE":
+        auth_label = "Banking Ombudsman"
+    elif cat == "RENT_TENANT_DISPUTE":
+        auth_label = "Rent Controller Office"
+    elif cat == "MEDICAL_NEGLIGENCE":
+        auth_label = "State Medical Council"
+    elif cat == "EDUCATION_DISPUTE":
+        auth_label = "Education Department Office"
+    elif cat == "WORKPLACE_HARASSMENT":
+        auth_label = "Internal Complaints Committee"
+    elif cat == "SENIOR_CITIZEN_ABUSE":
+        auth_label = "Social Welfare Officer"
+    elif cat == "CHILD_WELFARE":
+        auth_label = "Child Welfare Committee"
+    elif cat == "DISABILITY_RIGHTS":
+        auth_label = "Differently Abled Commissioner Office"
+    elif cat in ["CASTE_DISCRIMINATION", "POLICE_MISCONDUCT"]:
+        auth_label = "District Collector Office"
+    elif cat == "CORRUPTION_BRIBERY":
+        auth_label = "Vigilance and Anti-Corruption Bureau"
+    elif cat == "CIVIC_INFRASTRUCTURE":
+        auth_label = "Municipal Corporation Grievance Cell"
+    elif cat == "RTI_APPLICATION":
+        auth_label = "Public Information Officer"
 
     authority_data.append((text, cat, priority, "Coimbatore", auth_label))
 
@@ -200,88 +328,4 @@ with open("datasets/authority_training.csv", "w", encoding="utf-8", newline="") 
     writer.writerow(["complaint_text", "category", "priority", "district", "authority_label"])
     writer.writerows(authority_data)
 
-
-# 4. document_recommendation_training.csv
-doc_data = []
-for text, lang, cat in extended_complaints:
-    docs = "Aadhaar Card"
-    if cat == "LABOUR_DISPUTE":
-        docs = "Salary Slip|Employee ID|Bank Statement"
-    elif cat == "CONSUMER_COMPLAINT":
-        docs = "Invoice|Transaction Screenshot|Product Image"
-    elif cat == "CYBER_CRIME":
-        docs = "Bank Statement|Transaction Screenshot|Aadhaar Card"
-    elif cat == "PROPERTY_DISPUTE":
-        docs = "Property Document|Aadhaar Card"
-    elif cat == "DOMESTIC_VIOLENCE":
-        docs = "Medical Report|Police Complaint Copy"
-    elif cat == "GOVERNMENT_SCHEME":
-        docs = "Ration Card|Income Certificate"
-
-    doc_data.append((text, cat, "MEDIUM", docs))
-
-with open("datasets/document_recommendation_training.csv", "w", encoding="utf-8", newline="") as f:
-    writer = csv.writer(f)
-    writer.writerow(["complaint_text", "category", "priority", "required_documents"])
-    writer.writerows(doc_data)
-
-
-# 5. next_steps_knowledge_base.csv
-next_steps_data = [
-    ("LABOUR_DISPUTE", "HIGH", "Salary not paid", "You can submit details to the Labour Office.", "Collect salary proof|Prepare written complaint|Approach Labour Office|Keep acknowledgement copy"),
-    ("CONSUMER_COMPLAINT", "MEDIUM", "Received damaged product", "You should file a claim in the Consumer Forum.", "Save order invoice|Take photo of product|Approach Consumer Forum|File notice"),
-    ("CYBER_CRIME", "HIGH", "Hacked account", "Report immediately to Cyber Cell.", "Call 1930 immediately|Take account screenshots|Register Cyber Cell case|Inform bank"),
-    ("PROPERTY_DISPUTE", "MEDIUM", "Land encroachment", "Consult DLSA for mediation or file a suit.", "Obtain surveyor report|Present property deed|Consult civil lawyer|Initiate mediation"),
-    ("DOMESTIC_VIOLENCE", "CRITICAL", "Physical violence", "Contact Women Helpline or Local Protection Officer.", "Go to safety first|Contact helpline 181|Record medical injuries|File police report"),
-    ("CRIMINAL_COMPLAINT", "CRITICAL", "Robbery at home", "Visit local Police Station to register FIR.", "Ensure safety first|Do not touch scene|Visit Police Station|Register FIR copy"),
-    ("GOVERNMENT_SCHEME", "LOW", "Pension issue", "File grievance at District Grievance cell.", "Collect eligibility proofs|Visit grievance officer|Submit application|Track status"),
-    ("GENERAL_LEGAL_AID", "LOW", "Witness summon", "Contact DLSA to obtain legal counseling.", "Read summon details|Obtain DLSA counseling|Reach court on time|Take legal guides"),
-]
-# Repeat to reach training length
-kb_rows = []
-for i in range(15):
-    for cat, pri, query, ans, steps in next_steps_data:
-        kb_rows.append((cat, pri, f"{query} variant {i}", ans, steps))
-
-with open("datasets/next_steps_knowledge_base.csv", "w", encoding="utf-8", newline="") as f:
-    writer = csv.writer(f)
-    writer.writerow(["category", "priority", "user_query", "answer", "steps"])
-    writer.writerows(kb_rows)
-
-
-# 6. chatbot_qa_dataset.csv
-chatbot_qa = [
-    ("what is the legal aid authority", "en", "GENERAL_LEGAL_AID", "Legal Aid Authority provides free legal services to the weaker sections of the society to ensure that opportunities for securing justice are not denied.", "yes"),
-    ("how do i file a consumer complaint", "en", "CONSUMER_COMPLAINT", "You can file a complaint with the Consumer Forum online or in person using your invoice.", "yes"),
-    ("what are my options if my salary is delayed", "en", "LABOUR_DISPUTE", "You can register a grievance at the Labour Office and show your employment contract.", "yes"),
-    ("how to report a banking scam", "en", "CYBER_CRIME", "Please report online cyber crime immediately at cybercrime.gov.in or dial 1930.", "yes"),
-    ("what is the helpline for women safety", "en", "WOMEN_SAFETY", "Women in distress can dial the national women helpline 181 for safety assistance.", "yes"),
-]
-# Expand QA dataset
-qa_rows = []
-for i in range(25):
-    for q, l, c, a, sd in chatbot_qa:
-        qa_rows.append((f"{q} variant {i}", l, c, a, sd))
-
-with open("datasets/chatbot_qa_dataset.csv", "w", encoding="utf-8", newline="") as f:
-    writer = csv.writer(f)
-    writer.writerow(["question", "language", "category", "answer", "safety_disclaimer_required"])
-    writer.writerows(qa_rows)
-
-
-# 7. document_keywords.json
-doc_keywords = {
-    "SALARY_SLIP": ["salary", "pay slip", "earnings", "employee", "net pay", "deductions"],
-    "INVOICE": ["invoice", "bill", "tax invoice", "gst", "total amount", "seller"],
-    "EMPLOYEE_ID": ["employee card", "id card", "employee id", "validity", "identity", "company name"],
-    "BANK_STATEMENT": ["bank statement", "account statement", "balance", "transaction", "withdrawal", "deposit"],
-    "TRANSACTION_SCREENSHOT": ["transaction success", "upi", "payment to", "ref no", "utr", "amount sent"],
-    "PROPERTY_DOCUMENT": ["patta", "sale deed", "property tax", "registration", "survey number", "schedule"],
-    "MEDICAL_REPORT": ["patient", "clinical", "injury", "treatment", "medical certificate", "doctor sign"],
-    "POLICE_COMPLAINT_COPY": ["first information report", "fir", "police station", "complaint copy", "crpc", "officer sign"]
-}
-
-with open("datasets/document_keywords.json", "w", encoding="utf-8") as f:
-    json.dump(doc_keywords, f, indent=2)
-
-print("Datasets generated successfully!")
+print(f"Generated expanded datasets successfully: 750 training samples across 25 categories.")

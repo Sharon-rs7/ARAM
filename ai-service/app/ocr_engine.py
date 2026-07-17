@@ -1,16 +1,19 @@
 import os
 import re
+from PIL import Image
 
-has_easyocr = False
-reader = None
+has_tesseract = False
 
 try:
-    import easyocr
-    # Load reader for English/Tamil
-    reader = easyocr.Reader(['en', 'ta'], gpu=False)
-    has_easyocr = True
+    import pytesseract
+    # Pytesseract will execute the local Tesseract installation command
+    # You can specify the binary path if it's not on system PATH:
+    # pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+    pytesseract.get_tesseract_version()
+    has_tesseract = True
+    print("Pytesseract initialized successfully.")
 except Exception as e:
-    print(f"EasyOCR not loaded: {e}. OCR will run in mock/low-resource mode.")
+    print(f"Pytesseract not loaded: {e}. OCR will run in mock/low-resource mode.")
 
 def mask_sensitive_data(text: str) -> str:
     if not text:
@@ -28,6 +31,10 @@ def mask_sensitive_data(text: str) -> str:
     return text
 
 def extract_ocr_text(file_path: str) -> dict:
+    """
+    Extracts text from images using pytesseract.
+    Falls back to mock responses if Tesseract is not installed.
+    """
     if not os.path.exists(file_path):
         return {
             "extractedText": "Mock OCR: File not found.",
@@ -37,20 +44,19 @@ def extract_ocr_text(file_path: str) -> dict:
 
     extracted = ""
     confidence = 0.85
-    
-    if has_easyocr and reader:
+
+    if has_tesseract:
         try:
-            results = reader.readtext(file_path)
-            texts = [res[1] for res in results]
-            confidences = [res[2] for res in results]
-            extracted = " ".join(texts)
-            if confidences:
-                confidence = float(sum(confidences) / len(confidences))
+            # Open image using Pillow
+            img = Image.open(file_path)
+            # Run Tesseract with English + Tamil language pack support
+            extracted = pytesseract.image_to_string(img, lang="eng+tam").strip()
+            confidence = 0.90
         except Exception as ex:
-            print(f"EasyOCR extraction error: {ex}")
+            print(f"Tesseract extraction error: {ex}. Falling back to mock text.")
             extracted = ""
 
-    # Fallback/Mock OCR if empty or EasyOCR not present
+    # Fallback/Mock OCR if empty or Tesseract not present
     if not extracted:
         filename = os.path.basename(file_path).lower()
         if "salary" in filename:

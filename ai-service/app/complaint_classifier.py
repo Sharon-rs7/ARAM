@@ -11,7 +11,22 @@ FALLBACK_KEYWORDS = {
     "DOMESTIC_VIOLENCE": ["husband", "beats", "beating", "abusing", "dowry", "starved", "domestic", "violence"],
     "CRIMINAL_COMPLAINT": ["theft", "stole", "robbed", "attack", "weapons", "assault"],
     "FAMILY_DISPUTE": ["divorce", "custody", "marriage", "inheritance", "ancestral", "ancestry", "division"],
-    "GOVERNMENT_SCHEME": ["scheme", "pension", "bribe", "latcham", "ration", "benefits"]
+    "GOVERNMENT_SCHEME": ["scheme", "pension", "bribe", "latcham", "ration", "benefits"],
+    "MOTOR_ACCIDENT_CLAIM": ["accident", "collision", "compensation", "vehicle", "car", "bike", "truck", "mact", "ibabathu"],
+    "INSURANCE_CLAIM": ["insurance", "rejection", "policy", "premium", "payout", "claim", "kaapeedu"],
+    "BANKING_DISPUTE": ["banking", "credit card", "frozen", "loan", "emi", "unauthorized", "charge", "interest", "banku"],
+    "RENT_TENANT_DISPUTE": ["tenant", "landlord", "rent", "agreement", "lease", "eviction", "vacate", "owner", "vaadagai"],
+    "MEDICAL_NEGLIGENCE": ["negligence", "doctor", "surgical", "gauze", "wrong medication", "hospital", "injection", "treatment", "alatchiyam"],
+    "EDUCATION_DISPUTE": ["college", "school", "certificate", "capitation fee", "rte", "admission", "scholarship", "fees"],
+    "WORKPLACE_HARASSMENT": ["harassment", "toxic", "supervisor", "manager", "hostile", "workplace", "abusive", "sexual"],
+    "SENIOR_CITIZEN_ABUSE": ["senior citizen", "elderly", "abandoned", "father", "mother", "pension", "maintenance", "muthiyor"],
+    "CHILD_WELFARE": ["child", "labor", "minor", "marriage", "school dropout", "work", "abuse", "kuzhandhai"],
+    "DISABILITY_RIGHTS": ["disability", "disabled", "accessibility", "ramp", "reservation", "quota", "differently abled"],
+    "CASTE_DISCRIMINATION": ["caste", "discrimination", "boycott", "sc", "slurs", "glass", "temple", "jaathi"],
+    "POLICE_MISCONDUCT": ["police", "fir", "detention", "lockup", "custodial", "violence", "misconduct", "beating"],
+    "CORRUPTION_BRIBERY": ["bribe", "corruption", "latcham", "kickback", "officer", "money", "demanding"],
+    "CIVIC_INFRASTRUCTURE": ["sewage", "drinking water", "potholes", "street light", "garbage", "civic", "municipal", "road", "kuppai"],
+    "RTI_APPLICATION": ["rti", "information", "pio", "appeal", "application", "reply", "details"]
 }
 
 def keyword_category(text: str):

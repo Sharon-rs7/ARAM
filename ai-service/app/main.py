@@ -2,7 +2,7 @@ import sys
 import types
 
 # Inject mock modules for ML dependencies if not installed
-for mod_name in ['numpy', 'joblib', 'easyocr', 'cv2', 'pandas', 'sklearn', 'sentence_transformers', 'tensorflow', 'keras', 'scipy']:
+for mod_name in ['numpy', 'joblib', 'easyocr', 'cv2', 'pandas', 'sklearn', 'sentence_transformers', 'tensorflow', 'keras', 'scipy', 'pytesseract', 'faster_whisper']:
     try:
         __import__(mod_name)
     except ImportError:
@@ -25,6 +25,15 @@ for mod_name in ['numpy', 'joblib', 'easyocr', 'cv2', 'pandas', 'sklearn', 'sent
             class MockDataFrame:
                 def __init__(self, *args, **kwargs): pass
             mock_mod.DataFrame = MockDataFrame
+        elif mod_name == 'pytesseract':
+            mock_mod.image_to_string = lambda *args, **kwargs: ""
+            mock_mod.get_tesseract_version = lambda *args, **kwargs: "4.0.0"
+        elif mod_name == 'faster_whisper':
+            class MockWhisperModel:
+                def __init__(self, *args, **kwargs): pass
+                def transcribe(self, *args, **kwargs):
+                    return [], type('Info', (object,), {'language': 'en', 'language_probability': 0.85})()
+            mock_mod.WhisperModel = MockWhisperModel
         sys.modules[mod_name] = mock_mod
 
 import os
@@ -41,6 +50,7 @@ from app.chatbot_engine import ask_chatbot_engine
 from app.ocr_engine import extract_ocr_text
 from app.document_verifier import verify_document_service
 from app.mongo_logger import log_ai_action
+from app.speech_to_text import transcribe_audio
 
 app = FastAPI(title="ARAM AI Service")
 
@@ -154,6 +164,24 @@ def documents_verify(
             
         res = verify_document_service(temp_file_path, expectedDocumentType, complaintCategory)
         log_ai_action("document_verification_logs", res)
+        return res
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    finally:
+        if os.path.exists(temp_file_path):
+            os.remove(temp_file_path)
+
+@app.post("/voice/transcribe")
+def voice_transcribe(file: UploadFile = File(...)):
+    temp_dir = tempfile.gettempdir()
+    temp_file_path = os.path.join(temp_dir, f"transcribe_{uuid_filename(file.filename)}")
+    
+    try:
+        with open(temp_file_path, "wb") as buffer:
+            shutil.copyfileobj(file.file, buffer)
+            
+        res = transcribe_audio(temp_file_path)
+        log_ai_action("voice_transcription_logs", res)
         return res
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

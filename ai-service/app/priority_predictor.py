@@ -21,9 +21,9 @@ def predict_priority(text: str, category: str, is_sensitive: bool, duration_mont
     # If priority models are missing, fall back to rules
     if model_loader.is_model_missing("priority"):
         score = 30
-        if is_sensitive or category in ["WOMEN_SAFETY", "DOMESTIC_VIOLENCE", "CRIMINAL_COMPLAINT"]:
+        if is_sensitive or category in ["WOMEN_SAFETY", "DOMESTIC_VIOLENCE", "CRIMINAL_COMPLAINT", "MEDICAL_NEGLIGENCE", "POLICE_MISCONDUCT", "CHILD_WELFARE"]:
             score = 75
-        elif category in ["CYBER_CRIME", "LABOUR_DISPUTE"]:
+        elif category in ["CYBER_CRIME", "LABOUR_DISPUTE", "INSURANCE_CLAIM", "BANKING_DISPUTE", "CORRUPTION_BRIBERY"]:
             score = 50
         
         # Adjust for duration
