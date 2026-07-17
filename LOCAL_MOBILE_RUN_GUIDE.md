@@ -46,3 +46,18 @@ This guide explains how to connect your Android phone or any mobile device to th
 ## 🚨 Troubleshooting
 - **Firewall Block:** If the page doesn't load on your phone, you may need to allow ports `5173` and `8080` through the Windows Defender Firewall.
 - **CORS Errors:** Wildcard patterns `http://192.168.*:*` are allowed in `CorsConfig.java`. Ensure your IP falls within standard local subnets.
+
+---
+
+## 🧹 Step 4: Clearing Mobile/PWA Cache (Dev Fixes)
+If you made changes that are not reflecting on your phone, the PWA service worker may be serving cached assets. Clear it manually:
+1. **Desktop Chrome:**
+   - Open DevTools (`F12` or `Ctrl + Shift + I`).
+   - Go to **Application** → **Service Workers** → Click **Unregister**.
+   - Go to **Application** → **Storage** → Click **Clear site data**.
+   - Perform a hard reload: `Ctrl + F5`.
+2. **Mobile Chrome:**
+   - Tap the three dots menu → Settings → Site settings → All sites.
+   - Search for your laptop's IP address and select it.
+   - Tap **Clear & reset**.
+

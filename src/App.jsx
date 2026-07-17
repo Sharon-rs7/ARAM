@@ -134,25 +134,6 @@ function App() {
         {/* 404 Catch All */}
         <Route path="*" element={<NotFound />} />
       </Routes>
-      
-      {/* Dev Badge */}
-      <div style={{
-        position: 'fixed',
-        bottom: '20px',
-        right: '20px',
-        background: '#ffffff',
-        color: '#0f172a',
-        padding: '10px 16px',
-        borderRadius: '8px',
-        fontSize: '12px',
-        fontWeight: 'bold',
-        zIndex: 99999,
-        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-        border: '2.5px solid #0f172a',
-        pointerEvents: 'none'
-      }}>
-        CURRENT ARAM PROJECT UPDATED
-      </div>
     </BrowserRouter>
   );
 }

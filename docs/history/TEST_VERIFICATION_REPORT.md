@@ -9,7 +9,7 @@ This document reports the comprehensive testing and verification of the consolid
 - **Backend Directory:** `E:\prgt\New folder\aram\aram-backend`
 - **Required Files Present:** `package.json`, `vite.config.js`, `src/main.jsx`, `src/App.jsx`, `.env`, `.env.example`, `README.md`, `aram-backend/pom.xml`.
 - **Environment Properties:** 
-  - `VITE_API_BASE_URL=http://10.58.17.140:8080/api`
+  - `VITE_API_BASE_URL=http://localhost:8080/api`
   - `VITE_USE_MOCKS=false`
 - **Unwanted Duplicate Projects:** Confirmed no duplicate directories (like `aid/` or copied `aram-app/`) in the root.
 

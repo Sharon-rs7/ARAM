@@ -1,6 +1,7 @@
 # ARAM Demo & Test Credentials
 
-This file contains the seeded database login credentials for development and testing.
+> [!WARNING]
+> The credentials and configurations listed below are strictly for local development and testing. Do not reuse these emails, passwords, or settings in staging or production environments.
 
 ---
 
@@ -11,8 +12,6 @@ This file contains the seeded database login credentials for development and tes
 | **Admin** | `admin@aram.ai` | `Admin@123` | `/admin/dashboard` |
 | **Citizen (Default)** | `citizen@aram.ai` | `Citizen@123` | `/citizen/dashboard` |
 | **Volunteer / Helper** | `volunteer@aram.ai` | `Helper@123` | `/volunteer/dashboard` |
-| **Advocate** | `advocate@aram.ai` | `Advocate@123` | `/advocate/dashboard` |
-| **Authority Officer** | `officer@aram.ai` | `Officer@123` | `/authority/dashboard` |
 
 ---
 

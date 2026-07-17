@@ -72,35 +72,15 @@ html[data-theme="dark"] {
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
 }
 
-/* Role Color Schema Overrides */
-html[data-role="citizen"] {
-  --role-primary: #2563eb;
-  --role-accent: #06b6d4;
-  --role-soft: rgba(37, 99, 235, 0.10);
-}
-
-html[data-role="helper"] {
-  --role-primary: #0f766e;
-  --role-accent: #22c55e;
-  --role-soft: rgba(15, 118, 110, 0.10);
-}
-
-html[data-role="admin"] {
-  --role-primary: #1e293b;
-  --role-accent: #dc2626;
-  --role-soft: rgba(220, 38, 38, 0.10);
-}
-
-html[data-role="advocate"] {
-  --role-primary: #7e22ce;
-  --role-accent: #c084fc;
-  --role-soft: rgba(126, 34, 206, 0.10);
-}
-
+/* Role Color Schema Overrides (Unified Professional Blue/White) */
+html[data-role="citizen"],
+html[data-role="helper"],
+html[data-role="admin"],
+html[data-role="advocate"],
 html[data-role="authority"] {
-  --role-primary: #ea580c;
-  --role-accent: #fb923c;
-  --role-soft: rgba(234, 88, 12, 0.10);
+  --role-primary: #2563eb;
+  --role-accent: #2563eb;
+  --role-soft: rgba(37, 99, 235, 0.08);
 }
 
 /* Map existing global.css variables to theme-aware variables */

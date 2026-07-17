@@ -49,11 +49,11 @@ const VolunteerSidebar = () => {
   };
 
   return (
-    <aside className="flex min-h-screen w-[260px] flex-col bg-[#0B1F36] text-white">
+    <aside className="sidebar flex min-h-screen w-[260px] flex-col border-r border-slate-200 bg-white">
       {/* Logo */}
-      <div className="border-b border-white/10 p-8">
-        <h1 className="text-3xl font-bold text-green-400">ARAM</h1>
-        <p className="mt-2 text-xs text-slate-400">Volunteer Panel</p>
+      <div className="border-b border-slate-100 p-8">
+        <h1 className="text-3xl font-extrabold text-blue-600">ARAM</h1>
+        <p className="mt-1.5 text-xs text-slate-400 font-semibold uppercase tracking-wider">Volunteer Panel</p>
       </div>
 
       {/* Menu */}
@@ -66,14 +66,14 @@ const VolunteerSidebar = () => {
                 key={item.path}
                 to={item.path}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-xl px-3 py-2.5 transition-colors ${
+                  `flex items-center gap-3 rounded-xl px-4 py-2.5 transition-all duration-200 ${
                     isActive
-                      ? "bg-green-600/20 text-white ring-1 ring-green-400/20 font-medium"
-                      : "text-slate-300 hover:bg-white/10 hover:text-white"
+                      ? "bg-blue-50 text-blue-600 font-semibold shadow-sm"
+                      : "text-slate-605 hover:bg-slate-50 hover:text-slate-900"
                   }`
                 }
               >
-                <Icon size={22} />
+                <Icon size={20} className="shrink-0" />
                 <span className="font-medium">{item.title}</span>
               </NavLink>
             );
@@ -82,12 +82,12 @@ const VolunteerSidebar = () => {
       </nav>
 
       {/* Logout */}
-      <div className="border-t border-slate-700 p-5">
+      <div className="border-t border-slate-100 p-5">
         <button
           onClick={() => setShowConfirmLogout(true)}
-          className="flex w-full items-center gap-4 rounded-xl px-5 py-4 text-red-400 transition hover:bg-red-600 hover:text-white"
+          className="flex w-full items-center gap-4 rounded-xl px-5 py-4 text-red-500 hover:bg-red-50 hover:text-red-700 transition duration-200"
         >
-          <LogOut size={22} />
+          <LogOut size={20} className="shrink-0" />
           <span className="font-medium">Logout</span>
         </button>
       </div>

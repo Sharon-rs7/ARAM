@@ -6,6 +6,9 @@ This guide details all environment variables and properties configurations acros
 > Never hardcode real passwords, API secret keys, database passwords, or JWT secrets in the repository source code.
 > Always use local environment configurations (`.env`) or Spring profiles and commit only `.env.example` templates.
 
+> [!IMPORTANT]
+> The seed details stored inside `DEMO_CREDENTIALS.md` are purely for local development, testing, and mock databases. Under no circumstances should these account configurations, passwords, or emails be reused in staging or production systems.
+
 ---
 
 ## 💻 1. Frontend Web App Config (`.env`)

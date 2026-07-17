@@ -8,3 +8,5 @@ ai-service/models/
 ai-service/venv/
 __pycache__/
 *.log
+ai-service/.pytest_cache/
+*.pyc

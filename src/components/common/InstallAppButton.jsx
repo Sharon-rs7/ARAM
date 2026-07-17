@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Download } from "lucide-react";
 import Button from "./Button";
+import { toast } from "sonner";
 
 export default function InstallAppButton() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
@@ -34,7 +35,7 @@ export default function InstallAppButton() {
 
   const handleInstallClick = async () => {
     if (!deferredPrompt) {
-      alert("ARAM install option is not available right now. In Chrome, please click the three dots menu and select 'Add to Home screen'.");
+      toast.warning("Install option is not available yet. On Android Chrome, open menu and tap Add to Home screen.");
       return;
     }
     deferredPrompt.prompt();

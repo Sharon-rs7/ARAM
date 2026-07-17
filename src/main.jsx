@@ -20,8 +20,8 @@ createRoot(document.getElementById('root')).render(
   </React.StrictMode>
 );
 
-// Register PWA Service Worker
-if ("serviceWorker" in navigator) {
+// Register PWA Service Worker in production only
+if (import.meta.env.PROD && "serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("/sw.js")
       .then((reg) => console.log("ARAM Service Worker registered successfully.", reg.scope))
