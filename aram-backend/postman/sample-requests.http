@@ -1,0 +1,51 @@
+### Health
+GET http://localhost:8080/api/health
+
+### Register citizen
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "name": "Noyal Ashwin J",
+  "email": "noyal@example.com",
+  "mobile": "9876543211",
+  "password": "Pass1234",
+  "role": "CITIZEN"
+}
+
+### Login admin
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin@aram.ai",
+  "password": "Admin@123"
+}
+
+### Submit complaint - add Bearer token
+POST http://localhost:8080/api/complaints
+Authorization: Bearer YOUR_ACCESS_TOKEN
+Content-Type: application/json
+
+{
+  "title": "Salary not paid",
+  "description": "My employer has not paid my salary for 3 months and is not responding.",
+  "language": "ENGLISH",
+  "district": "Coimbatore",
+  "inputMode": "TEXT",
+  "sensitive": false,
+  "preferredHelperGender": "ANY",
+  "identityVisibility": "VISIBLE"
+}
+
+### My complaints
+GET http://localhost:8080/api/complaints/my
+Authorization: Bearer YOUR_ACCESS_TOKEN
+
+### Notifications
+GET http://localhost:8080/api/notifications
+Authorization: Bearer YOUR_ACCESS_TOKEN
+
+### Admin dashboard
+GET http://localhost:8080/api/admin/dashboard
+Authorization: Bearer ADMIN_ACCESS_TOKEN

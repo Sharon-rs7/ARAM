@@ -1,0 +1,165 @@
+{
+  "id": "e4a7df49-9fb5-48fa-8692-749e7568ad6b",
+  "name": "ARAM Local Environment",
+  "values": [
+    {
+      "key": "BASE_URL",
+      "value": "http://localhost:8080/api",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "FRONTEND_URL",
+      "value": "http://localhost:5173",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "SWAGGER_URL",
+      "value": "http://localhost:8080/swagger-ui/index.html",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "H2_URL",
+      "value": "http://localhost:8080/h2-console",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "CITIZEN_EMAIL",
+      "value": "citizen@aram.ai",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "CITIZEN_PASSWORD",
+      "value": "Citizen@123",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "VOLUNTEER_EMAIL",
+      "value": "volunteer@aram.ai",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "VOLUNTEER_PASSWORD",
+      "value": "Helper@123",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "ADMIN_EMAIL",
+      "value": "admin@aram.ai",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "ADMIN_PASSWORD",
+      "value": "Admin@123",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "JWT_TOKEN",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "CITIZEN_TOKEN",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "VOLUNTEER_TOKEN",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "ADMIN_TOKEN",
+      "value": "",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "COMPLAINT_ID",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "USER_ID",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "VOLUNTEER_ID",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "DOCUMENT_ID",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "NOTIFICATION_ID",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "AUTHORITY_ID",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "OTP",
+      "value": "",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "AI_SERVICE_URL",
+      "value": "http://localhost:8000",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "AI_API_KEY",
+      "value": "placeholder-only",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "SMS_API_KEY",
+      "value": "placeholder-only",
+      "type": "secret",
+      "enabled": true
+    },
+    {
+      "key": "EMAIL_USERNAME",
+      "value": "placeholder-only",
+      "type": "default",
+      "enabled": true
+    },
+    {
+      "key": "EMAIL_PASSWORD",
+      "value": "placeholder-only",
+      "type": "secret",
+      "enabled": true
+    }
+  ],
+  "_postman_variable_scope": "environment",
+  "_postman_exported_at": "2026-07-17T06:00:00.000Z",
+  "_postman_exported_using": "Postman/10.0.0"
+}

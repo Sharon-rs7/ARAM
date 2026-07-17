@@ -1,0 +1,1785 @@
+{
+  "info": {
+    "_postman_id": "c1f77d34-7a32-4e4c-bdf6-a606de5b8e9f",
+    "name": "ARAM Legal Aid AI - Full API Collection",
+    "description": "API collection for testing and validating all endpoints of the ARAM platform.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Health & System",
+      "item": [
+        {
+          "name": "System Health Diagnostics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/health",
+              "host": ["{{BASE_URL}}"],
+              "path": ["health"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Authentication",
+      "item": [
+        {
+          "name": "Register User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ashwin Noyal\",\n  \"email\": \"citizen@aram.ai\",\n  \"password\": \"Citizen@123\",\n  \"mobile\": \"9876543210\",\n  \"role\": \"CITIZEN\",\n  \"district\": \"Coimbatore\",\n  \"preferredLanguage\": \"English\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/register",
+              "host": ["{{BASE_URL}}"],
+              "path": ["auth", "register"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Citizen Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.accessToken) {",
+                  "  pm.environment.set(\"JWT_TOKEN\", json.accessToken);",
+                  "  pm.environment.set(\"CITIZEN_TOKEN\", json.accessToken);",
+                  "}",
+                  "pm.test(\"Citizen login status 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{CITIZEN_EMAIL}}\",\n  \"password\": \"{{CITIZEN_PASSWORD}}\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/login",
+              "host": ["{{BASE_URL}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Volunteer Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.accessToken) {",
+                  "  pm.environment.set(\"JWT_TOKEN\", json.accessToken);",
+                  "  pm.environment.set(\"VOLUNTEER_TOKEN\", json.accessToken);",
+                  "}",
+                  "pm.test(\"Volunteer login status 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{VOLUNTEER_EMAIL}}\",\n  \"password\": \"{{VOLUNTEER_PASSWORD}}\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/login",
+              "host": ["{{BASE_URL}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Admin Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.accessToken) {",
+                  "  pm.environment.set(\"JWT_TOKEN\", json.accessToken);",
+                  "  pm.environment.set(\"ADMIN_TOKEN\", json.accessToken);",
+                  "}",
+                  "pm.test(\"Admin login status 200\", function () {",
+                  "  pm.response.to.have.status(200);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{ADMIN_EMAIL}}\",\n  \"password\": \"{{ADMIN_PASSWORD}}\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/login",
+              "host": ["{{BASE_URL}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Token Refresh",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"some-refresh-token-placeholder\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/refresh",
+              "host": ["{{BASE_URL}}"],
+              "path": ["auth", "refresh"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. User Profile",
+      "item": [
+        {
+          "name": "Get Current Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/users/me",
+              "host": ["{{BASE_URL}}"],
+              "path": ["users", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Noyal Ashwin J\",\n  \"mobile\": \"9876543210\",\n  \"district\": \"Coimbatore\",\n  \"address\": \"Coimbatore, Tamil Nadu\",\n  \"preferredLanguage\": \"Tanglish\",\n  \"bio\": \"AI & DS student using ARAM platform\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/users/me",
+              "host": ["{{BASE_URL}}"],
+              "path": ["users", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upload Avatar",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/users/me/avatar",
+              "host": ["{{BASE_URL}}"],
+              "path": ["users", "me", "avatar"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Theme Preference",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"theme\": \"DARK\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/users/me/theme",
+              "host": ["{{BASE_URL}}"],
+              "path": ["users", "me", "theme"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Citizen Complaints",
+      "item": [
+        {
+          "name": "Submit Complaint",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.id) {",
+                  "  pm.environment.set(\"COMPLAINT_ID\", json.id);",
+                  "}",
+                  "pm.test(\"Status is 201 Created\", function () {",
+                  "  pm.response.to.have.status(201);",
+                  "});"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Salary not paid by company\",\n  \"description\": \"My employer has not paid salary for two months and is not responding to my requests.\",\n  \"category\": \"LABOUR_DISPUTE\",\n  \"location\": \"Gandhipuram\",\n  \"priority\": \"MEDIUM\",\n  \"identityVisibility\": \"VISIBLE\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/complaints",
+              "host": ["{{BASE_URL}}"],
+              "path": ["complaints"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get My Complaints",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/complaints/my",
+              "host": ["{{BASE_URL}}"],
+              "path": ["complaints", "my"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. Complaint Details",
+      "item": [
+        {
+          "name": "Get Complaint Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/complaints/{{COMPLAINT_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["complaints", "{{COMPLAINT_ID}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Complaint Status",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"UNDER_REVIEW\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/complaints/{{COMPLAINT_ID}}/status",
+              "host": ["{{BASE_URL}}"],
+              "path": ["complaints", "{{COMPLAINT_ID}}", "status"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Advocate Opinion",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"opinion\": \"This is a valid unpaid salary case under industrial disputes act Section 2a.\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/advocate/cases/{{COMPLAINT_ID}}/opinion",
+              "host": ["{{BASE_URL}}"],
+              "path": ["advocate", "cases", "{{COMPLAINT_ID}}", "opinion"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "6. AI Analysis",
+      "item": [
+        {
+          "name": "Reanalyze Case",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/complaints/{{COMPLAINT_ID}}/reanalyze",
+              "host": ["{{BASE_URL}}"],
+              "path": ["complaints", "{{COMPLAINT_ID}}", "reanalyze"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "7. Documents",
+      "item": [
+        {
+          "name": "Upload Evidence Document",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json.id) {",
+                  "  pm.environment.set(\"DOCUMENT_ID\", json.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "complaintId",
+                  "value": "{{COMPLAINT_ID}}",
+                  "type": "text"
+                },
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/documents/upload",
+              "host": ["{{BASE_URL}}"],
+              "path": ["documents", "upload"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Document AI",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "expectedDocumentType",
+                  "value": "Receipt / Proof Slip",
+                  "type": "text"
+                },
+                {
+                  "key": "complaintCategory",
+                  "value": "LABOUR_DISPUTE",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/documents/verify-ai",
+              "host": ["{{BASE_URL}}"],
+              "path": ["documents", "verify-ai"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Complaint Documents",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/documents/complaint/{{COMPLAINT_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["documents", "complaint", "{{COMPLAINT_ID}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Doc Verification",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"VERIFIED\",\n  \"comments\": \"Looks genuine proof of transaction\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/documents/{{DOCUMENT_ID}}/verification",
+              "host": ["{{BASE_URL}}"],
+              "path": ["documents", "{{DOCUMENT_ID}}", "verification"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "8. Notifications",
+      "item": [
+        {
+          "name": "Get My Notifications",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/notifications",
+              "host": ["{{BASE_URL}}"],
+              "path": ["notifications"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Unread Notification Count",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/notifications/unread-count",
+              "host": ["{{BASE_URL}}"],
+              "path": ["notifications", "unread-count"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mark Notification Read",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/notifications/{{NOTIFICATION_ID}}/read",
+              "host": ["{{BASE_URL}}"],
+              "path": ["notifications", "{{NOTIFICATION_ID}}", "read"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "9. Volunteer / Helper",
+      "item": [
+        {
+          "name": "Get Helper Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{VOLUNTEER_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/helper/profile",
+              "host": ["{{BASE_URL}}"],
+              "path": ["helper", "profile"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Helper Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{VOLUNTEER_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Helper Advocate User\",\n  \"bio\": \"Community Helper for Legal Aid\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/helper/profile",
+              "host": ["{{BASE_URL}}"],
+              "path": ["helper", "profile"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Helper Cases",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{VOLUNTEER_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/helper/cases",
+              "host": ["{{BASE_URL}}"],
+              "path": ["helper", "cases"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Helper Case Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{VOLUNTEER_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/helper/cases/{{COMPLAINT_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["helper", "cases", "{{COMPLAINT_ID}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Case Status",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{VOLUNTEER_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"IN_PROGRESS\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/helper/cases/{{COMPLAINT_ID}}/status",
+              "host": ["{{BASE_URL}}"],
+              "path": ["helper", "cases", "{{COMPLAINT_ID}}", "status"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Helper Case Note",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{VOLUNTEER_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/helper/cases/{{COMPLAINT_ID}}/notes",
+              "host": ["{{BASE_URL}}"],
+              "path": ["helper", "cases", "{{COMPLAINT_ID}}", "notes"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "10. Admin Dashboard",
+      "item": [
+        {
+          "name": "Get Admin Dashboard",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/dashboard",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "dashboard"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "11. Admin Users",
+      "item": [
+        {
+          "name": "Get Admin Users",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/users",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "users"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Admin User Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/users/{{USER_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "users", "{{USER_ID}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Admin User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ACTIVE\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/admin/users/{{USER_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "users", "{{USER_ID}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Soft Delete User",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/users/{{USER_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "users", "{{USER_ID}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "12. Admin Complaints",
+      "item": [
+        {
+          "name": "Get Admin Complaints",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/complaints",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "complaints"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Admin Complaint Status",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"RESOLVED\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/admin/complaints/{{COMPLAINT_ID}}/status",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "complaints", "{{COMPLAINT_ID}}", "status"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Assign Helper to Complaint",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"helperId\": 2\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/admin/complaints/{{COMPLAINT_ID}}/assign-helper",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "complaints", "{{COMPLAINT_ID}}", "assign-helper"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Soft Delete Complaint",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/complaints/{{COMPLAINT_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "complaints", "{{COMPLAINT_ID}}"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "13. Admin Volunteers",
+      "item": [
+        {
+          "name": "Get Admin Helpers List",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/helpers",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "helpers"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Helper Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/helpers/{{VOLUNTEER_ID}}/verify",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "helpers", "{{VOLUNTEER_ID}}", "verify"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reject Helper Profile",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/helpers/{{VOLUNTEER_ID}}/reject",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "helpers", "{{VOLUNTEER_ID}}", "reject"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "14. Departments / Authorities",
+      "item": [
+        {
+          "name": "Get All Authorities",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/authorities",
+              "host": ["{{BASE_URL}}"],
+              "path": ["authorities"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Authorities by Category",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/authorities/category/LABOUR_DISPUTE",
+              "host": ["{{BASE_URL}}"],
+              "path": ["authorities", "category", "LABOUR_DISPUTE"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Authority Cases",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/authorities/cases",
+              "host": ["{{BASE_URL}}"],
+              "path": ["authorities", "cases"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Authority Case Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/authorities/cases/{{COMPLAINT_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["authorities", "cases", "{{COMPLAINT_ID}}"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Case Status by Authority",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"RESOLVED\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/authorities/cases/{{COMPLAINT_ID}}/status",
+              "host": ["{{BASE_URL}}"],
+              "path": ["authorities", "cases", "{{COMPLAINT_ID}}", "status"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Add Authority Remarks",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"remarks\": \"Department review completed. Proceed with case resolution.\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/authorities/cases/{{COMPLAINT_ID}}/remarks",
+              "host": ["{{BASE_URL}}"],
+              "path": ["authorities", "cases", "{{COMPLAINT_ID}}", "remarks"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "15. Reports / Export",
+      "item": [
+        {
+          "name": "Get Reports Statistics",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/reports",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "reports"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Export Users List Excel",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/users/export?role=CITIZEN",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "users", "export"],
+              "query": [
+                {
+                  "key": "role",
+                  "value": "CITIZEN"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "16. Audit Logs",
+      "item": [
+        {
+          "name": "Get System Audit Logs",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{ADMIN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/audit-logs",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "audit-logs"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "17. Password Reset / OTP",
+      "item": [
+        {
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"citizen@aram.ai\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/forgot-password",
+              "host": ["{{BASE_URL}}"],
+              "path": ["auth", "forgot-password"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify OTP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"citizen@aram.ai\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/verify-reset-otp",
+              "host": ["{{BASE_URL}}"],
+              "path": ["auth", "verify-reset-otp"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"citizen@aram.ai\",\n  \"otp\": \"123456\",\n  \"newPassword\": \"Citizen@123\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/reset-password",
+              "host": ["{{BASE_URL}}"],
+              "path": ["auth", "reset-password"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "18. AI Service Proxy",
+      "item": [
+        {
+          "name": "Analyze Complaint Text",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"complaintText\": \"I was scammed online through a phishing link and transferred 5000 Rs.\",\n  \"language\": \"English\",\n  \"district\": \"Coimbatore\",\n  \"isSensitive\": true\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/ai/analyze-complaint",
+              "host": ["{{BASE_URL}}"],
+              "path": ["ai", "analyze-complaint"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Chat with Assistant",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"message\": \"What documents do I need to file a labour dispute?\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/ai/chat",
+              "host": ["{{BASE_URL}}"],
+              "path": ["ai", "chat"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "OCR Extract Document",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/ai/documents/ocr",
+              "host": ["{{BASE_URL}}"],
+              "path": ["ai", "documents", "ocr"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Document Details",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "expectedDocumentType",
+                  "value": "Proof Slip",
+                  "type": "text"
+                },
+                {
+                  "key": "complaintCategory",
+                  "value": "CYBER_CRIME",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/ai/documents/verify",
+              "host": ["{{BASE_URL}}"],
+              "path": ["ai", "documents", "verify"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "19. Negative Test Cases",
+      "item": [
+        {
+          "name": "Login - Invalid Password",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"citizen@aram.ai\",\n  \"password\": \"WrongPassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/auth/login",
+              "host": ["{{BASE_URL}}"],
+              "path": ["auth", "login"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Non-Existent Complaint",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{JWT_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/complaints/999999",
+              "host": ["{{BASE_URL}}"],
+              "path": ["complaints", "999999"]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "20. Security Test Cases",
+      "item": [
+        {
+          "name": "Access Protected Route - No Token",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/users/me",
+              "host": ["{{BASE_URL}}"],
+              "path": ["users", "me"]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Access Admin Endpoint as Citizen",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{CITIZEN_TOKEN}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/admin/dashboard",
+              "host": ["{{BASE_URL}}"],
+              "path": ["admin", "dashboard"]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

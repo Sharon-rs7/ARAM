@@ -1,0 +1,271 @@
+complaint_text,category,priority,district,authority_label
+My company did not pay my salary for 3 months.,LABOUR_DISPUTE,LOW,Coimbatore,Labour Office
+Employer terminated me without notice or severance pay.,LABOUR_DISPUTE,LOW,Coimbatore,Labour Office
+Working extra hours but no overtime pay given.,LABOUR_DISPUTE,LOW,Coimbatore,Labour Office
+Ennoda office-la 3 maasamaa sambalam tharala.,LABOUR_DISPUTE,LOW,Coimbatore,Labour Office
+Company karanga ennoda salary tharama emathuranga.,LABOUR_DISPUTE,LOW,Coimbatore,Labour Office
+3 மாதங்களாக என் நிறுவனம் எனக்கு சம்பளம் வழங்கவில்லை.,LABOUR_DISPUTE,LOW,Coimbatore,Labour Office
+முன்னறிவிப்பு இல்லாமல் வேலைநீக்கம் செய்யப்பட்டேன்.,LABOUR_DISPUTE,LOW,Coimbatore,Labour Office
+कंपनी ने पिछले तीन महीने का वेतन नहीं दिया है।,LABOUR_DISPUTE,LOW,Coimbatore,Labour Office
+बिना किसी नोटिस के नौकरी से निकाल दिया गया।,LABOUR_DISPUTE,LOW,Coimbatore,Labour Office
+Bought a mobile phone online but received a soap bar.,CONSUMER_COMPLAINT,LOW,Coimbatore,Consumer Forum
+Store refusing to honor the 1-year product warranty.,CONSUMER_COMPLAINT,LOW,Coimbatore,Consumer Forum
+Charged extra double amount than the MRP printed.,CONSUMER_COMPLAINT,LOW,Coimbatore,Consumer Forum
+"Online-la phone order panna, aana dummy box vandhuchu.",CONSUMER_COMPLAINT,LOW,Coimbatore,Consumer Forum
+"Shopkeeper warranty card kudukala, replace panna maatranga.",CONSUMER_COMPLAINT,LOW,Coimbatore,Consumer Forum
+"ஆன்லைனில் வாங்கிய தயாரிப்பு சேதமடைந்துள்ளது, திரும்பப் பெற மறுக்கிறார்கள்.",CONSUMER_COMPLAINT,LOW,Coimbatore,Consumer Forum
+அதிகப்படியான விலை வசூலிக்கும் கடைக்காரர்.,CONSUMER_COMPLAINT,LOW,Coimbatore,Consumer Forum
+अमेज़न से नकली प्रोडक्ट मिला है और पैसे वापस नहीं कर रहे।,CONSUMER_COMPLAINT,LOW,Coimbatore,Consumer Forum
+दुकानदार वारंटी में सामान बदलने से मना कर रहा है।,CONSUMER_COMPLAINT,LOW,Coimbatore,Consumer Forum
+Lost 50000 rupees due to a fake UPI QR code scam.,CYBER_CRIME,LOW,Coimbatore,Cyber Crime Portal
+Bank account hacked and savings transferred online.,CYBER_CRIME,LOW,Coimbatore,Cyber Crime Portal
+Received phishing links asking for my net banking OTP.,CYBER_CRIME,LOW,Coimbatore,Cyber Crime Portal
+Ennoda bank account hacking aagi panam pochu.,CYBER_CRIME,LOW,Coimbatore,Cyber Crime Portal
+UPI scanner scam-la 10000 rubaa tholachuten.,CYBER_CRIME,LOW,Coimbatore,Cyber Crime Portal
+போலி ஓடிபி மூலம் எனது கணக்கிலிருந்து பணம் திருடப்பட்டது.,CYBER_CRIME,LOW,Coimbatore,Cyber Crime Portal
+வங்கி கணக்கு ஹேக் செய்யப்பட்டு பரிவர்த்தனை நடந்துள்ளது.,CYBER_CRIME,LOW,Coimbatore,Cyber Crime Portal
+फेसबुक अकाउंट हैक करके पैसे मांगे जा रहे हैं।,CYBER_CRIME,LOW,Coimbatore,Cyber Crime Portal
+बैंक मैनेजर बनकर ओटीपी पूछा और पैसे निकाल लिए।,CYBER_CRIME,LOW,Coimbatore,Cyber Crime Portal
+Neighbor encroached my boundary wall and built a gate.,PROPERTY_DISPUTE,LOW,Coimbatore,Police Station
+Landlord refusing to return my security deposit.,PROPERTY_DISPUTE,LOW,Coimbatore,Police Station
+Forged property patta documents used to sell my land.,PROPERTY_DISPUTE,LOW,Coimbatore,Police Station
+Pakkathu veetukaaran enga idathula encroaching panran.,PROPERTY_DISPUTE,LOW,Coimbatore,Police Station
+Landlord advance panatha thiruppi tharama emathuran.,PROPERTY_DISPUTE,LOW,Coimbatore,Police Station
+அண்டை வீட்டார் எனது நில எல்லையை ஆக்கிரமித்து கட்டியுள்ளனர்.,PROPERTY_DISPUTE,LOW,Coimbatore,Police Station
+போலி பத்திரம் தயாரித்து எனது வீட்டை விற்க முயல்கிறார்கள்.,PROPERTY_DISPUTE,LOW,Coimbatore,Police Station
+पड़ोसी ने मेरी जमीन पर अवैध कब्जा कर लिया है।,PROPERTY_DISPUTE,LOW,Coimbatore,Police Station
+मकान मालिक सिक्योरिटी डिपॉजिट वापस नहीं कर रहा है।,PROPERTY_DISPUTE,LOW,Coimbatore,Police Station
+Colleague continuously stalking and sending inappropriate texts.,WOMEN_SAFETY,HIGH,Coimbatore,Women Helpline
+Facing verbal harassment at public bus stop daily.,WOMEN_SAFETY,HIGH,Coimbatore,Women Helpline
+Some guys following me home from college metro station.,WOMEN_SAFETY,HIGH,Coimbatore,Women Helpline
+"Office-la oru officer thappa pesuran, stalk panran.",WOMEN_SAFETY,HIGH,Coimbatore,Women Helpline
+College poitu varra valiyila silaper follow panranga.,WOMEN_SAFETY,HIGH,Coimbatore,Women Helpline
+பேருந்து நிலையத்தில் ஒரு நபர் என்னைத் தொடர்ந்து பின்தொடர்கிறார்.,WOMEN_SAFETY,HIGH,Coimbatore,Women Helpline
+பணியிடத்தில் எனக்கு தொடர்ந்து பாலியல் தொல்லைகள் வருகின்றன.,WOMEN_SAFETY,HIGH,Coimbatore,Women Helpline
+रास्ते में कुछ लड़के रोज पीछा करते हैं और फब्तियां कसते हैं।,WOMEN_SAFETY,HIGH,Coimbatore,Women Helpline
+ऑफिस में सहकर्मी द्वारा परेशान किया जा रहा है।,WOMEN_SAFETY,HIGH,Coimbatore,Women Helpline
+Husband beats me under the influence of alcohol.,DOMESTIC_VIOLENCE,HIGH,Coimbatore,Protection Officer
+In-laws abusing and threatening for dowry money.,DOMESTIC_VIOLENCE,HIGH,Coimbatore,Protection Officer
+Locked inside the house and starved by my husband.,DOMESTIC_VIOLENCE,HIGH,Coimbatore,Protection Officer
+Enga veetla purushan thittamal adikiraru.,DOMESTIC_VIOLENCE,HIGH,Coimbatore,Protection Officer
+"Dowry ketu maamiyaar thollai tharanga, room-la lock panranga.",DOMESTIC_VIOLENCE,HIGH,Coimbatore,Protection Officer
+மது குடித்துவிட்டு கணவர் தினமும் என்னை அடிக்கிறார்.,DOMESTIC_VIOLENCE,HIGH,Coimbatore,Protection Officer
+வரதட்சணை கேட்டு மாமியார் கொடுமைப்படுத்துகிறார்கள்.,DOMESTIC_VIOLENCE,HIGH,Coimbatore,Protection Officer
+पति शराब पीकर रोज मारता-पीटता है।,DOMESTIC_VIOLENCE,HIGH,Coimbatore,Protection Officer
+ससुराल वाले दहेज के लिए प्रताड़ित कर रहे हैं।,DOMESTIC_VIOLENCE,HIGH,Coimbatore,Protection Officer
+Gang attacked me with weapons near the market area.,CRIMINAL_COMPLAINT,CRITICAL,Coimbatore,Police Station
+My motorcycle was stolen from outside my house entry.,CRIMINAL_COMPLAINT,HIGH,Coimbatore,Police Station
+Robbers broke into my home and stole gold jewelry.,CRIMINAL_COMPLAINT,HIGH,Coimbatore,Police Station
+Market kitta gang kathi vechu adichanga.,CRIMINAL_COMPLAINT,HIGH,Coimbatore,Police Station
+Enga veetu bike-a thiruditu poitinga.,CRIMINAL_COMPLAINT,HIGH,Coimbatore,Police Station
+இரவில் வீட்டை உடைத்து தங்க நகைகள் திருடப்பட்டுள்ளன.,CRIMINAL_COMPLAINT,HIGH,Coimbatore,Police Station
+சாலையில் சிலர் என்னைத் தாக்கி எனது பணத்தைப் பறித்தனர்.,CRIMINAL_COMPLAINT,HIGH,Coimbatore,Police Station
+घर के बाहर से मेरी बाइक चोरी हो गई है।,CRIMINAL_COMPLAINT,HIGH,Coimbatore,Police Station
+कुछ गुंडों ने हथियार दिखाकर मुझे लूटा।,CRIMINAL_COMPLAINT,HIGH,Coimbatore,Police Station
+Filing for divorce and seeking child custody support.,FAMILY_DISPUTE,LOW,Coimbatore,District Legal Services Authority
+Parents forcing me to get married against my will.,FAMILY_DISPUTE,LOW,Coimbatore,District Legal Services Authority
+Brothers refusing to divide ancestral inheritance fairly.,FAMILY_DISPUTE,LOW,Coimbatore,District Legal Services Authority
+"Divorce venum, aana baby custody thara matengranga.",FAMILY_DISPUTE,LOW,Coimbatore,District Legal Services Authority
+Enga appa force panni marriage panna soldranga.,FAMILY_DISPUTE,LOW,Coimbatore,District Legal Services Authority
+விருப்பம் இல்லாமல் குடும்பத்தினர் திருமணம் செய்ய வற்புறுத்துகிறார்கள்.,FAMILY_DISPUTE,LOW,Coimbatore,District Legal Services Authority
+பூர்வீக சொத்தை பிரிப்பதில் சகோதரர்களுக்குள் தகராறு.,FAMILY_DISPUTE,LOW,Coimbatore,District Legal Services Authority
+पैतृक संपत्ति के बंटवारे को लेकर भाइयों में विवाद है।,FAMILY_DISPUTE,LOW,Coimbatore,District Legal Services Authority
+तलाक और बच्चे की कस्टडी के लिए मामला दर्ज करना है।,FAMILY_DISPUTE,LOW,Coimbatore,District Legal Services Authority
+Denied benefits of housing scheme despite having all eligibility.,GOVERNMENT_SCHEME,LOW,Coimbatore,Government Grievance Cell
+Panchayat office demanding bribe for widow pension approval.,GOVERNMENT_SCHEME,LOW,Coimbatore,Government Grievance Cell
+Ration card distribution office delayed my card for a year.,GOVERNMENT_SCHEME,LOW,Coimbatore,Government Grievance Cell
+Housing scheme-la ellam documents irundhum select aagala.,GOVERNMENT_SCHEME,LOW,Coimbatore,Government Grievance Cell
+Widow pension kuduka bribe panam kekuranga.,GOVERNMENT_SCHEME,LOW,Coimbatore,Government Grievance Cell
+விபத்து நிவாரணத் தொகை பெற தகுதி இருந்தும் கிடைக்கவில்லை.,GOVERNMENT_SCHEME,LOW,Coimbatore,Government Grievance Cell
+ரேஷன் கார்டு வழங்க அதிகாரிகள் லஞ்சம் கேட்கிறார்கள்.,GOVERNMENT_SCHEME,LOW,Coimbatore,Government Grievance Cell
+पात्र होने के बावजूद आवास योजना की सूची में नाम नहीं है।,GOVERNMENT_SCHEME,LOW,Coimbatore,Government Grievance Cell
+विधवा पेंशन के लिए सरकारी कर्मचारी रिश्वत मांग रहे हैं।,GOVERNMENT_SCHEME,LOW,Coimbatore,Government Grievance Cell
+I need free legal advice regarding a contract discrepancy.,GENERAL_LEGAL_AID,LOW,Coimbatore,District Legal Services Authority
+How to apply for free legal representation in district court.,GENERAL_LEGAL_AID,LOW,Coimbatore,District Legal Services Authority
+Need guidance on court procedures for a witness summon.,GENERAL_LEGAL_AID,LOW,Coimbatore,District Legal Services Authority
+"Enaku free lawyer venum, court case pathi legal aid thairya.",GENERAL_LEGAL_AID,LOW,Coimbatore,District Legal Services Authority
+"Court sumons vandhuruku, step by step guidance enna.",GENERAL_LEGAL_AID,LOW,Coimbatore,District Legal Services Authority
+இலவச சட்ட உதவி பெற எங்கு விண்ணப்பிக்க வேண்டும்?,GENERAL_LEGAL_AID,LOW,Coimbatore,District Legal Services Authority
+"நீதிமன்ற சம்மன் வந்துள்ளது, என்ன செய்ய வேண்டும் என அறிய வேண்டும்.",GENERAL_LEGAL_AID,LOW,Coimbatore,District Legal Services Authority
+"कोर्ट समन मिला है, कानूनी सहायता की आवश्यकता है।",GENERAL_LEGAL_AID,LOW,Coimbatore,District Legal Services Authority
+सरकारी वकील की सहायता पाने के लिए क्या नियम हैं।,GENERAL_LEGAL_AID,LOW,Coimbatore,District Legal Services Authority
+Regarding my issue: My company did not pay my salary for 3 months.,LABOUR_DISPUTE,LOW,Coimbatore,Labour Office
+Regarding my issue: Employer terminated me without notice or severance pay.,LABOUR_DISPUTE,LOW,Coimbatore,Labour Office
+Regarding my issue: Working extra hours but no overtime pay given.,LABOUR_DISPUTE,LOW,Coimbatore,Labour Office
+Regarding my issue: Ennoda office-la 3 maasamaa sambalam tharala.,LABOUR_DISPUTE,LOW,Coimbatore,Labour Office
+Regarding my issue: Company karanga ennoda salary tharama emathuranga.,LABOUR_DISPUTE,LOW,Coimbatore,Labour Office
+Regarding my issue: 3 மாதங்களாக என் நிறுவனம் எனக்கு சம்பளம் வழங்கவில்லை.,LABOUR_DISPUTE,LOW,Coimbatore,Labour Office
+Regarding my issue: முன்னறிவிப்பு இல்லாமல் வேலைநீக்கம் செய்யப்பட்டேன்.,LABOUR_DISPUTE,LOW,Coimbatore,Labour Office
+Regarding my issue: कंपनी ने पिछले तीन महीने का वेतन नहीं दिया है।,LABOUR_DISPUTE,LOW,Coimbatore,Labour Office
+Regarding my issue: बिना किसी नोटिस के नौकरी से निकाल दिया गया।,LABOUR_DISPUTE,LOW,Coimbatore,Labour Office
+Regarding my issue: Bought a mobile phone online but received a soap bar.,CONSUMER_COMPLAINT,LOW,Coimbatore,Consumer Forum
+Regarding my issue: Store refusing to honor the 1-year product warranty.,CONSUMER_COMPLAINT,LOW,Coimbatore,Consumer Forum
+Regarding my issue: Charged extra double amount than the MRP printed.,CONSUMER_COMPLAINT,LOW,Coimbatore,Consumer Forum
+"Regarding my issue: Online-la phone order panna, aana dummy box vandhuchu.",CONSUMER_COMPLAINT,LOW,Coimbatore,Consumer Forum
+"Regarding my issue: Shopkeeper warranty card kudukala, replace panna maatranga.",CONSUMER_COMPLAINT,LOW,Coimbatore,Consumer Forum
+"Regarding my issue: ஆன்லைனில் வாங்கிய தயாரிப்பு சேதமடைந்துள்ளது, திரும்பப் பெற மறுக்கிறார்கள்.",CONSUMER_COMPLAINT,LOW,Coimbatore,Consumer Forum
+Regarding my issue: அதிகப்படியான விலை வசூலிக்கும் கடைக்காரர்.,CONSUMER_COMPLAINT,LOW,Coimbatore,Consumer Forum
+Regarding my issue: अमेज़न से नकली प्रोडक्ट मिला है और पैसे वापस नहीं कर रहे।,CONSUMER_COMPLAINT,LOW,Coimbatore,Consumer Forum
+Regarding my issue: दुकानदार वारंटी में सामान बदलने से मना कर रहा है।,CONSUMER_COMPLAINT,LOW,Coimbatore,Consumer Forum
+Regarding my issue: Lost 50000 rupees due to a fake UPI QR code scam.,CYBER_CRIME,LOW,Coimbatore,Cyber Crime Portal
+Regarding my issue: Bank account hacked and savings transferred online.,CYBER_CRIME,LOW,Coimbatore,Cyber Crime Portal
+Regarding my issue: Received phishing links asking for my net banking OTP.,CYBER_CRIME,LOW,Coimbatore,Cyber Crime Portal
+Regarding my issue: Ennoda bank account hacking aagi panam pochu.,CYBER_CRIME,LOW,Coimbatore,Cyber Crime Portal
+Regarding my issue: UPI scanner scam-la 10000 rubaa tholachuten.,CYBER_CRIME,LOW,Coimbatore,Cyber Crime Portal
+Regarding my issue: போலி ஓடிபி மூலம் எனது கணக்கிலிருந்து பணம் திருடப்பட்டது.,CYBER_CRIME,LOW,Coimbatore,Cyber Crime Portal
+Regarding my issue: வங்கி கணக்கு ஹேக் செய்யப்பட்டு பரிவர்த்தனை நடந்துள்ளது.,CYBER_CRIME,LOW,Coimbatore,Cyber Crime Portal
+Regarding my issue: फेसबुक अकाउंट हैक करके पैसे मांगे जा रहे हैं।,CYBER_CRIME,LOW,Coimbatore,Cyber Crime Portal
+Regarding my issue: बैंक मैनेजर बनकर ओटीपी पूछा और पैसे निकाल लिए।,CYBER_CRIME,LOW,Coimbatore,Cyber Crime Portal
+Regarding my issue: Neighbor encroached my boundary wall and built a gate.,PROPERTY_DISPUTE,LOW,Coimbatore,Police Station
+Regarding my issue: Landlord refusing to return my security deposit.,PROPERTY_DISPUTE,LOW,Coimbatore,Police Station
+Regarding my issue: Forged property patta documents used to sell my land.,PROPERTY_DISPUTE,LOW,Coimbatore,Police Station
+Regarding my issue: Pakkathu veetukaaran enga idathula encroaching panran.,PROPERTY_DISPUTE,LOW,Coimbatore,Police Station
+Regarding my issue: Landlord advance panatha thiruppi tharama emathuran.,PROPERTY_DISPUTE,LOW,Coimbatore,Police Station
+Regarding my issue: அண்டை வீட்டார் எனது நில எல்லையை ஆக்கிரமித்து கட்டியுள்ளனர்.,PROPERTY_DISPUTE,LOW,Coimbatore,Police Station
+Regarding my issue: போலி பத்திரம் தயாரித்து எனது வீட்டை விற்க முயல்கிறார்கள்.,PROPERTY_DISPUTE,LOW,Coimbatore,Police Station
+Regarding my issue: पड़ोसी ने मेरी जमीन पर अवैध कब्जा कर लिया है।,PROPERTY_DISPUTE,LOW,Coimbatore,Police Station
+Regarding my issue: मकान मालिक सिक्योरिटी डिपॉजिट वापस नहीं कर रहा है।,PROPERTY_DISPUTE,LOW,Coimbatore,Police Station
+Regarding my issue: Colleague continuously stalking and sending inappropriate texts.,WOMEN_SAFETY,HIGH,Coimbatore,Women Helpline
+Regarding my issue: Facing verbal harassment at public bus stop daily.,WOMEN_SAFETY,HIGH,Coimbatore,Women Helpline
+Regarding my issue: Some guys following me home from college metro station.,WOMEN_SAFETY,HIGH,Coimbatore,Women Helpline
+"Regarding my issue: Office-la oru officer thappa pesuran, stalk panran.",WOMEN_SAFETY,HIGH,Coimbatore,Women Helpline
+Regarding my issue: College poitu varra valiyila silaper follow panranga.,WOMEN_SAFETY,HIGH,Coimbatore,Women Helpline
+Regarding my issue: பேருந்து நிலையத்தில் ஒரு நபர் என்னைத் தொடர்ந்து பின்தொடர்கிறார்.,WOMEN_SAFETY,HIGH,Coimbatore,Women Helpline
+Regarding my issue: பணியிடத்தில் எனக்கு தொடர்ந்து பாலியல் தொல்லைகள் வருகின்றன.,WOMEN_SAFETY,HIGH,Coimbatore,Women Helpline
+Regarding my issue: रास्ते में कुछ लड़के रोज पीछा करते हैं और फब्तियां कसते हैं।,WOMEN_SAFETY,HIGH,Coimbatore,Women Helpline
+Regarding my issue: ऑफिस में सहकर्मी द्वारा परेशान किया जा रहा है।,WOMEN_SAFETY,HIGH,Coimbatore,Women Helpline
+Regarding my issue: Husband beats me under the influence of alcohol.,DOMESTIC_VIOLENCE,HIGH,Coimbatore,Protection Officer
+Regarding my issue: In-laws abusing and threatening for dowry money.,DOMESTIC_VIOLENCE,HIGH,Coimbatore,Protection Officer
+Regarding my issue: Locked inside the house and starved by my husband.,DOMESTIC_VIOLENCE,HIGH,Coimbatore,Protection Officer
+Regarding my issue: Enga veetla purushan thittamal adikiraru.,DOMESTIC_VIOLENCE,HIGH,Coimbatore,Protection Officer
+"Regarding my issue: Dowry ketu maamiyaar thollai tharanga, room-la lock panranga.",DOMESTIC_VIOLENCE,HIGH,Coimbatore,Protection Officer
+Regarding my issue: மது குடித்துவிட்டு கணவர் தினமும் என்னை அடிக்கிறார்.,DOMESTIC_VIOLENCE,HIGH,Coimbatore,Protection Officer
+Regarding my issue: வரதட்சணை கேட்டு மாமியார் கொடுமைப்படுத்துகிறார்கள்.,DOMESTIC_VIOLENCE,HIGH,Coimbatore,Protection Officer
+Regarding my issue: पति शराब पीकर रोज मारता-पीटता है।,DOMESTIC_VIOLENCE,HIGH,Coimbatore,Protection Officer
+Regarding my issue: ससुराल वाले दहेज के लिए प्रताड़ित कर रहे हैं।,DOMESTIC_VIOLENCE,HIGH,Coimbatore,Protection Officer
+Regarding my issue: Gang attacked me with weapons near the market area.,CRIMINAL_COMPLAINT,CRITICAL,Coimbatore,Police Station
+Regarding my issue: My motorcycle was stolen from outside my house entry.,CRIMINAL_COMPLAINT,HIGH,Coimbatore,Police Station
+Regarding my issue: Robbers broke into my home and stole gold jewelry.,CRIMINAL_COMPLAINT,HIGH,Coimbatore,Police Station
+Regarding my issue: Market kitta gang kathi vechu adichanga.,CRIMINAL_COMPLAINT,HIGH,Coimbatore,Police Station
+Regarding my issue: Enga veetu bike-a thiruditu poitinga.,CRIMINAL_COMPLAINT,HIGH,Coimbatore,Police Station
+Regarding my issue: இரவில் வீட்டை உடைத்து தங்க நகைகள் திருடப்பட்டுள்ளன.,CRIMINAL_COMPLAINT,HIGH,Coimbatore,Police Station
+Regarding my issue: சாலையில் சிலர் என்னைத் தாக்கி எனது பணத்தைப் பறித்தனர்.,CRIMINAL_COMPLAINT,HIGH,Coimbatore,Police Station
+Regarding my issue: घर के बाहर से मेरी बाइक चोरी हो गई है।,CRIMINAL_COMPLAINT,HIGH,Coimbatore,Police Station
+Regarding my issue: कुछ गुंडों ने हथियार दिखाकर मुझे लूटा।,CRIMINAL_COMPLAINT,HIGH,Coimbatore,Police Station
+Regarding my issue: Filing for divorce and seeking child custody support.,FAMILY_DISPUTE,LOW,Coimbatore,District Legal Services Authority
+Regarding my issue: Parents forcing me to get married against my will.,FAMILY_DISPUTE,LOW,Coimbatore,District Legal Services Authority
+Regarding my issue: Brothers refusing to divide ancestral inheritance fairly.,FAMILY_DISPUTE,LOW,Coimbatore,District Legal Services Authority
+"Regarding my issue: Divorce venum, aana baby custody thara matengranga.",FAMILY_DISPUTE,LOW,Coimbatore,District Legal Services Authority
+Regarding my issue: Enga appa force panni marriage panna soldranga.,FAMILY_DISPUTE,LOW,Coimbatore,District Legal Services Authority
+Regarding my issue: விருப்பம் இல்லாமல் குடும்பத்தினர் திருமணம் செய்ய வற்புறுத்துகிறார்கள்.,FAMILY_DISPUTE,LOW,Coimbatore,District Legal Services Authority
+Regarding my issue: பூர்வீக சொத்தை பிரிப்பதில் சகோதரர்களுக்குள் தகராறு.,FAMILY_DISPUTE,LOW,Coimbatore,District Legal Services Authority
+Regarding my issue: पैतृक संपत्ति के बंटवारे को लेकर भाइयों में विवाद है।,FAMILY_DISPUTE,LOW,Coimbatore,District Legal Services Authority
+Regarding my issue: तलाक और बच्चे की कस्टडी के लिए मामला दर्ज करना है।,FAMILY_DISPUTE,LOW,Coimbatore,District Legal Services Authority
+Regarding my issue: Denied benefits of housing scheme despite having all eligibility.,GOVERNMENT_SCHEME,LOW,Coimbatore,Government Grievance Cell
+Regarding my issue: Panchayat office demanding bribe for widow pension approval.,GOVERNMENT_SCHEME,LOW,Coimbatore,Government Grievance Cell
+Regarding my issue: Ration card distribution office delayed my card for a year.,GOVERNMENT_SCHEME,LOW,Coimbatore,Government Grievance Cell
+Regarding my issue: Housing scheme-la ellam documents irundhum select aagala.,GOVERNMENT_SCHEME,LOW,Coimbatore,Government Grievance Cell
+Regarding my issue: Widow pension kuduka bribe panam kekuranga.,GOVERNMENT_SCHEME,LOW,Coimbatore,Government Grievance Cell
+Regarding my issue: விபத்து நிவாரணத் தொகை பெற தகுதி இருந்தும் கிடைக்கவில்லை.,GOVERNMENT_SCHEME,LOW,Coimbatore,Government Grievance Cell
+Regarding my issue: ரேஷன் கார்டு வழங்க அதிகாரிகள் லஞ்சம் கேட்கிறார்கள்.,GOVERNMENT_SCHEME,LOW,Coimbatore,Government Grievance Cell
+Regarding my issue: पात्र होने के बावजूद आवास योजना की सूची में नाम नहीं है।,GOVERNMENT_SCHEME,LOW,Coimbatore,Government Grievance Cell
+Regarding my issue: विधवा पेंशन के लिए सरकारी कर्मचारी रिश्वत मांग रहे हैं।,GOVERNMENT_SCHEME,LOW,Coimbatore,Government Grievance Cell
+Regarding my issue: I need free legal advice regarding a contract discrepancy.,GENERAL_LEGAL_AID,LOW,Coimbatore,District Legal Services Authority
+Regarding my issue: How to apply for free legal representation in district court.,GENERAL_LEGAL_AID,LOW,Coimbatore,District Legal Services Authority
+Regarding my issue: Need guidance on court procedures for a witness summon.,GENERAL_LEGAL_AID,LOW,Coimbatore,District Legal Services Authority
+"Regarding my issue: Enaku free lawyer venum, court case pathi legal aid thairya.",GENERAL_LEGAL_AID,LOW,Coimbatore,District Legal Services Authority
+"Regarding my issue: Court sumons vandhuruku, step by step guidance enna.",GENERAL_LEGAL_AID,LOW,Coimbatore,District Legal Services Authority
+Regarding my issue: இலவச சட்ட உதவி பெற எங்கு விண்ணப்பிக்க வேண்டும்?,GENERAL_LEGAL_AID,LOW,Coimbatore,District Legal Services Authority
+"Regarding my issue: நீதிமன்ற சம்மன் வந்துள்ளது, என்ன செய்ய வேண்டும் என அறிய வேண்டும்.",GENERAL_LEGAL_AID,LOW,Coimbatore,District Legal Services Authority
+"Regarding my issue: कोर्ट समन मिला है, कानूनी सहायता की आवश्यकता है।",GENERAL_LEGAL_AID,LOW,Coimbatore,District Legal Services Authority
+Regarding my issue: सरकारी वकील की सहायता पाने के लिए क्या नियम हैं।,GENERAL_LEGAL_AID,LOW,Coimbatore,District Legal Services Authority
+Urgent legal help needed. My company did not pay my salary for 3 months.,LABOUR_DISPUTE,LOW,Coimbatore,Labour Office
+Urgent legal help needed. Employer terminated me without notice or severance pay.,LABOUR_DISPUTE,LOW,Coimbatore,Labour Office
+Urgent legal help needed. Working extra hours but no overtime pay given.,LABOUR_DISPUTE,LOW,Coimbatore,Labour Office
+Urgent legal help needed. Ennoda office-la 3 maasamaa sambalam tharala.,LABOUR_DISPUTE,LOW,Coimbatore,Labour Office
+Urgent legal help needed. Company karanga ennoda salary tharama emathuranga.,LABOUR_DISPUTE,LOW,Coimbatore,Labour Office
+Urgent legal help needed. 3 மாதங்களாக என் நிறுவனம் எனக்கு சம்பளம் வழங்கவில்லை.,LABOUR_DISPUTE,LOW,Coimbatore,Labour Office
+Urgent legal help needed. முன்னறிவிப்பு இல்லாமல் வேலைநீக்கம் செய்யப்பட்டேன்.,LABOUR_DISPUTE,LOW,Coimbatore,Labour Office
+Urgent legal help needed. कंपनी ने पिछले तीन महीने का वेतन नहीं दिया है।,LABOUR_DISPUTE,LOW,Coimbatore,Labour Office
+Urgent legal help needed. बिना किसी नोटिस के नौकरी से निकाल दिया गया।,LABOUR_DISPUTE,LOW,Coimbatore,Labour Office
+Urgent legal help needed. Bought a mobile phone online but received a soap bar.,CONSUMER_COMPLAINT,LOW,Coimbatore,Consumer Forum
+Urgent legal help needed. Store refusing to honor the 1-year product warranty.,CONSUMER_COMPLAINT,LOW,Coimbatore,Consumer Forum
+Urgent legal help needed. Charged extra double amount than the MRP printed.,CONSUMER_COMPLAINT,LOW,Coimbatore,Consumer Forum
+"Urgent legal help needed. Online-la phone order panna, aana dummy box vandhuchu.",CONSUMER_COMPLAINT,LOW,Coimbatore,Consumer Forum
+"Urgent legal help needed. Shopkeeper warranty card kudukala, replace panna maatranga.",CONSUMER_COMPLAINT,LOW,Coimbatore,Consumer Forum
+"Urgent legal help needed. ஆன்லைனில் வாங்கிய தயாரிப்பு சேதமடைந்துள்ளது, திரும்பப் பெற மறுக்கிறார்கள்.",CONSUMER_COMPLAINT,LOW,Coimbatore,Consumer Forum
+Urgent legal help needed. அதிகப்படியான விலை வசூலிக்கும் கடைக்காரர்.,CONSUMER_COMPLAINT,LOW,Coimbatore,Consumer Forum
+Urgent legal help needed. अमेज़न से नकली प्रोडक्ट मिला है और पैसे वापस नहीं कर रहे।,CONSUMER_COMPLAINT,LOW,Coimbatore,Consumer Forum
+Urgent legal help needed. दुकानदार वारंटी में सामान बदलने से मना कर रहा है।,CONSUMER_COMPLAINT,LOW,Coimbatore,Consumer Forum
+Urgent legal help needed. Lost 50000 rupees due to a fake UPI QR code scam.,CYBER_CRIME,LOW,Coimbatore,Cyber Crime Portal
+Urgent legal help needed. Bank account hacked and savings transferred online.,CYBER_CRIME,LOW,Coimbatore,Cyber Crime Portal
+Urgent legal help needed. Received phishing links asking for my net banking OTP.,CYBER_CRIME,LOW,Coimbatore,Cyber Crime Portal
+Urgent legal help needed. Ennoda bank account hacking aagi panam pochu.,CYBER_CRIME,LOW,Coimbatore,Cyber Crime Portal
+Urgent legal help needed. UPI scanner scam-la 10000 rubaa tholachuten.,CYBER_CRIME,LOW,Coimbatore,Cyber Crime Portal
+Urgent legal help needed. போலி ஓடிபி மூலம் எனது கணக்கிலிருந்து பணம் திருடப்பட்டது.,CYBER_CRIME,LOW,Coimbatore,Cyber Crime Portal
+Urgent legal help needed. வங்கி கணக்கு ஹேக் செய்யப்பட்டு பரிவர்த்தனை நடந்துள்ளது.,CYBER_CRIME,LOW,Coimbatore,Cyber Crime Portal
+Urgent legal help needed. फेसबुक अकाउंट हैक करके पैसे मांगे जा रहे हैं।,CYBER_CRIME,LOW,Coimbatore,Cyber Crime Portal
+Urgent legal help needed. बैंक मैनेजर बनकर ओटीपी पूछा और पैसे निकाल लिए।,CYBER_CRIME,LOW,Coimbatore,Cyber Crime Portal
+Urgent legal help needed. Neighbor encroached my boundary wall and built a gate.,PROPERTY_DISPUTE,LOW,Coimbatore,Police Station
+Urgent legal help needed. Landlord refusing to return my security deposit.,PROPERTY_DISPUTE,LOW,Coimbatore,Police Station
+Urgent legal help needed. Forged property patta documents used to sell my land.,PROPERTY_DISPUTE,LOW,Coimbatore,Police Station
+Urgent legal help needed. Pakkathu veetukaaran enga idathula encroaching panran.,PROPERTY_DISPUTE,LOW,Coimbatore,Police Station
+Urgent legal help needed. Landlord advance panatha thiruppi tharama emathuran.,PROPERTY_DISPUTE,LOW,Coimbatore,Police Station
+Urgent legal help needed. அண்டை வீட்டார் எனது நில எல்லையை ஆக்கிரமித்து கட்டியுள்ளனர்.,PROPERTY_DISPUTE,LOW,Coimbatore,Police Station
+Urgent legal help needed. போலி பத்திரம் தயாரித்து எனது வீட்டை விற்க முயல்கிறார்கள்.,PROPERTY_DISPUTE,LOW,Coimbatore,Police Station
+Urgent legal help needed. पड़ोसी ने मेरी जमीन पर अवैध कब्जा कर लिया है।,PROPERTY_DISPUTE,LOW,Coimbatore,Police Station
+Urgent legal help needed. मकान मालिक सिक्योरिटी डिपॉजिट वापस नहीं कर रहा है।,PROPERTY_DISPUTE,LOW,Coimbatore,Police Station
+Urgent legal help needed. Colleague continuously stalking and sending inappropriate texts.,WOMEN_SAFETY,HIGH,Coimbatore,Women Helpline
+Urgent legal help needed. Facing verbal harassment at public bus stop daily.,WOMEN_SAFETY,HIGH,Coimbatore,Women Helpline
+Urgent legal help needed. Some guys following me home from college metro station.,WOMEN_SAFETY,HIGH,Coimbatore,Women Helpline
+"Urgent legal help needed. Office-la oru officer thappa pesuran, stalk panran.",WOMEN_SAFETY,HIGH,Coimbatore,Women Helpline
+Urgent legal help needed. College poitu varra valiyila silaper follow panranga.,WOMEN_SAFETY,HIGH,Coimbatore,Women Helpline
+Urgent legal help needed. பேருந்து நிலையத்தில் ஒரு நபர் என்னைத் தொடர்ந்து பின்தொடர்கிறார்.,WOMEN_SAFETY,HIGH,Coimbatore,Women Helpline
+Urgent legal help needed. பணியிடத்தில் எனக்கு தொடர்ந்து பாலியல் தொல்லைகள் வருகின்றன.,WOMEN_SAFETY,HIGH,Coimbatore,Women Helpline
+Urgent legal help needed. रास्ते में कुछ लड़के रोज पीछा करते हैं और फब्तियां कसते हैं।,WOMEN_SAFETY,HIGH,Coimbatore,Women Helpline
+Urgent legal help needed. ऑफिस में सहकर्मी द्वारा परेशान किया जा रहा है।,WOMEN_SAFETY,HIGH,Coimbatore,Women Helpline
+Urgent legal help needed. Husband beats me under the influence of alcohol.,DOMESTIC_VIOLENCE,HIGH,Coimbatore,Protection Officer
+Urgent legal help needed. In-laws abusing and threatening for dowry money.,DOMESTIC_VIOLENCE,HIGH,Coimbatore,Protection Officer
+Urgent legal help needed. Locked inside the house and starved by my husband.,DOMESTIC_VIOLENCE,HIGH,Coimbatore,Protection Officer
+Urgent legal help needed. Enga veetla purushan thittamal adikiraru.,DOMESTIC_VIOLENCE,HIGH,Coimbatore,Protection Officer
+"Urgent legal help needed. Dowry ketu maamiyaar thollai tharanga, room-la lock panranga.",DOMESTIC_VIOLENCE,HIGH,Coimbatore,Protection Officer
+Urgent legal help needed. மது குடித்துவிட்டு கணவர் தினமும் என்னை அடிக்கிறார்.,DOMESTIC_VIOLENCE,HIGH,Coimbatore,Protection Officer
+Urgent legal help needed. வரதட்சணை கேட்டு மாமியார் கொடுமைப்படுத்துகிறார்கள்.,DOMESTIC_VIOLENCE,HIGH,Coimbatore,Protection Officer
+Urgent legal help needed. पति शराब पीकर रोज मारता-पीटता है।,DOMESTIC_VIOLENCE,HIGH,Coimbatore,Protection Officer
+Urgent legal help needed. ससुराल वाले दहेज के लिए प्रताड़ित कर रहे हैं।,DOMESTIC_VIOLENCE,HIGH,Coimbatore,Protection Officer
+Urgent legal help needed. Gang attacked me with weapons near the market area.,CRIMINAL_COMPLAINT,CRITICAL,Coimbatore,Police Station
+Urgent legal help needed. My motorcycle was stolen from outside my house entry.,CRIMINAL_COMPLAINT,HIGH,Coimbatore,Police Station
+Urgent legal help needed. Robbers broke into my home and stole gold jewelry.,CRIMINAL_COMPLAINT,HIGH,Coimbatore,Police Station
+Urgent legal help needed. Market kitta gang kathi vechu adichanga.,CRIMINAL_COMPLAINT,HIGH,Coimbatore,Police Station
+Urgent legal help needed. Enga veetu bike-a thiruditu poitinga.,CRIMINAL_COMPLAINT,HIGH,Coimbatore,Police Station
+Urgent legal help needed. இரவில் வீட்டை உடைத்து தங்க நகைகள் திருடப்பட்டுள்ளன.,CRIMINAL_COMPLAINT,HIGH,Coimbatore,Police Station
+Urgent legal help needed. சாலையில் சிலர் என்னைத் தாக்கி எனது பணத்தைப் பறித்தனர்.,CRIMINAL_COMPLAINT,HIGH,Coimbatore,Police Station
+Urgent legal help needed. घर के बाहर से मेरी बाइक चोरी हो गई है।,CRIMINAL_COMPLAINT,HIGH,Coimbatore,Police Station
+Urgent legal help needed. कुछ गुंडों ने हथियार दिखाकर मुझे लूटा।,CRIMINAL_COMPLAINT,HIGH,Coimbatore,Police Station
+Urgent legal help needed. Filing for divorce and seeking child custody support.,FAMILY_DISPUTE,LOW,Coimbatore,District Legal Services Authority
+Urgent legal help needed. Parents forcing me to get married against my will.,FAMILY_DISPUTE,LOW,Coimbatore,District Legal Services Authority
+Urgent legal help needed. Brothers refusing to divide ancestral inheritance fairly.,FAMILY_DISPUTE,LOW,Coimbatore,District Legal Services Authority
+"Urgent legal help needed. Divorce venum, aana baby custody thara matengranga.",FAMILY_DISPUTE,LOW,Coimbatore,District Legal Services Authority
+Urgent legal help needed. Enga appa force panni marriage panna soldranga.,FAMILY_DISPUTE,LOW,Coimbatore,District Legal Services Authority
+Urgent legal help needed. விருப்பம் இல்லாமல் குடும்பத்தினர் திருமணம் செய்ய வற்புறுத்துகிறார்கள்.,FAMILY_DISPUTE,LOW,Coimbatore,District Legal Services Authority
+Urgent legal help needed. பூர்வீக சொத்தை பிரிப்பதில் சகோதரர்களுக்குள் தகராறு.,FAMILY_DISPUTE,LOW,Coimbatore,District Legal Services Authority
+Urgent legal help needed. पैतृक संपत्ति के बंटवारे को लेकर भाइयों में विवाद है।,FAMILY_DISPUTE,LOW,Coimbatore,District Legal Services Authority
+Urgent legal help needed. तलाक और बच्चे की कस्टडी के लिए मामला दर्ज करना है।,FAMILY_DISPUTE,LOW,Coimbatore,District Legal Services Authority
+Urgent legal help needed. Denied benefits of housing scheme despite having all eligibility.,GOVERNMENT_SCHEME,LOW,Coimbatore,Government Grievance Cell
+Urgent legal help needed. Panchayat office demanding bribe for widow pension approval.,GOVERNMENT_SCHEME,LOW,Coimbatore,Government Grievance Cell
+Urgent legal help needed. Ration card distribution office delayed my card for a year.,GOVERNMENT_SCHEME,LOW,Coimbatore,Government Grievance Cell
+Urgent legal help needed. Housing scheme-la ellam documents irundhum select aagala.,GOVERNMENT_SCHEME,LOW,Coimbatore,Government Grievance Cell
+Urgent legal help needed. Widow pension kuduka bribe panam kekuranga.,GOVERNMENT_SCHEME,LOW,Coimbatore,Government Grievance Cell
+Urgent legal help needed. விபத்து நிவாரணத் தொகை பெற தகுதி இருந்தும் கிடைக்கவில்லை.,GOVERNMENT_SCHEME,LOW,Coimbatore,Government Grievance Cell
+Urgent legal help needed. ரேஷன் கார்டு வழங்க அதிகாரிகள் லஞ்சம் கேட்கிறார்கள்.,GOVERNMENT_SCHEME,LOW,Coimbatore,Government Grievance Cell
+Urgent legal help needed. पात्र होने के बावजूद आवास योजना की सूची में नाम नहीं है।,GOVERNMENT_SCHEME,LOW,Coimbatore,Government Grievance Cell
+Urgent legal help needed. विधवा पेंशन के लिए सरकारी कर्मचारी रिश्वत मांग रहे हैं।,GOVERNMENT_SCHEME,LOW,Coimbatore,Government Grievance Cell
+Urgent legal help needed. I need free legal advice regarding a contract discrepancy.,GENERAL_LEGAL_AID,LOW,Coimbatore,District Legal Services Authority
+Urgent legal help needed. How to apply for free legal representation in district court.,GENERAL_LEGAL_AID,LOW,Coimbatore,District Legal Services Authority
+Urgent legal help needed. Need guidance on court procedures for a witness summon.,GENERAL_LEGAL_AID,LOW,Coimbatore,District Legal Services Authority
+"Urgent legal help needed. Enaku free lawyer venum, court case pathi legal aid thairya.",GENERAL_LEGAL_AID,LOW,Coimbatore,District Legal Services Authority
+"Urgent legal help needed. Court sumons vandhuruku, step by step guidance enna.",GENERAL_LEGAL_AID,LOW,Coimbatore,District Legal Services Authority
+Urgent legal help needed. இலவச சட்ட உதவி பெற எங்கு விண்ணப்பிக்க வேண்டும்?,GENERAL_LEGAL_AID,LOW,Coimbatore,District Legal Services Authority
+"Urgent legal help needed. நீதிமன்ற சம்மன் வந்துள்ளது, என்ன செய்ய வேண்டும் என அறிய வேண்டும்.",GENERAL_LEGAL_AID,LOW,Coimbatore,District Legal Services Authority
+"Urgent legal help needed. कोर्ट समन मिला है, कानूनी सहायता की आवश्यकता है।",GENERAL_LEGAL_AID,LOW,Coimbatore,District Legal Services Authority
+Urgent legal help needed. सरकारी वकील की सहायता पाने के लिए क्या नियम हैं।,GENERAL_LEGAL_AID,LOW,Coimbatore,District Legal Services Authority

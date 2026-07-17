@@ -1,0 +1,10 @@
+node_modules/
+dist/
+target/
+.env
+uploads/
+ai-service/raw_datasets/
+ai-service/models/
+ai-service/venv/
+__pycache__/
+*.log

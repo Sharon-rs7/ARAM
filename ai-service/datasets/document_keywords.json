@@ -1,0 +1,66 @@
+{
+  "SALARY_SLIP": [
+    "salary",
+    "pay slip",
+    "earnings",
+    "employee",
+    "net pay",
+    "deductions"
+  ],
+  "INVOICE": [
+    "invoice",
+    "bill",
+    "tax invoice",
+    "gst",
+    "total amount",
+    "seller"
+  ],
+  "EMPLOYEE_ID": [
+    "employee card",
+    "id card",
+    "employee id",
+    "validity",
+    "identity",
+    "company name"
+  ],
+  "BANK_STATEMENT": [
+    "bank statement",
+    "account statement",
+    "balance",
+    "transaction",
+    "withdrawal",
+    "deposit"
+  ],
+  "TRANSACTION_SCREENSHOT": [
+    "transaction success",
+    "upi",
+    "payment to",
+    "ref no",
+    "utr",
+    "amount sent"
+  ],
+  "PROPERTY_DOCUMENT": [
+    "patta",
+    "sale deed",
+    "property tax",
+    "registration",
+    "survey number",
+    "schedule"
+  ],
+  "MEDICAL_REPORT": [
+    "patient",
+    "clinical",
+    "injury",
+    "treatment",
+    "medical certificate",
+    "doctor sign"
+  ],
+  "POLICE_COMPLAINT_COPY": [
+    "first information report",
+    "fir",
+    "police station",
+    "complaint copy",
+    "crpc",
+    "officer sign"
+  ]
+}

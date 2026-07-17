@@ -1,0 +1,234 @@
+/* Base CSS Variable Definitions (Light Theme) */
+:root {
+  --color-primary-900: #0f2747;
+  --color-primary-800: #173b66;
+  --color-primary-700: #1e4f86;
+  --color-primary-600: #2563a5;
+  --color-primary-500: #2f78c4;
+  --color-primary-100: #dbeafe;
+  --color-primary-50: #eff6ff;
+
+  --color-ai-700: #0f766e;
+  --color-ai-600: #0d9488;
+  --color-ai-500: #14b8a6;
+  --color-ai-100: #ccfbf1;
+  --color-ai-50: #f0fdfa;
+
+  --color-background: #f6f8fc;
+  --color-surface: #ffffff;
+  --color-sidebar: #0b1f36;
+  --color-border: #e2e8f0;
+
+  --color-heading: #0f172a;
+  --color-body: #334155;
+  --color-muted: #64748b;
+
+  --color-success: #15803d;
+  --color-warning: #b45309;
+  --color-danger: #b91c1c;
+  --color-info: #1d4ed8;
+
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+
+  --shadow-card:
+    0 1px 2px rgb(15 23 42 / 0.04),
+    0 4px 12px rgb(15 23 42 / 0.06);
+}
+
+:root,
+html[data-theme="light"] {
+  --bg-main: #f8fafc;
+  --bg-card: #ffffff;
+  --bg-elevated: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #64748b;
+  --border: #e2e8f0;
+  --input-bg: #ffffff;
+  --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+
+  --danger: #dc2626;
+  --danger-soft: rgba(220, 38, 38, 0.12);
+  --success: #16a34a;
+  --warning: #d97706;
+
+  /* Default role color scheme (Citizen) */
+  --role-primary: #2563eb;
+  --role-accent: #06b6d4;
+  --role-soft: rgba(37, 99, 235, 0.10);
+}
+
+/* Dark Theme Overrides */
+html[data-theme="dark"] {
+  --bg-main: #0f172a;
+  --bg-card: #111827;
+  --bg-elevated: #1e293b;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border: #334155;
+  --input-bg: #0f172a;
+  --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+/* Role Color Schema Overrides */
+html[data-role="citizen"] {
+  --role-primary: #2563eb;
+  --role-accent: #06b6d4;
+  --role-soft: rgba(37, 99, 235, 0.10);
+}
+
+html[data-role="helper"] {
+  --role-primary: #0f766e;
+  --role-accent: #22c55e;
+  --role-soft: rgba(15, 118, 110, 0.10);
+}
+
+html[data-role="admin"] {
+  --role-primary: #1e293b;
+  --role-accent: #dc2626;
+  --role-soft: rgba(220, 38, 38, 0.10);
+}
+
+html[data-role="advocate"] {
+  --role-primary: #7e22ce;
+  --role-accent: #c084fc;
+  --role-soft: rgba(126, 34, 206, 0.10);
+}
+
+html[data-role="authority"] {
+  --role-primary: #ea580c;
+  --role-accent: #fb923c;
+  --role-soft: rgba(234, 88, 12, 0.10);
+}
+
+/* Map existing global.css variables to theme-aware variables */
+:root {
+  --primary: var(--role-primary);
+  --primary-dark: var(--role-primary);
+  --primary-soft: var(--role-soft);
+  --bg: var(--bg-main);
+  --surface: var(--bg-card);
+  --text: var(--text-main);
+  --muted: var(--text-muted);
+}
+
+/* Base Body Application styling */
+body {
+  background: var(--bg-main);
+  color: var(--text-main);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Font Size Overrides */
+html.font-small {
+  font-size: 14px;
+}
+html.font-default {
+  font-size: 16px;
+}
+html.font-large {
+  font-size: 18px;
+}
+
+/* Reduced Motion Overrides */
+html.reduced-motion * {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
+/* Premium Styles for Cards, Modals, Forms & Inputs */
+.panel-card, .table-card, .auth-card {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border) !important;
+  color: var(--text-main) !important;
+  box-shadow: var(--shadow) !important;
+}
+
+input, select, textarea {
+  background: var(--input-bg) !important;
+  color: var(--text-main) !important;
+  border: 1px solid var(--border) !important;
+}
+
+hr {
+  border: 0;
+  border-top: 1px solid var(--border) !important;
+}
+
+.topbar {
+  background: var(--bg-main) !important;
+  border-bottom: 1px solid var(--border) !important;
+}
+
+.topbar-right .avatar {
+  background: var(--role-soft) !important;
+  color: var(--role-primary) !important;
+  border: 1px solid var(--border);
+}
+
+.sidebar {
+  background: var(--bg-card) !important;
+  border-right: 1px solid var(--border) !important;
+}
+
+.side-links a {
+  color: var(--text-muted) !important;
+}
+
+.side-links a:hover,
+.side-links a.active {
+  background: var(--role-soft) !important;
+  color: var(--role-primary) !important;
+}
+
+.settings-menu-dropdown {
+  background: var(--bg-elevated) !important;
+  border: 1px solid var(--border) !important;
+  box-shadow: var(--shadow) !important;
+}
+
+.settings-dropdown-item {
+  color: var(--text-main) !important;
+}
+
+.settings-dropdown-item:hover {
+  background: var(--role-soft) !important;
+}
+
+.timeline-item .dot {
+  background: var(--role-soft) !important;
+  color: var(--role-primary) !important;
+  border: 2px solid var(--role-primary);
+}
+
+.timeline-item.done .dot {
+  background: var(--role-primary) !important;
+  color: white !important;
+}
+
+th, td {
+  border-bottom: 1px solid var(--border) !important;
+}
+
+tr:hover {
+  background: var(--role-soft) !important;
+}
+
+/* Fix checkbox scaling issue caused by global input selector overrides */
+input[type="checkbox"] {
+  width: 16px !important;
+  height: 16px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  appearance: checkbox !important;
+  -webkit-appearance: checkbox !important;
+  display: inline-block !important;
+}

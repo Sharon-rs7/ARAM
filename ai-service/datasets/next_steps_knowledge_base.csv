@@ -1,0 +1,121 @@
+category,priority,user_query,answer,steps
+LABOUR_DISPUTE,HIGH,Salary not paid variant 0,You can submit details to the Labour Office.,Collect salary proof|Prepare written complaint|Approach Labour Office|Keep acknowledgement copy
+CONSUMER_COMPLAINT,MEDIUM,Received damaged product variant 0,You should file a claim in the Consumer Forum.,Save order invoice|Take photo of product|Approach Consumer Forum|File notice
+CYBER_CRIME,HIGH,Hacked account variant 0,Report immediately to Cyber Cell.,Call 1930 immediately|Take account screenshots|Register Cyber Cell case|Inform bank
+PROPERTY_DISPUTE,MEDIUM,Land encroachment variant 0,Consult DLSA for mediation or file a suit.,Obtain surveyor report|Present property deed|Consult civil lawyer|Initiate mediation
+DOMESTIC_VIOLENCE,CRITICAL,Physical violence variant 0,Contact Women Helpline or Local Protection Officer.,Go to safety first|Contact helpline 181|Record medical injuries|File police report
+CRIMINAL_COMPLAINT,CRITICAL,Robbery at home variant 0,Visit local Police Station to register FIR.,Ensure safety first|Do not touch scene|Visit Police Station|Register FIR copy
+GOVERNMENT_SCHEME,LOW,Pension issue variant 0,File grievance at District Grievance cell.,Collect eligibility proofs|Visit grievance officer|Submit application|Track status
+GENERAL_LEGAL_AID,LOW,Witness summon variant 0,Contact DLSA to obtain legal counseling.,Read summon details|Obtain DLSA counseling|Reach court on time|Take legal guides
+LABOUR_DISPUTE,HIGH,Salary not paid variant 1,You can submit details to the Labour Office.,Collect salary proof|Prepare written complaint|Approach Labour Office|Keep acknowledgement copy
+CONSUMER_COMPLAINT,MEDIUM,Received damaged product variant 1,You should file a claim in the Consumer Forum.,Save order invoice|Take photo of product|Approach Consumer Forum|File notice
+CYBER_CRIME,HIGH,Hacked account variant 1,Report immediately to Cyber Cell.,Call 1930 immediately|Take account screenshots|Register Cyber Cell case|Inform bank
+PROPERTY_DISPUTE,MEDIUM,Land encroachment variant 1,Consult DLSA for mediation or file a suit.,Obtain surveyor report|Present property deed|Consult civil lawyer|Initiate mediation
+DOMESTIC_VIOLENCE,CRITICAL,Physical violence variant 1,Contact Women Helpline or Local Protection Officer.,Go to safety first|Contact helpline 181|Record medical injuries|File police report
+CRIMINAL_COMPLAINT,CRITICAL,Robbery at home variant 1,Visit local Police Station to register FIR.,Ensure safety first|Do not touch scene|Visit Police Station|Register FIR copy
+GOVERNMENT_SCHEME,LOW,Pension issue variant 1,File grievance at District Grievance cell.,Collect eligibility proofs|Visit grievance officer|Submit application|Track status
+GENERAL_LEGAL_AID,LOW,Witness summon variant 1,Contact DLSA to obtain legal counseling.,Read summon details|Obtain DLSA counseling|Reach court on time|Take legal guides
+LABOUR_DISPUTE,HIGH,Salary not paid variant 2,You can submit details to the Labour Office.,Collect salary proof|Prepare written complaint|Approach Labour Office|Keep acknowledgement copy
+CONSUMER_COMPLAINT,MEDIUM,Received damaged product variant 2,You should file a claim in the Consumer Forum.,Save order invoice|Take photo of product|Approach Consumer Forum|File notice
+CYBER_CRIME,HIGH,Hacked account variant 2,Report immediately to Cyber Cell.,Call 1930 immediately|Take account screenshots|Register Cyber Cell case|Inform bank
+PROPERTY_DISPUTE,MEDIUM,Land encroachment variant 2,Consult DLSA for mediation or file a suit.,Obtain surveyor report|Present property deed|Consult civil lawyer|Initiate mediation
+DOMESTIC_VIOLENCE,CRITICAL,Physical violence variant 2,Contact Women Helpline or Local Protection Officer.,Go to safety first|Contact helpline 181|Record medical injuries|File police report
+CRIMINAL_COMPLAINT,CRITICAL,Robbery at home variant 2,Visit local Police Station to register FIR.,Ensure safety first|Do not touch scene|Visit Police Station|Register FIR copy
+GOVERNMENT_SCHEME,LOW,Pension issue variant 2,File grievance at District Grievance cell.,Collect eligibility proofs|Visit grievance officer|Submit application|Track status
+GENERAL_LEGAL_AID,LOW,Witness summon variant 2,Contact DLSA to obtain legal counseling.,Read summon details|Obtain DLSA counseling|Reach court on time|Take legal guides
+LABOUR_DISPUTE,HIGH,Salary not paid variant 3,You can submit details to the Labour Office.,Collect salary proof|Prepare written complaint|Approach Labour Office|Keep acknowledgement copy
+CONSUMER_COMPLAINT,MEDIUM,Received damaged product variant 3,You should file a claim in the Consumer Forum.,Save order invoice|Take photo of product|Approach Consumer Forum|File notice
+CYBER_CRIME,HIGH,Hacked account variant 3,Report immediately to Cyber Cell.,Call 1930 immediately|Take account screenshots|Register Cyber Cell case|Inform bank
+PROPERTY_DISPUTE,MEDIUM,Land encroachment variant 3,Consult DLSA for mediation or file a suit.,Obtain surveyor report|Present property deed|Consult civil lawyer|Initiate mediation
+DOMESTIC_VIOLENCE,CRITICAL,Physical violence variant 3,Contact Women Helpline or Local Protection Officer.,Go to safety first|Contact helpline 181|Record medical injuries|File police report
+CRIMINAL_COMPLAINT,CRITICAL,Robbery at home variant 3,Visit local Police Station to register FIR.,Ensure safety first|Do not touch scene|Visit Police Station|Register FIR copy
+GOVERNMENT_SCHEME,LOW,Pension issue variant 3,File grievance at District Grievance cell.,Collect eligibility proofs|Visit grievance officer|Submit application|Track status
+GENERAL_LEGAL_AID,LOW,Witness summon variant 3,Contact DLSA to obtain legal counseling.,Read summon details|Obtain DLSA counseling|Reach court on time|Take legal guides
+LABOUR_DISPUTE,HIGH,Salary not paid variant 4,You can submit details to the Labour Office.,Collect salary proof|Prepare written complaint|Approach Labour Office|Keep acknowledgement copy
+CONSUMER_COMPLAINT,MEDIUM,Received damaged product variant 4,You should file a claim in the Consumer Forum.,Save order invoice|Take photo of product|Approach Consumer Forum|File notice
+CYBER_CRIME,HIGH,Hacked account variant 4,Report immediately to Cyber Cell.,Call 1930 immediately|Take account screenshots|Register Cyber Cell case|Inform bank
+PROPERTY_DISPUTE,MEDIUM,Land encroachment variant 4,Consult DLSA for mediation or file a suit.,Obtain surveyor report|Present property deed|Consult civil lawyer|Initiate mediation
+DOMESTIC_VIOLENCE,CRITICAL,Physical violence variant 4,Contact Women Helpline or Local Protection Officer.,Go to safety first|Contact helpline 181|Record medical injuries|File police report
+CRIMINAL_COMPLAINT,CRITICAL,Robbery at home variant 4,Visit local Police Station to register FIR.,Ensure safety first|Do not touch scene|Visit Police Station|Register FIR copy
+GOVERNMENT_SCHEME,LOW,Pension issue variant 4,File grievance at District Grievance cell.,Collect eligibility proofs|Visit grievance officer|Submit application|Track status
+GENERAL_LEGAL_AID,LOW,Witness summon variant 4,Contact DLSA to obtain legal counseling.,Read summon details|Obtain DLSA counseling|Reach court on time|Take legal guides
+LABOUR_DISPUTE,HIGH,Salary not paid variant 5,You can submit details to the Labour Office.,Collect salary proof|Prepare written complaint|Approach Labour Office|Keep acknowledgement copy
+CONSUMER_COMPLAINT,MEDIUM,Received damaged product variant 5,You should file a claim in the Consumer Forum.,Save order invoice|Take photo of product|Approach Consumer Forum|File notice
+CYBER_CRIME,HIGH,Hacked account variant 5,Report immediately to Cyber Cell.,Call 1930 immediately|Take account screenshots|Register Cyber Cell case|Inform bank
+PROPERTY_DISPUTE,MEDIUM,Land encroachment variant 5,Consult DLSA for mediation or file a suit.,Obtain surveyor report|Present property deed|Consult civil lawyer|Initiate mediation
+DOMESTIC_VIOLENCE,CRITICAL,Physical violence variant 5,Contact Women Helpline or Local Protection Officer.,Go to safety first|Contact helpline 181|Record medical injuries|File police report
+CRIMINAL_COMPLAINT,CRITICAL,Robbery at home variant 5,Visit local Police Station to register FIR.,Ensure safety first|Do not touch scene|Visit Police Station|Register FIR copy
+GOVERNMENT_SCHEME,LOW,Pension issue variant 5,File grievance at District Grievance cell.,Collect eligibility proofs|Visit grievance officer|Submit application|Track status
+GENERAL_LEGAL_AID,LOW,Witness summon variant 5,Contact DLSA to obtain legal counseling.,Read summon details|Obtain DLSA counseling|Reach court on time|Take legal guides
+LABOUR_DISPUTE,HIGH,Salary not paid variant 6,You can submit details to the Labour Office.,Collect salary proof|Prepare written complaint|Approach Labour Office|Keep acknowledgement copy
+CONSUMER_COMPLAINT,MEDIUM,Received damaged product variant 6,You should file a claim in the Consumer Forum.,Save order invoice|Take photo of product|Approach Consumer Forum|File notice
+CYBER_CRIME,HIGH,Hacked account variant 6,Report immediately to Cyber Cell.,Call 1930 immediately|Take account screenshots|Register Cyber Cell case|Inform bank
+PROPERTY_DISPUTE,MEDIUM,Land encroachment variant 6,Consult DLSA for mediation or file a suit.,Obtain surveyor report|Present property deed|Consult civil lawyer|Initiate mediation
+DOMESTIC_VIOLENCE,CRITICAL,Physical violence variant 6,Contact Women Helpline or Local Protection Officer.,Go to safety first|Contact helpline 181|Record medical injuries|File police report
+CRIMINAL_COMPLAINT,CRITICAL,Robbery at home variant 6,Visit local Police Station to register FIR.,Ensure safety first|Do not touch scene|Visit Police Station|Register FIR copy
+GOVERNMENT_SCHEME,LOW,Pension issue variant 6,File grievance at District Grievance cell.,Collect eligibility proofs|Visit grievance officer|Submit application|Track status
+GENERAL_LEGAL_AID,LOW,Witness summon variant 6,Contact DLSA to obtain legal counseling.,Read summon details|Obtain DLSA counseling|Reach court on time|Take legal guides
+LABOUR_DISPUTE,HIGH,Salary not paid variant 7,You can submit details to the Labour Office.,Collect salary proof|Prepare written complaint|Approach Labour Office|Keep acknowledgement copy
+CONSUMER_COMPLAINT,MEDIUM,Received damaged product variant 7,You should file a claim in the Consumer Forum.,Save order invoice|Take photo of product|Approach Consumer Forum|File notice
+CYBER_CRIME,HIGH,Hacked account variant 7,Report immediately to Cyber Cell.,Call 1930 immediately|Take account screenshots|Register Cyber Cell case|Inform bank
+PROPERTY_DISPUTE,MEDIUM,Land encroachment variant 7,Consult DLSA for mediation or file a suit.,Obtain surveyor report|Present property deed|Consult civil lawyer|Initiate mediation
+DOMESTIC_VIOLENCE,CRITICAL,Physical violence variant 7,Contact Women Helpline or Local Protection Officer.,Go to safety first|Contact helpline 181|Record medical injuries|File police report
+CRIMINAL_COMPLAINT,CRITICAL,Robbery at home variant 7,Visit local Police Station to register FIR.,Ensure safety first|Do not touch scene|Visit Police Station|Register FIR copy
+GOVERNMENT_SCHEME,LOW,Pension issue variant 7,File grievance at District Grievance cell.,Collect eligibility proofs|Visit grievance officer|Submit application|Track status
+GENERAL_LEGAL_AID,LOW,Witness summon variant 7,Contact DLSA to obtain legal counseling.,Read summon details|Obtain DLSA counseling|Reach court on time|Take legal guides
+LABOUR_DISPUTE,HIGH,Salary not paid variant 8,You can submit details to the Labour Office.,Collect salary proof|Prepare written complaint|Approach Labour Office|Keep acknowledgement copy
+CONSUMER_COMPLAINT,MEDIUM,Received damaged product variant 8,You should file a claim in the Consumer Forum.,Save order invoice|Take photo of product|Approach Consumer Forum|File notice
+CYBER_CRIME,HIGH,Hacked account variant 8,Report immediately to Cyber Cell.,Call 1930 immediately|Take account screenshots|Register Cyber Cell case|Inform bank
+PROPERTY_DISPUTE,MEDIUM,Land encroachment variant 8,Consult DLSA for mediation or file a suit.,Obtain surveyor report|Present property deed|Consult civil lawyer|Initiate mediation
+DOMESTIC_VIOLENCE,CRITICAL,Physical violence variant 8,Contact Women Helpline or Local Protection Officer.,Go to safety first|Contact helpline 181|Record medical injuries|File police report
+CRIMINAL_COMPLAINT,CRITICAL,Robbery at home variant 8,Visit local Police Station to register FIR.,Ensure safety first|Do not touch scene|Visit Police Station|Register FIR copy
+GOVERNMENT_SCHEME,LOW,Pension issue variant 8,File grievance at District Grievance cell.,Collect eligibility proofs|Visit grievance officer|Submit application|Track status
+GENERAL_LEGAL_AID,LOW,Witness summon variant 8,Contact DLSA to obtain legal counseling.,Read summon details|Obtain DLSA counseling|Reach court on time|Take legal guides
+LABOUR_DISPUTE,HIGH,Salary not paid variant 9,You can submit details to the Labour Office.,Collect salary proof|Prepare written complaint|Approach Labour Office|Keep acknowledgement copy
+CONSUMER_COMPLAINT,MEDIUM,Received damaged product variant 9,You should file a claim in the Consumer Forum.,Save order invoice|Take photo of product|Approach Consumer Forum|File notice
+CYBER_CRIME,HIGH,Hacked account variant 9,Report immediately to Cyber Cell.,Call 1930 immediately|Take account screenshots|Register Cyber Cell case|Inform bank
+PROPERTY_DISPUTE,MEDIUM,Land encroachment variant 9,Consult DLSA for mediation or file a suit.,Obtain surveyor report|Present property deed|Consult civil lawyer|Initiate mediation
+DOMESTIC_VIOLENCE,CRITICAL,Physical violence variant 9,Contact Women Helpline or Local Protection Officer.,Go to safety first|Contact helpline 181|Record medical injuries|File police report
+CRIMINAL_COMPLAINT,CRITICAL,Robbery at home variant 9,Visit local Police Station to register FIR.,Ensure safety first|Do not touch scene|Visit Police Station|Register FIR copy
+GOVERNMENT_SCHEME,LOW,Pension issue variant 9,File grievance at District Grievance cell.,Collect eligibility proofs|Visit grievance officer|Submit application|Track status
+GENERAL_LEGAL_AID,LOW,Witness summon variant 9,Contact DLSA to obtain legal counseling.,Read summon details|Obtain DLSA counseling|Reach court on time|Take legal guides
+LABOUR_DISPUTE,HIGH,Salary not paid variant 10,You can submit details to the Labour Office.,Collect salary proof|Prepare written complaint|Approach Labour Office|Keep acknowledgement copy
+CONSUMER_COMPLAINT,MEDIUM,Received damaged product variant 10,You should file a claim in the Consumer Forum.,Save order invoice|Take photo of product|Approach Consumer Forum|File notice
+CYBER_CRIME,HIGH,Hacked account variant 10,Report immediately to Cyber Cell.,Call 1930 immediately|Take account screenshots|Register Cyber Cell case|Inform bank
+PROPERTY_DISPUTE,MEDIUM,Land encroachment variant 10,Consult DLSA for mediation or file a suit.,Obtain surveyor report|Present property deed|Consult civil lawyer|Initiate mediation
+DOMESTIC_VIOLENCE,CRITICAL,Physical violence variant 10,Contact Women Helpline or Local Protection Officer.,Go to safety first|Contact helpline 181|Record medical injuries|File police report
+CRIMINAL_COMPLAINT,CRITICAL,Robbery at home variant 10,Visit local Police Station to register FIR.,Ensure safety first|Do not touch scene|Visit Police Station|Register FIR copy
+GOVERNMENT_SCHEME,LOW,Pension issue variant 10,File grievance at District Grievance cell.,Collect eligibility proofs|Visit grievance officer|Submit application|Track status
+GENERAL_LEGAL_AID,LOW,Witness summon variant 10,Contact DLSA to obtain legal counseling.,Read summon details|Obtain DLSA counseling|Reach court on time|Take legal guides
+LABOUR_DISPUTE,HIGH,Salary not paid variant 11,You can submit details to the Labour Office.,Collect salary proof|Prepare written complaint|Approach Labour Office|Keep acknowledgement copy
+CONSUMER_COMPLAINT,MEDIUM,Received damaged product variant 11,You should file a claim in the Consumer Forum.,Save order invoice|Take photo of product|Approach Consumer Forum|File notice
+CYBER_CRIME,HIGH,Hacked account variant 11,Report immediately to Cyber Cell.,Call 1930 immediately|Take account screenshots|Register Cyber Cell case|Inform bank
+PROPERTY_DISPUTE,MEDIUM,Land encroachment variant 11,Consult DLSA for mediation or file a suit.,Obtain surveyor report|Present property deed|Consult civil lawyer|Initiate mediation
+DOMESTIC_VIOLENCE,CRITICAL,Physical violence variant 11,Contact Women Helpline or Local Protection Officer.,Go to safety first|Contact helpline 181|Record medical injuries|File police report
+CRIMINAL_COMPLAINT,CRITICAL,Robbery at home variant 11,Visit local Police Station to register FIR.,Ensure safety first|Do not touch scene|Visit Police Station|Register FIR copy
+GOVERNMENT_SCHEME,LOW,Pension issue variant 11,File grievance at District Grievance cell.,Collect eligibility proofs|Visit grievance officer|Submit application|Track status
+GENERAL_LEGAL_AID,LOW,Witness summon variant 11,Contact DLSA to obtain legal counseling.,Read summon details|Obtain DLSA counseling|Reach court on time|Take legal guides
+LABOUR_DISPUTE,HIGH,Salary not paid variant 12,You can submit details to the Labour Office.,Collect salary proof|Prepare written complaint|Approach Labour Office|Keep acknowledgement copy
+CONSUMER_COMPLAINT,MEDIUM,Received damaged product variant 12,You should file a claim in the Consumer Forum.,Save order invoice|Take photo of product|Approach Consumer Forum|File notice
+CYBER_CRIME,HIGH,Hacked account variant 12,Report immediately to Cyber Cell.,Call 1930 immediately|Take account screenshots|Register Cyber Cell case|Inform bank
+PROPERTY_DISPUTE,MEDIUM,Land encroachment variant 12,Consult DLSA for mediation or file a suit.,Obtain surveyor report|Present property deed|Consult civil lawyer|Initiate mediation
+DOMESTIC_VIOLENCE,CRITICAL,Physical violence variant 12,Contact Women Helpline or Local Protection Officer.,Go to safety first|Contact helpline 181|Record medical injuries|File police report
+CRIMINAL_COMPLAINT,CRITICAL,Robbery at home variant 12,Visit local Police Station to register FIR.,Ensure safety first|Do not touch scene|Visit Police Station|Register FIR copy
+GOVERNMENT_SCHEME,LOW,Pension issue variant 12,File grievance at District Grievance cell.,Collect eligibility proofs|Visit grievance officer|Submit application|Track status
+GENERAL_LEGAL_AID,LOW,Witness summon variant 12,Contact DLSA to obtain legal counseling.,Read summon details|Obtain DLSA counseling|Reach court on time|Take legal guides
+LABOUR_DISPUTE,HIGH,Salary not paid variant 13,You can submit details to the Labour Office.,Collect salary proof|Prepare written complaint|Approach Labour Office|Keep acknowledgement copy
+CONSUMER_COMPLAINT,MEDIUM,Received damaged product variant 13,You should file a claim in the Consumer Forum.,Save order invoice|Take photo of product|Approach Consumer Forum|File notice
+CYBER_CRIME,HIGH,Hacked account variant 13,Report immediately to Cyber Cell.,Call 1930 immediately|Take account screenshots|Register Cyber Cell case|Inform bank
+PROPERTY_DISPUTE,MEDIUM,Land encroachment variant 13,Consult DLSA for mediation or file a suit.,Obtain surveyor report|Present property deed|Consult civil lawyer|Initiate mediation
+DOMESTIC_VIOLENCE,CRITICAL,Physical violence variant 13,Contact Women Helpline or Local Protection Officer.,Go to safety first|Contact helpline 181|Record medical injuries|File police report
+CRIMINAL_COMPLAINT,CRITICAL,Robbery at home variant 13,Visit local Police Station to register FIR.,Ensure safety first|Do not touch scene|Visit Police Station|Register FIR copy
+GOVERNMENT_SCHEME,LOW,Pension issue variant 13,File grievance at District Grievance cell.,Collect eligibility proofs|Visit grievance officer|Submit application|Track status
+GENERAL_LEGAL_AID,LOW,Witness summon variant 13,Contact DLSA to obtain legal counseling.,Read summon details|Obtain DLSA counseling|Reach court on time|Take legal guides
+LABOUR_DISPUTE,HIGH,Salary not paid variant 14,You can submit details to the Labour Office.,Collect salary proof|Prepare written complaint|Approach Labour Office|Keep acknowledgement copy
+CONSUMER_COMPLAINT,MEDIUM,Received damaged product variant 14,You should file a claim in the Consumer Forum.,Save order invoice|Take photo of product|Approach Consumer Forum|File notice
+CYBER_CRIME,HIGH,Hacked account variant 14,Report immediately to Cyber Cell.,Call 1930 immediately|Take account screenshots|Register Cyber Cell case|Inform bank
+PROPERTY_DISPUTE,MEDIUM,Land encroachment variant 14,Consult DLSA for mediation or file a suit.,Obtain surveyor report|Present property deed|Consult civil lawyer|Initiate mediation
+DOMESTIC_VIOLENCE,CRITICAL,Physical violence variant 14,Contact Women Helpline or Local Protection Officer.,Go to safety first|Contact helpline 181|Record medical injuries|File police report
+CRIMINAL_COMPLAINT,CRITICAL,Robbery at home variant 14,Visit local Police Station to register FIR.,Ensure safety first|Do not touch scene|Visit Police Station|Register FIR copy
+GOVERNMENT_SCHEME,LOW,Pension issue variant 14,File grievance at District Grievance cell.,Collect eligibility proofs|Visit grievance officer|Submit application|Track status
+GENERAL_LEGAL_AID,LOW,Witness summon variant 14,Contact DLSA to obtain legal counseling.,Read summon details|Obtain DLSA counseling|Reach court on time|Take legal guides

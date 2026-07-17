@@ -1,0 +1,133 @@
+package com.aram.legalaid.service;
+
+import com.aram.legalaid.config.AIServiceProperties;
+import com.aram.legalaid.dto.*;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.*;
+import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
+import java.util.Map;
+
+@Service
+public class AIClientService {
+
+    private final RestTemplate restTemplate;
+    private final AIServiceProperties properties;
+
+    public AIClientService(AIServiceProperties properties) {
+        this.restTemplate = new RestTemplate();
+        this.properties = properties;
+    }
+
+    public AiTriageResponse analyzeComplaint(String text, String language, String district, boolean isSensitive) {
+        String url = properties.getUrl() + "/complaint/analyze";
+        try {
+            Map<String, Object> payload = Map.of(
+                "complaintText", text,
+                "language", language != null ? language : "en",
+                "district", district != null ? district : "Coimbatore",
+                "isSensitive", isSensitive
+            );
+            return restTemplate.postForObject(url, payload, AiTriageResponse.class);
+        } catch (Exception e) {
+            System.err.println("FastAPI analyzeComplaint failed: " + e.getMessage());
+            // Safe fallback response mapping if service is down
+            return new AiTriageResponse(
+                "GENERAL_LEGAL_AID",
+                "MEDIUM",
+                50,
+                0.50,
+                "District Legal Services Authority",
+                0.50,
+                List.of("Aadhaar Card"),
+                0.50,
+                List.of("Submit complaint details", "Consult legal aid representative"),
+                true, // manualReviewRequired = true on failure
+                false
+            );
+        }
+    }
+
+    public AiChatResponse askChatbot(AiChatRequest request) {
+        String url = properties.getUrl() + "/chat/ask";
+        try {
+            return restTemplate.postForObject(url, request, AiChatResponse.class);
+        } catch (Exception e) {
+            System.err.println("FastAPI askChatbot failed: " + e.getMessage());
+            return new AiChatResponse(
+                "I am sorry, the AI service is currently undergoing maintenance. Please reach out to your local helper. This is preliminary legal aid guidance only.",
+                "GENERAL_LEGAL_AID",
+                0.50,
+                List.of("Retry connection", "Consult counselor"),
+                "This is preliminary legal aid guidance only."
+            );
+        }
+    }
+
+    public Map<String, Object> ocrDocument(MultipartFile file) {
+        String url = properties.getUrl() + "/documents/ocr";
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("file", getFileResource(file));
+
+            HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<>(body, headers);
+            ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
+            return response.getBody();
+        } catch (Exception e) {
+            System.err.println("FastAPI ocrDocument failed: " + e.getMessage());
+            return Map.of(
+                "extractedText", "",
+                "maskedText", "",
+                "confidence", 0.0,
+                "status", "NEEDS_MANUAL_REVIEW"
+            );
+        }
+    }
+
+    public AiDocumentVerifyResponse verifyDocument(MultipartFile file, String expectedType, String category) {
+        String url = properties.getUrl() + "/documents/verify";
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("file", getFileResource(file));
+            body.add("expectedDocumentType", expectedType);
+            body.add("complaintCategory", category);
+
+            HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<>(body, headers);
+            ResponseEntity<AiDocumentVerifyResponse> response = restTemplate.postForEntity(url, entity, AiDocumentVerifyResponse.class);
+            return response.getBody();
+        } catch (Exception e) {
+            System.err.println("FastAPI verifyDocument failed: " + e.getMessage());
+            return new AiDocumentVerifyResponse(
+                expectedType,
+                "Unable to process OCR copy.",
+                0.50,
+                0.50,
+                0.0,
+                0.50,
+                "NEEDS_MANUAL_REVIEW",
+                List.of(),
+                List.of()
+            );
+        }
+    }
+
+    private ByteArrayResource getFileResource(MultipartFile file) throws Exception {
+        return new ByteArrayResource(file.getBytes()) {
+            @Override
+            public String getFilename() {
+                return file.getOriginalFilename() != null ? file.getOriginalFilename() : "file.wav";
+            }
+        };
+    }
+}
