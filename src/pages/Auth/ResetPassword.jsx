@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import Logo from '../../components/Logo.jsx';
+import Logo from '@/components/common/Logo';
 import { authApi } from '../../services/api.js';
 
 export default function ResetPassword() {
