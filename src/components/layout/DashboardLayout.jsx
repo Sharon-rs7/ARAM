@@ -233,8 +233,8 @@ const DashboardLayout = ({ children }) => {
             onMouseDown={startResizing}
             className="absolute top-0 -right-1.5 w-3 h-full cursor-col-resize z-30 group flex items-center justify-center select-none"
           >
-            <div className="w-[2px] h-full bg-transparent group-hover:bg-indigo-500/70 group-active:bg-indigo-500 transition-colors duration-150" />
-            <div className="absolute top-1/2 -translate-y-1/2 w-1.5 h-6 rounded-full bg-slate-900 border border-slate-700 opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity duration-150 flex flex-col items-center justify-center gap-0.5 shadow-md">
+            <div className="w-[1.5px] h-full bg-slate-200 dark:bg-slate-800 group-hover:bg-indigo-500/70 group-active:bg-indigo-500 transition-colors duration-150" />
+            <div className="absolute top-1/2 -translate-y-1/2 w-1.5 h-6 rounded-full bg-slate-900 border border-slate-700 opacity-50 group-hover:opacity-100 group-active:opacity-100 transition-all duration-150 flex flex-col items-center justify-center gap-0.5 shadow-md">
               <span className="w-0.5 h-0.5 rounded-full bg-slate-400" />
               <span className="w-0.5 h-0.5 rounded-full bg-slate-400" />
               <span className="w-0.5 h-0.5 rounded-full bg-slate-400" />
