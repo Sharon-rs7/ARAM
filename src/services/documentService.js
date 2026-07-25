@@ -34,7 +34,7 @@ export const documentService = {
         missingKeywords: []
       };
     }
-    const res = await api.post("/documents/verify", formData, {
+    const res = await api.post("/documents/verify-ai", formData, {
       headers: { "Content-Type": "multipart/form-data" }
     });
     return res.data;

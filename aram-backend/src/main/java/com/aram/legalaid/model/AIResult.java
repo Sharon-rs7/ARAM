@@ -47,6 +47,18 @@ public class AIResult {
     @Column(nullable = false)
     private boolean manualReviewRequired;
 
+    @Column(length = 50)
+    private String detectedLanguage;
+
+    @Column(columnDefinition = "TEXT")
+    private String translatedSummary;
+
+    @Column(columnDefinition = "TEXT")
+    private String spokenSummaryText;
+
+    @Column(nullable = false)
+    private boolean readAloudAvailable = false;
+
     private LocalDateTime createdAt;
 
     @PrePersist
@@ -78,4 +90,13 @@ public class AIResult {
     public void setManualReviewRequired(boolean manualReviewRequired) { this.manualReviewRequired = manualReviewRequired; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public String getDetectedLanguage() { return detectedLanguage; }
+    public void setDetectedLanguage(String detectedLanguage) { this.detectedLanguage = detectedLanguage; }
+    public String getTranslatedSummary() { return translatedSummary; }
+    public void setTranslatedSummary(String translatedSummary) { this.translatedSummary = translatedSummary; }
+    public String getSpokenSummaryText() { return spokenSummaryText; }
+    public void setSpokenSummaryText(String spokenSummaryText) { this.spokenSummaryText = spokenSummaryText; }
+    public boolean isReadAloudAvailable() { return readAloudAvailable; }
+    public void setReadAloudAvailable(boolean readAloudAvailable) { this.readAloudAvailable = readAloudAvailable; }
 }

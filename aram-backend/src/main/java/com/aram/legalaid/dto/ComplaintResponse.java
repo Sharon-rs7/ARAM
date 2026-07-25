@@ -23,5 +23,24 @@ public record ComplaintResponse(
         IdentityVisibility identityVisibility,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
-        AIResultResponse aiResult
+        AIResultResponse aiResult,
+        String originalText,
+        String originalLanguage,
+        String normalizedText,
+        String translatedText,
+        boolean voiceInputUsed,
+        Double voiceTranscriptConfidence,
+        String preferredResponseLanguage,
+        String legalOpinion,
+        Long assignedHelperId,
+        String assignedHelperName,
+        BlockchainInfoResponse blockchainInfo,
+        boolean highRisk,
+        boolean disclaimerAccepted,
+        LocalDateTime disclaimerAcceptedAt,
+        String resolutionSummary,
+        String reopenReason,
+        String safeContactMethod,
+        String safeContactTime
 ) {}
+

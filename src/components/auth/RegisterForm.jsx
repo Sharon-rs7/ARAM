@@ -136,7 +136,7 @@ const RegisterForm = () => {
       <p className="mt-1.5 text-xs text-slate-500">Join ARAM and get AI-powered legal assistance.</p>
 
       {error && (
-        <div className="mt-4 p-3 bg-red-50 text-red-650 rounded-xl text-xs border border-red-100 flex items-start gap-2">
+        <div className="mt-4 p-3 bg-red-50 text-red-600 rounded-xl text-xs border border-red-100 flex items-start gap-2">
           <Info size={14} className="mt-0.5 shrink-0" />
           <span>{error}</span>
         </div>
@@ -145,7 +145,7 @@ const RegisterForm = () => {
       <form onSubmit={handleRegister} className="mt-5 space-y-4">
         {/* Section 1: Account */}
         <div className="border-b border-slate-100 pb-3">
-          <h3 className="text-xs font-bold text-blue-650 uppercase tracking-wider mb-2">Account Info</h3>
+          <h3 className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2">Account Info</h3>
           <div className="grid gap-3 sm:grid-cols-2">
             <Input
               label="Full Name"
@@ -154,7 +154,6 @@ const RegisterForm = () => {
               onChange={update}
               required
               placeholder="John Doe"
-              icon={User}
             />
             <Input
               label="Email Address"
@@ -164,7 +163,6 @@ const RegisterForm = () => {
               onChange={update}
               required
               placeholder="name@example.com"
-              icon={Mail}
             />
             <div className="sm:col-span-2">
               <Input
@@ -175,7 +173,6 @@ const RegisterForm = () => {
                 onChange={update}
                 required
                 placeholder="9876543210"
-                icon={Phone}
               />
             </div>
           </div>
@@ -183,19 +180,13 @@ const RegisterForm = () => {
 
         {/* Section 2: Profile Settings */}
         <div className="border-b border-slate-100 pb-3">
-          <h3 className="text-xs font-bold text-blue-650 uppercase tracking-wider mb-2">Profile & Location</h3>
+          <h3 className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2">Profile & Location</h3>
           <div className="grid gap-3 sm:grid-cols-3">
             <div>
               <label className="mb-1.5 block font-semibold text-slate-700 text-xs uppercase tracking-wider">Register As</label>
-              <select
-                name="role"
-                value={form.role}
-                onChange={update}
-                className="h-11 w-full rounded-xl border border-slate-200 px-3 text-xs focus:border-blue-500 focus:ring-4 focus:ring-blue-50/50 outline-none transition text-slate-850 cursor-pointer"
-              >
-                <option value="CITIZEN">Citizen</option>
-                <option value="VOLUNTEER">Volunteer / Helper</option>
-              </select>
+              <div className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-xs flex items-center text-slate-500 font-semibold select-none">
+                Public User (Public Profile)
+              </div>
             </div>
             <div className="sm:col-span-2">
               <Input
@@ -205,7 +196,6 @@ const RegisterForm = () => {
                 onChange={update}
                 required
                 placeholder="e.g. Chennai"
-                icon={MapPin}
               />
             </div>
             <div className="sm:col-span-3">
@@ -214,7 +204,7 @@ const RegisterForm = () => {
                 name="preferredLanguage"
                 value={form.preferredLanguage}
                 onChange={update}
-                className="h-11 w-full rounded-xl border border-slate-200 px-3 text-xs focus:border-blue-500 focus:ring-4 focus:ring-blue-50/50 outline-none transition text-slate-850 cursor-pointer"
+                className="h-11 w-full rounded-xl border border-slate-200 px-3 text-xs focus:border-blue-500 focus:ring-4 focus:ring-blue-50/50 outline-none transition text-slate-800 cursor-pointer"
               >
                 <option value="English">English</option>
                 <option value="Tamil">Tamil</option>
@@ -227,7 +217,7 @@ const RegisterForm = () => {
         {/* Section 3: Volunteer Info (Only if Volunteer Role Selected) */}
         {form.role === "VOLUNTEER" && (
           <div className="border-b border-slate-100 pb-3 bg-teal-50/30 p-3 rounded-xl border border-teal-100">
-            <h3 className="text-xs font-bold text-teal-700 uppercase tracking-wider mb-2">Volunteer Specific Details</h3>
+            <h3 className="text-xs font-bold text-teal-700 uppercase tracking-wider mb-2">Legal Guide Specific Details</h3>
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <label className="mb-1.5 block font-semibold text-slate-700 text-xs uppercase tracking-wider">Department Preference</label>
@@ -235,7 +225,7 @@ const RegisterForm = () => {
                   name="departmentPreference"
                   value={form.departmentPreference}
                   onChange={update}
-                  className="h-11 w-full rounded-xl bg-white border border-slate-200 px-3 text-xs focus:border-blue-500 focus:ring-4 focus:ring-blue-50/50 outline-none transition text-slate-850 cursor-pointer"
+                  className="h-11 w-full rounded-xl bg-white border border-slate-200 px-3 text-xs focus:border-blue-500 focus:ring-4 focus:ring-blue-50/50 outline-none transition text-slate-800 cursor-pointer"
                 >
                   <option value="Labour Dispute">Labour Dispute</option>
                   <option value="Consumer Complaint">Consumer Complaint</option>
@@ -252,7 +242,6 @@ const RegisterForm = () => {
                 onChange={update}
                 required
                 placeholder="e.g. Mylapore Division"
-                icon={BookOpen}
               />
               <div className="sm:col-span-2">
                 <Input
@@ -261,23 +250,22 @@ const RegisterForm = () => {
                   value={form.languagesKnown}
                   onChange={update}
                   placeholder="e.g. Tamil, English"
-                  icon={User}
                 />
               </div>
               <div className="sm:col-span-2">
-                <label className="mb-1.5 block font-semibold text-slate-700 text-xs uppercase tracking-wider">Reason to Volunteer (Min 20 characters)</label>
+                <label className="mb-1.5 block font-semibold text-slate-700 text-xs uppercase tracking-wider">Reason to guide (Min 20 characters)</label>
                 <textarea
                   name="reasonToVolunteer"
                   value={form.reasonToVolunteer}
                   onChange={update}
                   required
                   placeholder="Explain why you want to support legal aid assistance in your community..."
-                  className="w-full rounded-xl border border-slate-200 p-3 text-xs outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-50/50 transition text-slate-850 h-20"
+                  className="w-full rounded-xl border border-slate-200 p-3 text-xs outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-50/50 transition text-slate-800 h-20"
                 />
               </div>
               <div className="sm:col-span-2 flex items-start gap-2 bg-white/70 p-2.5 rounded-lg border border-teal-200 text-[10px] text-teal-800 leading-normal">
-                <ShieldAlert size={14} className="shrink-0 mt-0.5 text-teal-650" />
-                <span><strong>Notice:</strong> Volunteer profiles undergo administrative verification. You will be able to review cases once approved.</span>
+                <ShieldAlert size={14} className="shrink-0 mt-0.5 text-teal-600" />
+                <span><strong>Notice:</strong> Legal Guide profiles undergo administrative verification. You will be able to review cases once approved.</span>
               </div>
             </div>
           </div>
@@ -285,7 +273,7 @@ const RegisterForm = () => {
 
         {/* Section 4: Security (Passwords) */}
         <div className="border-b border-slate-100 pb-3">
-          <h3 className="text-xs font-bold text-blue-650 uppercase tracking-wider mb-2">Password Setup</h3>
+          <h3 className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2">Password Setup</h3>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="relative">
               <Input
@@ -296,11 +284,10 @@ const RegisterForm = () => {
                 onChange={update}
                 required
                 placeholder="••••••••"
-                icon={Lock}
               />
               <button
                 type="button"
-                className="absolute right-3 top-[33px] text-slate-400 hover:text-slate-650"
+                className="absolute right-3 top-[33px] text-slate-400 hover:text-slate-600"
                 onClick={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
@@ -315,11 +302,10 @@ const RegisterForm = () => {
                 onChange={update}
                 required
                 placeholder="••••••••"
-                icon={Lock}
               />
               <button
                 type="button"
-                className="absolute right-3 top-[33px] text-slate-400 hover:text-slate-650"
+                className="absolute right-3 top-[33px] text-slate-400 hover:text-slate-600"
                 onClick={() => setShowConfirm(!showConfirm)}
               >
                 {showConfirm ? <EyeOff size={15} /> : <Eye size={15} />}
@@ -349,7 +335,7 @@ const RegisterForm = () => {
               name="termsAccepted"
               checked={form.termsAccepted}
               onChange={update}
-              className="h-4 w-4 shrink-0 rounded border-slate-200 text-blue-650 focus:ring-blue-500 mt-0.5 cursor-pointer"
+              className="h-4 w-4 shrink-0 rounded border-slate-200 text-blue-600 focus:ring-blue-500 mt-0.5 cursor-pointer"
             />
             <span>I accept the <Link to="/terms" className="text-blue-600 font-semibold hover:underline">Terms & Conditions</Link> and agree to privacy guidelines.</span>
           </label>
@@ -365,7 +351,7 @@ const RegisterForm = () => {
 
           <p className="text-center text-slate-500 text-xs">
             Already have an account?{" "}
-            <Link to="/login" className="font-bold text-blue-650 hover:underline">
+            <Link to="/login" className="font-bold text-blue-600 hover:underline">
               Log in here
             </Link>
           </p>

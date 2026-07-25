@@ -186,7 +186,7 @@ const Profile = () => {
             <div className="flex gap-3 w-full sm:w-auto">
               <button
                 onClick={() => { setIsEditing(false); setError(""); }}
-                className="flex items-center justify-center gap-2 rounded-xl border border-slate-355 px-5 py-3 text-slate-655 hover:bg-slate-50 transition font-medium flex-1 sm:flex-none cursor-pointer"
+                className="flex items-center justify-center gap-2 rounded-xl border border-slate-355 px-5 py-3 text-slate-600 hover:bg-slate-50 transition font-medium flex-1 sm:flex-none cursor-pointer"
               >
                 <X size={18} />
                 Cancel
@@ -282,7 +282,7 @@ const Profile = () => {
                     type="email"
                     value={profile.email}
                     disabled
-                    className="w-full h-12 rounded-xl border border-slate-200 pl-12 bg-slate-50 text-slate-450"
+                    className="w-full h-12 rounded-xl border border-slate-200 pl-12 bg-slate-50 text-slate-400"
                   />
                 </div>
               </div>
@@ -296,7 +296,7 @@ const Profile = () => {
                     value={profile.mobile}
                     onChange={(e) => setProfile(prev => ({ ...prev, mobile: e.target.value }))}
                     disabled={!isEditing}
-                    className="w-full h-12 rounded-xl border border-slate-200 pl-12 pr-4 outline-none disabled:bg-slate-50 disabled:text-slate-555 transition focus:border-blue-500"
+                    className="w-full h-12 rounded-xl border border-slate-200 pl-12 pr-4 outline-none disabled:bg-slate-50 disabled:text-slate-500 transition focus:border-blue-500"
                   />
                 </div>
               </div>
@@ -310,7 +310,7 @@ const Profile = () => {
                     value={profile.district}
                     onChange={(e) => setProfile(prev => ({ ...prev, district: e.target.value }))}
                     disabled={!isEditing}
-                    className="w-full h-12 rounded-xl border border-slate-200 pl-12 pr-4 outline-none disabled:bg-slate-50 disabled:text-slate-555 transition focus:border-blue-500"
+                    className="w-full h-12 rounded-xl border border-slate-200 pl-12 pr-4 outline-none disabled:bg-slate-50 disabled:text-slate-500 transition focus:border-blue-500"
                   />
                 </div>
               </div>
@@ -322,7 +322,7 @@ const Profile = () => {
                   onChange={(e) => setProfile(prev => ({ ...prev, address: e.target.value }))}
                   disabled={!isEditing}
                   rows={2}
-                  className="w-full rounded-xl border border-slate-200 p-3 outline-none disabled:bg-slate-50 disabled:text-slate-555 transition focus:border-blue-500"
+                  className="w-full rounded-xl border border-slate-200 p-3 outline-none disabled:bg-slate-50 disabled:text-slate-500 transition focus:border-blue-500"
                 />
               </div>
 
@@ -332,7 +332,7 @@ const Profile = () => {
                   value={profile.preferredLanguage}
                   onChange={(e) => setProfile(prev => ({ ...prev, preferredLanguage: e.target.value }))}
                   disabled={!isEditing}
-                  className="w-full h-12 rounded-xl border border-slate-200 px-3 outline-none disabled:bg-slate-50 disabled:text-slate-555 transition focus:border-blue-500"
+                  className="w-full h-12 rounded-xl border border-slate-200 px-3 outline-none disabled:bg-slate-50 disabled:text-slate-500 transition focus:border-blue-500"
                 >
                   <option value="English">English</option>
                   <option value="Tamil">Tamil</option>
@@ -350,15 +350,15 @@ const Profile = () => {
               <h2 className="mb-6 text-2xl font-bold text-slate-900">Administrator Statistics</h2>
               <div className="space-y-4">
                 <div className="flex items-center justify-between rounded-2xl bg-slate-50 p-4 border border-slate-100">
-                  <span className="text-slate-650 font-medium">Total Complaints Managed</span>
+                  <span className="text-slate-600 font-medium">Total Complaints Managed</span>
                   <span className="text-2xl font-bold text-blue-600">1,286</span>
                 </div>
                 <div className="flex items-center justify-between rounded-2xl bg-slate-50 p-4 border border-slate-100">
-                  <span className="text-slate-655 font-medium">Registered Citizens</span>
+                  <span className="text-slate-600 font-medium">Registered Public Users</span>
                   <span className="text-2xl font-bold text-green-600">2,356</span>
                 </div>
                 <div className="flex items-center justify-between rounded-2xl bg-slate-50 p-4 border border-slate-100">
-                  <span className="text-slate-655 font-medium">Active Volunteers</span>
+                  <span className="text-slate-600 font-medium">Active Legal Guides</span>
                   <span className="text-2xl font-bold text-orange-600">128</span>
                 </div>
               </div>
@@ -378,7 +378,7 @@ const Profile = () => {
           <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t">
             <button
               onClick={() => { setIsEditing(false); setError(""); }}
-              className="px-8 py-4 border border-slate-350 rounded-xl hover:bg-slate-50 font-semibold text-slate-600 transition w-full sm:w-auto cursor-pointer text-center"
+              className="px-8 py-4 border border-slate-300 rounded-xl hover:bg-slate-50 font-semibold text-slate-600 transition w-full sm:w-auto cursor-pointer text-center"
             >
               Cancel
             </button>

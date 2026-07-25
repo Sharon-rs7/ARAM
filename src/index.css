@@ -14,6 +14,21 @@
     --color-sidebar-primary: var(--sidebar-primary);
     --color-sidebar-foreground: var(--sidebar-foreground);
     --color-sidebar: var(--sidebar);
+    
+    /* Override blue to Indigo */
+    --color-blue-50: #f5f3ff;
+    --color-blue-100: #ede9fe;
+    --color-blue-200: #ddd6fe;
+    --color-blue-300: #c084fc;
+    --color-blue-400: #a855f7;
+    --color-blue-500: #6366f1;
+    --color-blue-600: #4f46e5;
+    --color-blue-650: #4338ca;
+    --color-blue-700: #4338ca;
+    --color-blue-800: #3730a3;
+    --color-blue-900: #312e81;
+    --color-blue-950: #1e1b4b;
+
     --color-chart-5: var(--chart-5);
     --color-chart-2: var(--chart-2);
     --color-chart-1: var(--chart-1);

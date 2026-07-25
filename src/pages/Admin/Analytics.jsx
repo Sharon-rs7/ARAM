@@ -8,14 +8,55 @@ import {
   Download,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { adminService } from "../../services/adminService";
 import { toast } from "sonner";
 
 const Analytics = () => {
-
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    totalUsers: 0,
+    totalComplaints: 0,
+    activeVolunteers: 0
+  });
+  const [trends, setTrends] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [activity, setActivity] = useState({
+    totalSessions: 0,
+    activeNow: 0,
+    totalScreenTimeSeconds: 0,
+    totalActions: 0
+  });
+
+  useEffect(() => {
+    async function loadAnalytics() {
+      try {
+        const dStats = await adminService.getDashboard();
+        setStats({
+          totalUsers: dStats.totalComplaints > 0 ? dStats.totalUsers : 0,
+          totalComplaints: dStats.totalComplaints,
+          activeVolunteers: dStats.totalVolunteers
+        });
+
+        const cTrends = await adminService.getComplaintTrends();
+        setTrends(cTrends);
+
+        const cDist = await adminService.getCategoryDistribution();
+        setCategories(cDist);
+
+        const vAct = await adminService.getVolunteerActivity();
+        setActivity(vAct);
+      } catch (err) {
+        console.error("Failed to load analytics", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadAnalytics();
+  }, []);
 
   return (
-
     <DashboardLayout>
 
       <div className="space-y-8">
@@ -69,91 +110,29 @@ const Analytics = () => {
         {/* Top Cards */}
 
         <div className="grid gap-6 lg:grid-cols-4">
-
           <div className="rounded-3xl bg-white p-6 shadow-sm">
-
-            <TrendingUp
-              size={32}
-              className="text-blue-600"
-            />
-
-            <p className="mt-4 text-slate-500">
-
-              Monthly Growth
-
-            </p>
-
-            <h2 className="mt-2 text-4xl font-bold">
-
-              +18%
-
-            </h2>
-
+            <TrendingUp size={32} className="text-blue-600" />
+            <p className="mt-4 text-slate-500">Monthly Growth</p>
+            <h2 className="mt-2 text-4xl font-bold">+18%</h2>
           </div>
 
           <div className="rounded-3xl bg-white p-6 shadow-sm">
-
-            <Users
-              size={32}
-              className="text-green-600"
-            />
-
-            <p className="mt-4 text-slate-500">
-
-              Active Users
-
-            </p>
-
-            <h2 className="mt-2 text-4xl font-bold">
-
-              2,356
-
-            </h2>
-
+            <Users size={32} className="text-green-600" />
+            <p className="mt-4 text-slate-500">Registered Public Users</p>
+            <h2 className="mt-2 text-4xl font-bold">{stats.totalUsers.toLocaleString()}</h2>
           </div>
 
           <div className="rounded-3xl bg-white p-6 shadow-sm">
-
-            <FileText
-              size={32}
-              className="text-orange-500"
-            />
-
-            <p className="mt-4 text-slate-500">
-
-              Complaints
-
-            </p>
-
-            <h2 className="mt-2 text-4xl font-bold">
-
-              1,286
-
-            </h2>
-
+            <FileText size={32} className="text-orange-500" />
+            <p className="mt-4 text-slate-500">Total Complaints</p>
+            <h2 className="mt-2 text-4xl font-bold">{stats.totalComplaints.toLocaleString()}</h2>
           </div>
 
           <div className="rounded-3xl bg-white p-6 shadow-sm">
-
-            <BrainCircuit
-              size={32}
-              className="text-violet-600"
-            />
-
-            <p className="mt-4 text-slate-500">
-
-              AI Accuracy
-
-            </p>
-
-            <h2 className="mt-2 text-4xl font-bold">
-
-              97%
-
-            </h2>
-
+            <BrainCircuit size={32} className="text-violet-600" />
+            <p className="mt-4 text-slate-500">Active Legal Guides</p>
+            <h2 className="mt-2 text-4xl font-bold">{stats.activeVolunteers.toLocaleString()}</h2>
           </div>
-
         </div>
 
         {/* Charts */}
@@ -161,110 +140,49 @@ const Analytics = () => {
         <div className="grid gap-8 lg:grid-cols-2">
 
           <div className="rounded-3xl bg-white p-8 shadow-sm">
-
-            <h2 className="mb-6 text-2xl font-bold">
-
-              Monthly Complaints
-
-            </h2>
-
+            <h2 className="mb-6 text-2xl font-bold">Monthly Complaints</h2>
             <div className="flex h-80 items-end justify-between gap-4">
-
-              <div className="w-full rounded-t-xl bg-blue-500" style={{ height: "35%" }}></div>
-              <div className="w-full rounded-t-xl bg-blue-500" style={{ height: "48%" }}></div>
-              <div className="w-full rounded-t-xl bg-blue-500" style={{ height: "70%" }}></div>
-              <div className="w-full rounded-t-xl bg-blue-500" style={{ height: "60%" }}></div>
-              <div className="w-full rounded-t-xl bg-blue-500" style={{ height: "82%" }}></div>
-              <div className="w-full rounded-t-xl bg-blue-500" style={{ height: "95%" }}></div>
-
+              {trends && trends.length > 0 ? (
+                trends.map((t, idx) => {
+                  const maxCount = Math.max(...trends.map(x => x.count), 1);
+                  const heightPercent = Math.min(100, Math.max(10, Math.round((t.count / maxCount) * 100)));
+                  return (
+                    <div key={idx} className="w-full flex flex-col items-center gap-1.5 h-full justify-end">
+                      <span className="text-[10px] text-slate-500 font-mono font-bold">{t.count}</span>
+                      <div className="w-full rounded-t-xl bg-blue-500 transition-all duration-500" style={{ height: `${heightPercent * 0.7}%`, minHeight: '8px' }}></div>
+                      <span className="text-[10px] text-slate-500 font-semibold whitespace-nowrap mt-1">{t.month.split(" ")[0]}</span>
+                    </div>
+                  );
+                })
+              ) : (
+                <p className="text-slate-400 text-sm text-center py-10 w-full">No trend data available.</p>
+              )}
             </div>
-
           </div>
 
           <div className="rounded-3xl bg-white p-8 shadow-sm">
-
-            <h2 className="mb-6 text-2xl font-bold">
-
-              Category Distribution
-
-            </h2>
-
+            <h2 className="mb-6 text-2xl font-bold">Category Distribution</h2>
             <div className="space-y-6">
-
-              <div>
-
-                <div className="mb-2 flex justify-between">
-
-                  <span>Infrastructure</span>
-
-                  <span>42%</span>
-
-                </div>
-
-                <div className="h-3 rounded-full bg-slate-200">
-
-                  <div className="h-3 w-[42%] rounded-full bg-blue-600"></div>
-
-                </div>
-
-              </div>
-
-              <div>
-
-                <div className="mb-2 flex justify-between">
-
-                  <span>Water Supply</span>
-
-                  <span>26%</span>
-
-                </div>
-
-                <div className="h-3 rounded-full bg-slate-200">
-
-                  <div className="h-3 w-[26%] rounded-full bg-green-600"></div>
-
-                </div>
-
-              </div>
-
-              <div>
-
-                <div className="mb-2 flex justify-between">
-
-                  <span>Electricity</span>
-
-                  <span>18%</span>
-
-                </div>
-
-                <div className="h-3 rounded-full bg-slate-200">
-
-                  <div className="h-3 w-[18%] rounded-full bg-yellow-500"></div>
-
-                </div>
-
-              </div>
-
-              <div>
-
-                <div className="mb-2 flex justify-between">
-
-                  <span>Others</span>
-
-                  <span>14%</span>
-
-                </div>
-
-                <div className="h-3 rounded-full bg-slate-200">
-
-                  <div className="h-3 w-[14%] rounded-full bg-red-500"></div>
-
-                </div>
-
-              </div>
-
+              {categories && categories.length > 0 ? (
+                categories.map((c, idx) => {
+                  const colors = ["bg-blue-600", "bg-green-600", "bg-yellow-500", "bg-red-500", "bg-purple-500", "bg-orange-500", "bg-teal-500"];
+                  const color = colors[idx % colors.length];
+                  return (
+                    <div key={idx}>
+                      <div className="mb-2 flex justify-between text-sm">
+                        <span className="font-semibold text-slate-755">{c.displayName}</span>
+                        <span className="font-bold text-slate-900">{c.count} ({c.percentage}%)</span>
+                      </div>
+                      <div className="h-3 rounded-full bg-slate-100">
+                        <div className={`h-3 rounded-full ${color}`} style={{ width: `${c.percentage}%` }}></div>
+                      </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <p className="text-slate-400 text-sm text-center py-10">No categories recorded yet.</p>
+              )}
             </div>
-
           </div>
 
         </div>        {/* Department Performance & AI */}
@@ -414,70 +332,35 @@ const Analytics = () => {
         {/* Statistics */}
 
         <div className="grid gap-6 md:grid-cols-3">
-
           <div className="rounded-3xl bg-blue-50 p-6">
-
-            <CalendarDays
-              size={28}
-              className="text-blue-600"
-            />
-
+            <CalendarDays size={28} className="text-blue-600" />
             <h2 className="mt-4 text-4xl font-bold">
-
-              324
-
+              {activity.totalSessions.toLocaleString()}
             </h2>
-
             <p className="mt-2 text-slate-500">
-
-              Today's Complaints
-
+              Total Helper Sessions
             </p>
-
           </div>
 
           <div className="rounded-3xl bg-green-50 p-6">
-
-            <TrendingUp
-              size={28}
-              className="text-green-600"
-            />
-
+            <TrendingUp size={28} className="text-green-600" />
             <h2 className="mt-4 text-4xl font-bold">
-
-              92%
-
+              {activity.totalActions.toLocaleString()}
             </h2>
-
             <p className="mt-2 text-slate-500">
-
-              Resolution Rate
-
+              Logged Legal Guide Actions
             </p>
-
           </div>
 
           <div className="rounded-3xl bg-violet-50 p-6">
-
-            <BrainCircuit
-              size={28}
-              className="text-violet-600"
-            />
-
+            <BrainCircuit size={28} className="text-violet-600" />
             <h2 className="mt-4 text-4xl font-bold">
-
-              97%
-
+              {Math.round(activity.totalScreenTimeSeconds / 60).toLocaleString()}
             </h2>
-
             <p className="mt-2 text-slate-500">
-
-              AI Confidence
-
+              Active Screen Time (min)
             </p>
-
           </div>
-
         </div>
 
         {/* Bottom Buttons */}

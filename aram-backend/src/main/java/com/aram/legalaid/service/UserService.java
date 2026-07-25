@@ -66,6 +66,9 @@ public class UserService {
         if (request.preferredLanguage() != null) user.setPreferredLanguage(request.preferredLanguage());
         if (request.gender() != null) user.setGender(request.gender());
         if (request.specialization() != null) user.setSpecialization(request.specialization());
+        if (request.voiceAssistanceEnabled() != null) user.setVoiceAssistanceEnabled(request.voiceAssistanceEnabled());
+        if (request.simpleModeEnabled() != null) user.setSimpleModeEnabled(request.simpleModeEnabled());
+        if (request.speechRatePreference() != null) user.setSpeechRatePreference(request.speechRatePreference());
         return userRepository.save(user);
     }
 

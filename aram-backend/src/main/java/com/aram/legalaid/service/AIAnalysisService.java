@@ -28,19 +28,22 @@ public class AIAnalysisService {
     private final MapperService mapperService;
     private final MongoLogService mongoLogService;
     private final AIClientService aiClientService;
+    private final AuditLogService auditLogService;
 
     public AIAnalysisService(
             AIResultRepository aiResultRepository, 
             ComplaintRepository complaintRepository, 
             MapperService mapperService, 
             MongoLogService mongoLogService,
-            AIClientService aiClientService
+            AIClientService aiClientService,
+            AuditLogService auditLogService
     ) {
         this.aiResultRepository = aiResultRepository;
         this.complaintRepository = complaintRepository;
         this.mapperService = mapperService;
         this.mongoLogService = mongoLogService;
         this.aiClientService = aiClientService;
+        this.auditLogService = auditLogService;
     }
 
     private static final Map<ComplaintCategory, List<String>> CATEGORY_KEYWORDS = Map.of(
@@ -104,6 +107,16 @@ public class AIAnalysisService {
         complaint.setPriorityScore(score);
         complaint.setAuthority(authority);
         complaint.setStatus(ComplaintStatus.AUTHORITY_RECOMMENDED);
+        
+        boolean highRisk = category == ComplaintCategory.WOMEN_SAFETY_DOMESTIC_VIOLENCE
+                || priorityLevel == PriorityLevel.CRITICAL
+                || priorityLevel == PriorityLevel.HIGH
+                || complaint.isSensitive();
+        complaint.setHighRisk(highRisk);
+        if (highRisk) {
+            auditLogService.log("HIGH_RISK_FLAGGED", "SYSTEM", "High risk flagged automatically for complaint ID " + complaint.getId());
+        }
+
         complaintRepository.save(complaint);
 
         Map<String, Object> log = new LinkedHashMap<>();

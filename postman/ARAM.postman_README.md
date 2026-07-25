@@ -36,3 +36,14 @@ When executing document uploads:
 2. Under the **Body** tab, choose **form-data**.
 3. Hover over the `file` parameter row, click the dropdown on the right side of the key field, and select **File**.
 4. Click **Select Files** in the value column to choose a mock image or PDF from your computer before clicking Send.
+
+---
+
+## 🗣️ Audio Speech Transcription
+When testing speech transcription:
+1. Select/Create the `POST {{BASE_URL}}/speech/transcribe` request (proxied) or the direct endpoint `POST {{AI_SERVICE_URL}}/speech/transcribe`.
+2. Under the **Body** tab, choose **form-data**.
+3. Use key `audio` (or `file`) of type **File**, and upload a `.wav` or `.webm` recording.
+4. Set optional text keys `selectedLanguage` (values: `English`, `Tamil`, `Hindi`, `Tanglish`, `Auto`) or `preferredOutputLanguage`.
+5. Send request to inspect the generated transcript and translation JSON response.
+

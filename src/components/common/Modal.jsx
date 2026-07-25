@@ -43,7 +43,7 @@ const Modal = ({
           <h3 className="text-lg font-bold text-slate-900">{title}</h3>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-slate-450 hover:bg-slate-100 hover:text-slate-700 transition cursor-pointer"
+            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition cursor-pointer"
             aria-label="Close dialog"
           >
             <X size={18} />
@@ -51,7 +51,7 @@ const Modal = ({
         </div>
 
         {/* Body */}
-        <div className="text-sm text-slate-650 leading-relaxed">
+        <div className="text-sm text-slate-600 leading-relaxed">
           {children}
         </div>
       </div>

@@ -60,6 +60,51 @@ public class User {
     @Column(length = 40)
     private String preferredLanguage;
 
+    @Column(length = 250)
+    private String languagesKnown;
+
+    @Column(length = 250)
+    private String specializationCategories;
+
+    @Column(nullable = false)
+    private int maxActiveCases = 5;
+
+    @Column(nullable = false)
+    private int currentActiveCases = 0;
+
+    @Column(length = 50)
+    private String availabilityStatus = "AVAILABLE";
+
+    @Column(nullable = false)
+    private boolean womenSupportTrained = false;
+
+    @Column(nullable = false)
+    private boolean forcePasswordChange = false;
+
+    @Column(length = 250)
+    private String serviceArea;
+
+    @Column(length = 250)
+    private String subSpecializations;
+
+    @Column(length = 50)
+    private String experienceLevel;
+
+    @Column(nullable = false)
+    private boolean canHandleSensitiveCases = false;
+
+    @Column(nullable = false)
+    private boolean voiceAssistanceEnabled = false;
+
+    @Column(nullable = false)
+    private boolean simpleModeEnabled = false;
+
+    @Column(nullable = false)
+    private double speechRatePreference = 1.0;
+
+    @Column(nullable = false)
+    private boolean twoFactorEnabled = false;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private ThemePreference themePreference = ThemePreference.SYSTEM;
@@ -123,4 +168,39 @@ public class User {
     public void setLastLogin(LocalDateTime lastLogin) { this.lastLogin = lastLogin; }
     public Authority getAssociatedAuthority() { return associatedAuthority; }
     public void setAssociatedAuthority(Authority associatedAuthority) { this.associatedAuthority = associatedAuthority; }
+
+    public String getLanguagesKnown() { return languagesKnown; }
+    public void setLanguagesKnown(String languagesKnown) { this.languagesKnown = languagesKnown; }
+    public String getSpecializationCategories() { return specializationCategories; }
+    public void setSpecializationCategories(String specializationCategories) { this.specializationCategories = specializationCategories; }
+    public int getMaxActiveCases() { return maxActiveCases; }
+    public void setMaxActiveCases(int maxActiveCases) { this.maxActiveCases = maxActiveCases; }
+    public int getCurrentActiveCases() { return currentActiveCases; }
+    public void setCurrentActiveCases(int currentActiveCases) { this.currentActiveCases = currentActiveCases; }
+    public String getAvailabilityStatus() { return availabilityStatus; }
+    public void setAvailabilityStatus(String availabilityStatus) { this.availabilityStatus = availabilityStatus; }
+    public boolean isWomenSupportTrained() { return womenSupportTrained; }
+    public void setWomenSupportTrained(boolean womenSupportTrained) { this.womenSupportTrained = womenSupportTrained; }
+    public boolean isForcePasswordChange() { return forcePasswordChange; }
+    public void setForcePasswordChange(boolean forcePasswordChange) { this.forcePasswordChange = forcePasswordChange; }
+    public String getServiceArea() { return serviceArea; }
+    public void setServiceArea(String serviceArea) { this.serviceArea = serviceArea; }
+    public String getSubSpecializations() { return subSpecializations; }
+    public void setSubSpecializations(String subSpecializations) { this.subSpecializations = subSpecializations; }
+    public String getExperienceLevel() { return experienceLevel; }
+    public void setExperienceLevel(String experienceLevel) { this.experienceLevel = experienceLevel; }
+    public boolean isCanHandleSensitiveCases() { return canHandleSensitiveCases; }
+    public void setCanHandleSensitiveCases(boolean canHandleSensitiveCases) { this.canHandleSensitiveCases = canHandleSensitiveCases; }
+
+    public boolean isVoiceAssistanceEnabled() { return voiceAssistanceEnabled; }
+    public void setVoiceAssistanceEnabled(boolean voiceAssistanceEnabled) { this.voiceAssistanceEnabled = voiceAssistanceEnabled; }
+
+    public boolean isSimpleModeEnabled() { return simpleModeEnabled; }
+    public void setSimpleModeEnabled(boolean simpleModeEnabled) { this.simpleModeEnabled = simpleModeEnabled; }
+
+    public double getSpeechRatePreference() { return speechRatePreference; }
+    public void setSpeechRatePreference(double speechRatePreference) { this.speechRatePreference = speechRatePreference; }
+
+    public boolean isTwoFactorEnabled() { return twoFactorEnabled; }
+    public void setTwoFactorEnabled(boolean twoFactorEnabled) { this.twoFactorEnabled = twoFactorEnabled; }
 }

@@ -35,7 +35,7 @@ const Input = ({
           onChange={onChange}
           placeholder={placeholder}
           required={required}
-          className={`h-11 w-full rounded-xl border px-4 outline-none text-xs transition text-slate-850 focus:ring-4 focus:ring-blue-50/50 ${
+          className={`h-11 w-full rounded-xl border pr-4 outline-none text-xs transition text-slate-800 focus:ring-4 focus:ring-blue-50/50 ${
             Icon ? "pl-11" : "pl-4"
           } ${
             error 
@@ -47,7 +47,7 @@ const Input = ({
       </div>
 
       {error && (
-        <div className="mt-1.5 flex items-start gap-1 text-[11px] text-red-650 leading-relaxed">
+        <div className="mt-1.5 flex items-start gap-1 text-[11px] text-red-600 leading-relaxed">
           <Info size={12} className="mt-0.5 shrink-0" />
           <span>{error}</span>
         </div>

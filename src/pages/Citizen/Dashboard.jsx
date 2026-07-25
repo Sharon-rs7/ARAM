@@ -11,7 +11,14 @@ import {
   BrainCircuit,
   Plus,
   ArrowRight,
-  Sparkles
+  Sparkles,
+  PlusCircle,
+  ClipboardList,
+  Mic,
+  ShieldAlert,
+  CheckSquare,
+  MessageSquare,
+  Info
 } from "lucide-react";
 
 const statsConfig = [
@@ -75,15 +82,120 @@ const Dashboard = () => {
         {/* Welcome Header */}
         <Card className="rounded-2xl border border-slate-200 p-8">
           <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
-            Welcome Back 👋
+            Public User Dashboard
           </h2>
           <p className="mt-2 text-sm text-slate-500 max-w-xl">
-            Manage your registered grievances, review AI classification mappings, and track active community resolutions.
+            Submit complaints, track status, and access legal guidance.
           </p>
         </Card>
 
+        {/* Mobile Quick Action Cards Grid */}
+        <div className="block md:hidden space-y-4">
+          <div>
+            <h3 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-2.5">Primary Services</h3>
+            <div className="space-y-3">
+              {/* Speak Complaint */}
+              <button
+                onClick={() => navigate("/citizen/submit-complaint?voice=true")}
+                className="w-full min-h-[64px] bg-gradient-to-r from-red-500/10 to-transparent border border-red-200 rounded-2xl p-4 flex items-center gap-4 text-left transition hover:border-red-500 hover:shadow-sm active:scale-95 cursor-pointer"
+              >
+                <div className="h-10 w-10 rounded-full bg-red-500 text-white flex items-center justify-center shrink-0 shadow-sm">
+                  <Mic size={20} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-xs text-slate-800">Speak Complaint</h4>
+                  <p className="text-[10px] text-slate-500 font-medium mt-0.5">Use voice if typing is difficult</p>
+                </div>
+              </button>
+
+              {/* Type Complaint */}
+              <button
+                onClick={() => navigate("/citizen/submit-complaint")}
+                className="w-full min-h-[64px] bg-gradient-to-r from-blue-500/10 to-transparent border border-blue-200 rounded-2xl p-4 flex items-center gap-4 text-left transition hover:border-blue-500 hover:shadow-sm active:scale-95 cursor-pointer"
+              >
+                <div className="h-10 w-10 rounded-full bg-blue-650 text-white flex items-center justify-center shrink-0 shadow-sm">
+                  <PlusCircle size={20} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-xs text-slate-800">Type Complaint</h4>
+                  <p className="text-[10px] text-slate-500 font-medium mt-0.5">Write your problem in simple words</p>
+                </div>
+              </button>
+
+              {/* Track My Complaint */}
+              <button
+                onClick={() => navigate("/citizen/my-complaints")}
+                className="w-full min-h-[64px] bg-gradient-to-r from-indigo-500/10 to-transparent border border-indigo-200 rounded-2xl p-4 flex items-center gap-4 text-left transition hover:border-indigo-500 hover:shadow-sm active:scale-95 cursor-pointer"
+              >
+                <div className="h-10 w-10 rounded-full bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                  <ClipboardList size={20} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-xs text-slate-800">Track My Complaint</h4>
+                  <p className="text-[10px] text-slate-500 font-medium mt-0.5">Check status using complaint ID</p>
+                </div>
+              </button>
+
+              {/* Talk to Legal Guide */}
+              <button
+                onClick={() => navigate("/citizen/chatbot")}
+                className="w-full min-h-[64px] bg-gradient-to-r from-amber-500/10 to-transparent border border-amber-200 rounded-2xl p-4 flex items-center gap-4 text-left transition hover:border-amber-500 hover:shadow-sm active:scale-95 cursor-pointer"
+              >
+                <div className="h-10 w-10 rounded-full bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-sm">
+                  <MessageSquare size={20} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-xs text-slate-800">Talk to Legal Guide</h4>
+                  <p className="text-[10px] text-slate-500 font-medium mt-0.5">Continue your assigned case chat</p>
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider mb-2.5">Secondary Services</h3>
+            <div className="grid grid-cols-2 gap-3">
+              {/* Upload Proof */}
+              <button
+                onClick={() => navigate("/citizen/documents")}
+                className="min-h-[56px] border border-slate-200 bg-white rounded-2xl p-3 flex flex-col justify-center items-start text-left transition hover:border-blue-500 active:scale-95 cursor-pointer"
+              >
+                <CheckSquare size={16} className="text-emerald-600 mb-1" />
+                <span className="font-bold text-[11px] text-slate-800">Upload Proof</span>
+              </button>
+
+              {/* My Complaints */}
+              <button
+                onClick={() => navigate("/citizen/my-complaints")}
+                className="min-h-[56px] border border-slate-200 bg-white rounded-2xl p-3 flex flex-col justify-center items-start text-left transition hover:border-blue-500 active:scale-95 cursor-pointer"
+              >
+                <FileText size={16} className="text-indigo-600 mb-1" />
+                <span className="font-bold text-[11px] text-slate-800">My Complaints</span>
+              </button>
+
+              {/* Women Safety Help */}
+              <button
+                onClick={() => navigate("/citizen/submit-complaint?sensitive=true")}
+                className="min-h-[56px] border border-rose-200 bg-rose-50/20 rounded-2xl p-3 flex flex-col justify-center items-start text-left transition hover:border-rose-500 active:scale-95 cursor-pointer"
+              >
+                <ShieldAlert size={16} className="text-rose-500 mb-1" />
+                <span className="font-bold text-[11px] text-slate-800">Women Safety</span>
+              </button>
+
+              {/* Help Center */}
+              <button
+                onClick={() => navigate("/citizen/help")}
+                className="min-h-[56px] border border-slate-200 bg-white rounded-2xl p-3 flex flex-col justify-center items-start text-left transition hover:border-blue-500 active:scale-95 cursor-pointer"
+              >
+                <Info size={16} className="text-slate-550 mb-1" />
+                <span className="font-bold text-[11px] text-slate-800">Help Center</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
         {/* Stats Grid */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="hidden md:grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {statsConfig.map((item) => {
             const Icon = item.icon;
             return (
@@ -143,7 +255,7 @@ const Dashboard = () => {
                         status={item.status}
                         label={item.status.toUpperCase()}
                       />
-                      <span className="text-[10px] font-bold text-slate-450 tracking-wider">
+                      <span className="text-[10px] font-bold text-slate-400 tracking-wider">
                         {item.priority} Priority
                       </span>
                     </div>
@@ -171,7 +283,7 @@ const Dashboard = () => {
                 </Button>
                 <Button
                   variant="outline"
-                  className="w-full flex justify-between border-slate-200 hover:border-slate-350"
+                  className="w-full flex justify-between border-slate-200 hover:border-slate-300"
                   icon={ArrowRight}
                   iconPosition="right"
                   onClick={() => navigate("/citizen/ai-analysis")}

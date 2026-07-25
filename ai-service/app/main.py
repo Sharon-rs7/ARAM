@@ -52,67 +52,19 @@ from app.document_verifier import verify_document_service
 from app.mongo_logger import log_ai_action
 from app.speech_to_text import transcribe_audio
 
+from app.routers.health import router as health_router
+from app.routers.train import router as train_router
+from app.routers.analyze import router as analyze_router
+from app.routers.language import router as language_router
+from app.routers.speech import router as speech_router
+
 app = FastAPI(title="ARAM AI Service")
 
-@app.get("/health")
-def health():
-    return {
-        "service": "ARAM AI Service",
-        "status": "ok"
-    }
-
-@app.post("/complaint/analyze")
-def analyze_complaint(request: ComplaintAnalyzeRequest):
-    try:
-        text = request.complaintText
-        
-        # 1. Category Classification
-        cat_res = predict_category(text)
-        category = cat_res["category"]
-        confidence = cat_res["confidence"]
-        model_based = cat_res["modelBased"]
-        
-        # 2. Priority Prediction
-        prio_res = predict_priority(text, category, request.isSensitive)
-        priority = prio_res["priority"]
-        priority_score = prio_res["priorityScore"]
-        
-        # 3. Authority Recommendation
-        auth_res = recommend_authority(text, category, priority, request.district)
-        recommended_authority = auth_res["recommendedAuthority"]
-        auth_confidence = auth_res["confidence"]
-        
-        # 4. Document Recommendations
-        doc_res = recommend_documents(text, category, priority)
-        required_docs = doc_res["requiredDocuments"]
-        doc_confidence = doc_res["confidence"]
-        
-        # 5. Next steps knowledge lookup
-        chatbot_res = ask_chatbot_engine(text, request.language)
-        next_steps = chatbot_res["suggestedActions"]
-        
-        manual_review = cat_res["manualReviewRequired"] or prio_res["manualReviewRequired"] or auth_res["manualReviewRequired"]
-        
-        response_data = {
-            "category": category,
-            "priority": priority,
-            "priorityScore": priority_score,
-            "confidence": round(confidence, 2),
-            "recommendedAuthority": recommended_authority,
-            "authorityConfidence": round(auth_confidence, 2),
-            "requiredDocuments": required_docs,
-            "documentConfidence": round(doc_confidence, 2),
-            "nextSteps": next_steps,
-            "manualReviewRequired": manual_review,
-            "modelBased": model_based
-        }
-        
-        # Log to Mongo
-        log_ai_action("ai_classification_logs", response_data)
-        
-        return response_data
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+app.include_router(health_router)
+app.include_router(train_router)
+app.include_router(analyze_router)
+app.include_router(language_router)
+app.include_router(speech_router)
 
 @app.post("/chat/ask")
 def chat_ask(request: ChatAskRequest):

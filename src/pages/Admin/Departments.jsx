@@ -137,9 +137,7 @@ const Departments = () => {
             </h2>
 
             <p className="mt-2 text-slate-500">
-
-              Volunteers
-
+              Legal Guides
             </p>
 
           </div>
@@ -249,9 +247,7 @@ const Departments = () => {
                 </th>
 
                 <th className="px-6 py-5 text-left">
-
-                  Volunteers
-
+                  Legal Guides
                 </th>
 
                 <th className="px-6 py-5 text-left">
@@ -408,69 +404,7 @@ const Departments = () => {
 
         )}
 
-        {/* Summary Cards */}
 
-        {filteredDepartments.length > 0 && (
-
-          <div className="grid gap-6 md:grid-cols-3">
-
-            <div className="rounded-3xl bg-blue-50 p-6">
-
-              <h3 className="text-lg font-semibold text-blue-700">
-
-                Total Departments
-
-              </h3>
-
-              <h2 className="mt-3 text-4xl font-bold text-blue-600">
-
-                {departments.length}
-
-              </h2>
-
-            </div>
-
-            <div className="rounded-3xl bg-green-50 p-6">
-
-              <h3 className="text-lg font-semibold text-green-700">
-
-                Total Volunteers
-
-              </h3>
-
-              <h2 className="mt-3 text-4xl font-bold text-green-600">
-
-                {departments.reduce(
-                  (total, item) => total + item.volunteers,
-                  0
-                )}
-
-              </h2>
-
-            </div>
-
-            <div className="rounded-3xl bg-purple-50 p-6">
-
-              <h3 className="text-lg font-semibold text-purple-700">
-
-                Total Complaints
-
-              </h3>
-
-              <h2 className="mt-3 text-4xl font-bold text-purple-600">
-
-                {departments.reduce(
-                  (total, item) => total + item.complaints,
-                  0
-                )}
-
-              </h2>
-
-            </div>
-
-          </div>
-
-        )}
 
       </div>
 

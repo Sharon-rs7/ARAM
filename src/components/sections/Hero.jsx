@@ -61,50 +61,50 @@ const Hero = () => {
         <div className="relative hidden lg:flex">
           <div className="absolute -left-10 top-20 h-72 w-72 rounded-full bg-blue-200 blur-3xl opacity-40"></div>
 
-          <div className="relative rounded-[32px] border border-slate-200 bg-white p-8 shadow-2xl w-[320px]">
-            <div className="mb-8 flex items-center justify-between">
-              <h3 className="text-xl font-bold">
-                AI Analysis
-              </h3>
-              <ShieldCheck className="text-blue-600" />
+          <div className="relative rounded-[32px] border border-slate-200 bg-white p-8 shadow-2xl w-[325px] space-y-6">
+            <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+              <div className="h-10 w-10 rounded-full bg-indigo-50 flex items-center justify-center text-blue-600 shrink-0">
+                <Sparkles size={20} />
+              </div>
+              <div>
+                <h3 className="font-extrabold text-sm text-slate-800">AI Legal Assistant</h3>
+                <p className="text-[10px] text-slate-400 font-semibold">Triage & Guide Support</p>
+              </div>
             </div>
 
-            <div className="space-y-6">
-              <div className="rounded-xl bg-slate-50 p-4">
-                <p className="text-sm text-slate-500">
-                  Category
-                </p>
-                <h4 className="font-semibold text-slate-800">
-                  Labour Issue
-                </h4>
-              </div>
+            <p className="text-xs text-slate-500 leading-relaxed font-semibold">
+              ARAM uses AI to understand the complaint in plain language and guides you through the next steps.
+            </p>
 
-              <div className="rounded-xl bg-slate-50 p-4">
-                <p className="text-sm text-slate-500">
-                  Suggested Authority
-                </p>
-                <h4 className="flex items-center gap-2 font-semibold text-slate-800">
-                  <Scale size={18} />
-                  Labour Department
-                </h4>
-              </div>
-
-              <div className="rounded-xl bg-slate-50 p-4">
-                <p className="text-sm text-slate-500">
-                  Priority
-                </p>
-                <h4 className="font-semibold text-red-500">
-                  High
-                </h4>
-              </div>
-
-              <div>
-                <div className="mb-2 flex justify-between text-sm text-slate-650">
-                  <span>Confidence</span>
-                  <span>92%</span>
+            {/* Complaint Journey Timelines */}
+            <div className="space-y-4 relative before:absolute before:left-3 before:top-2 before:bottom-2 before:w-[2px] before:bg-slate-100">
+              <div className="flex gap-3 items-start relative pl-1">
+                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-50 border-2 border-blue-600 text-blue-600 text-[10px] font-bold z-10">
+                  1
                 </div>
-                <div className="h-3 rounded-full bg-slate-250">
-                  <div className="h-3 w-[92%] rounded-full bg-green-500"></div>
+                <div>
+                  <h5 className="text-[11px] font-bold text-slate-800">Complaint Received</h5>
+                  <p className="text-[9px] text-slate-450 mt-0.5 leading-normal">Describe your problem in plain words or voice.</p>
+                </div>
+              </div>
+
+              <div className="flex gap-3 items-start relative pl-1">
+                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-50 border-2 border-blue-600 text-blue-600 text-[10px] font-bold z-10">
+                  2
+                </div>
+                <div>
+                  <h5 className="text-[11px] font-bold text-slate-800">AI Guidance Checklist</h5>
+                  <p className="text-[9px] text-slate-450 mt-0.5 leading-normal">AI triages categories and required proof files.</p>
+                </div>
+              </div>
+
+              <div className="flex gap-3 items-start relative pl-1">
+                <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-50 border-2 border-blue-600 text-blue-600 text-[10px] font-bold z-10">
+                  3
+                </div>
+                <div>
+                  <h5 className="text-[11px] font-bold text-slate-800">Legal Guide Assigned</h5>
+                  <p className="text-[9px] text-slate-450 mt-0.5 leading-normal">Secure chat access is initialized for mediation.</p>
                 </div>
               </div>
             </div>

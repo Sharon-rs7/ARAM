@@ -328,4 +328,90 @@ with open("datasets/authority_training.csv", "w", encoding="utf-8", newline="") 
     writer.writerow(["complaint_text", "category", "priority", "district", "authority_label"])
     writer.writerows(authority_data)
 
+# 4. document_recommendation_training.csv
+document_rec_data = [
+    ("LABOUR_DISPUTE", "Salary Slip,Employee ID,Bank Statement"),
+    ("CONSUMER_COMPLAINT", "Invoice,Transaction Screenshot,Product Image"),
+    ("CYBER_CRIME", "Bank Statement,Transaction Screenshot,Aadhaar Card"),
+    ("PROPERTY_DISPUTE", "Property Document,Sale Deed,Aadhaar Card"),
+    ("WOMEN_SAFETY", "Aadhaar Card,Police Complaint Copy"),
+    ("DOMESTIC_VIOLENCE", "Medical Report,Police Complaint Copy,Aadhaar Card"),
+    ("CRIMINAL_COMPLAINT", "Police Complaint Copy,Aadhaar Card,FIR Copy"),
+    ("GOVERNMENT_SCHEME", "Ration Card,Income Certificate,Aadhaar Card"),
+    ("FAMILY_DISPUTE", "Marriage Certificate,Aadhaar Card,Property Deed"),
+    ("GENERAL_LEGAL_AID", "Aadhaar Card,Summon Copy"),
+    ("MOTOR_ACCIDENT_CLAIM", "FIR Copy,Medical Report,Insurance Policy"),
+    ("INSURANCE_CLAIM", "Insurance Policy,Rejection Letter,Premium Receipts"),
+    ("BANKING_DISPUTE", "Bank Statement,Complaint Letter to Bank,Passbook Copy"),
+    ("RENT_TENANT_DISPUTE", "Rent Agreement,Rent Receipts,Eviction Notice"),
+    ("MEDICAL_NEGLIGENCE", "Medical Report,Treatment Bills,Prescription Sheets"),
+    ("EDUCATION_DISPUTE", "Fee Receipts,Admission Card,Certificate Copies"),
+    ("WORKPLACE_HARASSMENT", "Employment Contract,Email/Chat Screenshots"),
+    ("SENIOR_CITIZEN_ABUSE", "Age Proof,Aadhaar Card,Medical Report"),
+    ("CHILD_WELFARE", "Child Identity Proof,Guardian Aadhaar Card"),
+    ("DISABILITY_RIGHTS", "Disability Certificate,Aadhaar Card"),
+    ("CASTE_DISCRIMINATION", "Community Certificate,Aadhaar Card,Complaint Copy"),
+    ("POLICE_MISCONDUCT", "FIR Copy,Complaint Copy,Aadhaar Card"),
+    ("CORRUPTION_BRIBERY", "Evidence (Audio/Video),Transaction Proof"),
+    ("CIVIC_INFRASTRUCTURE", "Grievance Letter,Infrastructure Photos"),
+    ("RTI_APPLICATION", "RTI Draft Copy,Fee Receipt,Aadhaar Card")
+]
+
+with open("datasets/document_recommendation_training.csv", "w", encoding="utf-8", newline="") as f:
+    writer = csv.writer(f)
+    writer.writerow(["category", "required_documents"])
+    writer.writerows(document_rec_data)
+
+# 5. language_samples.csv
+language_samples = [
+    ("This is an official complaint regarding my pending wages.", "English"),
+    ("Please assist me in finding a free legal representative.", "English"),
+    ("My landlord has locked me out of the apartment illegally.", "English"),
+    ("The online store sent me a fake product and refused refund.", "English"),
+    ("I am facing continuous mental harassment from my manager.", "English"),
+    
+    ("என் சம்பளம் மூன்று மாதமாக வரவில்லை, தயவு செய்து உதவுங்கள்.", "Tamil"),
+    ("பக்கத்து வீட்டுக்காரர் என் நிலத்தை ஆக்கிரமிப்பு செய்துள்ளார்.", "Tamil"),
+    ("காவல் துறையினர் எனது புகார் மனுவை வாங்க மறுக்கின்றனர்.", "Tamil"),
+    ("ஆன்லைனில் பொருள் வாங்கி ஏமாந்துவிட்டேன், பணத்தை மீட்டுத் தாருங்கள்.", "Tamil"),
+    ("கணவர் குடித்துவிட்டு தினமும் என்னை அடிக்கிறார்.", "Tamil"),
+    
+    ("मेरा वेतन पिछले दो महीने से बकाया है और कंपनी नहीं दे रही है।", "Hindi"),
+    ("पड़ोसी ने मेरी ज़मीन पर कब्ज़ा कर लिया है और धमकी दे रहा है।", "Hindi"),
+    ("मुझे कोर्ट से समन मिला है, कानूनी सहायता की आवश्यकता है।", "Hindi"),
+    ("पुलिस मेरी चोरी की बाइक की रिपोर्ट नहीं लिख रही है।", "Hindi"),
+    ("मुझे सरकारी आवास योजना के लिए आवेदन करने में मदद चाहिए।", "Hindi"),
+    
+    ("Ennoda office-la salary tharama romba delay panranga.", "Tanglish"),
+    ("Shopkeeper warranty replacement thara matenguran.", "Tanglish"),
+    ("UPI scam click panni bank account hacking aayiduche.", "Tanglish"),
+    ("Veetukaaran advance deposit thiruppi tharala.", "Tanglish"),
+    ("Free lawyer apply panna enna process nu sollunga.", "Tanglish")
+]
+
+with open("datasets/language_samples.csv", "w", encoding="utf-8", newline="") as f:
+    writer = csv.writer(f)
+    writer.writerow(["text", "language"])
+    writer.writerows(language_samples)
+
+# 6. volunteer_matching_training.csv
+volunteer_matches = [
+    ("LABOUR_DISPUTE", "English,Tamil", "ANY", "Labour Office"),
+    ("CONSUMER_COMPLAINT", "English,Tamil,Hindi", "ANY", "Consumer Forum"),
+    ("CYBER_CRIME", "English,Tamil", "ANY", "Cyber Crime Portal"),
+    ("PROPERTY_DISPUTE", "English,Tamil", "ANY", "Police Station"),
+    ("WOMEN_SAFETY", "English,Tamil", "FEMALE_PREFERRED", "Women Helpline"),
+    ("DOMESTIC_VIOLENCE", "English,Tamil", "FEMALE_PREFERRED", "Protection Officer"),
+    ("CRIMINAL_COMPLAINT", "English,Tamil,Hindi", "ANY", "Police Station"),
+    ("GOVERNMENT_SCHEME", "English,Tamil", "ANY", "Government Grievance Cell"),
+    ("FAMILY_DISPUTE", "English,Tamil", "ANY", "District Legal Services Authority"),
+    ("GENERAL_LEGAL_AID", "English,Tamil,Hindi", "ANY", "District Legal Services Authority")
+]
+
+with open("datasets/volunteer_matching_training.csv", "w", encoding="utf-8", newline="") as f:
+    writer = csv.writer(f)
+    writer.writerow(["category", "languages_known", "gender_rule", "recommended_authority"])
+    writer.writerows(volunteer_matches)
+
 print(f"Generated expanded datasets successfully: 750 training samples across 25 categories.")
+

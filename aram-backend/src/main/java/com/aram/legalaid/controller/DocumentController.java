@@ -47,4 +47,22 @@ public class DocumentController {
     public ResponseEntity<DocumentResponse> updateVerification(@PathVariable Long documentId, @Valid @RequestBody DocumentVerificationRequest request) {
         return ResponseEntity.ok(documentService.updateVerification(documentId, request));
     }
+
+    @GetMapping("/download/{id}")
+    public ResponseEntity<org.springframework.core.io.Resource> download(@PathVariable Long id) {
+        java.nio.file.Path path = documentService.getSecureDocumentPath(id);
+        try {
+            org.springframework.core.io.Resource resource = new org.springframework.core.io.UrlResource(path.toUri());
+            String contentType = java.nio.file.Files.probeContentType(path);
+            if (contentType == null) {
+                contentType = "application/octet-stream";
+            }
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + path.getFileName().toString() + "\"")
+                    .body(resource);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
 }

@@ -45,7 +45,7 @@ export default function BackendStatusCard() {
         {status === "online" ? (
           <Server size={18} className="text-emerald-700 shrink-0" />
         ) : (
-          <ServerCrash size={18} className="text-red-650 shrink-0 animate-pulse" />
+          <ServerCrash size={18} className="text-red-600 shrink-0 animate-pulse" />
         )}
         <div>
           <p className="font-semibold uppercase tracking-wider">

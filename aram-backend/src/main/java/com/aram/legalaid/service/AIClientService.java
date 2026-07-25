@@ -61,6 +61,7 @@ public class AIClientService {
             System.err.println("FastAPI askChatbot failed: " + e.getMessage());
             return new AiChatResponse(
                 "I am sorry, the AI service is currently undergoing maintenance. Please reach out to your local helper. This is preliminary legal aid guidance only.",
+                "I am sorry, the AI service is currently undergoing maintenance. Please reach out to your local helper. This is preliminary legal aid guidance only.",
                 "GENERAL_LEGAL_AID",
                 0.50,
                 List.of("Retry connection", "Consult counselor"),
@@ -119,6 +120,89 @@ public class AIClientService {
                 List.of(),
                 List.of()
             );
+        }
+    }
+
+    public List<Map<String, Object>> recommendVolunteers(String category, String language, boolean preferWoman, String district, List<Map<String, Object>> volunteers) {
+        String url = properties.getUrl() + "/recommend/volunteer";
+        try {
+            Map<String, Object> payload = Map.of(
+                "category", category,
+                "language", language != null ? language : "en",
+                "preferWomanVolunteer", preferWoman,
+                "district", district != null ? district : "Coimbatore",
+                "volunteers", volunteers
+            );
+            return restTemplate.postForObject(url, payload, List.class);
+        } catch (Exception e) {
+            System.err.println("FastAPI recommendVolunteers failed: " + e.getMessage());
+            return List.of();
+        }
+    }
+
+    public Map<String, Object> transcribeSpeech(MultipartFile file, String selectedLanguage) {
+        String url = properties.getUrl() + "/voice/transcribe";
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.MULTIPART_FORM_DATA);
+            
+            MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
+            body.add("file", getFileResource(file));
+            if (selectedLanguage != null) {
+                body.add("language", selectedLanguage);
+            }
+            
+            HttpEntity<MultiValueMap<String, Object>> entity = new HttpEntity<>(body, headers);
+            ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
+            return response.getBody();
+        } catch (Exception e) {
+            System.err.println("FastAPI transcribeSpeech failed: " + e.getMessage());
+            return Map.of("transcript", "Speech transcription failed. Please check microphone connection or type manually.", "confidence", 0.0);
+        }
+    }
+
+    public Map<String, Object> detectLanguage(String text) {
+        String url = properties.getUrl() + "/language/detect";
+        try {
+            return restTemplate.postForObject(url, Map.of("text", text), Map.class);
+        } catch (Exception e) {
+            System.err.println("FastAPI detectLanguage failed: " + e.getMessage());
+            return Map.of("language", "English");
+        }
+    }
+
+    public Map<String, Object> translateText(String text, String sourceLanguage, String targetLanguage) {
+        String url = properties.getUrl() + "/language/translate";
+        try {
+            Map<String, Object> payload = Map.of(
+                "text", text,
+                "sourceLanguage", sourceLanguage != null ? sourceLanguage : "Tamil",
+                "targetLanguage", targetLanguage != null ? targetLanguage : "English"
+            );
+            return restTemplate.postForObject(url, payload, Map.class);
+        } catch (Exception e) {
+            System.err.println("FastAPI translateText failed: " + e.getMessage());
+            return Map.of("originalText", text, "translatedText", text);
+        }
+    }
+
+    public Map<String, Object> normalizeText(String text) {
+        String url = properties.getUrl() + "/language/normalize";
+        try {
+            return restTemplate.postForObject(url, Map.of("text", text), Map.class);
+        } catch (Exception e) {
+            System.err.println("FastAPI normalizeText failed: " + e.getMessage());
+            return Map.of("originalText", text, "normalizedText", text);
+        }
+    }
+
+    public Map<String, Object> getSpeechStatus() {
+        String url = properties.getUrl() + "/speech/status";
+        try {
+            return restTemplate.getForObject(url, Map.class);
+        } catch (Exception e) {
+            System.err.println("FastAPI getSpeechStatus failed: " + e.getMessage());
+            return Map.of("modelLoaded", false, "modelSize", "base", "device", "cpu");
         }
     }
 

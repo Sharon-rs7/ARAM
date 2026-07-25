@@ -23,5 +23,20 @@ public record UserResponse(
         ThemePreference themePreference,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
-        LocalDateTime lastLogin
+        LocalDateTime lastLogin,
+        String languagesKnown,
+        String specializationCategories,
+        int maxActiveCases,
+        int currentActiveCases,
+        String availabilityStatus,
+        boolean womenSupportTrained,
+        boolean forcePasswordChange,
+        String serviceArea,
+        String subSpecializations,
+        String experienceLevel,
+        boolean canHandleSensitiveCases,
+        boolean voiceAssistanceEnabled,
+        boolean simpleModeEnabled,
+        double speechRatePreference,
+        boolean twoFactorEnabled
 ) {}

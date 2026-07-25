@@ -193,7 +193,7 @@ const Profile = () => {
             <div className="flex gap-3 w-full sm:w-auto">
               <button
                 onClick={() => { setIsEditing(false); setError(""); }}
-                className="flex items-center justify-center gap-2 rounded-xl border border-slate-350 px-5 py-3 text-slate-600 hover:bg-slate-50 transition font-medium flex-1 sm:flex-none cursor-pointer"
+                className="flex items-center justify-center gap-2 rounded-xl border border-slate-300 px-5 py-3 text-slate-600 hover:bg-slate-50 transition font-medium flex-1 sm:flex-none cursor-pointer"
               >
                 <X size={18} />
                 Cancel
@@ -255,10 +255,10 @@ const Profile = () => {
 
             <div className="text-center lg:text-left">
               <h2 className="text-3xl font-bold text-slate-900">{profile.name || "Aram User"}</h2>
-              <p className="mt-2 text-slate-500">Citizen Account</p>
+              <p className="mt-2 text-slate-500">Public User Account</p>
               <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-green-50 px-4 py-1.5 text-green-700 text-sm font-medium border border-green-100">
                 <ShieldCheck size={18} />
-                Verified Citizen
+                Verified Public User
               </div>
             </div>
           </div>
@@ -291,7 +291,7 @@ const Profile = () => {
                     type="email"
                     value={profile.email}
                     disabled
-                    className="w-full h-12 rounded-xl border border-slate-200 pl-12 pr-4 outline-none bg-slate-50 text-slate-450"
+                    className="w-full h-12 rounded-xl border border-slate-200 pl-12 pr-4 outline-none bg-slate-50 text-slate-400"
                   />
                 </div>
               </div>
@@ -393,7 +393,7 @@ const Profile = () => {
 
             <div className="rounded-3xl bg-white p-8 shadow-sm">
               <h2 className="mb-6 text-2xl font-bold text-slate-900">Privacy Preference</h2>
-              <div className="p-4 bg-blue-50/50 rounded-2xl border border-blue-100 text-sm text-slate-650 leading-relaxed space-y-2">
+              <div className="p-4 bg-blue-50/50 rounded-2xl border border-blue-100 text-sm text-slate-600 leading-relaxed space-y-2">
                 <p>
                   Your account is protected by ARAM's visual PII masks. Any uploaded document will automatically mask sensitive Aadhaar numbers or personal contact metrics.
                 </p>
@@ -410,7 +410,7 @@ const Profile = () => {
           <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t">
             <button
               onClick={() => { setIsEditing(false); setError(""); }}
-              className="px-8 py-4 border border-slate-350 rounded-xl hover:bg-slate-50 font-semibold text-slate-600 transition w-full sm:w-auto cursor-pointer text-center"
+              className="px-8 py-4 border border-slate-300 rounded-xl hover:bg-slate-50 font-semibold text-slate-600 transition w-full sm:w-auto cursor-pointer text-center"
             >
               Cancel
             </button>

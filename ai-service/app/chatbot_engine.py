@@ -56,6 +56,7 @@ def ask_chatbot_engine(message: str, language: str = None, user_role: str = "CIT
 
     return {
         "reply": reply,
+        "answer": reply,
         "category": category,
         "confidence": confidence,
         "suggestedActions": suggested_actions,

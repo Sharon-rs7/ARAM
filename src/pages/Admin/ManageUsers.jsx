@@ -26,14 +26,14 @@ const users = [
     id: "USR002",
     name: "Rahul Kumar",
     email: "rahul@gmail.com",
-    role: "Volunteer",
+    role: "Legal Guide",
     status: "Active",
   },
   {
     id: "USR003",
     name: "Priya",
     email: "priya@gmail.com",
-    role: "Citizen",
+    role: "Public User",
     status: "Inactive",
   },
   {
@@ -304,7 +304,7 @@ const ManageUsers = () => {
                       className={`rounded-full px-3 py-1 text-sm font-medium ${
                         user.role === "Admin"
                           ? "bg-violet-100 text-violet-600"
-                          : user.role === "Volunteer"
+                          : user.role === "Legal Guide"
                           ? "bg-blue-100 text-blue-600"
                           : "bg-slate-100 text-slate-700"
                       }`}

@@ -31,5 +31,8 @@ public record ComplaintRequest(
         @JsonAlias("isSensitive")
         Boolean sensitive,
         HelperGender preferredHelperGender,
-        IdentityVisibility identityVisibility
+        IdentityVisibility identityVisibility,
+        Boolean disclaimerAccepted,
+        String safeContactMethod,
+        String safeContactTime
 ) {}

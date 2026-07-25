@@ -1,11 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { Mail, Lock, Eye, EyeOff, Info, ChevronDown, ChevronUp } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, Info, ArrowRight, User, BookOpen, ShieldAlert } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { authService } from "../../services/authService";
 import { toast } from "sonner";
-import Input from "../common/Input";
-import Button from "../common/Button";
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -17,12 +15,9 @@ const LoginForm = () => {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [error, setError] = useState("");
-  const [showDemoBox, setShowDemoBox] = useState(false);
-
-  const isMockMode = import.meta.env.VITE_USE_MOCKS === "true";
 
   const handleLogin = async (e) => {
-    e.preventDefault();
+    e?.preventDefault();
     setError("");
 
     // Front-end email validation
@@ -66,137 +61,178 @@ const LoginForm = () => {
     }
   };
 
-  const loadDemoCredentials = (demoEmail, demoPassword) => {
+  const loadDemoCredentials = (demoEmail, demoPassword, roleName) => {
     setEmail(demoEmail);
     setPassword(demoPassword);
     setError("");
+    toast.info(`Prefilled demo credentials for ${roleName}`);
   };
 
   return (
-    <div className="w-full max-w-[420px] rounded-2xl bg-white p-6 lg:p-8 border border-slate-200 shadow-lg">
-      <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Welcome Back</h2>
-      <p className="mt-1.5 text-xs text-slate-500">Login to continue to your ARAM dashboard.</p>
+    <div className="w-full max-w-[430px] rounded-2xl bg-white p-7 lg:p-10 border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)]">
+      
+      {/* Pill Badge */}
+      <span className="inline-block px-3 py-1 rounded-full text-[10px] font-extrabold uppercase bg-indigo-50 text-indigo-700 tracking-wider mb-4 border border-indigo-100/50">
+        • SECURE SIGN-IN
+      </span>
+
+      {/* Heading */}
+      <h2 className="text-3.5xl font-medium text-slate-800 tracking-tight leading-none">
+        Welcome <span className="font-serif italic font-medium text-indigo-600" style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>back.</span>
+      </h2>
+      <p className="mt-2 text-xs text-slate-500">Sign in to continue your legal support journey.</p>
 
       {/* Backend / Val Error Alert */}
       {error && (
-        <div className="mt-4 p-3 bg-red-50 text-red-650 rounded-xl text-xs border border-red-100 flex items-start gap-2">
+        <div className="mt-5 p-3.5 bg-red-50 text-red-650 rounded-xl text-xs border border-red-100 flex items-start gap-2.5 animate-in fade-in duration-150">
           <Info size={14} className="mt-0.5 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
-      {/* Demo Credentials Soft Accordion in Mock Mode */}
-      {isMockMode && (
-        <div className="mt-4 border border-blue-100 rounded-xl overflow-hidden bg-blue-50/30">
-          <button
-            type="button"
-            onClick={() => setShowDemoBox(!showDemoBox)}
-            className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-bold text-blue-650 hover:bg-blue-50/55 transition cursor-pointer"
-          >
-            <span>DEMO LOGIN CREDENTIALS</span>
-            {showDemoBox ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
-          </button>
-          
-          {showDemoBox && (
-            <div className="px-4 pb-3 space-y-1.5 text-[11px] text-slate-650 border-t border-blue-100/50 pt-2 animate-in slide-in-from-top-1 duration-150">
-              <button
-                type="button"
-                onClick={() => loadDemoCredentials("citizen@aram.ai", "Citizen@123")}
-                className="w-full text-left p-2 bg-white rounded-lg border border-slate-100 hover:border-blue-300 transition"
-              >
-                <strong>Citizen:</strong> citizen@aram.ai <span className="text-slate-400 font-mono">(Citizen@123)</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => loadDemoCredentials("volunteer@aram.ai", "Helper@123")}
-                className="w-full text-left p-2 bg-white rounded-lg border border-slate-100 hover:border-blue-300 transition"
-              >
-                <strong>Volunteer:</strong> volunteer@aram.ai <span className="text-slate-400 font-mono">(Helper@123)</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => loadDemoCredentials("admin@aram.ai", "Admin@123")}
-                className="w-full text-left p-2 bg-white rounded-lg border border-slate-100 hover:border-blue-300 transition"
-              >
-                <strong>Admin:</strong> admin@aram.ai <span className="text-slate-400 font-mono">(Admin@123)</span>
-              </button>
-            </div>
-          )}
+      <form onSubmit={handleLogin} className="mt-6 space-y-5">
+        
+        {/* Email Address */}
+        <div className="space-y-1.5">
+          <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">
+            Email Address
+          </label>
+          <div className="relative">
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              placeholder="name@example.com"
+              className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 text-xs font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
+            />
+          </div>
         </div>
-      )}
-
-      <form onSubmit={handleLogin} className="mt-5 space-y-4">
-        {/* Email */}
-        <Input
-          label="Email Address"
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-          placeholder="name@example.com"
-          icon={Mail}
-        />
 
         {/* Password */}
-        <div className="relative">
-          <Input
-            label="Password"
-            type={showPassword ? "text" : "password"}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            placeholder="••••••••"
-            icon={Lock}
-          />
-          <button
-            type="button"
-            className="absolute right-3.5 top-[33px] text-slate-400 hover:text-slate-650 cursor-pointer"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-          </button>
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between">
+            <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">
+              Password
+            </label>
+            <Link to="/forgot-password" className="text-[10px] font-bold text-indigo-600 hover:underline">
+              Forgot password?
+            </Link>
+          </div>
+          <div className="relative">
+            <input
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              placeholder="••••••••"
+              className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-4 pr-12 text-xs font-medium text-slate-750 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
+            />
+            <button
+              type="button"
+              className="absolute right-3.5 top-3.5 text-slate-400 hover:text-slate-600 cursor-pointer transition"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+            </button>
+          </div>
         </div>
 
-        {/* Remember me & Forgot Pass */}
-        <div className="flex items-center justify-between text-xs pt-1">
-          <label className="flex items-center gap-2 text-slate-600 cursor-pointer select-none">
+        {/* Remember me for 30 days */}
+        <div className="flex items-center text-xs pt-0.5">
+          <label className="flex items-center gap-2.5 text-slate-500 cursor-pointer select-none font-medium">
             <input
               type="checkbox"
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
-              className="h-4 w-4 shrink-0 rounded border-slate-200 text-blue-650 focus:ring-blue-500 cursor-pointer"
+              className="h-4 w-4 shrink-0 rounded border-slate-350 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
             />
-            Remember me
+            Remember me for 30 days
           </label>
-          <Link to="/forgot-password" className="font-semibold text-blue-600 hover:underline">
-            Forgot Password?
-          </Link>
         </div>
 
-        {/* Submit */}
-        <Button
+        {/* Submit button with sliding arrow */}
+        <button
           type="submit"
-          loading={loading}
-          variant="primary"
-          className="w-full"
+          disabled={loading}
+          className="group relative flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-slate-900 text-xs font-bold text-white hover:bg-indigo-650 active:scale-[0.99] transition duration-150 cursor-pointer"
         >
-          Login
-        </Button>
+          {loading ? (
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+          ) : (
+            <>
+              Sign in 
+              <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+            </>
+          )}
+        </button>
 
-        {/* Redirect */}
-        <p className="text-center text-slate-500 text-xs pt-1">
+        {/* Register link */}
+        <p className="text-center text-slate-500 text-xs pt-1 font-medium">
           New to ARAM?{" "}
-          <Link to="/register" className="font-bold text-blue-650 hover:underline">
+          <Link to="/register" className="font-bold text-indigo-600 hover:underline">
             Create account
           </Link>
         </p>
 
-        {/* Legal Disclaimer Footer */}
-        <div className="border-t border-slate-100 pt-3 text-center text-[10px] text-slate-400 leading-relaxed">
-          By continuing, you agree to ARAM's{" "}
-          <Link to="/terms" className="hover:underline font-medium text-slate-500">Terms of Service</Link> and{" "}
-          <Link to="/privacy" className="hover:underline font-medium text-slate-500">Privacy Policy</Link>.
+        {/* Quick Demo Access Switcher */}
+        <div className="pt-4 border-t border-slate-100 space-y-3.5">
+          <div className="flex items-center justify-center gap-3">
+            <div className="h-[1px] bg-slate-100 flex-1" />
+            <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest shrink-0">
+              Quick Demo Access
+            </span>
+            <div className="h-[1px] bg-slate-100 flex-1" />
+          </div>
+
+          <div className="grid grid-cols-3 gap-2">
+            
+            {/* Citizen Card */}
+            <button
+              type="button"
+              onClick={() => loadDemoCredentials("citizen@aram.ai", "Citizen@123", "Citizen")}
+              className="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/10 cursor-pointer transition text-center group"
+            >
+              <div className="h-8 w-8 rounded-lg bg-emerald-50 text-emerald-650 flex items-center justify-center group-hover:scale-105 transition shrink-0">
+                <User size={14} />
+              </div>
+              <span className="text-[10px] font-extrabold text-slate-650 mt-2">Citizen</span>
+            </button>
+
+            {/* Legal Guide Card */}
+            <button
+              type="button"
+              onClick={() => loadDemoCredentials("volunteer@aram.ai", "Helper@123", "Legal Guide")}
+              className="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/10 cursor-pointer transition text-center group"
+            >
+              <div className="h-8 w-8 rounded-lg bg-indigo-50 text-indigo-650 flex items-center justify-center group-hover:scale-105 transition shrink-0">
+                <BookOpen size={14} />
+              </div>
+              <span className="text-[10px] font-extrabold text-slate-650 mt-2">Guide</span>
+            </button>
+
+            {/* Admin Card */}
+            <button
+              type="button"
+              onClick={() => loadDemoCredentials("admin@aram.ai", "Admin@123", "Admin")}
+              className="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/10 cursor-pointer transition text-center group"
+            >
+              <div className="h-8 w-8 rounded-lg bg-amber-50 text-amber-650 flex items-center justify-center group-hover:scale-105 transition shrink-0">
+                <ShieldAlert size={14} />
+              </div>
+              <span className="text-[10px] font-extrabold text-slate-650 mt-2">Admin</span>
+            </button>
+
+          </div>
         </div>
+
+        {/* Footer info */}
+        <div className="text-center text-[10px] text-slate-400 leading-normal pt-1.5">
+          By continuing, you agree to ARAM's{" "}
+          <Link to="/terms" className="hover:underline font-semibold text-slate-500">Terms of Service</Link> and{" "}
+          <Link to="/privacy" className="hover:underline font-semibold text-slate-500">Privacy Policy</Link>.
+        </div>
+
       </form>
     </div>
   );

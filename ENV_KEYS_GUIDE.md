@@ -38,12 +38,15 @@ Location: `aram-backend/src/main/resources/application.properties`
 ---
 
 ## 🤖 3. AI Service Pipeline Config
-Location: `ai-service/venv/.env`
+Location: `ai-service/.env`
 
 | Variable | Description | Placeholder Value | Purpose |
 | :--- | :--- | :--- | :--- |
 | `AI_SERVICE_URL` | FastAPI routing URL | `http://localhost:8000` | Redirects proxy AI classifications |
-| `AI_API_KEY` | LLM Gateway Access API Token | `placeholder-only-do-not-put-real-secret` | Authenticates Gemini/OpenAI endpoints |
+| `WHISPER_MODE` | Whisper transcription mode | `local` / `api` | Choose local model vs. mock API mode |
+| `WHISPER_MODEL_SIZE` | Size of local model weights to load | `base` / `small` / `tiny` | Balance accuracy vs. hardware speed |
+| `WHISPER_DEVICE` | Hardware device to run model on | `cpu` / `cuda` | Run on CPU vs. GPU |
+| `WHISPER_COMPUTE_TYPE` | Floating point quantization type | `int8` / `float16` | Optimize memory usage |
 | `OCR_ENABLED` | Document OCR scan verification toggle| `true` | Runs scanning pipelines |
 | `SPEECH_TO_TEXT_ENABLED` | Toggles audio transcribe translation | `true` | Dictates citizen speech complaints |
 

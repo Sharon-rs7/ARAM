@@ -16,8 +16,8 @@ const Contact = () => {
 
         <div>
 
-          <span className="rounded-full bg-blue-100 px-5 py-2 font-medium text-blue-600">
-            Contact Us
+          <span className="rounded-full bg-indigo-55 px-5 py-2 font-medium text-indigo-600">
+            Contact Support
           </span>
 
           <h2 className="mt-8 text-5xl font-bold text-slate-900">
@@ -25,14 +25,14 @@ const Contact = () => {
           </h2>
 
           <p className="mt-6 text-lg leading-8 text-slate-500">
-            Have questions? Our team is always ready to help.
+            Have questions? Our creator and support team is always ready to help.
           </p>
 
           <div className="mt-12 space-y-8">
 
             <div className="flex gap-5">
 
-              <div className="rounded-2xl bg-blue-100 p-4 text-blue-600">
+              <div className="rounded-2xl bg-indigo-55 p-4 text-indigo-600">
                 <Mail />
               </div>
 
@@ -43,7 +43,7 @@ const Contact = () => {
                 </h4>
 
                 <p className="text-slate-500">
-                  support@aram.ai
+                  noyalashwin0704@gmail.com
                 </p>
 
               </div>
@@ -52,18 +52,20 @@ const Contact = () => {
 
             <div className="flex gap-5">
 
-              <div className="rounded-2xl bg-blue-100 p-4 text-blue-600">
+              <div className="rounded-2xl bg-indigo-55 p-4 text-indigo-600">
                 <Phone />
               </div>
 
               <div>
 
                 <h4 className="font-bold">
-                  Phone
+                  Phone Support
                 </h4>
 
-                <p className="text-slate-500">
-                  +91 9876543210
+                <p className="text-slate-500 text-sm">
+                  +91 63812 76381 (Mr. Noyal Ashwin J)
+                  <br />
+                  +91 82203 55021 (Mr. Sharon R)
                 </p>
 
               </div>
@@ -72,18 +74,18 @@ const Contact = () => {
 
             <div className="flex gap-5">
 
-              <div className="rounded-2xl bg-blue-100 p-4 text-blue-600">
+              <div className="rounded-2xl bg-indigo-55 p-4 text-indigo-600">
                 <MapPin />
               </div>
 
               <div>
 
                 <h4 className="font-bold">
-                  Office
+                  Location
                 </h4>
 
                 <p className="text-slate-500">
-                  Coimbatore, Tamil Nadu, India
+                  Tamil Nadu, India
                 </p>
 
               </div>

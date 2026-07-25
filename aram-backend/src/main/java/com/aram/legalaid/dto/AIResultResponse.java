@@ -17,5 +17,9 @@ public record AIResultResponse(
         List<String> requiredDocuments,
         List<String> nextSteps,
         boolean manualReviewRequired,
-        LocalDateTime createdAt
+        LocalDateTime createdAt,
+        String detectedLanguage,
+        String translatedSummary,
+        String spokenSummaryText,
+        boolean readAloudAvailable
 ) {}

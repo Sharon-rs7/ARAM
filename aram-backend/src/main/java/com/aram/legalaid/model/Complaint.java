@@ -27,6 +27,7 @@ public class Complaint {
     private String title;
 
     @Column(nullable = false, columnDefinition = "TEXT")
+    @Convert(converter = com.aram.legalaid.util.EncryptedStringConverter.class)
     private String description;
 
     @Column(nullable = false, length = 20)
@@ -40,9 +41,33 @@ public class Complaint {
     private InputMode inputMode = InputMode.TEXT;
 
     @Column(columnDefinition = "TEXT")
+    @Convert(converter = com.aram.legalaid.util.EncryptedStringConverter.class)
     private String transcribedText;
 
     private Double transcriptionConfidence;
+
+    @Column(columnDefinition = "TEXT")
+    @Convert(converter = com.aram.legalaid.util.EncryptedStringConverter.class)
+    private String originalText;
+
+    @Column(length = 50)
+    private String originalLanguage;
+
+    @Column(columnDefinition = "TEXT")
+    @Convert(converter = com.aram.legalaid.util.EncryptedStringConverter.class)
+    private String normalizedText;
+
+    @Column(columnDefinition = "TEXT")
+    @Convert(converter = com.aram.legalaid.util.EncryptedStringConverter.class)
+    private String translatedText;
+
+    @Column(nullable = false)
+    private boolean voiceInputUsed = false;
+
+    private Double voiceTranscriptConfidence;
+
+    @Column(length = 50)
+    private String preferredResponseLanguage;
 
     @Enumerated(EnumType.STRING)
     @Column(length = 60)
@@ -77,10 +102,39 @@ public class Complaint {
     private User referredAdvocate;
 
     @Column(columnDefinition = "TEXT")
+    @Convert(converter = com.aram.legalaid.util.EncryptedStringConverter.class)
     private String legalOpinion;
 
     @Column(columnDefinition = "TEXT")
+    @Convert(converter = com.aram.legalaid.util.EncryptedStringConverter.class)
     private String authorityRemarks;
+
+    @Column(nullable = false)
+    private boolean womenSensitive = false;
+
+    @Column(length = 50)
+    private String safeContactMethod = "APP";
+
+    @Column(length = 100)
+    private String safeContactTime = "ANYTIME";
+
+    @Column(nullable = false)
+    private boolean highRisk = false;
+
+    @Column(nullable = false)
+    private boolean disclaimerAccepted = false;
+
+    private LocalDateTime disclaimerAcceptedAt;
+
+    @Column(columnDefinition = "TEXT")
+    @Convert(converter = com.aram.legalaid.util.EncryptedStringConverter.class)
+    private String resolutionSummary;
+
+    @Column(columnDefinition = "TEXT")
+    private String reopenReason;
+
+    @Column(columnDefinition = "TEXT")
+    private String assignmentOverrideReason;
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -142,4 +196,39 @@ public class Complaint {
     public void setLegalOpinion(String legalOpinion) { this.legalOpinion = legalOpinion; }
     public String getAuthorityRemarks() { return authorityRemarks; }
     public void setAuthorityRemarks(String authorityRemarks) { this.authorityRemarks = authorityRemarks; }
+
+    public String getOriginalText() { return originalText; }
+    public void setOriginalText(String originalText) { this.originalText = originalText; }
+    public String getOriginalLanguage() { return originalLanguage; }
+    public void setOriginalLanguage(String originalLanguage) { this.originalLanguage = originalLanguage; }
+    public String getNormalizedText() { return normalizedText; }
+    public void setNormalizedText(String normalizedText) { this.normalizedText = normalizedText; }
+    public String getTranslatedText() { return translatedText; }
+    public void setTranslatedText(String translatedText) { this.translatedText = translatedText; }
+    public boolean isVoiceInputUsed() { return voiceInputUsed; }
+    public void setVoiceInputUsed(boolean voiceInputUsed) { this.voiceInputUsed = voiceInputUsed; }
+    public Double getVoiceTranscriptConfidence() { return voiceTranscriptConfidence; }
+    public void setVoiceTranscriptConfidence(Double voiceTranscriptConfidence) { this.voiceTranscriptConfidence = voiceTranscriptConfidence; }
+    public String getPreferredResponseLanguage() { return preferredResponseLanguage; }
+    public void setPreferredResponseLanguage(String preferredResponseLanguage) { this.preferredResponseLanguage = preferredResponseLanguage; }
+
+    public boolean isWomenSensitive() { return womenSensitive; }
+    public void setWomenSensitive(boolean womenSensitive) { this.womenSensitive = womenSensitive; }
+    public String getSafeContactMethod() { return safeContactMethod; }
+    public void setSafeContactMethod(String safeContactMethod) { this.safeContactMethod = safeContactMethod; }
+    public String getSafeContactTime() { return safeContactTime; }
+    public void setSafeContactTime(String safeContactTime) { this.safeContactTime = safeContactTime; }
+    public String getAssignmentOverrideReason() { return assignmentOverrideReason; }
+    public void setAssignmentOverrideReason(String assignmentOverrideReason) { this.assignmentOverrideReason = assignmentOverrideReason; }
+
+    public boolean isHighRisk() { return highRisk; }
+    public void setHighRisk(boolean highRisk) { this.highRisk = highRisk; }
+    public boolean isDisclaimerAccepted() { return disclaimerAccepted; }
+    public void setDisclaimerAccepted(boolean disclaimerAccepted) { this.disclaimerAccepted = disclaimerAccepted; }
+    public LocalDateTime getDisclaimerAcceptedAt() { return disclaimerAcceptedAt; }
+    public void setDisclaimerAcceptedAt(LocalDateTime disclaimerAcceptedAt) { this.disclaimerAcceptedAt = disclaimerAcceptedAt; }
+    public String getResolutionSummary() { return resolutionSummary; }
+    public void setResolutionSummary(String resolutionSummary) { this.resolutionSummary = resolutionSummary; }
+    public String getReopenReason() { return reopenReason; }
+    public void setReopenReason(String reopenReason) { this.reopenReason = reopenReason; }
 }

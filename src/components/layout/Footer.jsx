@@ -146,8 +146,10 @@ const Footer = () => {
             © 2026 ARAM. All Rights Reserved.
           </p>
 
-          <p className="text-slate-500">
-            Built with ❤️ using React, Tailwind CSS & Spring Boot
+          <p className="text-slate-400 text-xs text-center md:text-right">
+            Created by <strong className="text-slate-200">Mr. Noyal Ashwin J</strong> (+91 6381276381) & <strong className="text-slate-200">Mr. Sharon R</strong> (+91 8220355021)
+            <br />
+            Support: <a href="mailto:noyalashwin0704@gmail.com" className="text-indigo-400 hover:underline">noyalashwin0704@gmail.com</a>
           </p>
         </div>
       </div>

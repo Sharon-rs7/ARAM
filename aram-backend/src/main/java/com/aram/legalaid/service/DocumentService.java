@@ -116,4 +116,30 @@ public class DocumentService {
         ));
         return mapperService.toDocumentResponse(saved);
     }
+
+    public Path getSecureDocumentPath(Long documentId) {
+        UploadedDocument document = documentRepository.findById(documentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Document not found"));
+        
+        Complaint complaint = document.getComplaint();
+        User user = userService.currentUser();
+        
+        if (user.getRole() == Role.ADMIN) {
+            // Admin can access all
+        } else if (user.getRole() == Role.HELPER) {
+            if (complaint.getAssignedHelper() == null || !complaint.getAssignedHelper().getId().equals(user.getId())) {
+                throw new ForbiddenException("You are not the assigned helper for this complaint");
+            }
+        } else {
+            if (!complaint.getUser().getId().equals(user.getId())) {
+                throw new ForbiddenException("You do not own this complaint");
+            }
+        }
+        
+        Path path = Path.of(document.getFilePath());
+        if (!Files.exists(path)) {
+            throw new ResourceNotFoundException("Document file not found on disk");
+        }
+        return path;
+    }
 }

@@ -34,7 +34,7 @@ const menuItems = [
     icon: ClipboardList,
   },
   {
-    title: "Manage Volunteers",
+    title: "Manage Legal Guides",
     path: "/admin/volunteers",
     icon: UserCheck,
   },
@@ -59,7 +59,7 @@ const menuItems = [
     icon: ShieldAlert,
   },
   {
-    title: "Volunteer Activity",
+    title: "Legal Guide Activity",
     path: "/admin/volunteer-activity",
     icon: Activity,
   },
@@ -85,11 +85,11 @@ const AdminSidebar = () => {
   };
 
   return (
-    <aside className="sidebar flex min-h-screen w-[260px] flex-col border-r border-slate-200 bg-white">
+    <aside className="sidebar flex min-h-screen w-full flex-col border-r border-slate-800 bg-slate-900">
       {/* Logo */}
-      <div className="border-b border-slate-100 p-8">
-        <h1 className="text-3xl font-extrabold text-blue-600">ARAM</h1>
-        <p className="mt-1.5 text-xs text-slate-400 font-semibold uppercase tracking-wider">Admin Panel</p>
+      <div className="border-b border-slate-800 p-8">
+        <h1 className="text-3xl font-extrabold text-white">ARAM</h1>
+        <p className="mt-1.5 text-xs text-slate-500 font-semibold uppercase tracking-wider">Admin Panel</p>
       </div>
 
       {/* Menu */}
@@ -104,8 +104,8 @@ const AdminSidebar = () => {
                 className={({ isActive }) =>
                   `flex items-center gap-3 rounded-xl px-4 py-2.5 transition-all duration-200 ${
                     isActive
-                      ? "bg-blue-50 text-blue-600 font-semibold shadow-sm"
-                      : "text-slate-605 hover:bg-slate-50 hover:text-slate-900"
+                      ? "bg-slate-800 text-white font-semibold shadow-sm border-l-4 border-blue-500 rounded-l-none pl-3"
+                      : "text-slate-400 hover:bg-slate-800/60 hover:text-slate-100"
                   }`
                 }
               >
@@ -118,10 +118,10 @@ const AdminSidebar = () => {
       </nav>
 
       {/* Logout */}
-      <div className="border-t border-slate-100 p-5">
+      <div className="border-t border-slate-800 p-5">
         <button
           onClick={() => setShowConfirmLogout(true)}
-          className="flex w-full items-center gap-4 rounded-xl px-5 py-4 text-red-500 hover:bg-red-50 hover:text-red-700 transition duration-200"
+          className="flex w-full items-center gap-4 rounded-xl px-5 py-4 text-red-400 hover:bg-red-950/20 hover:text-red-300 transition duration-200"
         >
           <LogOut size={20} className="shrink-0" />
           <span className="font-medium">Logout</span>

@@ -43,7 +43,7 @@ export const chatbotService = {
       };
     }
     
-    const res = await api.post("/ai/chat", payload);
+    const res = await api.post("/chat/ask", payload);
     return res.data;
   }
 };

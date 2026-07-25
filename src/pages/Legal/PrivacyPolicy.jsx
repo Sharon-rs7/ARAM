@@ -28,7 +28,7 @@ export default function PrivacyPolicy() {
 
           <h3 className="font-semibold text-slate-800 text-lg">3. Privacy Constraints</h3>
           <p>
-            Citizens can set their Identity Visibility to **VISIBLE**, **PARTIAL**, or **HIDDEN**. We mask all detected PII data (Aadhaar cards, mobile numbers, UPI IDs) using regex and machine learning engines before volunteer review.
+            Public Users can set their Identity Visibility to **VISIBLE**, **PARTIAL**, or **HIDDEN**. We mask all detected PII data (Aadhaar cards, mobile numbers, UPI IDs) using regex and machine learning engines before legal guide review.
           </p>
         </div>
 

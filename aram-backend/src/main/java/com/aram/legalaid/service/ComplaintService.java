@@ -23,15 +23,18 @@ public class ComplaintService {
     private final AIAnalysisService aiAnalysisService;
     private final NotificationService notificationService;
     private final MapperService mapperService;
+    private final BlockchainService blockchainService;
 
     public ComplaintService(ComplaintRepository complaintRepository, AIResultRepository aiResultRepository, UserService userService,
-                            AIAnalysisService aiAnalysisService, NotificationService notificationService, MapperService mapperService) {
+                            AIAnalysisService aiAnalysisService, NotificationService notificationService, MapperService mapperService,
+                            BlockchainService blockchainService) {
         this.complaintRepository = complaintRepository;
         this.aiResultRepository = aiResultRepository;
         this.userService = userService;
         this.aiAnalysisService = aiAnalysisService;
         this.notificationService = notificationService;
         this.mapperService = mapperService;
+        this.blockchainService = blockchainService;
     }
 
     @Transactional
@@ -51,10 +54,23 @@ public class ComplaintService {
         complaint.setSensitive(Boolean.TRUE.equals(request.sensitive()));
         complaint.setPreferredHelperGender(request.preferredHelperGender() == null ? HelperGender.ANY : request.preferredHelperGender());
         complaint.setIdentityVisibility(request.identityVisibility() == null ? IdentityVisibility.VISIBLE : request.identityVisibility());
+        complaint.setDisclaimerAccepted(Boolean.TRUE.equals(request.disclaimerAccepted()));
+        if (complaint.isDisclaimerAccepted()) {
+            complaint.setDisclaimerAcceptedAt(java.time.LocalDateTime.now());
+        }
+        if (request.safeContactMethod() != null) {
+            complaint.setSafeContactMethod(request.safeContactMethod());
+        }
+        if (request.safeContactTime() != null) {
+            complaint.setSafeContactTime(request.safeContactTime());
+        }
         complaint.setStatus(ComplaintStatus.SUBMITTED);
 
         Complaint savedComplaint = complaintRepository.save(complaint);
+        blockchainService.mineBlock(savedComplaint);
+        
         notificationService.create(user, "Your complaint has been submitted successfully. Complaint ID: " + savedComplaint.getId(), NotificationType.IN_APP);
+
 
         AIResult aiResult = aiAnalysisService.analyzeAndSave(savedComplaint);
         notificationService.create(user, "AI analysis completed. Category: " + aiResult.getCategory().getDisplayName() + ", Priority: " + aiResult.getPriority(), NotificationType.IN_APP);
@@ -76,7 +92,9 @@ public class ComplaintService {
     public ComplaintResponse getById(Long id) {
         Complaint complaint = findComplaint(id);
         User user = userService.currentUser();
-        if (user.getRole() != Role.ADMIN && !complaint.getUser().getId().equals(user.getId())) {
+        if (user.getRole() != Role.ADMIN 
+                && !complaint.getUser().getId().equals(user.getId())
+                && (user.getRole() != Role.HELPER || complaint.getAssignedHelper() == null || !complaint.getAssignedHelper().getId().equals(user.getId()))) {
             throw new ForbiddenException("You cannot view this complaint");
         }
         return mapperService.toComplaintResponse(complaint, aiResultRepository.findByComplaint(complaint).orElse(null));
@@ -101,6 +119,9 @@ public class ComplaintService {
             throw new ForbiddenException("Only admin/helper can update complaint status");
         }
         complaint.setStatus(request.status());
+        if (request.note() != null) {
+            complaint.setLegalOpinion(request.note());
+        }
         Complaint saved = complaintRepository.save(complaint);
         notificationService.create(saved.getUser(), "Your complaint ID " + saved.getId() + " status changed to " + saved.getStatus(), NotificationType.IN_APP);
         return mapperService.toComplaintResponse(saved, aiResultRepository.findByComplaint(saved).orElse(null));

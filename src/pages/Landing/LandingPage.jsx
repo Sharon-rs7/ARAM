@@ -23,25 +23,6 @@ const LandingPage = () => {
       <CTA />
       <Contact />
       <Footer />
-      
-      {import.meta.env.DEV && (
-        <div style={{
-          position: 'fixed',
-          bottom: '20px',
-          right: '20px',
-          zIndex: 9999,
-          background: '#ef4444',
-          color: 'white',
-          padding: '8px 16px',
-          borderRadius: '8px',
-          fontWeight: 'bold',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
-          fontSize: '12px',
-          pointerEvents: 'none'
-        }}>
-          RESTORED FRIEND UI ACTIVE
-        </div>
-      )}
     </>
   );
 };

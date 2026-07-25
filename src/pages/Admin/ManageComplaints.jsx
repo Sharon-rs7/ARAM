@@ -10,51 +10,60 @@ import {
   CheckCircle2,
   AlertTriangle,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
-const complaintData = [
-  {
-    id: "CMP1023",
-    citizen: "Sharon Robert",
-    category: "Road Damage",
-    department: "Municipality",
-    volunteer: "Arun",
-    status: "Pending",
-    priority: "High",
-  },
-  {
-    id: "CMP1024",
-    citizen: "Rahul Kumar",
-    category: "Garbage",
-    department: "Sanitation",
-    volunteer: "Priya",
-    status: "In Progress",
-    priority: "Medium",
-  },
-  {
-    id: "CMP1025",
-    citizen: "Ajay",
-    category: "Water Leakage",
-    department: "Water Board",
-    volunteer: "Karthik",
-    status: "Resolved",
-    priority: "Low",
-  },
-];
+import { adminService } from "../../services/adminService";
 
 const ManageComplaints = () => {
-
   const navigate = useNavigate();
-
   const [search, setSearch] = useState("");
+  const [complaints, setComplaints] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [statusFilter, setStatusFilter] = useState("ALL");
 
-  const filteredComplaints = complaintData.filter(
-    (item) =>
-      item.id.toLowerCase().includes(search.toLowerCase()) ||
-      item.citizen.toLowerCase().includes(search.toLowerCase()) ||
-      item.category.toLowerCase().includes(search.toLowerCase())
-  );
+  useEffect(() => {
+    async function loadComplaints() {
+      try {
+        const list = await adminService.getComplaints();
+        setComplaints(list || []);
+      } catch (err) {
+        console.error("Failed to load complaints:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadComplaints();
+  }, []);
+
+  const filteredComplaints = complaints.filter((item) => {
+    const id = item.id ? String(item.id) : "";
+    const citizen = item.citizenName || item.userName || "Citizen";
+    const category = item.categoryDisplayName || item.category || "General";
+    
+    const textMatch = 
+      id.toLowerCase().includes(search.toLowerCase()) ||
+      citizen.toLowerCase().includes(search.toLowerCase()) ||
+      category.toLowerCase().includes(search.toLowerCase());
+      
+    if (!textMatch) return false;
+    
+    if (statusFilter === "PENDING") {
+      return item.status === "PENDING" || item.status === "SUBMITTED";
+    }
+    if (statusFilter === "RESOLVED") {
+      return item.status === "RESOLVED";
+    }
+    if (statusFilter === "HIGH_PRIORITY") {
+      return item.priority === "HIGH" || item.priority === "CRITICAL";
+    }
+    
+    return true;
+  });
+
+  const totalCount = complaints.length;
+  const pendingCount = complaints.filter(c => c.status === "PENDING" || c.status === "SUBMITTED").length;
+  const resolvedCount = complaints.filter(c => c.status === "RESOLVED").length;
+  const highPriorityCount = complaints.filter(c => c.priority === "HIGH" || c.priority === "CRITICAL").length;
 
   return (
 
@@ -88,7 +97,12 @@ const ManageComplaints = () => {
 
         <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
 
-          <div className="rounded-3xl bg-white p-6 shadow-sm">
+          <div 
+            onClick={() => setStatusFilter("ALL")}
+            className={`rounded-3xl bg-white p-6 shadow-sm cursor-pointer border-2 transition ${
+              statusFilter === "ALL" ? "border-blue-500 ring-2 ring-blue-50" : "border-transparent"
+            }`}
+          >
 
             <FileText
               size={30}
@@ -97,11 +111,11 @@ const ManageComplaints = () => {
 
             <h2 className="mt-4 text-4xl font-bold">
 
-              1286
+              {totalCount}
 
             </h2>
 
-            <p className="mt-2 text-slate-500">
+            <p className="mt-2 text-slate-505 font-medium">
 
               Total Complaints
 
@@ -109,7 +123,12 @@ const ManageComplaints = () => {
 
           </div>
 
-          <div className="rounded-3xl bg-white p-6 shadow-sm">
+          <div 
+            onClick={() => setStatusFilter("PENDING")}
+            className={`rounded-3xl bg-white p-6 shadow-sm cursor-pointer border-2 transition ${
+              statusFilter === "PENDING" ? "border-orange-500 ring-2 ring-orange-50" : "border-transparent"
+            }`}
+          >
 
             <Clock3
               size={30}
@@ -118,11 +137,11 @@ const ManageComplaints = () => {
 
             <h2 className="mt-4 text-4xl font-bold">
 
-              182
+              {pendingCount}
 
             </h2>
 
-            <p className="mt-2 text-slate-500">
+            <p className="mt-2 text-slate-505 font-medium">
 
               Pending
 
@@ -130,7 +149,12 @@ const ManageComplaints = () => {
 
           </div>
 
-          <div className="rounded-3xl bg-white p-6 shadow-sm">
+          <div 
+            onClick={() => setStatusFilter("RESOLVED")}
+            className={`rounded-3xl bg-white p-6 shadow-sm cursor-pointer border-2 transition ${
+              statusFilter === "RESOLVED" ? "border-green-500 ring-2 ring-green-50" : "border-transparent"
+            }`}
+          >
 
             <CheckCircle2
               size={30}
@@ -139,11 +163,11 @@ const ManageComplaints = () => {
 
             <h2 className="mt-4 text-4xl font-bold">
 
-              1104
+              {resolvedCount}
 
             </h2>
 
-            <p className="mt-2 text-slate-500">
+            <p className="mt-2 text-slate-505 font-medium">
 
               Resolved
 
@@ -151,7 +175,12 @@ const ManageComplaints = () => {
 
           </div>
 
-          <div className="rounded-3xl bg-white p-6 shadow-sm">
+          <div 
+            onClick={() => setStatusFilter("HIGH_PRIORITY")}
+            className={`rounded-3xl bg-white p-6 shadow-sm cursor-pointer border-2 transition ${
+              statusFilter === "HIGH_PRIORITY" ? "border-red-500 ring-2 ring-red-50" : "border-transparent"
+            }`}
+          >
 
             <AlertTriangle
               size={30}
@@ -160,11 +189,11 @@ const ManageComplaints = () => {
 
             <h2 className="mt-4 text-4xl font-bold">
 
-              28
+              {highPriorityCount}
 
             </h2>
 
-            <p className="mt-2 text-slate-500">
+            <p className="mt-2 text-slate-505 font-medium">
 
               High Priority
 
@@ -219,13 +248,13 @@ const ManageComplaints = () => {
 
                 <th className="px-6 py-5 text-left">ID</th>
 
-                <th className="px-6 py-5 text-left">Citizen</th>
+                <th className="px-6 py-5 text-left">Public User</th>
 
                 <th className="px-6 py-5 text-left">Category</th>
 
                 <th className="px-6 py-5 text-left">Department</th>
 
-                <th className="px-6 py-5 text-left">Volunteer</th>
+                <th className="px-6 py-5 text-left">Legal Guide</th>
 
                 <th className="px-6 py-5 text-left">Priority</th>
 
@@ -239,115 +268,125 @@ const ManageComplaints = () => {
 
             <tbody>
 
-              {filteredComplaints.map((item) => (
-
-                <tr
-                  key={item.id}
-                  className="border-b transition hover:bg-slate-50"
-                >
-
-                  <td className="px-6 py-5 font-semibold">
-
-                    {item.id}
-
+              {loading ? (
+                <tr>
+                  <td colSpan="8" className="px-6 py-12 text-center text-slate-400">
+                    Loading complaints database...
                   </td>
-
-                  <td className="px-6 py-5">
-
-                    {item.citizen}
-
-                  </td>
-
-                  <td className="px-6 py-5">
-
-                    {item.category}
-
-                  </td>
-
-                  <td className="px-6 py-5">
-
-                    {item.department}
-
-                  </td>
-
-                  <td className="px-6 py-5">
-
-                    {item.volunteer}
-
-                  </td>
-
-                  <td className="px-6 py-5">
-
-                    <span
-                      className={`rounded-full px-3 py-1 text-sm font-medium ${
-                        item.priority === "High"
-                          ? "bg-red-100 text-red-600"
-                          : item.priority === "Medium"
-                          ? "bg-yellow-100 text-yellow-600"
-                          : "bg-green-100 text-green-600"
-                      }`}
-                    >
-
-                      {item.priority}
-
-                    </span>
-
-                  </td>
-
-                  <td className="px-6 py-5">
-
-                    <span
-                      className={`rounded-full px-3 py-1 text-sm font-medium ${
-                        item.status === "Pending"
-                          ? "bg-red-100 text-red-600"
-                          : item.status === "In Progress"
-                          ? "bg-blue-100 text-blue-600"
-                          : "bg-green-100 text-green-600"
-                      }`}
-                    >
-
-                      {item.status}
-
-                    </span>
-
-                  </td>
-
-                  <td className="px-6 py-5">
-
-                    <div className="flex justify-center gap-3">
-
-                      <button
-                        onClick={() => navigate("/admin/complaint-details")}
-                        className="rounded-xl bg-blue-600 p-3 text-white transition hover:bg-blue-700"
-                      >
-
-                        <Eye size={18} />
-
-                      </button>
-
-                      <button
-                        className="rounded-xl bg-green-600 p-3 text-white transition hover:bg-green-700"
-                      >
-
-                        <UserCheck size={18} />
-
-                      </button>
-
-                      <button
-                        className="rounded-xl bg-red-600 p-3 text-white transition hover:bg-red-700"
-                      >
-
-                        <Trash2 size={18} />
-
-                      </button>
-
-                    </div>
-
-                  </td>
-
                 </tr>
+              ) : filteredComplaints.map((item) => {
+                const id = `CMP${item.id}`;
+                const citizen = item.citizenName || item.userName || "Citizen";
+                const category = item.categoryDisplayName || item.category || "General";
+                const department = item.authority || item.department || "Triage Pending";
+                const volunteer = item.assignedHelperName || item.assignedHelper?.name || "Not Assigned";
+                const priority = item.priority ? item.priority.toUpperCase() : "MEDIUM";
+                const status = item.status ? item.status.toUpperCase() : "SUBMITTED";
 
-              ))}
+                const priorityClass = priority === "CRITICAL" || priority === "HIGH"
+                  ? "bg-red-100 text-red-600"
+                  : priority === "MEDIUM"
+                  ? "bg-yellow-100 text-yellow-650"
+                  : "bg-green-100 text-green-650";
+
+                const statusClass = status === "PENDING" || status === "SUBMITTED"
+                  ? "bg-orange-100 text-orange-650"
+                  : status === "RESOLVED"
+                  ? "bg-green-100 text-green-650"
+                  : "bg-blue-100 text-blue-600";
+
+                return (
+                  <tr
+                    key={item.id}
+                    className="border-b transition hover:bg-slate-50"
+                  >
+
+                    <td className="px-6 py-5 font-semibold text-slate-800">
+
+                      {id}
+
+                    </td>
+
+                    <td className="px-6 py-5">
+
+                      {citizen}
+
+                    </td>
+
+                    <td className="px-6 py-5">
+
+                      {category}
+
+                    </td>
+
+                    <td className="px-6 py-5">
+
+                      {department}
+
+                    </td>
+
+                    <td className="px-6 py-5">
+
+                      {volunteer}
+
+                    </td>
+
+                    <td className="px-6 py-5">
+
+                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${priorityClass}`}>
+
+                        {priority}
+
+                      </span>
+
+                    </td>
+
+                    <td className="px-6 py-5">
+
+                      <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusClass}`}>
+
+                        {status.replace("_", " ")}
+
+                      </span>
+
+                    </td>
+
+                    <td className="px-6 py-5">
+
+                      <div className="flex justify-center gap-3">
+
+                        <button
+                          onClick={() => navigate(`/admin/complaint-details` /* would need ID but fallback or detail page accepts state */)}
+                          className="rounded-xl bg-blue-600 p-3 text-white transition hover:bg-blue-700"
+                        >
+
+                          <Eye size={18} />
+
+                        </button>
+
+                        <button
+                          className="rounded-xl bg-green-600 p-3 text-white transition hover:bg-green-700"
+                        >
+
+                          <UserCheck size={18} />
+
+                        </button>
+
+                        <button
+                          className="rounded-xl bg-red-600 p-3 text-white transition hover:bg-red-700"
+                        >
+
+                          <Trash2 size={18} />
+
+                        </button>
+
+                      </div>
+
+                    </td>
+
+                  </tr>
+                );
+              })}
 
             </tbody>
 
@@ -400,7 +439,7 @@ const ManageComplaints = () => {
 
               <span className="mx-1 font-semibold">
 
-                {complaintData.length}
+                {complaints.length}
 
               </span>
 

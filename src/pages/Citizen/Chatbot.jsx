@@ -96,7 +96,7 @@ const Chatbot = () => {
 
           <button
             onClick={() => setMessages(initialMessages)}
-            className="flex items-center gap-2 rounded-xl border border-slate-350 px-5 py-3 hover:bg-slate-50 transition cursor-pointer text-slate-700 font-semibold"
+            className="flex items-center gap-2 rounded-xl border border-slate-300 px-5 py-3 hover:bg-slate-50 transition cursor-pointer text-slate-700 font-semibold"
           >
             <Trash2 size={18} />
             Clear Chat
@@ -190,7 +190,7 @@ const Chatbot = () => {
               <button
                 type="button"
                 onClick={() => toast.info("Attachments are coming soon.")}
-                className="rounded-xl border border-slate-350 p-4 transition hover:bg-white bg-white cursor-pointer"
+                className="rounded-xl border border-slate-300 p-4 transition hover:bg-white bg-white cursor-pointer"
                 title="Attach evidence slip"
               >
                 <Paperclip size={20} className="text-slate-600" />
@@ -200,7 +200,7 @@ const Chatbot = () => {
                 type="button"
                 onClick={handleVoiceRecord}
                 className={`rounded-xl border p-4 transition cursor-pointer ${
-                  recording ? "bg-red-500 text-white animate-pulse" : "border-slate-350 hover:bg-white bg-white"
+                  recording ? "bg-red-500 text-white animate-pulse" : "border-slate-300 hover:bg-white bg-white"
                 }`}
                 title="Dictate message"
               >
@@ -218,7 +218,7 @@ const Chatbot = () => {
                     sendMessage();
                   }
                 }}
-                className="h-14 flex-1 rounded-xl border border-slate-350 px-5 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 bg-white text-slate-800"
+                className="h-14 flex-1 rounded-xl border border-slate-300 px-5 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 bg-white text-slate-800"
               />
 
               <button

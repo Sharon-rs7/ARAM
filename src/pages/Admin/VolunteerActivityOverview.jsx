@@ -144,7 +144,7 @@ export default function VolunteerActivityOverview() {
         {/* Header */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Volunteer Activity Analytics</h1>
+            <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">Legal Guide Activity Analytics</h1>
             <p className="text-sm text-slate-500 mt-1">Monitor operational workload, screen-time sessions, and case review activities.</p>
           </div>
           <div className="flex gap-2.5">
@@ -157,7 +157,7 @@ export default function VolunteerActivityOverview() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           <Card className="p-5 flex items-center justify-between">
             <div>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Volunteers</p>
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-wider">Total Legal Guides</p>
               <h3 className="text-2xl font-black text-slate-900 mt-1.5">{stats.totalVolunteers}</h3>
             </div>
             <div className="bg-blue-50 text-blue-700 rounded-xl p-3"><Users size={20} /></div>
@@ -245,12 +245,12 @@ export default function VolunteerActivityOverview() {
         {/* Table Panel */}
         <Card className="p-6">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
-            <h3 className="text-base font-bold text-slate-900">Volunteer Workload Performance</h3>
+            <h3 className="text-base font-bold text-slate-900">Legal Guide Workload Performance</h3>
             <div className="relative w-full sm:max-w-xs">
               <Search size={14} className="absolute left-3 top-3.5 text-slate-400" />
               <input
                 type="text"
-                placeholder="Search volunteer..."
+                placeholder="Search legal guide..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="h-10 w-full rounded-xl border border-slate-200 pl-9 pr-4 text-xs outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-50/50"
@@ -262,7 +262,7 @@ export default function VolunteerActivityOverview() {
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="border-b border-slate-200 text-slate-400 font-bold uppercase tracking-wider">
-                  <th className="pb-3">Volunteer</th>
+                  <th className="pb-3">Legal Guide</th>
                   <th className="pb-3">Department</th>
                   <th className="pb-3">Today's Time</th>
                   <th className="pb-3">Reviewed Cases</th>
@@ -274,8 +274,11 @@ export default function VolunteerActivityOverview() {
               <tbody className="divide-y divide-slate-100">
                 {filteredVolunteers.map((v) => (
                   <tr key={v.id} className="hover:bg-slate-50/40">
-                    <td className="py-4">
-                      <p className="font-semibold text-slate-800">{v.name}</p>
+                    <td 
+                      className="py-4 cursor-pointer hover:text-indigo-600 transition"
+                      onClick={() => navigate(`/admin/volunteers/${v.id}/analytics`)}
+                    >
+                      <p className="font-semibold text-slate-800 hover:underline">{v.name}</p>
                       <p className="text-[10px] text-slate-400 mt-0.5">{v.email}</p>
                     </td>
                     <td className="py-4 font-medium text-slate-600">{v.department}</td>

@@ -7,7 +7,7 @@ export const aiService = {
   },
 
   askChat: (message, language = 'en', userRole = 'CITIZEN', complaintId = null) => {
-    return api.post('/ai/chat', { message, language, userRole, complaintId })
+    return api.post('/chat/ask', { message, language, userRole, complaintId })
       .then((res) => res.data);
   },
 

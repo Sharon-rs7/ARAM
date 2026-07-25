@@ -17,6 +17,10 @@ self.addEventListener("activate", (event) => {
 self.addEventListener("fetch", (event) => {
   // Only intercept navigate requests (HTML pages) to display offline fallback
   if (event.request.mode === "navigate") {
+    const url = event.request.url;
+    if (url.includes("/api/") || url.includes("/chat/")) {
+      return;
+    }
     event.respondWith(
       fetch(event.request).catch(() => {
         return caches.match(OFFLINE_URL);

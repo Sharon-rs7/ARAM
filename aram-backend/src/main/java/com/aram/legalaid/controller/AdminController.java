@@ -14,6 +14,8 @@ import com.aram.legalaid.service.AdminService;
 import com.aram.legalaid.service.AuditLogService;
 import com.aram.legalaid.service.ComplaintService;
 import com.aram.legalaid.service.MapperService;
+import com.aram.legalaid.service.VolunteerActivityService;
+import java.util.Optional;
 import com.aram.legalaid.util.ExcelExportUtil;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpHeaders;
@@ -24,6 +26,9 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.List;
+import java.util.Map;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -35,10 +40,15 @@ public class AdminController {
     private final MapperService mapperService;
     private final AuditLogService auditLogService;
     private final AuditLogRepository auditLogRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final com.aram.legalaid.service.AIClientService aiClientService;
+    private final VolunteerActivityService volunteerActivityService;
 
     public AdminController(AdminService adminService, ComplaintService complaintService, UserRepository userRepository,
                            ComplaintRepository complaintRepository, MapperService mapperService,
-                           AuditLogService auditLogService, AuditLogRepository auditLogRepository) {
+                           AuditLogService auditLogService, AuditLogRepository auditLogRepository,
+                           PasswordEncoder passwordEncoder, com.aram.legalaid.service.AIClientService aiClientService,
+                           VolunteerActivityService volunteerActivityService) {
         this.adminService = adminService;
         this.complaintService = complaintService;
         this.userRepository = userRepository;
@@ -46,6 +56,9 @@ public class AdminController {
         this.mapperService = mapperService;
         this.auditLogService = auditLogService;
         this.auditLogRepository = auditLogRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.aiClientService = aiClientService;
+        this.volunteerActivityService = volunteerActivityService;
     }
 
     @GetMapping("/dashboard")
@@ -156,8 +169,94 @@ public class AdminController {
     }
 
     @GetMapping("/audit-logs")
-    public ResponseEntity<List<AuditLog>> auditLogs() {
-        return ResponseEntity.ok(auditLogRepository.findAllByOrderByTimestampDesc());
+    public ResponseEntity<Map<String, Object>> auditLogs(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "size", defaultValue = "10") int size,
+            @RequestParam(value = "action", required = false) String action,
+            @RequestParam(value = "role", required = false) String role,
+            @RequestParam(value = "from", required = false) String from,
+            @RequestParam(value = "to", required = false) String to
+    ) {
+        List<AuditLog> allLogs = auditLogRepository.findAllByOrderByTimestampDesc();
+        java.util.stream.Stream<AuditLog> logStream = allLogs.stream();
+        
+        if (action != null && !action.trim().isEmpty()) {
+            String lowerAction = action.toLowerCase().trim();
+            logStream = logStream.filter(log -> log.getAction().toLowerCase().contains(lowerAction));
+        }
+        
+        if (role != null && !role.trim().isEmpty()) {
+            String lowerRole = role.toLowerCase().trim();
+            logStream = logStream.filter(log -> {
+                String performedBy = log.getPerformedBy();
+                if ("system".equals(performedBy.toLowerCase()) || "system ai".equals(performedBy.toLowerCase())) {
+                    return "system".contains(lowerRole) || "ai".contains(lowerRole);
+                }
+                
+                Optional<User> u = userRepository.findByEmail(performedBy);
+                if (u.isPresent()) {
+                    return u.get().getRole().name().toLowerCase().contains(lowerRole);
+                }
+                return false;
+            });
+        }
+        
+        if (from != null && !from.trim().isEmpty()) {
+            try {
+                java.time.LocalDateTime fromDate = java.time.LocalDate.parse(from.trim()).atStartOfDay();
+                logStream = logStream.filter(log -> !log.getTimestamp().isBefore(fromDate));
+            } catch (Exception e) {
+                // ignore
+            }
+        }
+        
+        if (to != null && !to.trim().isEmpty()) {
+            try {
+                java.time.LocalDateTime toDate = java.time.LocalDate.parse(to.trim()).plusDays(1).atStartOfDay();
+                logStream = logStream.filter(log -> log.getTimestamp().isBefore(toDate));
+            } catch (Exception e) {
+                // ignore
+            }
+        }
+        
+        List<AuditLog> filteredLogs = logStream.toList();
+        
+        int totalElements = filteredLogs.size();
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+        
+        int start = page * size;
+        int end = Math.min(start + size, totalElements);
+        
+        List<AuditLog> paginated = (start < totalElements) ? filteredLogs.subList(start, end) : List.of();
+        
+        Map<String, Object> response = new java.util.HashMap<>();
+        response.put("content", paginated);
+        response.put("currentPage", page);
+        response.put("totalElements", totalElements);
+        response.put("totalPages", totalPages);
+        response.put("size", size);
+        
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/analytics/complaint-trends")
+    public ResponseEntity<List<Map<String, Object>>> getComplaintTrends() {
+        return ResponseEntity.ok(adminService.getComplaintTrends());
+    }
+
+    @GetMapping("/analytics/category-distribution")
+    public ResponseEntity<List<Map<String, Object>>> getCategoryDistribution() {
+        return ResponseEntity.ok(adminService.getCategoryDistribution());
+    }
+
+    @GetMapping("/analytics/volunteer-workload")
+    public ResponseEntity<Map<String, Object>> getVolunteerWorkload() {
+        return ResponseEntity.ok(adminService.getVolunteerWorkload());
+    }
+
+    @GetMapping("/analytics/volunteer-activity")
+    public ResponseEntity<Map<String, Object>> getVolunteerActivity() {
+        return ResponseEntity.ok(volunteerActivityService.getOverallOverview());
     }
 
     @GetMapping("/reports")
@@ -178,5 +277,127 @@ public class AdminController {
         headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
 
         return ResponseEntity.ok().headers(headers).body(excelData);
+    }
+
+    @PostMapping("/helpers")
+    public ResponseEntity<UserResponse> createHelper(@Valid @RequestBody CreateVolunteerRequest request, Principal principal) {
+        if (userRepository.existsByEmail(request.email())) {
+            throw new com.aram.legalaid.exception.BadRequestException("Email already exists");
+        }
+        
+        User helper = new User();
+        helper.setName(request.name());
+        helper.setEmail(request.email());
+        helper.setMobile(request.mobile());
+        helper.setRole(Role.HELPER);
+        helper.setStatus(UserStatus.ACTIVE);
+        helper.setHelperVerified(true);
+        
+        String tempPassword = "AramVol@" + request.mobile().substring(6);
+        helper.setPasswordHash(passwordEncoder.encode(tempPassword));
+        helper.setForcePasswordChange(true);
+        
+        helper.setGender(request.gender());
+        helper.setDistrict(request.district());
+        helper.setLanguagesKnown(request.languagesKnown());
+        helper.setSpecializationCategories(request.specializationCategories());
+        helper.setMaxActiveCases(request.maxActiveCases() > 0 ? request.maxActiveCases() : 5);
+        helper.setWomenSupportTrained(request.womenSupportTrained());
+        helper.setCanHandleSensitiveCases(request.canHandleSensitiveCases());
+        helper.setServiceArea(request.serviceArea());
+        helper.setSubSpecializations(request.subSpecializations());
+        helper.setExperienceLevel(request.experienceLevel());
+        helper.setAvailabilityStatus("AVAILABLE");
+        helper.setCurrentActiveCases(0);
+        
+        User saved = userRepository.save(helper);
+        String adminName = principal != null ? principal.getName() : "admin@aram.ai";
+        auditLogService.log("VOLUNTEER_CREATED", adminName, "Admin created volunteer account: " + request.email() + " with temp password " + tempPassword);
+        
+        return ResponseEntity.ok(mapperService.toUserResponse(saved));
+    }
+
+    @GetMapping("/complaints/{id}/recommend-volunteers")
+    public ResponseEntity<List<Map<String, Object>>> recommendVolunteersForComplaint(@PathVariable Long id) {
+        Complaint complaint = complaintRepository.findById(id).orElseThrow(() -> new com.aram.legalaid.exception.ResourceNotFoundException("Complaint not found"));
+        
+        List<User> activeVolunteers = userRepository.findByRole(Role.HELPER).stream()
+                .filter(u -> u.getStatus() == UserStatus.ACTIVE)
+                .toList();
+        
+        List<Map<String, Object>> volunteerPayloads = activeVolunteers.stream().map(v -> {
+            Map<String, Object> map = new java.util.HashMap<>();
+            map.put("id", v.getId());
+            map.put("name", v.getName());
+            map.put("gender", v.getGender() != null ? v.getGender().toUpperCase() : "ANY");
+            
+            String langs = v.getLanguagesKnown();
+            map.put("languagesKnown", langs != null ? List.of(langs.split(",")) : List.of("English"));
+            
+            map.put("district", v.getDistrict() != null ? v.getDistrict() : "Coimbatore");
+            
+            String specs = v.getSpecializationCategories();
+            map.put("specializationCategories", specs != null ? List.of(specs.split(",")) : List.of());
+            
+            map.put("maxActiveCases", v.getMaxActiveCases());
+            map.put("currentActiveCases", v.getCurrentActiveCases());
+            map.put("availabilityStatus", v.getAvailabilityStatus());
+            map.put("womenSupportTrained", v.isWomenSupportTrained());
+            return map;
+        }).toList();
+        
+        String catCode = complaint.getCategory() != null ? complaint.getCategory().name() : "GENERAL_LEGAL_AID";
+        boolean preferWoman = complaint.isSensitive() || complaint.isWomenSensitive() || com.aram.legalaid.enums.HelperGender.FEMALE == complaint.getPreferredHelperGender();
+        
+        List<Map<String, Object>> recommendations = aiClientService.recommendVolunteers(
+            catCode,
+            complaint.getLanguage(),
+            preferWoman,
+            complaint.getDistrict(),
+            volunteerPayloads
+        );
+        
+        return ResponseEntity.ok(recommendations);
+    }
+
+    @PatchMapping("/complaints/{id}/assign-volunteer")
+    public ResponseEntity<ComplaintResponse> assignVolunteer(
+            @PathVariable Long id, 
+            @RequestBody Map<String, Object> body, 
+            Principal principal) {
+        Complaint complaint = complaintRepository.findById(id).orElseThrow(() -> new com.aram.legalaid.exception.ResourceNotFoundException("Complaint not found"));
+        
+        Long volunteerId = ((Number) body.get("volunteerId")).longValue();
+        User volunteer = userRepository.findById(volunteerId).orElseThrow(() -> new com.aram.legalaid.exception.ResourceNotFoundException("Volunteer not found"));
+        
+        boolean isSensitiveCase = complaint.isSensitive() || complaint.isWomenSensitive() || com.aram.legalaid.enums.HelperGender.FEMALE == complaint.getPreferredHelperGender();
+        if (isSensitiveCase && !"FEMALE".equalsIgnoreCase(volunteer.getGender())) {
+            String overrideReason = (String) body.get("overrideReason");
+            if (overrideReason == null || overrideReason.trim().isEmpty()) {
+                throw new com.aram.legalaid.exception.BadRequestException("Gender preference override requires a specified reason.");
+            }
+            complaint.setAssignmentOverrideReason(overrideReason);
+            String adminName = principal != null ? principal.getName() : "admin@aram.ai";
+            auditLogService.log("VOLUNTEER_GENDER_OVERRIDE", adminName, 
+                "Admin assigned male volunteer " + volunteer.getEmail() + " to sensitive complaint ID " + id + ". Reason: " + overrideReason);
+        }
+        
+        if (complaint.getAssignedHelper() != null) {
+            User oldHelper = complaint.getAssignedHelper();
+            oldHelper.setCurrentActiveCases(Math.max(0, oldHelper.getCurrentActiveCases() - 1));
+            userRepository.save(oldHelper);
+        }
+        
+        complaint.setAssignedHelper(volunteer);
+        complaint.setStatus(ComplaintStatus.HELPER_ASSIGNED);
+        Complaint saved = complaintRepository.save(complaint);
+        
+        volunteer.setCurrentActiveCases(volunteer.getCurrentActiveCases() + 1);
+        userRepository.save(volunteer);
+        
+        String adminName = principal != null ? principal.getName() : "admin@aram.ai";
+        auditLogService.log("COMPLAINT_ASSIGNED", adminName, "Assigned volunteer " + volunteer.getEmail() + " to complaint ID " + id);
+        
+        return ResponseEntity.ok(mapperService.toComplaintResponse(saved, null));
     }
 }

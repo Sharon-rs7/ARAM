@@ -18,6 +18,8 @@ import Chatbot from "./pages/Citizen/Chatbot";
 import Profile from "./pages/Citizen/Profile";
 import Settings from "./pages/Citizen/Settings";
 import CitizenDocuments from "./pages/Citizen/CitizenDocuments";
+import TrackComplaint from "./pages/Citizen/TrackComplaint";
+import HelpCenter from "./pages/Citizen/HelpCenter";
 
 /* Volunteer */
 import VolunteerDashboard from "./pages/Volunteer/Dashboard";
@@ -26,6 +28,7 @@ import VolunteerComplaintDetails from "./pages/Volunteer/ComplaintDetails";
 import CaseReview from "./pages/Volunteer/CaseReview";
 import VolunteerProfile from "./pages/Volunteer/Profile";
 import VolunteerSettings from "./pages/Volunteer/Settings";
+import MyAnalytics from "./pages/Volunteer/MyAnalytics";
 
 /* Admin */
 import AdminDashboard from "./pages/Admin/Dashboard";
@@ -41,6 +44,7 @@ import AdminSettings from "./pages/Admin/Settings";
 import AuditLogs from "./pages/Admin/AuditLogs";
 import VolunteerActivityOverview from "./pages/Admin/VolunteerActivityOverview";
 import VolunteerActivityDetails from "./pages/Admin/VolunteerActivityDetails";
+import VolunteerAnalytics from "./pages/Admin/VolunteerAnalytics";
 
 /* Legal & Errors */
 import TermsConditions from "./pages/Legal/TermsConditions";
@@ -69,6 +73,7 @@ function App() {
         <Route path="/cookie-policy" element={<CookiePolicy />} />
         <Route path="/unauthorized" element={<Unauthorized />} />
         <Route path="/server-error" element={<ServerError />} />
+        <Route path="/track-complaint" element={<TrackComplaint />} />
 
         {/* Public Authentication Pages (Protected from logged-in users) */}
         <Route element={<PublicRoute />}>
@@ -93,6 +98,7 @@ function App() {
           <Route path="/citizen/documents" element={<CitizenDocuments />} />
           <Route path="/citizen/profile" element={<Profile />} />
           <Route path="/citizen/settings" element={<Settings />} />
+          <Route path="/citizen/help" element={<HelpCenter />} />
         </Route>
 
         {/* Volunteer Protected Routes */}
@@ -104,6 +110,7 @@ function App() {
           <Route path="/volunteer/case-review/:id" element={<CaseReview />} />
           <Route path="/volunteer/profile" element={<VolunteerProfile />} />
           <Route path="/volunteer/settings" element={<VolunteerSettings />} />
+          <Route path="/volunteer/my-analytics" element={<MyAnalytics />} />
         </Route>
 
         {/* Admin Protected Routes */}
@@ -122,6 +129,7 @@ function App() {
           <Route path="/admin/audit-logs" element={<AuditLogs />} />
           <Route path="/admin/volunteer-activity" element={<VolunteerActivityOverview />} />
           <Route path="/admin/volunteers/:id/activity" element={<VolunteerActivityDetails />} />
+          <Route path="/admin/volunteers/:id/analytics" element={<VolunteerAnalytics />} />
           <Route path="/admin/profile" element={<AdminProfile />} />
           <Route path="/admin/settings" element={<AdminSettings />} />
         </Route>

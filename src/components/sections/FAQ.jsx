@@ -62,7 +62,7 @@ export default function FAQ() {
               <div 
                 className={`transition-all duration-350 ease-in-out ${
                   activeIndex === index ? "max-h-40 border-t p-6" : "max-h-0"
-                } overflow-hidden bg-slate-50/50 text-slate-650 text-sm leading-relaxed`}
+                } overflow-hidden bg-slate-50/50 text-slate-600 text-sm leading-relaxed`}
               >
                 {faq.answer}
               </div>

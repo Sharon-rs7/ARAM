@@ -28,5 +28,8 @@ public record UserUpdateRequest(
 
         String gender,
         String specialization,
-        com.aram.legalaid.enums.UserStatus status
+        com.aram.legalaid.enums.UserStatus status,
+        Boolean voiceAssistanceEnabled,
+        Boolean simpleModeEnabled,
+        Double speechRatePreference
 ) {}

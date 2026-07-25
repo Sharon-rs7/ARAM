@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { userService } from "../../services/userService";
+import { volunteerService } from "../../services/volunteerService";
 import { toast } from "sonner";
 
 const Profile = () => {
@@ -30,6 +31,11 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [avatarPreview, setAvatarPreview] = useState("");
+  const [stats, setStats] = useState({
+    assigned: 0,
+    resolved: 0,
+    successRate: 95
+  });
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -44,7 +50,7 @@ const Profile = () => {
           preferredLanguage: data.preferredLanguage || "English",
           bio: data.bio || "",
           avatarUrl: data.avatarUrl || "",
-          specialization: data.specialization || "Labor & Consumer Law",
+          specialization: data.specialization || "Labour Rights, Consumer Protection",
           departmentPreference: data.departmentPreference || "Labour Dispute",
           serviceArea: data.serviceArea || "Chennai limits",
           languagesKnown: data.languagesKnown || "English, Tamil",
@@ -61,7 +67,7 @@ const Profile = () => {
             preferredLanguage: authUser.preferredLanguage || "English",
             bio: authUser.bio || "",
             avatarUrl: authUser.avatarUrl || "",
-            specialization: authUser.specialization || "Labor & Consumer Law",
+            specialization: authUser.specialization || "Labour Rights, Consumer Protection",
             departmentPreference: authUser.departmentPreference || "Labour Dispute",
             serviceArea: authUser.serviceArea || "Chennai limits",
             languagesKnown: authUser.languagesKnown || "English, Tamil",
@@ -70,7 +76,24 @@ const Profile = () => {
         }
       }
     };
+
+    const fetchStats = async () => {
+      try {
+        const dashboard = await volunteerService.getDashboard();
+        if (dashboard && dashboard.stats) {
+          setStats({
+            assigned: dashboard.stats.assigned || 0,
+            resolved: dashboard.stats.resolved || 0,
+            successRate: dashboard.volunteer?.successRate || 95
+          });
+        }
+      } catch (err) {
+        console.warn("Failed to load volunteer stats dynamically", err);
+      }
+    };
+
     fetchProfile();
+    fetchStats();
   }, [authUser]);
 
   const handleAvatarChange = async (e) => {
@@ -204,7 +227,7 @@ const Profile = () => {
             <div className="flex gap-3 w-full sm:w-auto">
               <button
                 onClick={() => { setIsEditing(false); setError(""); }}
-                className="flex items-center justify-center gap-2 rounded-xl border border-slate-355 px-5 py-3 text-slate-650 hover:bg-slate-50 transition font-medium flex-1 sm:flex-none cursor-pointer"
+                className="flex items-center justify-center gap-2 rounded-xl border border-slate-355 px-5 py-3 text-slate-600 hover:bg-slate-50 transition font-medium flex-1 sm:flex-none cursor-pointer"
               >
                 <X size={18} />
                 Cancel
@@ -300,7 +323,7 @@ const Profile = () => {
                     type="email"
                     value={profile.email}
                     disabled
-                    className="w-full h-12 rounded-xl border border-slate-200 pl-12 bg-slate-50 text-slate-450"
+                    className="w-full h-12 rounded-xl border border-slate-200 pl-12 bg-slate-50 text-slate-400"
                   />
                 </div>
               </div>
@@ -368,15 +391,15 @@ const Profile = () => {
             <div className="space-y-4">
               <div className="flex items-center justify-between rounded-2xl bg-slate-50 p-4 border border-slate-100">
                 <span className="text-slate-600 font-medium">Assigned Case Load</span>
-                <span className="text-2xl font-bold text-blue-600">2</span>
+                <span className="text-2xl font-bold text-indigo-600">{stats.assigned}</span>
               </div>
               <div className="flex items-center justify-between rounded-2xl bg-slate-50 p-4 border border-slate-100">
                 <span className="text-slate-600 font-medium">Cases Resolved</span>
-                <span className="text-2xl font-bold text-green-600">5</span>
+                <span className="text-2xl font-bold text-green-600">{stats.resolved}</span>
               </div>
               <div className="flex items-center justify-between rounded-2xl bg-slate-50 p-4 border border-slate-100">
                 <span className="text-slate-600 font-medium">Success Rate</span>
-                <span className="text-2xl font-bold text-purple-600">95%</span>
+                <span className="text-2xl font-bold text-purple-600">{stats.successRate}%</span>
               </div>
             </div>
 
@@ -412,7 +435,7 @@ const Profile = () => {
           <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4 border-t">
             <button
               onClick={() => { setIsEditing(false); setError(""); }}
-              className="px-8 py-4 border border-slate-350 rounded-xl hover:bg-slate-50 font-semibold text-slate-600 transition w-full sm:w-auto cursor-pointer text-center"
+              className="px-8 py-4 border border-slate-300 rounded-xl hover:bg-slate-50 font-semibold text-slate-600 transition w-full sm:w-auto cursor-pointer text-center"
             >
               Cancel
             </button>

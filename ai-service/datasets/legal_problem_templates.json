@@ -1,0 +1,5400 @@
+[
+  {
+    "problemId": "LP-001",
+    "category": "LABOUR_DISPUTE",
+    "subcategory": "Salary Not Paid",
+    "languageKeywords": {
+      "English": [
+        "labour dispute",
+        "salary not paid",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "salary not paid"
+      ],
+      "Hindi": [
+        "salary not paid",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "salarynotpaid",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Unpaid salary or wages delayed by employer in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Unpaid salary or wages delayed by employer.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Unpaid salary or wages delayed by employer.",
+      "Tanglish": "Enaku help venum: Unpaid salary or wages delayed by employer process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card",
+      "Employee ID",
+      "Employment Agreement",
+      "Salary Slip"
+    ],
+    "recommendedAuthority": "Labour Office",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Salary Slip proofs.",
+      "Draft formal written statement of Salary Not Paid.",
+      "Submit the petition to the recommended Labour Office."
+    ],
+    "volunteerExpertiseTags": [
+      "labour_dispute",
+      "salary_not_paid"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-002",
+    "category": "LABOUR_DISPUTE",
+    "subcategory": "Unfair Dismissal",
+    "languageKeywords": {
+      "English": [
+        "labour dispute",
+        "unfair dismissal",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "unfair dismissal"
+      ],
+      "Hindi": [
+        "unfair dismissal",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "unfairdismissal",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Terminated from job without notice or valid reason in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Terminated from job without notice or valid reason.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Terminated from job without notice or valid reason.",
+      "Tanglish": "Enaku help venum: Terminated from job without notice or valid reason process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Labour Office",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Unfair Dismissal.",
+      "Submit the petition to the recommended Labour Office."
+    ],
+    "volunteerExpertiseTags": [
+      "labour_dispute",
+      "unfair_dismissal"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-003",
+    "category": "LABOUR_DISPUTE",
+    "subcategory": "Overtime Exploitation",
+    "languageKeywords": {
+      "English": [
+        "labour dispute",
+        "overtime exploitation",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "overtime exploitation"
+      ],
+      "Hindi": [
+        "overtime exploitation",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "overtimeexploitation",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Forced to work overtime without extra pay in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Forced to work overtime without extra pay.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Forced to work overtime without extra pay.",
+      "Tanglish": "Enaku help venum: Forced to work overtime without extra pay process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card",
+      "Employee ID",
+      "Employment Agreement",
+      "Salary Slip"
+    ],
+    "recommendedAuthority": "Labour Office",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Salary Slip proofs.",
+      "Draft formal written statement of Overtime Exploitation.",
+      "Submit the petition to the recommended Labour Office."
+    ],
+    "volunteerExpertiseTags": [
+      "labour_dispute",
+      "overtime_exploitation"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-004",
+    "category": "LABOUR_DISPUTE",
+    "subcategory": "Contract Breach",
+    "languageKeywords": {
+      "English": [
+        "labour dispute",
+        "contract breach",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "contract breach"
+      ],
+      "Hindi": [
+        "contract breach",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "contractbreach",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Employer violated terms of employment agreement in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Employer violated terms of employment agreement.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Employer violated terms of employment agreement.",
+      "Tanglish": "Enaku help venum: Employer violated terms of employment agreement process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card",
+      "Employee ID",
+      "Employment Agreement",
+      "Salary Slip"
+    ],
+    "recommendedAuthority": "Labour Office",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Salary Slip proofs.",
+      "Draft formal written statement of Contract Breach.",
+      "Submit the petition to the recommended Labour Office."
+    ],
+    "volunteerExpertiseTags": [
+      "labour_dispute",
+      "contract_breach"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-005",
+    "category": "CONSUMER_COMPLAINT",
+    "subcategory": "Defective Product",
+    "languageKeywords": {
+      "English": [
+        "consumer complaint",
+        "defective product",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "defective product"
+      ],
+      "Hindi": [
+        "defective product",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "defectiveproduct",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Received damaged or malfunctioning item in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Received damaged or malfunctioning item.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Received damaged or malfunctioning item.",
+      "Tanglish": "Enaku help venum: Received damaged or malfunctioning item process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card",
+      "Product Images",
+      "Invoice Receipts",
+      "Transaction Screenshot"
+    ],
+    "recommendedAuthority": "Consumer Forum",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Invoice Receipts proofs.",
+      "Draft formal written statement of Defective Product.",
+      "Submit the petition to the recommended Consumer Forum."
+    ],
+    "volunteerExpertiseTags": [
+      "consumer_complaint",
+      "defective_product"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-006",
+    "category": "CONSUMER_COMPLAINT",
+    "subcategory": "Warranty Denial",
+    "languageKeywords": {
+      "English": [
+        "consumer complaint",
+        "warranty denial",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "warranty denial"
+      ],
+      "Hindi": [
+        "warranty denial",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "warrantydenial",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Seller or brand refused to honor product warranty in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Seller or brand refused to honor product warranty.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Seller or brand refused to honor product warranty.",
+      "Tanglish": "Enaku help venum: Seller or brand refused to honor product warranty process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card",
+      "Product Images",
+      "Invoice Receipts",
+      "Transaction Screenshot"
+    ],
+    "recommendedAuthority": "Consumer Forum",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Invoice Receipts proofs.",
+      "Draft formal written statement of Warranty Denial.",
+      "Submit the petition to the recommended Consumer Forum."
+    ],
+    "volunteerExpertiseTags": [
+      "consumer_complaint",
+      "warranty_denial"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-007",
+    "category": "CONSUMER_COMPLAINT",
+    "subcategory": "Overcharging MRP",
+    "languageKeywords": {
+      "English": [
+        "consumer complaint",
+        "overcharging mrp",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "overcharging mrp"
+      ],
+      "Hindi": [
+        "overcharging mrp",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "overchargingmrp",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Shopkeeper charged extra price above maximum retail price in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Shopkeeper charged extra price above maximum retail price.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Shopkeeper charged extra price above maximum retail price.",
+      "Tanglish": "Enaku help venum: Shopkeeper charged extra price above maximum retail price process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card",
+      "Product Images",
+      "Invoice Receipts",
+      "Transaction Screenshot"
+    ],
+    "recommendedAuthority": "Consumer Forum",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Invoice Receipts proofs.",
+      "Draft formal written statement of Overcharging MRP.",
+      "Submit the petition to the recommended Consumer Forum."
+    ],
+    "volunteerExpertiseTags": [
+      "consumer_complaint",
+      "overcharging_mrp"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-008",
+    "category": "CONSUMER_COMPLAINT",
+    "subcategory": "Fake Online Order",
+    "languageKeywords": {
+      "English": [
+        "consumer complaint",
+        "fake online order",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "fake online order"
+      ],
+      "Hindi": [
+        "fake online order",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "fakeonlineorder",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Ordered item online but received empty box or fake item in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Ordered item online but received empty box or fake item.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Ordered item online but received empty box or fake item.",
+      "Tanglish": "Enaku help venum: Ordered item online but received empty box or fake item process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card",
+      "Product Images",
+      "Invoice Receipts",
+      "Transaction Screenshot"
+    ],
+    "recommendedAuthority": "Consumer Forum",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Invoice Receipts proofs.",
+      "Draft formal written statement of Fake Online Order.",
+      "Submit the petition to the recommended Consumer Forum."
+    ],
+    "volunteerExpertiseTags": [
+      "consumer_complaint",
+      "fake_online_order"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-009",
+    "category": "CYBER_CRIME",
+    "subcategory": "UPI Fraud Scam",
+    "languageKeywords": {
+      "English": [
+        "cyber crime",
+        "upi fraud scam",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "upi fraud scam"
+      ],
+      "Hindi": [
+        "upi fraud scam",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "upifraudscam",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Lost money to fraudulent QR code or UPI link in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Lost money to fraudulent QR code or UPI link.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Lost money to fraudulent QR code or UPI link.",
+      "Tanglish": "Enaku help venum: Lost money to fraudulent QR code or UPI link process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card",
+      "Transaction Screenshot",
+      "Bank Statement"
+    ],
+    "recommendedAuthority": "Cyber Crime Portal",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Bank Statement proofs.",
+      "Draft formal written statement of UPI Fraud Scam.",
+      "Submit the petition to the recommended Cyber Crime Portal."
+    ],
+    "volunteerExpertiseTags": [
+      "cyber_crime",
+      "upi_fraud_scam"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-010",
+    "category": "CYBER_CRIME",
+    "subcategory": "Account Hacking",
+    "languageKeywords": {
+      "English": [
+        "cyber crime",
+        "account hacking",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "account hacking"
+      ],
+      "Hindi": [
+        "account hacking",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "accounthacking",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Social media or email account accessed by hackers in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Social media or email account accessed by hackers.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Social media or email account accessed by hackers.",
+      "Tanglish": "Enaku help venum: Social media or email account accessed by hackers process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card",
+      "Transaction Screenshot",
+      "Bank Statement"
+    ],
+    "recommendedAuthority": "Cyber Crime Portal",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Bank Statement proofs.",
+      "Draft formal written statement of Account Hacking.",
+      "Submit the petition to the recommended Cyber Crime Portal."
+    ],
+    "volunteerExpertiseTags": [
+      "cyber_crime",
+      "account_hacking"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-011",
+    "category": "CYBER_CRIME",
+    "subcategory": "Phishing Link",
+    "languageKeywords": {
+      "English": [
+        "cyber crime",
+        "phishing link",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "phishing link"
+      ],
+      "Hindi": [
+        "phishing link",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "phishinglink",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Received suspicious link requesting banking password/OTP in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Received suspicious link requesting banking password/OTP.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Received suspicious link requesting banking password/OTP.",
+      "Tanglish": "Enaku help venum: Received suspicious link requesting banking password/OTP process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card",
+      "Transaction Screenshot",
+      "Bank Statement"
+    ],
+    "recommendedAuthority": "Cyber Crime Portal",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Bank Statement proofs.",
+      "Draft formal written statement of Phishing Link.",
+      "Submit the petition to the recommended Cyber Crime Portal."
+    ],
+    "volunteerExpertiseTags": [
+      "cyber_crime",
+      "phishing_link"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-012",
+    "category": "CYBER_CRIME",
+    "subcategory": "Identity Theft",
+    "languageKeywords": {
+      "English": [
+        "cyber crime",
+        "identity theft",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "identity theft"
+      ],
+      "Hindi": [
+        "identity theft",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "identitytheft",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Personal documents used online without authorization in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Personal documents used online without authorization.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Personal documents used online without authorization.",
+      "Tanglish": "Enaku help venum: Personal documents used online without authorization process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "FIR Copy",
+      "Aadhaar Card",
+      "Medical Wound Certificate",
+      "Police Complaint Copy"
+    ],
+    "recommendedAuthority": "Cyber Crime Portal",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Police Complaint Copy proofs.",
+      "Draft formal written statement of Identity Theft.",
+      "Submit the petition to the recommended Cyber Crime Portal."
+    ],
+    "volunteerExpertiseTags": [
+      "cyber_crime",
+      "identity_theft"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-013",
+    "category": "PROPERTY_DISPUTE",
+    "subcategory": "Boundary Encroachment",
+    "languageKeywords": {
+      "English": [
+        "property dispute",
+        "boundary encroachment",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "boundary encroachment"
+      ],
+      "Hindi": [
+        "boundary encroachment",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "boundaryencroachment",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Neighbor built wall crossing land boundaries in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Neighbor built wall crossing land boundaries.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Neighbor built wall crossing land boundaries.",
+      "Tanglish": "Enaku help venum: Neighbor built wall crossing land boundaries process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card",
+      "Tax Receipts",
+      "Sale Deed / Lease copy",
+      "Property Land Patta"
+    ],
+    "recommendedAuthority": "Police Station",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Property Land Patta proofs.",
+      "Draft formal written statement of Boundary Encroachment.",
+      "Submit the petition to the recommended Police Station."
+    ],
+    "volunteerExpertiseTags": [
+      "property_dispute",
+      "boundary_encroachment"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-014",
+    "category": "PROPERTY_DISPUTE",
+    "subcategory": "Deposit Refund Denial",
+    "languageKeywords": {
+      "English": [
+        "property dispute",
+        "deposit refund denial",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "deposit refund denial"
+      ],
+      "Hindi": [
+        "deposit refund denial",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "depositrefunddenial",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Landlord refused to refund lease security deposit in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Landlord refused to refund lease security deposit.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Landlord refused to refund lease security deposit.",
+      "Tanglish": "Enaku help venum: Landlord refused to refund lease security deposit process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Police Station",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Deposit Refund Denial.",
+      "Submit the petition to the recommended Police Station."
+    ],
+    "volunteerExpertiseTags": [
+      "property_dispute",
+      "deposit_refund_denial"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-015",
+    "category": "PROPERTY_DISPUTE",
+    "subcategory": "Forged Title Deed",
+    "languageKeywords": {
+      "English": [
+        "property dispute",
+        "forged title deed",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "forged title deed"
+      ],
+      "Hindi": [
+        "forged title deed",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "forgedtitledeed",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Fake land registration deed used to claim ownership in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Fake land registration deed used to claim ownership.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Fake land registration deed used to claim ownership.",
+      "Tanglish": "Enaku help venum: Fake land registration deed used to claim ownership process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card",
+      "Tax Receipts",
+      "Sale Deed / Lease copy",
+      "Property Land Patta"
+    ],
+    "recommendedAuthority": "Police Station",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Property Land Patta proofs.",
+      "Draft formal written statement of Forged Title Deed.",
+      "Submit the petition to the recommended Police Station."
+    ],
+    "volunteerExpertiseTags": [
+      "property_dispute",
+      "forged_title_deed"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-016",
+    "category": "PROPERTY_DISPUTE",
+    "subcategory": "Land Illegal Occupation",
+    "languageKeywords": {
+      "English": [
+        "property dispute",
+        "land illegal occupation",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "land illegal occupation"
+      ],
+      "Hindi": [
+        "land illegal occupation",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "landillegaloccupation",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Goon or relative illegally occupying land parcel in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Goon or relative illegally occupying land parcel.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Goon or relative illegally occupying land parcel.",
+      "Tanglish": "Enaku help venum: Goon or relative illegally occupying land parcel process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card",
+      "Tax Receipts",
+      "Sale Deed / Lease copy",
+      "Property Land Patta"
+    ],
+    "recommendedAuthority": "Police Station",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Property Land Patta proofs.",
+      "Draft formal written statement of Land Illegal Occupation.",
+      "Submit the petition to the recommended Police Station."
+    ],
+    "volunteerExpertiseTags": [
+      "property_dispute",
+      "land_illegal_occupation"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-017",
+    "category": "WOMEN_SAFETY",
+    "subcategory": "Stalking",
+    "languageKeywords": {
+      "English": [
+        "women safety",
+        "stalking",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "stalking"
+      ],
+      "Hindi": [
+        "stalking",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "stalking",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Followed physically or online persistently by a stalker in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Followed physically or online persistently by a stalker.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Followed physically or online persistently by a stalker.",
+      "Tanglish": "Enaku help venum: Followed physically or online persistently by a stalker process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Women Helpline",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Stalking.",
+      "Submit the petition to the recommended Women Helpline."
+    ],
+    "volunteerExpertiseTags": [
+      "women_safety",
+      "stalking"
+    ],
+    "womenSensitive": true,
+    "preferredVolunteerGenderRule": "FEMALE_PREFERRED",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-018",
+    "category": "WOMEN_SAFETY",
+    "subcategory": "Public Harassment",
+    "languageKeywords": {
+      "English": [
+        "women safety",
+        "public harassment",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "public harassment"
+      ],
+      "Hindi": [
+        "public harassment",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "publicharassment",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Verbal abuse or threats faced at bus stops or roads in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Verbal abuse or threats faced at bus stops or roads.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Verbal abuse or threats faced at bus stops or roads.",
+      "Tanglish": "Enaku help venum: Verbal abuse or threats faced at bus stops or roads process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Women Helpline",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Public Harassment.",
+      "Submit the petition to the recommended Women Helpline."
+    ],
+    "volunteerExpertiseTags": [
+      "women_safety",
+      "public_harassment"
+    ],
+    "womenSensitive": true,
+    "preferredVolunteerGenderRule": "FEMALE_PREFERRED",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-019",
+    "category": "WOMEN_SAFETY",
+    "subcategory": "Inappropriate Messaging",
+    "languageKeywords": {
+      "English": [
+        "women safety",
+        "inappropriate messaging",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "inappropriate messaging"
+      ],
+      "Hindi": [
+        "inappropriate messaging",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "inappropriatemessaging",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Received obscene messages on chat platforms in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Received obscene messages on chat platforms.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Received obscene messages on chat platforms.",
+      "Tanglish": "Enaku help venum: Received obscene messages on chat platforms process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Women Helpline",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Inappropriate Messaging.",
+      "Submit the petition to the recommended Women Helpline."
+    ],
+    "volunteerExpertiseTags": [
+      "women_safety",
+      "inappropriate_messaging"
+    ],
+    "womenSensitive": true,
+    "preferredVolunteerGenderRule": "FEMALE_PREFERRED",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-020",
+    "category": "WOMEN_SAFETY",
+    "subcategory": "Voyeurism",
+    "languageKeywords": {
+      "English": [
+        "women safety",
+        "voyeurism",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "voyeurism"
+      ],
+      "Hindi": [
+        "voyeurism",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "voyeurism",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Secret video recording or photography without consent in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Secret video recording or photography without consent.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Secret video recording or photography without consent.",
+      "Tanglish": "Enaku help venum: Secret video recording or photography without consent process pathi."
+    },
+    "priorityCode": "CRITICAL",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Women Helpline",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Voyeurism.",
+      "Submit the petition to the recommended Women Helpline."
+    ],
+    "volunteerExpertiseTags": [
+      "women_safety",
+      "voyeurism"
+    ],
+    "womenSensitive": true,
+    "preferredVolunteerGenderRule": "FEMALE_PREFERRED",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-021",
+    "category": "DOMESTIC_VIOLENCE",
+    "subcategory": "Physical Abuse",
+    "languageKeywords": {
+      "English": [
+        "domestic violence",
+        "physical abuse",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "physical abuse"
+      ],
+      "Hindi": [
+        "physical abuse",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "physicalabuse",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Assaulted physically by husband or in-laws in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Assaulted physically by husband or in-laws.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Assaulted physically by husband or in-laws.",
+      "Tanglish": "Enaku help venum: Assaulted physically by husband or in-laws process pathi."
+    },
+    "priorityCode": "CRITICAL",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "FIR Copy",
+      "Aadhaar Card",
+      "Medical Wound Certificate",
+      "Police Complaint Copy"
+    ],
+    "recommendedAuthority": "Protection Officer",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Police Complaint Copy proofs.",
+      "Draft formal written statement of Physical Abuse.",
+      "Submit the petition to the recommended Protection Officer."
+    ],
+    "volunteerExpertiseTags": [
+      "domestic_violence",
+      "physical_abuse"
+    ],
+    "womenSensitive": true,
+    "preferredVolunteerGenderRule": "FEMALE_PREFERRED",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-022",
+    "category": "DOMESTIC_VIOLENCE",
+    "subcategory": "Dowry Threat",
+    "languageKeywords": {
+      "English": [
+        "domestic violence",
+        "dowry threat",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "dowry threat"
+      ],
+      "Hindi": [
+        "dowry threat",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "dowrythreat",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Threatened or abused demanding gold/cash dowry in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Threatened or abused demanding gold/cash dowry.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Threatened or abused demanding gold/cash dowry.",
+      "Tanglish": "Enaku help venum: Threatened or abused demanding gold/cash dowry process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Protection Officer",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Dowry Threat.",
+      "Submit the petition to the recommended Protection Officer."
+    ],
+    "volunteerExpertiseTags": [
+      "domestic_violence",
+      "dowry_threat"
+    ],
+    "womenSensitive": true,
+    "preferredVolunteerGenderRule": "FEMALE_PREFERRED",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-023",
+    "category": "DOMESTIC_VIOLENCE",
+    "subcategory": "Forced Confinement",
+    "languageKeywords": {
+      "English": [
+        "domestic violence",
+        "forced confinement",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "forced confinement"
+      ],
+      "Hindi": [
+        "forced confinement",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "forcedconfinement",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Locked inside house or restricted from calling family in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Locked inside house or restricted from calling family.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Locked inside house or restricted from calling family.",
+      "Tanglish": "Enaku help venum: Locked inside house or restricted from calling family process pathi."
+    },
+    "priorityCode": "CRITICAL",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Protection Officer",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Forced Confinement.",
+      "Submit the petition to the recommended Protection Officer."
+    ],
+    "volunteerExpertiseTags": [
+      "domestic_violence",
+      "forced_confinement"
+    ],
+    "womenSensitive": true,
+    "preferredVolunteerGenderRule": "FEMALE_PREFERRED",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-024",
+    "category": "DOMESTIC_VIOLENCE",
+    "subcategory": "Emotional Blackmail",
+    "languageKeywords": {
+      "English": [
+        "domestic violence",
+        "emotional blackmail",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "emotional blackmail"
+      ],
+      "Hindi": [
+        "emotional blackmail",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "emotionalblackmail",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Constant harassment causing mental torture at home in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Constant harassment causing mental torture at home.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Constant harassment causing mental torture at home.",
+      "Tanglish": "Enaku help venum: Constant harassment causing mental torture at home process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Protection Officer",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Emotional Blackmail.",
+      "Submit the petition to the recommended Protection Officer."
+    ],
+    "volunteerExpertiseTags": [
+      "domestic_violence",
+      "emotional_blackmail"
+    ],
+    "womenSensitive": true,
+    "preferredVolunteerGenderRule": "FEMALE_PREFERRED",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-025",
+    "category": "CRIMINAL_COMPLAINT",
+    "subcategory": "Theft/Housebreak",
+    "languageKeywords": {
+      "English": [
+        "criminal complaint",
+        "theft/housebreak",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "theft/housebreak"
+      ],
+      "Hindi": [
+        "theft/housebreak",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "theft/housebreak",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: House broken into and valuables stolen in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: House broken into and valuables stolen.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: House broken into and valuables stolen.",
+      "Tanglish": "Enaku help venum: House broken into and valuables stolen process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "FIR Copy",
+      "Aadhaar Card",
+      "Medical Wound Certificate",
+      "Police Complaint Copy"
+    ],
+    "recommendedAuthority": "Police Station",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Police Complaint Copy proofs.",
+      "Draft formal written statement of Theft/Housebreak.",
+      "Submit the petition to the recommended Police Station."
+    ],
+    "volunteerExpertiseTags": [
+      "criminal_complaint",
+      "theft/housebreak"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-026",
+    "category": "CRIMINAL_COMPLAINT",
+    "subcategory": "Assault/Battery",
+    "languageKeywords": {
+      "English": [
+        "criminal complaint",
+        "assault/battery",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "assault/battery"
+      ],
+      "Hindi": [
+        "assault/battery",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "assault/battery",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Physically attacked by a gang or neighbor with weapons in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Physically attacked by a gang or neighbor with weapons.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Physically attacked by a gang or neighbor with weapons.",
+      "Tanglish": "Enaku help venum: Physically attacked by a gang or neighbor with weapons process pathi."
+    },
+    "priorityCode": "CRITICAL",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "FIR Copy",
+      "Aadhaar Card",
+      "Medical Wound Certificate",
+      "Police Complaint Copy"
+    ],
+    "recommendedAuthority": "Police Station",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Police Complaint Copy proofs.",
+      "Draft formal written statement of Assault/Battery.",
+      "Submit the petition to the recommended Police Station."
+    ],
+    "volunteerExpertiseTags": [
+      "criminal_complaint",
+      "assault/battery"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-027",
+    "category": "CRIMINAL_COMPLAINT",
+    "subcategory": "Extortion/Blackmail",
+    "languageKeywords": {
+      "English": [
+        "criminal complaint",
+        "extortion/blackmail",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "extortion/blackmail"
+      ],
+      "Hindi": [
+        "extortion/blackmail",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "extortion/blackmail",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Demanded money under threat of exposing personal info in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Demanded money under threat of exposing personal info.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Demanded money under threat of exposing personal info.",
+      "Tanglish": "Enaku help venum: Demanded money under threat of exposing personal info process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Police Station",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Extortion/Blackmail.",
+      "Submit the petition to the recommended Police Station."
+    ],
+    "volunteerExpertiseTags": [
+      "criminal_complaint",
+      "extortion/blackmail"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-028",
+    "category": "CRIMINAL_COMPLAINT",
+    "subcategory": "Vandalism/Property Damage",
+    "languageKeywords": {
+      "English": [
+        "criminal complaint",
+        "vandalism/property damage",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "vandalism/property damage"
+      ],
+      "Hindi": [
+        "vandalism/property damage",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "vandalism/propertydamage",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Private vehicle or house gate damaged intentionally in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Private vehicle or house gate damaged intentionally.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Private vehicle or house gate damaged intentionally.",
+      "Tanglish": "Enaku help venum: Private vehicle or house gate damaged intentionally process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card",
+      "Tax Receipts",
+      "Sale Deed / Lease copy",
+      "Property Land Patta"
+    ],
+    "recommendedAuthority": "Police Station",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Property Land Patta proofs.",
+      "Draft formal written statement of Vandalism/Property Damage.",
+      "Submit the petition to the recommended Police Station."
+    ],
+    "volunteerExpertiseTags": [
+      "criminal_complaint",
+      "vandalism/property_damage"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-029",
+    "category": "FAMILY_DISPUTE",
+    "subcategory": "Child Custody",
+    "languageKeywords": {
+      "English": [
+        "family dispute",
+        "child custody",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "child custody"
+      ],
+      "Hindi": [
+        "child custody",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "childcustody",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Dispute over custody rights of minor child during separation in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Dispute over custody rights of minor child during separation.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Dispute over custody rights of minor child during separation.",
+      "Tanglish": "Enaku help venum: Dispute over custody rights of minor child during separation process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "District Legal Services Authority",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Child Custody.",
+      "Submit the petition to the recommended District Legal Services Authority."
+    ],
+    "volunteerExpertiseTags": [
+      "family_dispute",
+      "child_custody"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-030",
+    "category": "FAMILY_DISPUTE",
+    "subcategory": "Divorce Proceedings",
+    "languageKeywords": {
+      "English": [
+        "family dispute",
+        "divorce proceedings",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "divorce proceedings"
+      ],
+      "Hindi": [
+        "divorce proceedings",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "divorceproceedings",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Filing for legal divorce due to mutual incompatibility in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Filing for legal divorce due to mutual incompatibility.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Filing for legal divorce due to mutual incompatibility.",
+      "Tanglish": "Enaku help venum: Filing for legal divorce due to mutual incompatibility process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "District Legal Services Authority",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Divorce Proceedings.",
+      "Submit the petition to the recommended District Legal Services Authority."
+    ],
+    "volunteerExpertiseTags": [
+      "family_dispute",
+      "divorce_proceedings"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-031",
+    "category": "FAMILY_DISPUTE",
+    "subcategory": "Ancestral Property Division",
+    "languageKeywords": {
+      "English": [
+        "family dispute",
+        "ancestral property division",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "ancestral property division"
+      ],
+      "Hindi": [
+        "ancestral property division",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "ancestralpropertydivision",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Sisters or brothers disputing ancestral share division in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Sisters or brothers disputing ancestral share division.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Sisters or brothers disputing ancestral share division.",
+      "Tanglish": "Enaku help venum: Sisters or brothers disputing ancestral share division process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card",
+      "Tax Receipts",
+      "Sale Deed / Lease copy",
+      "Property Land Patta"
+    ],
+    "recommendedAuthority": "District Legal Services Authority",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Property Land Patta proofs.",
+      "Draft formal written statement of Ancestral Property Division.",
+      "Submit the petition to the recommended District Legal Services Authority."
+    ],
+    "volunteerExpertiseTags": [
+      "family_dispute",
+      "ancestral_property_division"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-032",
+    "category": "FAMILY_DISPUTE",
+    "subcategory": "Forced Marriage",
+    "languageKeywords": {
+      "English": [
+        "family dispute",
+        "forced marriage",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "forced marriage"
+      ],
+      "Hindi": [
+        "forced marriage",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "forcedmarriage",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Family members forcing marriage against personal will in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Family members forcing marriage against personal will.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Family members forcing marriage against personal will.",
+      "Tanglish": "Enaku help venum: Family members forcing marriage against personal will process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "District Legal Services Authority",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Forced Marriage.",
+      "Submit the petition to the recommended District Legal Services Authority."
+    ],
+    "volunteerExpertiseTags": [
+      "family_dispute",
+      "forced_marriage"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-033",
+    "category": "GOVERNMENT_SCHEME",
+    "subcategory": "Widow Pension Delay",
+    "languageKeywords": {
+      "English": [
+        "government scheme",
+        "widow pension delay",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "widow pension delay"
+      ],
+      "Hindi": [
+        "widow pension delay",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "widowpensiondelay",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Pending approval for widow pension scheme for months in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Pending approval for widow pension scheme for months.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Pending approval for widow pension scheme for months.",
+      "Tanglish": "Enaku help venum: Pending approval for widow pension scheme for months process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card",
+      "Ration Card",
+      "Income Certificate"
+    ],
+    "recommendedAuthority": "Government Grievance Cell",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Ration Card proofs.",
+      "Draft formal written statement of Widow Pension Delay.",
+      "Submit the petition to the recommended Government Grievance Cell."
+    ],
+    "volunteerExpertiseTags": [
+      "government_scheme",
+      "widow_pension_delay"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-034",
+    "category": "GOVERNMENT_SCHEME",
+    "subcategory": "Ration Card Denial",
+    "languageKeywords": {
+      "English": [
+        "government scheme",
+        "ration card denial",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "ration card denial"
+      ],
+      "Hindi": [
+        "ration card denial",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "rationcarddenial",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Ration shop refusing to issue card or supply commodities in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Ration shop refusing to issue card or supply commodities.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Ration shop refusing to issue card or supply commodities.",
+      "Tanglish": "Enaku help venum: Ration shop refusing to issue card or supply commodities process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card",
+      "Ration Card",
+      "Income Certificate"
+    ],
+    "recommendedAuthority": "Government Grievance Cell",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Ration Card proofs.",
+      "Draft formal written statement of Ration Card Denial.",
+      "Submit the petition to the recommended Government Grievance Cell."
+    ],
+    "volunteerExpertiseTags": [
+      "government_scheme",
+      "ration_card_denial"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-035",
+    "category": "GOVERNMENT_SCHEME",
+    "subcategory": "Housing Benefits Reject",
+    "languageKeywords": {
+      "English": [
+        "government scheme",
+        "housing benefits reject",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "housing benefits reject"
+      ],
+      "Hindi": [
+        "housing benefits reject",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "housingbenefitsreject",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Eligible housing scheme request turned down by officials in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Eligible housing scheme request turned down by officials.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Eligible housing scheme request turned down by officials.",
+      "Tanglish": "Enaku help venum: Eligible housing scheme request turned down by officials process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card",
+      "Ration Card",
+      "Income Certificate"
+    ],
+    "recommendedAuthority": "Government Grievance Cell",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Ration Card proofs.",
+      "Draft formal written statement of Housing Benefits Reject.",
+      "Submit the petition to the recommended Government Grievance Cell."
+    ],
+    "volunteerExpertiseTags": [
+      "government_scheme",
+      "housing_benefits_reject"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-036",
+    "category": "GOVERNMENT_SCHEME",
+    "subcategory": "Farmer Subsidy Issue",
+    "languageKeywords": {
+      "English": [
+        "government scheme",
+        "farmer subsidy issue",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "farmer subsidy issue"
+      ],
+      "Hindi": [
+        "farmer subsidy issue",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "farmersubsidyissue",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Fertilizer or crop damage subsidy money not credited in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Fertilizer or crop damage subsidy money not credited.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Fertilizer or crop damage subsidy money not credited.",
+      "Tanglish": "Enaku help venum: Fertilizer or crop damage subsidy money not credited process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Government Grievance Cell",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Farmer Subsidy Issue.",
+      "Submit the petition to the recommended Government Grievance Cell."
+    ],
+    "volunteerExpertiseTags": [
+      "government_scheme",
+      "farmer_subsidy_issue"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-037",
+    "category": "GENERAL_LEGAL_AID",
+    "subcategory": "Contract Consultation",
+    "languageKeywords": {
+      "English": [
+        "general legal aid",
+        "contract consultation",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "contract consultation"
+      ],
+      "Hindi": [
+        "contract consultation",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "contractconsultation",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Need lawyer to review partnership or land lease agreement in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Need lawyer to review partnership or land lease agreement.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Need lawyer to review partnership or land lease agreement.",
+      "Tanglish": "Enaku help venum: Need lawyer to review partnership or land lease agreement process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card",
+      "Employee ID",
+      "Employment Agreement",
+      "Salary Slip"
+    ],
+    "recommendedAuthority": "District Legal Services Authority",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Salary Slip proofs.",
+      "Draft formal written statement of Contract Consultation.",
+      "Submit the petition to the recommended District Legal Services Authority."
+    ],
+    "volunteerExpertiseTags": [
+      "general_legal_aid",
+      "contract_consultation"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-038",
+    "category": "GENERAL_LEGAL_AID",
+    "subcategory": "Court Summon Guidance",
+    "languageKeywords": {
+      "English": [
+        "general legal aid",
+        "court summon guidance",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "court summon guidance"
+      ],
+      "Hindi": [
+        "court summon guidance",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "courtsummonguidance",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Received summon as witness or defendant, next steps info in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Received summon as witness or defendant, next steps info.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Received summon as witness or defendant, next steps info.",
+      "Tanglish": "Enaku help venum: Received summon as witness or defendant, next steps info process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "District Legal Services Authority",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Court Summon Guidance.",
+      "Submit the petition to the recommended District Legal Services Authority."
+    ],
+    "volunteerExpertiseTags": [
+      "general_legal_aid",
+      "court_summon_guidance"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-039",
+    "category": "GENERAL_LEGAL_AID",
+    "subcategory": "Affidavit Filing",
+    "languageKeywords": {
+      "English": [
+        "general legal aid",
+        "affidavit filing",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "affidavit filing"
+      ],
+      "Hindi": [
+        "affidavit filing",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "affidavitfiling",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Drafting name change or address proof affidavit in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Drafting name change or address proof affidavit.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Drafting name change or address proof affidavit.",
+      "Tanglish": "Enaku help venum: Drafting name change or address proof affidavit process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "District Legal Services Authority",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Affidavit Filing.",
+      "Submit the petition to the recommended District Legal Services Authority."
+    ],
+    "volunteerExpertiseTags": [
+      "general_legal_aid",
+      "affidavit_filing"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-040",
+    "category": "GENERAL_LEGAL_AID",
+    "subcategory": "Free Lawyer Application",
+    "languageKeywords": {
+      "English": [
+        "general legal aid",
+        "free lawyer application",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "free lawyer application"
+      ],
+      "Hindi": [
+        "free lawyer application",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "freelawyerapplication",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Requesting DLSA panel advocate for representation in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Requesting DLSA panel advocate for representation.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Requesting DLSA panel advocate for representation.",
+      "Tanglish": "Enaku help venum: Requesting DLSA panel advocate for representation process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "District Legal Services Authority",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Free Lawyer Application.",
+      "Submit the petition to the recommended District Legal Services Authority."
+    ],
+    "volunteerExpertiseTags": [
+      "general_legal_aid",
+      "free_lawyer_application"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-041",
+    "category": "MOTOR_ACCIDENT_CLAIM",
+    "subcategory": "Third Party Property Damage",
+    "languageKeywords": {
+      "English": [
+        "motor accident claim",
+        "third party property damage",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "third party property damage"
+      ],
+      "Hindi": [
+        "third party property damage",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "thirdpartypropertydamage",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Vehicle damaged due to reckless driving of another car in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Vehicle damaged due to reckless driving of another car.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Vehicle damaged due to reckless driving of another car.",
+      "Tanglish": "Enaku help venum: Vehicle damaged due to reckless driving of another car process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card",
+      "Tax Receipts",
+      "Sale Deed / Lease copy",
+      "Property Land Patta"
+    ],
+    "recommendedAuthority": "Motor Accident Claims Tribunal",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Property Land Patta proofs.",
+      "Draft formal written statement of Third Party Property Damage.",
+      "Submit the petition to the recommended Motor Accident Claims Tribunal."
+    ],
+    "volunteerExpertiseTags": [
+      "motor_accident_claim",
+      "third_party_property_damage"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-042",
+    "category": "MOTOR_ACCIDENT_CLAIM",
+    "subcategory": "Bodily Injury Compensation",
+    "languageKeywords": {
+      "English": [
+        "motor accident claim",
+        "bodily injury compensation",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "bodily injury compensation"
+      ],
+      "Hindi": [
+        "bodily injury compensation",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "bodilyinjurycompensation",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Seeking accident claim from insurer for fractures in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Seeking accident claim from insurer for fractures.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Seeking accident claim from insurer for fractures.",
+      "Tanglish": "Enaku help venum: Seeking accident claim from insurer for fractures process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Medical Reports",
+      "Aadhaar Card",
+      "Treatment Bills",
+      "Prescriptions"
+    ],
+    "recommendedAuthority": "Motor Accident Claims Tribunal",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Medical Reports proofs.",
+      "Draft formal written statement of Bodily Injury Compensation.",
+      "Submit the petition to the recommended Motor Accident Claims Tribunal."
+    ],
+    "volunteerExpertiseTags": [
+      "motor_accident_claim",
+      "bodily_injury_compensation"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-043",
+    "category": "MOTOR_ACCIDENT_CLAIM",
+    "subcategory": "Hit and Run Claim",
+    "languageKeywords": {
+      "English": [
+        "motor accident claim",
+        "hit and run claim",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "hit and run claim"
+      ],
+      "Hindi": [
+        "hit and run claim",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "hitandrunclaim",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Injured by unknown speeding vehicle fleeing accident spot in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Injured by unknown speeding vehicle fleeing accident spot.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Injured by unknown speeding vehicle fleeing accident spot.",
+      "Tanglish": "Enaku help venum: Injured by unknown speeding vehicle fleeing accident spot process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Motor Accident Claims Tribunal",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Hit and Run Claim.",
+      "Submit the petition to the recommended Motor Accident Claims Tribunal."
+    ],
+    "volunteerExpertiseTags": [
+      "motor_accident_claim",
+      "hit_and_run_claim"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-044",
+    "category": "MOTOR_ACCIDENT_CLAIM",
+    "subcategory": "Tribunal Petition Filing",
+    "languageKeywords": {
+      "English": [
+        "motor accident claim",
+        "tribunal petition filing",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "tribunal petition filing"
+      ],
+      "Hindi": [
+        "tribunal petition filing",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "tribunalpetitionfiling",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Submitting MACT claim petition after collision in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Submitting MACT claim petition after collision.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Submitting MACT claim petition after collision.",
+      "Tanglish": "Enaku help venum: Submitting MACT claim petition after collision process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Motor Accident Claims Tribunal",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Tribunal Petition Filing.",
+      "Submit the petition to the recommended Motor Accident Claims Tribunal."
+    ],
+    "volunteerExpertiseTags": [
+      "motor_accident_claim",
+      "tribunal_petition_filing"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-045",
+    "category": "INSURANCE_CLAIM",
+    "subcategory": "Life Cover Rejection",
+    "languageKeywords": {
+      "English": [
+        "insurance claim",
+        "life cover rejection",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "life cover rejection"
+      ],
+      "Hindi": [
+        "life cover rejection",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "lifecoverrejection",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Nominee claim denied by insurer claiming hidden illness in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Nominee claim denied by insurer claiming hidden illness.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Nominee claim denied by insurer claiming hidden illness.",
+      "Tanglish": "Enaku help venum: Nominee claim denied by insurer claiming hidden illness process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Insurance Ombudsman",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Life Cover Rejection.",
+      "Submit the petition to the recommended Insurance Ombudsman."
+    ],
+    "volunteerExpertiseTags": [
+      "insurance_claim",
+      "life_cover_rejection"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-046",
+    "category": "INSURANCE_CLAIM",
+    "subcategory": "Health Surgery Denied",
+    "languageKeywords": {
+      "English": [
+        "insurance claim",
+        "health surgery denied",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "health surgery denied"
+      ],
+      "Hindi": [
+        "health surgery denied",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "healthsurgerydenied",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: TPA rejected cashless hospitalization pre-auth request in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: TPA rejected cashless hospitalization pre-auth request.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: TPA rejected cashless hospitalization pre-auth request.",
+      "Tanglish": "Enaku help venum: TPA rejected cashless hospitalization pre-auth request process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Insurance Ombudsman",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Health Surgery Denied.",
+      "Submit the petition to the recommended Insurance Ombudsman."
+    ],
+    "volunteerExpertiseTags": [
+      "insurance_claim",
+      "health_surgery_denied"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-047",
+    "category": "INSURANCE_CLAIM",
+    "subcategory": "Crop Failure Compensation",
+    "languageKeywords": {
+      "English": [
+        "insurance claim",
+        "crop failure compensation",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "crop failure compensation"
+      ],
+      "Hindi": [
+        "crop failure compensation",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "cropfailurecompensation",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Natural calamity damage payout pending from crop insurer in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Natural calamity damage payout pending from crop insurer.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Natural calamity damage payout pending from crop insurer.",
+      "Tanglish": "Enaku help venum: Natural calamity damage payout pending from crop insurer process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Insurance Ombudsman",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Crop Failure Compensation.",
+      "Submit the petition to the recommended Insurance Ombudsman."
+    ],
+    "volunteerExpertiseTags": [
+      "insurance_claim",
+      "crop_failure_compensation"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-048",
+    "category": "INSURANCE_CLAIM",
+    "subcategory": "Car Collision Refusal",
+    "languageKeywords": {
+      "English": [
+        "insurance claim",
+        "car collision refusal",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "car collision refusal"
+      ],
+      "Hindi": [
+        "car collision refusal",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "carcollisionrefusal",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Claim rejected alleging license validity discrepancy in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Claim rejected alleging license validity discrepancy.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Claim rejected alleging license validity discrepancy.",
+      "Tanglish": "Enaku help venum: Claim rejected alleging license validity discrepancy process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Insurance Ombudsman",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Car Collision Refusal.",
+      "Submit the petition to the recommended Insurance Ombudsman."
+    ],
+    "volunteerExpertiseTags": [
+      "insurance_claim",
+      "car_collision_refusal"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-049",
+    "category": "BANKING_DISPUTE",
+    "subcategory": "Unauthorized Cards Fees",
+    "languageKeywords": {
+      "English": [
+        "banking dispute",
+        "unauthorized cards fees",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "unauthorized cards fees"
+      ],
+      "Hindi": [
+        "unauthorized cards fees",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "unauthorizedcardsfees",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Billed annual charges despite card being lifetime free in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Billed annual charges despite card being lifetime free.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Billed annual charges despite card being lifetime free.",
+      "Tanglish": "Enaku help venum: Billed annual charges despite card being lifetime free process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Banking Ombudsman",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Unauthorized Cards Fees.",
+      "Submit the petition to the recommended Banking Ombudsman."
+    ],
+    "volunteerExpertiseTags": [
+      "banking_dispute",
+      "unauthorized_cards_fees"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-050",
+    "category": "BANKING_DISPUTE",
+    "subcategory": "Account Freezing",
+    "languageKeywords": {
+      "English": [
+        "banking dispute",
+        "account freezing",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "account freezing"
+      ],
+      "Hindi": [
+        "account freezing",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "accountfreezing",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Bank frozen savings account without notice in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Bank frozen savings account without notice.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Bank frozen savings account without notice.",
+      "Tanglish": "Enaku help venum: Bank frozen savings account without notice process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Banking Ombudsman",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Account Freezing.",
+      "Submit the petition to the recommended Banking Ombudsman."
+    ],
+    "volunteerExpertiseTags": [
+      "banking_dispute",
+      "account_freezing"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-051",
+    "category": "BANKING_DISPUTE",
+    "subcategory": "Loan EMI Double Debit",
+    "languageKeywords": {
+      "English": [
+        "banking dispute",
+        "loan emi double debit",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "loan emi double debit"
+      ],
+      "Hindi": [
+        "loan emi double debit",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "loanemidoubledebit",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: EMI deducted twice in a month due to technical glitch in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: EMI deducted twice in a month due to technical glitch.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: EMI deducted twice in a month due to technical glitch.",
+      "Tanglish": "Enaku help venum: EMI deducted twice in a month due to technical glitch process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Banking Ombudsman",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Loan EMI Double Debit.",
+      "Submit the petition to the recommended Banking Ombudsman."
+    ],
+    "volunteerExpertiseTags": [
+      "banking_dispute",
+      "loan_emi_double_debit"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-052",
+    "category": "BANKING_DISPUTE",
+    "subcategory": "ATM Cash Dispense Failure",
+    "languageKeywords": {
+      "English": [
+        "banking dispute",
+        "atm cash dispense failure",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "atm cash dispense failure"
+      ],
+      "Hindi": [
+        "atm cash dispense failure",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "atmcashdispensefailure",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Money debited from account but cash not dispensed in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Money debited from account but cash not dispensed.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Money debited from account but cash not dispensed.",
+      "Tanglish": "Enaku help venum: Money debited from account but cash not dispensed process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Banking Ombudsman",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of ATM Cash Dispense Failure.",
+      "Submit the petition to the recommended Banking Ombudsman."
+    ],
+    "volunteerExpertiseTags": [
+      "banking_dispute",
+      "atm_cash_dispense_failure"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-053",
+    "category": "RENT_TENANT_DISPUTE",
+    "subcategory": "Illegal Eviction",
+    "languageKeywords": {
+      "English": [
+        "rent tenant dispute",
+        "illegal eviction",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "illegal eviction"
+      ],
+      "Hindi": [
+        "illegal eviction",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "illegaleviction",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Landlord cut electricity to force tenant out before lease end in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Landlord cut electricity to force tenant out before lease end.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Landlord cut electricity to force tenant out before lease end.",
+      "Tanglish": "Enaku help venum: Landlord cut electricity to force tenant out before lease end process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Rent Agreement",
+      "Rent Receipts",
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Rent Controller Office",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Rent Agreement proofs.",
+      "Draft formal written statement of Illegal Eviction.",
+      "Submit the petition to the recommended Rent Controller Office."
+    ],
+    "volunteerExpertiseTags": [
+      "rent_tenant_dispute",
+      "illegal_eviction"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-054",
+    "category": "RENT_TENANT_DISPUTE",
+    "subcategory": "Maintenance Failure",
+    "languageKeywords": {
+      "English": [
+        "rent tenant dispute",
+        "maintenance failure",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "maintenance failure"
+      ],
+      "Hindi": [
+        "maintenance failure",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "maintenancefailure",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Owner refusing to repair leaking roof and drainage pipes in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Owner refusing to repair leaking roof and drainage pipes.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Owner refusing to repair leaking roof and drainage pipes.",
+      "Tanglish": "Enaku help venum: Owner refusing to repair leaking roof and drainage pipes process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Rent Controller Office",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Maintenance Failure.",
+      "Submit the petition to the recommended Rent Controller Office."
+    ],
+    "volunteerExpertiseTags": [
+      "rent_tenant_dispute",
+      "maintenance_failure"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-055",
+    "category": "RENT_TENANT_DISPUTE",
+    "subcategory": "Commercial Lease Breach",
+    "languageKeywords": {
+      "English": [
+        "rent tenant dispute",
+        "commercial lease breach",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "commercial lease breach"
+      ],
+      "Hindi": [
+        "commercial lease breach",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "commercialleasebreach",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Premises lease terms modified arbitrarily by building owner in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Premises lease terms modified arbitrarily by building owner.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Premises lease terms modified arbitrarily by building owner.",
+      "Tanglish": "Enaku help venum: Premises lease terms modified arbitrarily by building owner process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card",
+      "Tax Receipts",
+      "Sale Deed / Lease copy",
+      "Property Land Patta"
+    ],
+    "recommendedAuthority": "Rent Controller Office",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Property Land Patta proofs.",
+      "Draft formal written statement of Commercial Lease Breach.",
+      "Submit the petition to the recommended Rent Controller Office."
+    ],
+    "volunteerExpertiseTags": [
+      "rent_tenant_dispute",
+      "commercial_lease_breach"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-056",
+    "category": "RENT_TENANT_DISPUTE",
+    "subcategory": "Unauthorized Subletting",
+    "languageKeywords": {
+      "English": [
+        "rent tenant dispute",
+        "unauthorized subletting",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "unauthorized subletting"
+      ],
+      "Hindi": [
+        "unauthorized subletting",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "unauthorizedsubletting",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Tenant sublet the apartment to third parties without lease permit in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Tenant sublet the apartment to third parties without lease permit.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Tenant sublet the apartment to third parties without lease permit.",
+      "Tanglish": "Enaku help venum: Tenant sublet the apartment to third parties without lease permit process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Rent Controller Office",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Unauthorized Subletting.",
+      "Submit the petition to the recommended Rent Controller Office."
+    ],
+    "volunteerExpertiseTags": [
+      "rent_tenant_dispute",
+      "unauthorized_subletting"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-057",
+    "category": "MEDICAL_NEGLIGENCE",
+    "subcategory": "Surgical Gauze Left In",
+    "languageKeywords": {
+      "English": [
+        "medical negligence",
+        "surgical gauze left in",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "surgical gauze left in"
+      ],
+      "Hindi": [
+        "surgical gauze left in",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "surgicalgauzeleftin",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Foreign object left inside abdomen during appendicitis surgery in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Foreign object left inside abdomen during appendicitis surgery.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Foreign object left inside abdomen during appendicitis surgery.",
+      "Tanglish": "Enaku help venum: Foreign object left inside abdomen during appendicitis surgery process pathi."
+    },
+    "priorityCode": "CRITICAL",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "State Medical Council",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Surgical Gauze Left In.",
+      "Submit the petition to the recommended State Medical Council."
+    ],
+    "volunteerExpertiseTags": [
+      "medical_negligence",
+      "surgical_gauze_left_in"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-058",
+    "category": "MEDICAL_NEGLIGENCE",
+    "subcategory": "Wrong Drug Prescription",
+    "languageKeywords": {
+      "English": [
+        "medical negligence",
+        "wrong drug prescription",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "wrong drug prescription"
+      ],
+      "Hindi": [
+        "wrong drug prescription",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "wrongdrugprescription",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Pharmacist or clinic dispensed wrong dosage leading to poisoning in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Pharmacist or clinic dispensed wrong dosage leading to poisoning.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Pharmacist or clinic dispensed wrong dosage leading to poisoning.",
+      "Tanglish": "Enaku help venum: Pharmacist or clinic dispensed wrong dosage leading to poisoning process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "State Medical Council",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Wrong Drug Prescription.",
+      "Submit the petition to the recommended State Medical Council."
+    ],
+    "volunteerExpertiseTags": [
+      "medical_negligence",
+      "wrong_drug_prescription"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-059",
+    "category": "MEDICAL_NEGLIGENCE",
+    "subcategory": "Delayed Emergency Treatment",
+    "languageKeywords": {
+      "English": [
+        "medical negligence",
+        "delayed emergency treatment",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "delayed emergency treatment"
+      ],
+      "Hindi": [
+        "delayed emergency treatment",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "delayedemergencytreatment",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Accident patient denied ICU admission demanding deposit first in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Accident patient denied ICU admission demanding deposit first.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Accident patient denied ICU admission demanding deposit first.",
+      "Tanglish": "Enaku help venum: Accident patient denied ICU admission demanding deposit first process pathi."
+    },
+    "priorityCode": "CRITICAL",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "State Medical Council",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Delayed Emergency Treatment.",
+      "Submit the petition to the recommended State Medical Council."
+    ],
+    "volunteerExpertiseTags": [
+      "medical_negligence",
+      "delayed_emergency_treatment"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-060",
+    "category": "MEDICAL_NEGLIGENCE",
+    "subcategory": "Misdiagnosis Damage",
+    "languageKeywords": {
+      "English": [
+        "medical negligence",
+        "misdiagnosis damage",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "misdiagnosis damage"
+      ],
+      "Hindi": [
+        "misdiagnosis damage",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "misdiagnosisdamage",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Treated for wrong illness leading to worsening of condition in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Treated for wrong illness leading to worsening of condition.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Treated for wrong illness leading to worsening of condition.",
+      "Tanglish": "Enaku help venum: Treated for wrong illness leading to worsening of condition process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Medical Reports",
+      "Aadhaar Card",
+      "Treatment Bills",
+      "Prescriptions"
+    ],
+    "recommendedAuthority": "State Medical Council",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Medical Reports proofs.",
+      "Draft formal written statement of Misdiagnosis Damage.",
+      "Submit the petition to the recommended State Medical Council."
+    ],
+    "volunteerExpertiseTags": [
+      "medical_negligence",
+      "misdiagnosis_damage"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-061",
+    "category": "EDUCATION_DISPUTE",
+    "subcategory": "TC/Certificate Withholding",
+    "languageKeywords": {
+      "English": [
+        "education dispute",
+        "tc/certificate withholding",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "tc/certificate withholding"
+      ],
+      "Hindi": [
+        "tc/certificate withholding",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "tc/certificatewithholding",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: College refusing to issue transfer certificate demanding extra fees in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: College refusing to issue transfer certificate demanding extra fees.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: College refusing to issue transfer certificate demanding extra fees.",
+      "Tanglish": "Enaku help venum: College refusing to issue transfer certificate demanding extra fees process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Education Department Office",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of TC/Certificate Withholding.",
+      "Submit the petition to the recommended Education Department Office."
+    ],
+    "volunteerExpertiseTags": [
+      "education_dispute",
+      "tc/certificate_withholding"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-062",
+    "category": "EDUCATION_DISPUTE",
+    "subcategory": "Illegal Capitation Fees",
+    "languageKeywords": {
+      "English": [
+        "education dispute",
+        "illegal capitation fees",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "illegal capitation fees"
+      ],
+      "Hindi": [
+        "illegal capitation fees",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "illegalcapitationfees",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: School demanding donation money for admission under management seat in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: School demanding donation money for admission under management seat.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: School demanding donation money for admission under management seat.",
+      "Tanglish": "Enaku help venum: School demanding donation money for admission under management seat process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Education Department Office",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Illegal Capitation Fees.",
+      "Submit the petition to the recommended Education Department Office."
+    ],
+    "volunteerExpertiseTags": [
+      "education_dispute",
+      "illegal_capitation_fees"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-063",
+    "category": "EDUCATION_DISPUTE",
+    "subcategory": "RTE Quota Denial",
+    "languageKeywords": {
+      "English": [
+        "education dispute",
+        "rte quota denial",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "rte quota denial"
+      ],
+      "Hindi": [
+        "rte quota denial",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "rtequotadenial",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Refused free education quota seat despite matching income criteria in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Refused free education quota seat despite matching income criteria.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Refused free education quota seat despite matching income criteria.",
+      "Tanglish": "Enaku help venum: Refused free education quota seat despite matching income criteria process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Education Department Office",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of RTE Quota Denial.",
+      "Submit the petition to the recommended Education Department Office."
+    ],
+    "volunteerExpertiseTags": [
+      "education_dispute",
+      "rte_quota_denial"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-064",
+    "category": "EDUCATION_DISPUTE",
+    "subcategory": "Hostel Harassment",
+    "languageKeywords": {
+      "English": [
+        "education dispute",
+        "hostel harassment",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "hostel harassment"
+      ],
+      "Hindi": [
+        "hostel harassment",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "hostelharassment",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Warden or seniors mentally harassing student in university hostel in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Warden or seniors mentally harassing student in university hostel.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Warden or seniors mentally harassing student in university hostel.",
+      "Tanglish": "Enaku help venum: Warden or seniors mentally harassing student in university hostel process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Education Department Office",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Hostel Harassment.",
+      "Submit the petition to the recommended Education Department Office."
+    ],
+    "volunteerExpertiseTags": [
+      "education_dispute",
+      "hostel_harassment"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-065",
+    "category": "WORKPLACE_HARASSMENT",
+    "subcategory": "Quid Pro Quo Coercion",
+    "languageKeywords": {
+      "English": [
+        "workplace harassment",
+        "quid pro quo coercion",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "quid pro quo coercion"
+      ],
+      "Hindi": [
+        "quid pro quo coercion",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "quidproquocoercion",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Supervisor demanding sexual favors for salary increment in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Supervisor demanding sexual favors for salary increment.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Supervisor demanding sexual favors for salary increment.",
+      "Tanglish": "Enaku help venum: Supervisor demanding sexual favors for salary increment process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Internal Complaints Committee",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Quid Pro Quo Coercion.",
+      "Submit the petition to the recommended Internal Complaints Committee."
+    ],
+    "volunteerExpertiseTags": [
+      "workplace_harassment",
+      "quid_pro_quo_coercion"
+    ],
+    "womenSensitive": true,
+    "preferredVolunteerGenderRule": "FEMALE_PREFERRED",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-066",
+    "category": "WORKPLACE_HARASSMENT",
+    "subcategory": "Hostile Boss Outrage",
+    "languageKeywords": {
+      "English": [
+        "workplace harassment",
+        "hostile boss outrage",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "hostile boss outrage"
+      ],
+      "Hindi": [
+        "hostile boss outrage",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "hostilebossoutrage",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Shouted at publicly using abusive slurs continuously in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Shouted at publicly using abusive slurs continuously.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Shouted at publicly using abusive slurs continuously.",
+      "Tanglish": "Enaku help venum: Shouted at publicly using abusive slurs continuously process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Internal Complaints Committee",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Hostile Boss Outrage.",
+      "Submit the petition to the recommended Internal Complaints Committee."
+    ],
+    "volunteerExpertiseTags": [
+      "workplace_harassment",
+      "hostile_boss_outrage"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "FEMALE_PREFERRED",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-067",
+    "category": "WORKPLACE_HARASSMENT",
+    "subcategory": "Salary Deduction Threats",
+    "languageKeywords": {
+      "English": [
+        "workplace harassment",
+        "salary deduction threats",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "salary deduction threats"
+      ],
+      "Hindi": [
+        "salary deduction threats",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "salarydeductionthreats",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Forced to work late hours under threat of firing in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Forced to work late hours under threat of firing.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Forced to work late hours under threat of firing.",
+      "Tanglish": "Enaku help venum: Forced to work late hours under threat of firing process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card",
+      "Employee ID",
+      "Employment Agreement",
+      "Salary Slip"
+    ],
+    "recommendedAuthority": "Internal Complaints Committee",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Salary Slip proofs.",
+      "Draft formal written statement of Salary Deduction Threats.",
+      "Submit the petition to the recommended Internal Complaints Committee."
+    ],
+    "volunteerExpertiseTags": [
+      "workplace_harassment",
+      "salary_deduction_threats"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "FEMALE_PREFERRED",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-068",
+    "category": "WORKPLACE_HARASSMENT",
+    "subcategory": "Gender Bias Promotion",
+    "languageKeywords": {
+      "English": [
+        "workplace harassment",
+        "gender bias promotion",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "gender bias promotion"
+      ],
+      "Hindi": [
+        "gender bias promotion",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "genderbiaspromotion",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Passed over for promotion despite being top performer based on gender in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Passed over for promotion despite being top performer based on gender.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Passed over for promotion despite being top performer based on gender.",
+      "Tanglish": "Enaku help venum: Passed over for promotion despite being top performer based on gender process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Internal Complaints Committee",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Gender Bias Promotion.",
+      "Submit the petition to the recommended Internal Complaints Committee."
+    ],
+    "volunteerExpertiseTags": [
+      "workplace_harassment",
+      "gender_bias_promotion"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "FEMALE_PREFERRED",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-069",
+    "category": "SENIOR_CITIZEN_ABUSE",
+    "subcategory": "Property Forcible Transfer",
+    "languageKeywords": {
+      "English": [
+        "senior citizen abuse",
+        "property forcible transfer",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "property forcible transfer"
+      ],
+      "Hindi": [
+        "property forcible transfer",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "propertyforcibletransfer",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Son forced elder father to sign gift deed for house in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Son forced elder father to sign gift deed for house.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Son forced elder father to sign gift deed for house.",
+      "Tanglish": "Enaku help venum: Son forced elder father to sign gift deed for house process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card",
+      "Tax Receipts",
+      "Sale Deed / Lease copy",
+      "Property Land Patta"
+    ],
+    "recommendedAuthority": "Social Welfare Officer",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Property Land Patta proofs.",
+      "Draft formal written statement of Property Forcible Transfer.",
+      "Submit the petition to the recommended Social Welfare Officer."
+    ],
+    "volunteerExpertiseTags": [
+      "senior_citizen_abuse",
+      "property_forcible_transfer"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-070",
+    "category": "SENIOR_CITIZEN_ABUSE",
+    "subcategory": "Abandonment/Starvation",
+    "languageKeywords": {
+      "English": [
+        "senior citizen abuse",
+        "abandonment/starvation",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "abandonment/starvation"
+      ],
+      "Hindi": [
+        "abandonment/starvation",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "abandonment/starvation",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Elderly mother left at bus stand without food or money in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Elderly mother left at bus stand without food or money.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Elderly mother left at bus stand without food or money.",
+      "Tanglish": "Enaku help venum: Elderly mother left at bus stand without food or money process pathi."
+    },
+    "priorityCode": "CRITICAL",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Social Welfare Officer",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Abandonment/Starvation.",
+      "Submit the petition to the recommended Social Welfare Officer."
+    ],
+    "volunteerExpertiseTags": [
+      "senior_citizen_abuse",
+      "abandonment/starvation"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-071",
+    "category": "SENIOR_CITIZEN_ABUSE",
+    "subcategory": "Physical Assault",
+    "languageKeywords": {
+      "English": [
+        "senior citizen abuse",
+        "physical assault",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "physical assault"
+      ],
+      "Hindi": [
+        "physical assault",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "physicalassault",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Daughter-in-law physically beating aged mother-in-law in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Daughter-in-law physically beating aged mother-in-law.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Daughter-in-law physically beating aged mother-in-law.",
+      "Tanglish": "Enaku help venum: Daughter-in-law physically beating aged mother-in-law process pathi."
+    },
+    "priorityCode": "CRITICAL",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "FIR Copy",
+      "Aadhaar Card",
+      "Medical Wound Certificate",
+      "Police Complaint Copy"
+    ],
+    "recommendedAuthority": "Social Welfare Officer",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Police Complaint Copy proofs.",
+      "Draft formal written statement of Physical Assault.",
+      "Submit the petition to the recommended Social Welfare Officer."
+    ],
+    "volunteerExpertiseTags": [
+      "senior_citizen_abuse",
+      "physical_assault"
+    ],
+    "womenSensitive": true,
+    "preferredVolunteerGenderRule": "FEMALE_PREFERRED",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-072",
+    "category": "SENIOR_CITIZEN_ABUSE",
+    "subcategory": "Maintenance Claim Refusal",
+    "languageKeywords": {
+      "English": [
+        "senior citizen abuse",
+        "maintenance claim refusal",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "maintenance claim refusal"
+      ],
+      "Hindi": [
+        "maintenance claim refusal",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "maintenanceclaimrefusal",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Children earning high salaries refusing basic monthly maintenance in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Children earning high salaries refusing basic monthly maintenance.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Children earning high salaries refusing basic monthly maintenance.",
+      "Tanglish": "Enaku help venum: Children earning high salaries refusing basic monthly maintenance process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Social Welfare Officer",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Maintenance Claim Refusal.",
+      "Submit the petition to the recommended Social Welfare Officer."
+    ],
+    "volunteerExpertiseTags": [
+      "senior_citizen_abuse",
+      "maintenance_claim_refusal"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-073",
+    "category": "CHILD_WELFARE",
+    "subcategory": "Child Labor Hotel",
+    "languageKeywords": {
+      "English": [
+        "child welfare",
+        "child labor hotel",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "child labor hotel"
+      ],
+      "Hindi": [
+        "child labor hotel",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "childlaborhotel",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Minor child employed for washing dishes in local restaurant in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Minor child employed for washing dishes in local restaurant.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Minor child employed for washing dishes in local restaurant.",
+      "Tanglish": "Enaku help venum: Minor child employed for washing dishes in local restaurant process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Child Welfare Committee",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Child Labor Hotel.",
+      "Submit the petition to the recommended Child Welfare Committee."
+    ],
+    "volunteerExpertiseTags": [
+      "child_welfare",
+      "child_labor_hotel"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-074",
+    "category": "CHILD_WELFARE",
+    "subcategory": "Forced Child Marriage",
+    "languageKeywords": {
+      "English": [
+        "child welfare",
+        "forced child marriage",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "forced child marriage"
+      ],
+      "Hindi": [
+        "forced child marriage",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "forcedchildmarriage",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Relatives organizing wedding ceremony for a minor schoolgirl in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Relatives organizing wedding ceremony for a minor schoolgirl.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Relatives organizing wedding ceremony for a minor schoolgirl.",
+      "Tanglish": "Enaku help venum: Relatives organizing wedding ceremony for a minor schoolgirl process pathi."
+    },
+    "priorityCode": "CRITICAL",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Child Welfare Committee",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Forced Child Marriage.",
+      "Submit the petition to the recommended Child Welfare Committee."
+    ],
+    "volunteerExpertiseTags": [
+      "child_welfare",
+      "forced_child_marriage"
+    ],
+    "womenSensitive": true,
+    "preferredVolunteerGenderRule": "FEMALE_PREFERRED",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-075",
+    "category": "CHILD_WELFARE",
+    "subcategory": "School Dropouts Neglect",
+    "languageKeywords": {
+      "English": [
+        "child welfare",
+        "school dropouts neglect",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "school dropouts neglect"
+      ],
+      "Hindi": [
+        "school dropouts neglect",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "schooldropoutsneglect",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Orphan kid kept out of school and sent for begging in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Orphan kid kept out of school and sent for begging.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Orphan kid kept out of school and sent for begging.",
+      "Tanglish": "Enaku help venum: Orphan kid kept out of school and sent for begging process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Child Welfare Committee",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of School Dropouts Neglect.",
+      "Submit the petition to the recommended Child Welfare Committee."
+    ],
+    "volunteerExpertiseTags": [
+      "child_welfare",
+      "school_dropouts_neglect"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-076",
+    "category": "CHILD_WELFARE",
+    "subcategory": "Juvenile Delinquency Help",
+    "languageKeywords": {
+      "English": [
+        "child welfare",
+        "juvenile delinquency help",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "juvenile delinquency help"
+      ],
+      "Hindi": [
+        "juvenile delinquency help",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "juveniledelinquencyhelp",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Assistance needed for counseling minor caught in minor theft in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Assistance needed for counseling minor caught in minor theft.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Assistance needed for counseling minor caught in minor theft.",
+      "Tanglish": "Enaku help venum: Assistance needed for counseling minor caught in minor theft process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Child Welfare Committee",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Juvenile Delinquency Help.",
+      "Submit the petition to the recommended Child Welfare Committee."
+    ],
+    "volunteerExpertiseTags": [
+      "child_welfare",
+      "juvenile_delinquency_help"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-077",
+    "category": "DISABILITY_RIGHTS",
+    "subcategory": "Wheelchair Ramp Absence",
+    "languageKeywords": {
+      "English": [
+        "disability rights",
+        "wheelchair ramp absence",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "wheelchair ramp absence"
+      ],
+      "Hindi": [
+        "wheelchair ramp absence",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "wheelchairrampabsence",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Public bank branch refuses to construct accessible ramp entry in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Public bank branch refuses to construct accessible ramp entry.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Public bank branch refuses to construct accessible ramp entry.",
+      "Tanglish": "Enaku help venum: Public bank branch refuses to construct accessible ramp entry process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Differently Abled Commissioner Office",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Wheelchair Ramp Absence.",
+      "Submit the petition to the recommended Differently Abled Commissioner Office."
+    ],
+    "volunteerExpertiseTags": [
+      "disability_rights",
+      "wheelchair_ramp_absence"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-078",
+    "category": "DISABILITY_RIGHTS",
+    "subcategory": "Job Reservation Denial",
+    "languageKeywords": {
+      "English": [
+        "disability rights",
+        "job reservation denial",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "job reservation denial"
+      ],
+      "Hindi": [
+        "job reservation denial",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "jobreservationdenial",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Differently abled candidate rejected in interview citing disability in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Differently abled candidate rejected in interview citing disability.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Differently abled candidate rejected in interview citing disability.",
+      "Tanglish": "Enaku help venum: Differently abled candidate rejected in interview citing disability process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Differently Abled Commissioner Office",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Job Reservation Denial.",
+      "Submit the petition to the recommended Differently Abled Commissioner Office."
+    ],
+    "volunteerExpertiseTags": [
+      "disability_rights",
+      "job_reservation_denial"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-079",
+    "category": "DISABILITY_RIGHTS",
+    "subcategory": "Welfare Card Processing delay",
+    "languageKeywords": {
+      "English": [
+        "disability rights",
+        "welfare card processing delay",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "welfare card processing delay"
+      ],
+      "Hindi": [
+        "welfare card processing delay",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "welfarecardprocessingdelay",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: UDID card application stuck at welfare office for months in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: UDID card application stuck at welfare office for months.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: UDID card application stuck at welfare office for months.",
+      "Tanglish": "Enaku help venum: UDID card application stuck at welfare office for months process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Differently Abled Commissioner Office",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Welfare Card Processing delay.",
+      "Submit the petition to the recommended Differently Abled Commissioner Office."
+    ],
+    "volunteerExpertiseTags": [
+      "disability_rights",
+      "welfare_card_processing_delay"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-080",
+    "category": "DISABILITY_RIGHTS",
+    "subcategory": "Assistive Devices Quota",
+    "languageKeywords": {
+      "English": [
+        "disability rights",
+        "assistive devices quota",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "assistive devices quota"
+      ],
+      "Hindi": [
+        "assistive devices quota",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "assistivedevicesquota",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Eligible applicant denied free wheelchair scheme by panchayat in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Eligible applicant denied free wheelchair scheme by panchayat.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Eligible applicant denied free wheelchair scheme by panchayat.",
+      "Tanglish": "Enaku help venum: Eligible applicant denied free wheelchair scheme by panchayat process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Differently Abled Commissioner Office",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Assistive Devices Quota.",
+      "Submit the petition to the recommended Differently Abled Commissioner Office."
+    ],
+    "volunteerExpertiseTags": [
+      "disability_rights",
+      "assistive_devices_quota"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-081",
+    "category": "CASTE_DISCRIMINATION",
+    "subcategory": "Temple Festival Boycott",
+    "languageKeywords": {
+      "English": [
+        "caste discrimination",
+        "temple festival boycott",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "temple festival boycott"
+      ],
+      "Hindi": [
+        "temple festival boycott",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "templefestivalboycott",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: SC community excluded from participation in village chariot festival in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: SC community excluded from participation in village chariot festival.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: SC community excluded from participation in village chariot festival.",
+      "Tanglish": "Enaku help venum: SC community excluded from participation in village chariot festival process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "District Collector Office",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Temple Festival Boycott.",
+      "Submit the petition to the recommended District Collector Office."
+    ],
+    "volunteerExpertiseTags": [
+      "caste_discrimination",
+      "temple_festival_boycott"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-082",
+    "category": "CASTE_DISCRIMINATION",
+    "subcategory": "Public Well Access Denied",
+    "languageKeywords": {
+      "English": [
+        "caste discrimination",
+        "public well access denied",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "public well access denied"
+      ],
+      "Hindi": [
+        "public well access denied",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "publicwellaccessdenied",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Not allowed to draw water from shared public borewell in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Not allowed to draw water from shared public borewell.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Not allowed to draw water from shared public borewell.",
+      "Tanglish": "Enaku help venum: Not allowed to draw water from shared public borewell process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "District Collector Office",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Public Well Access Denied.",
+      "Submit the petition to the recommended District Collector Office."
+    ],
+    "volunteerExpertiseTags": [
+      "caste_discrimination",
+      "public_well_access_denied"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-083",
+    "category": "CASTE_DISCRIMINATION",
+    "subcategory": "Separate Tumbler System",
+    "languageKeywords": {
+      "English": [
+        "caste discrimination",
+        "separate tumbler system",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "separate tumbler system"
+      ],
+      "Hindi": [
+        "separate tumbler system",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "separatetumblersystem",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Separate glasses used for serving tea based on community identity in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Separate glasses used for serving tea based on community identity.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Separate glasses used for serving tea based on community identity.",
+      "Tanglish": "Enaku help venum: Separate glasses used for serving tea based on community identity process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "District Collector Office",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Separate Tumbler System.",
+      "Submit the petition to the recommended District Collector Office."
+    ],
+    "volunteerExpertiseTags": [
+      "caste_discrimination",
+      "separate_tumbler_system"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-084",
+    "category": "CASTE_DISCRIMINATION",
+    "subcategory": "Casteist Verbal Abuse",
+    "languageKeywords": {
+      "English": [
+        "caste discrimination",
+        "casteist verbal abuse",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "casteist verbal abuse"
+      ],
+      "Hindi": [
+        "casteist verbal abuse",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "casteistverbalabuse",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Abused using derogatory caste names at local workplace in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Abused using derogatory caste names at local workplace.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Abused using derogatory caste names at local workplace.",
+      "Tanglish": "Enaku help venum: Abused using derogatory caste names at local workplace process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "FIR Copy",
+      "Aadhaar Card",
+      "Medical Wound Certificate",
+      "Police Complaint Copy"
+    ],
+    "recommendedAuthority": "District Collector Office",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Police Complaint Copy proofs.",
+      "Draft formal written statement of Casteist Verbal Abuse.",
+      "Submit the petition to the recommended District Collector Office."
+    ],
+    "volunteerExpertiseTags": [
+      "caste_discrimination",
+      "casteist_verbal_abuse"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-085",
+    "category": "POLICE_MISCONDUCT",
+    "subcategory": "Refusal to Register FIR",
+    "languageKeywords": {
+      "English": [
+        "police misconduct",
+        "refusal to register fir",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "refusal to register fir"
+      ],
+      "Hindi": [
+        "refusal to register fir",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "refusaltoregisterfir",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Police station officer refused to take complaint for bike theft in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Police station officer refused to take complaint for bike theft.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Police station officer refused to take complaint for bike theft.",
+      "Tanglish": "Enaku help venum: Police station officer refused to take complaint for bike theft process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "FIR Copy",
+      "Aadhaar Card",
+      "Medical Wound Certificate",
+      "Police Complaint Copy"
+    ],
+    "recommendedAuthority": "District Collector Office",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Police Complaint Copy proofs.",
+      "Draft formal written statement of Refusal to Register FIR.",
+      "Submit the petition to the recommended District Collector Office."
+    ],
+    "volunteerExpertiseTags": [
+      "police_misconduct",
+      "refusal_to_register_fir"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-086",
+    "category": "POLICE_MISCONDUCT",
+    "subcategory": "Custodial Lockup Torture",
+    "languageKeywords": {
+      "English": [
+        "police misconduct",
+        "custodial lockup torture",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "custodial lockup torture"
+      ],
+      "Hindi": [
+        "custodial lockup torture",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "custodiallockuptorture",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Suspect beaten brutally inside police cell during interrogation in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Suspect beaten brutally inside police cell during interrogation.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Suspect beaten brutally inside police cell during interrogation.",
+      "Tanglish": "Enaku help venum: Suspect beaten brutally inside police cell during interrogation process pathi."
+    },
+    "priorityCode": "CRITICAL",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "District Collector Office",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Custodial Lockup Torture.",
+      "Submit the petition to the recommended District Collector Office."
+    ],
+    "volunteerExpertiseTags": [
+      "police_misconduct",
+      "custodial_lockup_torture"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-087",
+    "category": "POLICE_MISCONDUCT",
+    "subcategory": "False Case Frame Up",
+    "languageKeywords": {
+      "English": [
+        "police misconduct",
+        "false case frame up",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "false case frame up"
+      ],
+      "Hindi": [
+        "false case frame up",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "falsecaseframeup",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Fabricated evidence used to lock up innocent citizen in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Fabricated evidence used to lock up innocent citizen.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Fabricated evidence used to lock up innocent citizen.",
+      "Tanglish": "Enaku help venum: Fabricated evidence used to lock up innocent citizen process pathi."
+    },
+    "priorityCode": "CRITICAL",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "District Collector Office",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of False Case Frame Up.",
+      "Submit the petition to the recommended District Collector Office."
+    ],
+    "volunteerExpertiseTags": [
+      "police_misconduct",
+      "false_case_frame_up"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-088",
+    "category": "POLICE_MISCONDUCT",
+    "subcategory": "Assault at Traffic Checkpoint",
+    "languageKeywords": {
+      "English": [
+        "police misconduct",
+        "assault at traffic checkpoint",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "assault at traffic checkpoint"
+      ],
+      "Hindi": [
+        "assault at traffic checkpoint",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "assaultattrafficcheckpoint",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Traffic constable physically assaulted driver over argument in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Traffic constable physically assaulted driver over argument.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Traffic constable physically assaulted driver over argument.",
+      "Tanglish": "Enaku help venum: Traffic constable physically assaulted driver over argument process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "FIR Copy",
+      "Aadhaar Card",
+      "Medical Wound Certificate",
+      "Police Complaint Copy"
+    ],
+    "recommendedAuthority": "District Collector Office",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Police Complaint Copy proofs.",
+      "Draft formal written statement of Assault at Traffic Checkpoint.",
+      "Submit the petition to the recommended District Collector Office."
+    ],
+    "volunteerExpertiseTags": [
+      "police_misconduct",
+      "assault_at_traffic_checkpoint"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-089",
+    "category": "CORRUPTION_BRIBERY",
+    "subcategory": "Bribe for Death Certificate",
+    "languageKeywords": {
+      "English": [
+        "corruption bribery",
+        "bribe for death certificate",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "bribe for death certificate"
+      ],
+      "Hindi": [
+        "bribe for death certificate",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "bribefordeathcertificate",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Village officer demanding Rs 2000 to sign death certificate copy in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Village officer demanding Rs 2000 to sign death certificate copy.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Village officer demanding Rs 2000 to sign death certificate copy.",
+      "Tanglish": "Enaku help venum: Village officer demanding Rs 2000 to sign death certificate copy process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Vigilance and Anti-Corruption Bureau",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Bribe for Death Certificate.",
+      "Submit the petition to the recommended Vigilance and Anti-Corruption Bureau."
+    ],
+    "volunteerExpertiseTags": [
+      "corruption_bribery",
+      "bribe_for_death_certificate"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-090",
+    "category": "CORRUPTION_BRIBERY",
+    "subcategory": "Municipal Inspector Kickback",
+    "languageKeywords": {
+      "English": [
+        "corruption bribery",
+        "municipal inspector kickback",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "municipal inspector kickback"
+      ],
+      "Hindi": [
+        "municipal inspector kickback",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "municipalinspectorkickback",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Building plan approval delayed demanding percentage kickback in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Building plan approval delayed demanding percentage kickback.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Building plan approval delayed demanding percentage kickback.",
+      "Tanglish": "Enaku help venum: Building plan approval delayed demanding percentage kickback process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Vigilance and Anti-Corruption Bureau",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Municipal Inspector Kickback.",
+      "Submit the petition to the recommended Vigilance and Anti-Corruption Bureau."
+    ],
+    "volunteerExpertiseTags": [
+      "corruption_bribery",
+      "municipal_inspector_kickback"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-091",
+    "category": "CORRUPTION_BRIBERY",
+    "subcategory": "Revenue Patta Bribery",
+    "languageKeywords": {
+      "English": [
+        "corruption bribery",
+        "revenue patta bribery",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "revenue patta bribery"
+      ],
+      "Hindi": [
+        "revenue patta bribery",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "revenuepattabribery",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Tahsildar office demanding bribe to verify patta land transfer in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Tahsildar office demanding bribe to verify patta land transfer.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Tahsildar office demanding bribe to verify patta land transfer.",
+      "Tanglish": "Enaku help venum: Tahsildar office demanding bribe to verify patta land transfer process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Vigilance and Anti-Corruption Bureau",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Revenue Patta Bribery.",
+      "Submit the petition to the recommended Vigilance and Anti-Corruption Bureau."
+    ],
+    "volunteerExpertiseTags": [
+      "corruption_bribery",
+      "revenue_patta_bribery"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-092",
+    "category": "CORRUPTION_BRIBERY",
+    "subcategory": "Licensing Officer Bribe",
+    "languageKeywords": {
+      "English": [
+        "corruption bribery",
+        "licensing officer bribe",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "licensing officer bribe"
+      ],
+      "Hindi": [
+        "licensing officer bribe",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "licensingofficerbribe",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Food safety officer demanding bribe for license issuance in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Food safety officer demanding bribe for license issuance.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Food safety officer demanding bribe for license issuance.",
+      "Tanglish": "Enaku help venum: Food safety officer demanding bribe for license issuance process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Vigilance and Anti-Corruption Bureau",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Licensing Officer Bribe.",
+      "Submit the petition to the recommended Vigilance and Anti-Corruption Bureau."
+    ],
+    "volunteerExpertiseTags": [
+      "corruption_bribery",
+      "licensing_officer_bribe"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-093",
+    "category": "CIVIC_INFRASTRUCTURE",
+    "subcategory": "Sewage Water Mixture",
+    "languageKeywords": {
+      "English": [
+        "civic infrastructure",
+        "sewage water mixture",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "sewage water mixture"
+      ],
+      "Hindi": [
+        "sewage water mixture",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "sewagewatermixture",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Sewage line leakage mixing into public drinking water pipeline in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Sewage line leakage mixing into public drinking water pipeline.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Sewage line leakage mixing into public drinking water pipeline.",
+      "Tanglish": "Enaku help venum: Sewage line leakage mixing into public drinking water pipeline process pathi."
+    },
+    "priorityCode": "HIGH",
+    "priorityName": "Urgent Intervention",
+    "highRiskSignals": [
+      "suicide",
+      "murder",
+      "kill",
+      "death"
+    ],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Municipal Corporation Grievance Cell",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Sewage Water Mixture.",
+      "Submit the petition to the recommended Municipal Corporation Grievance Cell."
+    ],
+    "volunteerExpertiseTags": [
+      "civic_infrastructure",
+      "sewage_water_mixture"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-094",
+    "category": "CIVIC_INFRASTRUCTURE",
+    "subcategory": "Dangerous Potholes Main road",
+    "languageKeywords": {
+      "English": [
+        "civic infrastructure",
+        "dangerous potholes main road",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "dangerous potholes main road"
+      ],
+      "Hindi": [
+        "dangerous potholes main road",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "dangerouspotholesmainroad",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Massive open craters on highway causing regular accidents in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Massive open craters on highway causing regular accidents.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Massive open craters on highway causing regular accidents.",
+      "Tanglish": "Enaku help venum: Massive open craters on highway causing regular accidents process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Municipal Corporation Grievance Cell",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Dangerous Potholes Main road.",
+      "Submit the petition to the recommended Municipal Corporation Grievance Cell."
+    ],
+    "volunteerExpertiseTags": [
+      "civic_infrastructure",
+      "dangerous_potholes_main_road"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-095",
+    "category": "CIVIC_INFRASTRUCTURE",
+    "subcategory": "Non-functioning Street Lights",
+    "languageKeywords": {
+      "English": [
+        "civic infrastructure",
+        "non-functioning street lights",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "non-functioning street lights"
+      ],
+      "Hindi": [
+        "non-functioning street lights",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "non-functioningstreetlights",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Complete dark stretch on main road causing rise in snatching cases in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Complete dark stretch on main road causing rise in snatching cases.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Complete dark stretch on main road causing rise in snatching cases.",
+      "Tanglish": "Enaku help venum: Complete dark stretch on main road causing rise in snatching cases process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Municipal Corporation Grievance Cell",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Non-functioning Street Lights.",
+      "Submit the petition to the recommended Municipal Corporation Grievance Cell."
+    ],
+    "volunteerExpertiseTags": [
+      "civic_infrastructure",
+      "non-functioning_street_lights"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-096",
+    "category": "CIVIC_INFRASTRUCTURE",
+    "subcategory": "Piles of Garbage Dump",
+    "languageKeywords": {
+      "English": [
+        "civic infrastructure",
+        "piles of garbage dump",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "piles of garbage dump"
+      ],
+      "Hindi": [
+        "piles of garbage dump",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "pilesofgarbagedump",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Garbage not cleared for weeks in residential colony corner in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Garbage not cleared for weeks in residential colony corner.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Garbage not cleared for weeks in residential colony corner.",
+      "Tanglish": "Enaku help venum: Garbage not cleared for weeks in residential colony corner process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Municipal Corporation Grievance Cell",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Piles of Garbage Dump.",
+      "Submit the petition to the recommended Municipal Corporation Grievance Cell."
+    ],
+    "volunteerExpertiseTags": [
+      "civic_infrastructure",
+      "piles_of_garbage_dump"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-097",
+    "category": "RTI_APPLICATION",
+    "subcategory": "PIO Refused Application",
+    "languageKeywords": {
+      "English": [
+        "rti application",
+        "pio refused application",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "pio refused application"
+      ],
+      "Hindi": [
+        "pio refused application",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "piorefusedapplication",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Public Info Officer refused to accept RTI letter submission in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Public Info Officer refused to accept RTI letter submission.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Public Info Officer refused to accept RTI letter submission.",
+      "Tanglish": "Enaku help venum: Public Info Officer refused to accept RTI letter submission process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Public Information Officer",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of PIO Refused Application.",
+      "Submit the petition to the recommended Public Information Officer."
+    ],
+    "volunteerExpertiseTags": [
+      "rti_application",
+      "pio_refused_application"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-098",
+    "category": "RTI_APPLICATION",
+    "subcategory": "Intentionally Fake Information",
+    "languageKeywords": {
+      "English": [
+        "rti application",
+        "intentionally fake information",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "intentionally fake information"
+      ],
+      "Hindi": [
+        "intentionally fake information",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "intentionallyfakeinformation",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: Provided incorrect details regarding public funds usage in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: Provided incorrect details regarding public funds usage.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: Provided incorrect details regarding public funds usage.",
+      "Tanglish": "Enaku help venum: Provided incorrect details regarding public funds usage process pathi."
+    },
+    "priorityCode": "MEDIUM",
+    "priorityName": "Priority Review",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Public Information Officer",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Intentionally Fake Information.",
+      "Submit the petition to the recommended Public Information Officer."
+    ],
+    "volunteerExpertiseTags": [
+      "rti_application",
+      "intentionally_fake_information"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-099",
+    "category": "RTI_APPLICATION",
+    "subcategory": "Delay Beyond 30 days",
+    "languageKeywords": {
+      "English": [
+        "rti application",
+        "delay beyond 30 days",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "delay beyond 30 days"
+      ],
+      "Hindi": [
+        "delay beyond 30 days",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "delaybeyond30days",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: No reply received for RTI inquiry after the legal 30 days deadline in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: No reply received for RTI inquiry after the legal 30 days deadline.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: No reply received for RTI inquiry after the legal 30 days deadline.",
+      "Tanglish": "Enaku help venum: No reply received for RTI inquiry after the legal 30 days deadline process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "Aadhaar Card"
+    ],
+    "recommendedAuthority": "Public Information Officer",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card proofs.",
+      "Draft formal written statement of Delay Beyond 30 days.",
+      "Submit the petition to the recommended Public Information Officer."
+    ],
+    "volunteerExpertiseTags": [
+      "rti_application",
+      "delay_beyond_30_days"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  },
+  {
+    "problemId": "LP-100",
+    "category": "RTI_APPLICATION",
+    "subcategory": "RTI First Appeal Rejection",
+    "languageKeywords": {
+      "English": [
+        "rti application",
+        "rti first appeal rejection",
+        "legal help",
+        "assistance"
+      ],
+      "Tamil": [
+        "உதவி",
+        "சட்டம்",
+        "rti first appeal rejection"
+      ],
+      "Hindi": [
+        "rti first appeal rejection",
+        "sahayata"
+      ],
+      "Tanglish": [
+        "rtifirstappealrejection",
+        "help"
+      ]
+    },
+    "sampleComplaints": {
+      "English": "Regarding my grievance: First appellate authority dismissed appeal without hearing reason in my area.",
+      "Tamil": "எனக்கு இதில் உதவி தேவை: First appellate authority dismissed appeal without hearing reason.",
+      "Hindi": "मुझे इस समस्या में सहायता चाहिए: First appellate authority dismissed appeal without hearing reason.",
+      "Tanglish": "Enaku help venum: First appellate authority dismissed appeal without hearing reason process pathi."
+    },
+    "priorityCode": "LOW",
+    "priorityName": "Standard Guidance",
+    "highRiskSignals": [],
+    "requiredDocuments": [
+      "FIR Copy",
+      "Aadhaar Card",
+      "Medical Wound Certificate",
+      "Police Complaint Copy"
+    ],
+    "recommendedAuthority": "Public Information Officer",
+    "nextSteps": [
+      "Gather all supporting Aadhaar Card, Police Complaint Copy proofs.",
+      "Draft formal written statement of RTI First Appeal Rejection.",
+      "Submit the petition to the recommended Public Information Officer."
+    ],
+    "volunteerExpertiseTags": [
+      "rti_application",
+      "rti_first_appeal_rejection"
+    ],
+    "womenSensitive": false,
+    "preferredVolunteerGenderRule": "ANY",
+    "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority."
+  }
+]

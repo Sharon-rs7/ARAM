@@ -55,9 +55,9 @@ html[data-theme="light"] {
   --warning: #d97706;
 
   /* Default role color scheme (Citizen) */
-  --role-primary: #2563eb;
-  --role-accent: #06b6d4;
-  --role-soft: rgba(37, 99, 235, 0.10);
+  --role-primary: #4f46e5;
+  --role-accent: #4f46e5;
+  --role-soft: rgba(79, 70, 229, 0.10);
 }
 
 /* Dark Theme Overrides */
@@ -78,9 +78,9 @@ html[data-role="helper"],
 html[data-role="admin"],
 html[data-role="advocate"],
 html[data-role="authority"] {
-  --role-primary: #2563eb;
-  --role-accent: #2563eb;
-  --role-soft: rgba(37, 99, 235, 0.08);
+  --role-primary: #4f46e5;
+  --role-accent: #4f46e5;
+  --role-soft: rgba(79, 70, 229, 0.08);
 }
 
 /* Map existing global.css variables to theme-aware variables */

@@ -75,7 +75,78 @@ export const userService = {
       await new Promise((resolve) => setTimeout(resolve, 300));
       return { success: true, message: "Settings saved locally." };
     }
-    const res = await api.put("/users/me/settings", payload);
+    if (payload.themePreference) {
+      const res = await api.put("/users/me/theme", { themePreference: payload.themePreference });
+      return res.data;
+    }
+    // Save other settings to localStorage and document backend TODO
+    const localSettings = JSON.parse(localStorage.getItem("local_settings") || "{}");
+    localStorage.setItem("local_settings", JSON.stringify({ ...localSettings, ...payload }));
+    return { success: true, message: "Settings saved to local preferences." };
+  },
+
+  changePassword: async (oldPassword, newPassword) => {
+    if (USE_MOCKS) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      return { success: true, message: "Password updated successfully." };
+    }
+    const res = await api.put("/users/me/password", { oldPassword, newPassword });
+    return res.data;
+  },
+
+  enable2fa: async () => {
+    if (USE_MOCKS) {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      return { success: true, enabled: true, message: "2FA enabled." };
+    }
+    const res = await api.post("/users/me/2fa/enable");
+    return res.data;
+  },
+
+  disable2fa: async () => {
+    if (USE_MOCKS) {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      return { success: true, enabled: false, message: "2FA disabled." };
+    }
+    const res = await api.post("/users/me/2fa/disable");
+    return res.data;
+  },
+
+  getDevices: async () => {
+    if (USE_MOCKS) {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      return [
+        { deviceName: "Windows PC (Current Session)", browser: "Chrome", lastLogin: new Date().toISOString(), ipAddress: "127.0.0.1" }
+      ];
+    }
+    const res = await api.get("/users/me/devices");
+    return res.data;
+  },
+
+  logoutAllDevices: async () => {
+    if (USE_MOCKS) {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      return { success: true };
+    }
+    const res = await api.post("/users/me/logout-all");
+    return res.data;
+  },
+
+  downloadDataReport: async () => {
+    if (USE_MOCKS) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      return { name: "Rajesh Kumar", email: "citizen@aram.ai", disclaimer: "Mock Data Report Details" };
+    }
+    const res = await api.get("/users/me/data-report");
+    return res.data;
+  },
+
+  deleteAccountRequest: async () => {
+    if (USE_MOCKS) {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      return { success: true, status: "PENDING_REVIEW" };
+    }
+    const res = await api.post("/users/me/delete-request");
     return res.data;
   }
 };

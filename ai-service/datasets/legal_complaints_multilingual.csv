@@ -1,271 +1,751 @@
 complaint_text,language,category
 My company did not pay my salary for 3 months.,English,LABOUR_DISPUTE
 Employer terminated me without notice or severance pay.,English,LABOUR_DISPUTE
-Working extra hours but no overtime pay given.,English,LABOUR_DISPUTE
 Ennoda office-la 3 maasamaa sambalam tharala.,Tanglish,LABOUR_DISPUTE
-Company karanga ennoda salary tharama emathuranga.,Tanglish,LABOUR_DISPUTE
 3 மாதங்களாக என் நிறுவனம் எனக்கு சம்பளம் வழங்கவில்லை.,Tamil,LABOUR_DISPUTE
 முன்னறிவிப்பு இல்லாமல் வேலைநீக்கம் செய்யப்பட்டேன்.,Tamil,LABOUR_DISPUTE
-कंपनी ने पिछले तीन महीने का वेतन नहीं दिया है।,Hindi,LABOUR_DISPUTE
-बिना किसी नोटिस के नौकरी से निकाल दिया गया।,Hindi,LABOUR_DISPUTE
+Company-la salary tharama delay panranga.,Tanglish,LABOUR_DISPUTE
 Bought a mobile phone online but received a soap bar.,English,CONSUMER_COMPLAINT
 Store refusing to honor the 1-year product warranty.,English,CONSUMER_COMPLAINT
-Charged extra double amount than the MRP printed.,English,CONSUMER_COMPLAINT
 "Online-la phone order panna, aana dummy box vandhuchu.",Tanglish,CONSUMER_COMPLAINT
-"Shopkeeper warranty card kudukala, replace panna maatranga.",Tanglish,CONSUMER_COMPLAINT
 "ஆன்லைனில் வாங்கிய தயாரிப்பு சேதமடைந்துள்ளது, திரும்பப் பெற மறுக்கிறார்கள்.",Tamil,CONSUMER_COMPLAINT
 அதிகப்படியான விலை வசூலிக்கும் கடைக்காரர்.,Tamil,CONSUMER_COMPLAINT
-अमेज़न से नकली प्रोडक्ट मिला है और पैसे वापस नहीं कर रहे।,Hindi,CONSUMER_COMPLAINT
-दुकानदार वारंटी में सामान बदलने से मना कर रहा है।,Hindi,CONSUMER_COMPLAINT
+Defective TV purchase panni response illa store la.,Tanglish,CONSUMER_COMPLAINT
 Lost 50000 rupees due to a fake UPI QR code scam.,English,CYBER_CRIME
 Bank account hacked and savings transferred online.,English,CYBER_CRIME
-Received phishing links asking for my net banking OTP.,English,CYBER_CRIME
 Ennoda bank account hacking aagi panam pochu.,Tanglish,CYBER_CRIME
-UPI scanner scam-la 10000 rubaa tholachuten.,Tanglish,CYBER_CRIME
 போலி ஓடிபி மூலம் எனது கணக்கிலிருந்து பணம் திருடப்பட்டது.,Tamil,CYBER_CRIME
 வங்கி கணக்கு ஹேக் செய்யப்பட்டு பரிவர்த்தனை நடந்துள்ளது.,Tamil,CYBER_CRIME
-फेसबुक अकाउंट हैक करके पैसे मांगे जा रहे हैं।,Hindi,CYBER_CRIME
-बैंक मैनेजर बनकर ओटीपी पूछा और पैसे निकाल लिए।,Hindi,CYBER_CRIME
+Scam links click panni bank balance tholachuten.,Tanglish,CYBER_CRIME
 Neighbor encroached my boundary wall and built a gate.,English,PROPERTY_DISPUTE
 Landlord refusing to return my security deposit.,English,PROPERTY_DISPUTE
-Forged property patta documents used to sell my land.,English,PROPERTY_DISPUTE
 Pakkathu veetukaaran enga idathula encroaching panran.,Tanglish,PROPERTY_DISPUTE
-Landlord advance panatha thiruppi tharama emathuran.,Tanglish,PROPERTY_DISPUTE
 அண்டை வீட்டார் எனது நில எல்லையை ஆக்கிரமித்து கட்டியுள்ளனர்.,Tamil,PROPERTY_DISPUTE
 போலி பத்திரம் தயாரித்து எனது வீட்டை விற்க முயல்கிறார்கள்.,Tamil,PROPERTY_DISPUTE
-पड़ोसी ने मेरी जमीन पर अवैध कब्जा कर लिया है।,Hindi,PROPERTY_DISPUTE
-मकान मालिक सिक्योरिटी डिपॉजिट वापस नहीं कर रहा है।,Hindi,PROPERTY_DISPUTE
+Patta transfer panna registration office-la legal issue.,Tanglish,PROPERTY_DISPUTE
 Colleague continuously stalking and sending inappropriate texts.,English,WOMEN_SAFETY
 Facing verbal harassment at public bus stop daily.,English,WOMEN_SAFETY
-Some guys following me home from college metro station.,English,WOMEN_SAFETY
 "Office-la oru officer thappa pesuran, stalk panran.",Tanglish,WOMEN_SAFETY
-College poitu varra valiyila silaper follow panranga.,Tanglish,WOMEN_SAFETY
 பேருந்து நிலையத்தில் ஒரு நபர் என்னைத் தொடர்ந்து பின்தொடர்கிறார்.,Tamil,WOMEN_SAFETY
 பணியிடத்தில் எனக்கு தொடர்ந்து பாலியல் தொல்லைகள் வருகின்றன.,Tamil,WOMEN_SAFETY
-रास्ते में कुछ लड़के रोज पीछा करते हैं और फब्तियां कसते हैं।,Hindi,WOMEN_SAFETY
-ऑफिस में सहकर्मी द्वारा परेशान किया जा रहा है।,Hindi,WOMEN_SAFETY
+Stalker follow panran evening college vitu varra vazhila.,Tanglish,WOMEN_SAFETY
 Husband beats me under the influence of alcohol.,English,DOMESTIC_VIOLENCE
 In-laws abusing and threatening for dowry money.,English,DOMESTIC_VIOLENCE
-Locked inside the house and starved by my husband.,English,DOMESTIC_VIOLENCE
 Enga veetla purushan thittamal adikiraru.,Tanglish,DOMESTIC_VIOLENCE
-"Dowry ketu maamiyaar thollai tharanga, room-la lock panranga.",Tanglish,DOMESTIC_VIOLENCE
 மது குடித்துவிட்டு கணவர் தினமும் என்னை அடிக்கிறார்.,Tamil,DOMESTIC_VIOLENCE
 வரதட்சணை கேட்டு மாமியார் கொடுமைப்படுத்துகிறார்கள்.,Tamil,DOMESTIC_VIOLENCE
-पति शराब पीकर रोज मारता-पीटता है।,Hindi,DOMESTIC_VIOLENCE
-ससुराल वाले दहेज के लिए प्रताड़ित कर रहे हैं।,Hindi,DOMESTIC_VIOLENCE
+Dowry pathathu nu solli purushan abusive-a nadakuran.,Tanglish,DOMESTIC_VIOLENCE
 Gang attacked me with weapons near the market area.,English,CRIMINAL_COMPLAINT
 My motorcycle was stolen from outside my house entry.,English,CRIMINAL_COMPLAINT
-Robbers broke into my home and stole gold jewelry.,English,CRIMINAL_COMPLAINT
 Market kitta gang kathi vechu adichanga.,Tanglish,CRIMINAL_COMPLAINT
-Enga veetu bike-a thiruditu poitinga.,Tanglish,CRIMINAL_COMPLAINT
 இரவில் வீட்டை உடைத்து தங்க நகைகள் திருடப்பட்டுள்ளன.,Tamil,CRIMINAL_COMPLAINT
 சாலையில் சிலர் என்னைத் தாக்கி எனது பணத்தைப் பறித்தனர்.,Tamil,CRIMINAL_COMPLAINT
-घर के बाहर से मेरी बाइक चोरी हो गई है।,Hindi,CRIMINAL_COMPLAINT
-कुछ गुंडों ने हथियार दिखाकर मुझे लूटा।,Hindi,CRIMINAL_COMPLAINT
+Gold chain robbery nadanthuchu street corner la.,Tanglish,CRIMINAL_COMPLAINT
 Filing for divorce and seeking child custody support.,English,FAMILY_DISPUTE
 Parents forcing me to get married against my will.,English,FAMILY_DISPUTE
-Brothers refusing to divide ancestral inheritance fairly.,English,FAMILY_DISPUTE
 "Divorce venum, aana baby custody thara matengranga.",Tanglish,FAMILY_DISPUTE
-Enga appa force panni marriage panna soldranga.,Tanglish,FAMILY_DISPUTE
 விருப்பம் இல்லாமல் குடும்பத்தினர் திருமணம் செய்ய வற்புறுத்துகிறார்கள்.,Tamil,FAMILY_DISPUTE
 பூர்வீக சொத்தை பிரிப்பதில் சகோதரர்களுக்குள் தகராறு.,Tamil,FAMILY_DISPUTE
-पैतृक संपत्ति के बंटवारे को लेकर भाइयों में विवाद है।,Hindi,FAMILY_DISPUTE
-तलाक और बच्चे की कस्टडी के लिए मामला दर्ज करना है।,Hindi,FAMILY_DISPUTE
+Ancesty property share divide panrathula conflict.,Tanglish,FAMILY_DISPUTE
 Denied benefits of housing scheme despite having all eligibility.,English,GOVERNMENT_SCHEME
 Panchayat office demanding bribe for widow pension approval.,English,GOVERNMENT_SCHEME
-Ration card distribution office delayed my card for a year.,English,GOVERNMENT_SCHEME
 Housing scheme-la ellam documents irundhum select aagala.,Tanglish,GOVERNMENT_SCHEME
-Widow pension kuduka bribe panam kekuranga.,Tanglish,GOVERNMENT_SCHEME
 விபத்து நிவாரணத் தொகை பெற தகுதி இருந்தும் கிடைக்கவில்லை.,Tamil,GOVERNMENT_SCHEME
 ரேஷன் கார்டு வழங்க அதிகாரிகள் லஞ்சம் கேட்கிறார்கள்.,Tamil,GOVERNMENT_SCHEME
-पात्र होने के बावजूद आवास योजना की सूची में नाम नहीं है।,Hindi,GOVERNMENT_SCHEME
-विधवा पेंशन के लिए सरकारी कर्मचारी रिश्वत मांग रहे हैं।,Hindi,GOVERNMENT_SCHEME
+OAP pension scheme register panna officials reject panranga.,Tanglish,GOVERNMENT_SCHEME
 I need free legal advice regarding a contract discrepancy.,English,GENERAL_LEGAL_AID
 How to apply for free legal representation in district court.,English,GENERAL_LEGAL_AID
-Need guidance on court procedures for a witness summon.,English,GENERAL_LEGAL_AID
 "Enaku free lawyer venum, court case pathi legal aid thairya.",Tanglish,GENERAL_LEGAL_AID
-"Court sumons vandhuruku, step by step guidance enna.",Tanglish,GENERAL_LEGAL_AID
 இலவச சட்ட உதவி பெற எங்கு விண்ணப்பிக்க வேண்டும்?,Tamil,GENERAL_LEGAL_AID
 "நீதிமன்ற சம்மன் வந்துள்ளது, என்ன செய்ய வேண்டும் என அறிய வேண்டும்.",Tamil,GENERAL_LEGAL_AID
-"कोर्ट समन मिला है, कानूनी सहायता की आवश्यकता है।",Hindi,GENERAL_LEGAL_AID
-सरकारी वकील की सहायता पाने के लिए क्या नियम हैं।,Hindi,GENERAL_LEGAL_AID
-Regarding my issue: My company did not pay my salary for 3 months.,English,LABOUR_DISPUTE
-Regarding my issue: Employer terminated me without notice or severance pay.,English,LABOUR_DISPUTE
-Regarding my issue: Working extra hours but no overtime pay given.,English,LABOUR_DISPUTE
-Regarding my issue: Ennoda office-la 3 maasamaa sambalam tharala.,Tanglish,LABOUR_DISPUTE
-Regarding my issue: Company karanga ennoda salary tharama emathuranga.,Tanglish,LABOUR_DISPUTE
-Regarding my issue: 3 மாதங்களாக என் நிறுவனம் எனக்கு சம்பளம் வழங்கவில்லை.,Tamil,LABOUR_DISPUTE
-Regarding my issue: முன்னறிவிப்பு இல்லாமல் வேலைநீக்கம் செய்யப்பட்டேன்.,Tamil,LABOUR_DISPUTE
-Regarding my issue: कंपनी ने पिछले तीन महीने का वेतन नहीं दिया है।,Hindi,LABOUR_DISPUTE
-Regarding my issue: बिना किसी नोटिस के नौकरी से निकाल दिया गया।,Hindi,LABOUR_DISPUTE
-Regarding my issue: Bought a mobile phone online but received a soap bar.,English,CONSUMER_COMPLAINT
-Regarding my issue: Store refusing to honor the 1-year product warranty.,English,CONSUMER_COMPLAINT
-Regarding my issue: Charged extra double amount than the MRP printed.,English,CONSUMER_COMPLAINT
-"Regarding my issue: Online-la phone order panna, aana dummy box vandhuchu.",Tanglish,CONSUMER_COMPLAINT
-"Regarding my issue: Shopkeeper warranty card kudukala, replace panna maatranga.",Tanglish,CONSUMER_COMPLAINT
-"Regarding my issue: ஆன்லைனில் வாங்கிய தயாரிப்பு சேதமடைந்துள்ளது, திரும்பப் பெற மறுக்கிறார்கள்.",Tamil,CONSUMER_COMPLAINT
-Regarding my issue: அதிகப்படியான விலை வசூலிக்கும் கடைக்காரர்.,Tamil,CONSUMER_COMPLAINT
-Regarding my issue: अमेज़न से नकली प्रोडक्ट मिला है और पैसे वापस नहीं कर रहे।,Hindi,CONSUMER_COMPLAINT
-Regarding my issue: दुकानदार वारंटी में सामान बदलने से मना कर रहा है।,Hindi,CONSUMER_COMPLAINT
-Regarding my issue: Lost 50000 rupees due to a fake UPI QR code scam.,English,CYBER_CRIME
-Regarding my issue: Bank account hacked and savings transferred online.,English,CYBER_CRIME
-Regarding my issue: Received phishing links asking for my net banking OTP.,English,CYBER_CRIME
-Regarding my issue: Ennoda bank account hacking aagi panam pochu.,Tanglish,CYBER_CRIME
-Regarding my issue: UPI scanner scam-la 10000 rubaa tholachuten.,Tanglish,CYBER_CRIME
-Regarding my issue: போலி ஓடிபி மூலம் எனது கணக்கிலிருந்து பணம் திருடப்பட்டது.,Tamil,CYBER_CRIME
-Regarding my issue: வங்கி கணக்கு ஹேக் செய்யப்பட்டு பரிவர்த்தனை நடந்துள்ளது.,Tamil,CYBER_CRIME
-Regarding my issue: फेसबुक अकाउंट हैक करके पैसे मांगे जा रहे हैं।,Hindi,CYBER_CRIME
-Regarding my issue: बैंक मैनेजर बनकर ओटीपी पूछा और पैसे निकाल लिए।,Hindi,CYBER_CRIME
-Regarding my issue: Neighbor encroached my boundary wall and built a gate.,English,PROPERTY_DISPUTE
-Regarding my issue: Landlord refusing to return my security deposit.,English,PROPERTY_DISPUTE
-Regarding my issue: Forged property patta documents used to sell my land.,English,PROPERTY_DISPUTE
-Regarding my issue: Pakkathu veetukaaran enga idathula encroaching panran.,Tanglish,PROPERTY_DISPUTE
-Regarding my issue: Landlord advance panatha thiruppi tharama emathuran.,Tanglish,PROPERTY_DISPUTE
-Regarding my issue: அண்டை வீட்டார் எனது நில எல்லையை ஆக்கிரமித்து கட்டியுள்ளனர்.,Tamil,PROPERTY_DISPUTE
-Regarding my issue: போலி பத்திரம் தயாரித்து எனது வீட்டை விற்க முயல்கிறார்கள்.,Tamil,PROPERTY_DISPUTE
-Regarding my issue: पड़ोसी ने मेरी जमीन पर अवैध कब्जा कर लिया है।,Hindi,PROPERTY_DISPUTE
-Regarding my issue: मकान मालिक सिक्योरिटी डिपॉजिट वापस नहीं कर रहा है।,Hindi,PROPERTY_DISPUTE
-Regarding my issue: Colleague continuously stalking and sending inappropriate texts.,English,WOMEN_SAFETY
-Regarding my issue: Facing verbal harassment at public bus stop daily.,English,WOMEN_SAFETY
-Regarding my issue: Some guys following me home from college metro station.,English,WOMEN_SAFETY
-"Regarding my issue: Office-la oru officer thappa pesuran, stalk panran.",Tanglish,WOMEN_SAFETY
-Regarding my issue: College poitu varra valiyila silaper follow panranga.,Tanglish,WOMEN_SAFETY
-Regarding my issue: பேருந்து நிலையத்தில் ஒரு நபர் என்னைத் தொடர்ந்து பின்தொடர்கிறார்.,Tamil,WOMEN_SAFETY
-Regarding my issue: பணியிடத்தில் எனக்கு தொடர்ந்து பாலியல் தொல்லைகள் வருகின்றன.,Tamil,WOMEN_SAFETY
-Regarding my issue: रास्ते में कुछ लड़के रोज पीछा करते हैं और फब्तियां कसते हैं।,Hindi,WOMEN_SAFETY
-Regarding my issue: ऑफिस में सहकर्मी द्वारा परेशान किया जा रहा है।,Hindi,WOMEN_SAFETY
-Regarding my issue: Husband beats me under the influence of alcohol.,English,DOMESTIC_VIOLENCE
-Regarding my issue: In-laws abusing and threatening for dowry money.,English,DOMESTIC_VIOLENCE
-Regarding my issue: Locked inside the house and starved by my husband.,English,DOMESTIC_VIOLENCE
-Regarding my issue: Enga veetla purushan thittamal adikiraru.,Tanglish,DOMESTIC_VIOLENCE
-"Regarding my issue: Dowry ketu maamiyaar thollai tharanga, room-la lock panranga.",Tanglish,DOMESTIC_VIOLENCE
-Regarding my issue: மது குடித்துவிட்டு கணவர் தினமும் என்னை அடிக்கிறார்.,Tamil,DOMESTIC_VIOLENCE
-Regarding my issue: வரதட்சணை கேட்டு மாமியார் கொடுமைப்படுத்துகிறார்கள்.,Tamil,DOMESTIC_VIOLENCE
-Regarding my issue: पति शराब पीकर रोज मारता-पीटता है।,Hindi,DOMESTIC_VIOLENCE
-Regarding my issue: ससुराल वाले दहेज के लिए प्रताड़ित कर रहे हैं।,Hindi,DOMESTIC_VIOLENCE
-Regarding my issue: Gang attacked me with weapons near the market area.,English,CRIMINAL_COMPLAINT
-Regarding my issue: My motorcycle was stolen from outside my house entry.,English,CRIMINAL_COMPLAINT
-Regarding my issue: Robbers broke into my home and stole gold jewelry.,English,CRIMINAL_COMPLAINT
-Regarding my issue: Market kitta gang kathi vechu adichanga.,Tanglish,CRIMINAL_COMPLAINT
-Regarding my issue: Enga veetu bike-a thiruditu poitinga.,Tanglish,CRIMINAL_COMPLAINT
-Regarding my issue: இரவில் வீட்டை உடைத்து தங்க நகைகள் திருடப்பட்டுள்ளன.,Tamil,CRIMINAL_COMPLAINT
-Regarding my issue: சாலையில் சிலர் என்னைத் தாக்கி எனது பணத்தைப் பறித்தனர்.,Tamil,CRIMINAL_COMPLAINT
-Regarding my issue: घर के बाहर से मेरी बाइक चोरी हो गई है।,Hindi,CRIMINAL_COMPLAINT
-Regarding my issue: कुछ गुंडों ने हथियार दिखाकर मुझे लूटा।,Hindi,CRIMINAL_COMPLAINT
-Regarding my issue: Filing for divorce and seeking child custody support.,English,FAMILY_DISPUTE
-Regarding my issue: Parents forcing me to get married against my will.,English,FAMILY_DISPUTE
-Regarding my issue: Brothers refusing to divide ancestral inheritance fairly.,English,FAMILY_DISPUTE
-"Regarding my issue: Divorce venum, aana baby custody thara matengranga.",Tanglish,FAMILY_DISPUTE
-Regarding my issue: Enga appa force panni marriage panna soldranga.,Tanglish,FAMILY_DISPUTE
-Regarding my issue: விருப்பம் இல்லாமல் குடும்பத்தினர் திருமணம் செய்ய வற்புறுத்துகிறார்கள்.,Tamil,FAMILY_DISPUTE
-Regarding my issue: பூர்வீக சொத்தை பிரிப்பதில் சகோதரர்களுக்குள் தகராறு.,Tamil,FAMILY_DISPUTE
-Regarding my issue: पैतृक संपत्ति के बंटवारे को लेकर भाइयों में विवाद है।,Hindi,FAMILY_DISPUTE
-Regarding my issue: तलाक और बच्चे की कस्टडी के लिए मामला दर्ज करना है।,Hindi,FAMILY_DISPUTE
-Regarding my issue: Denied benefits of housing scheme despite having all eligibility.,English,GOVERNMENT_SCHEME
-Regarding my issue: Panchayat office demanding bribe for widow pension approval.,English,GOVERNMENT_SCHEME
-Regarding my issue: Ration card distribution office delayed my card for a year.,English,GOVERNMENT_SCHEME
-Regarding my issue: Housing scheme-la ellam documents irundhum select aagala.,Tanglish,GOVERNMENT_SCHEME
-Regarding my issue: Widow pension kuduka bribe panam kekuranga.,Tanglish,GOVERNMENT_SCHEME
-Regarding my issue: விபத்து நிவாரணத் தொகை பெற தகுதி இருந்தும் கிடைக்கவில்லை.,Tamil,GOVERNMENT_SCHEME
-Regarding my issue: ரேஷன் கார்டு வழங்க அதிகாரிகள் லஞ்சம் கேட்கிறார்கள்.,Tamil,GOVERNMENT_SCHEME
-Regarding my issue: पात्र होने के बावजूद आवास योजना की सूची में नाम नहीं है।,Hindi,GOVERNMENT_SCHEME
-Regarding my issue: विधवा पेंशन के लिए सरकारी कर्मचारी रिश्वत मांग रहे हैं।,Hindi,GOVERNMENT_SCHEME
-Regarding my issue: I need free legal advice regarding a contract discrepancy.,English,GENERAL_LEGAL_AID
-Regarding my issue: How to apply for free legal representation in district court.,English,GENERAL_LEGAL_AID
-Regarding my issue: Need guidance on court procedures for a witness summon.,English,GENERAL_LEGAL_AID
-"Regarding my issue: Enaku free lawyer venum, court case pathi legal aid thairya.",Tanglish,GENERAL_LEGAL_AID
-"Regarding my issue: Court sumons vandhuruku, step by step guidance enna.",Tanglish,GENERAL_LEGAL_AID
-Regarding my issue: இலவச சட்ட உதவி பெற எங்கு விண்ணப்பிக்க வேண்டும்?,Tamil,GENERAL_LEGAL_AID
-"Regarding my issue: நீதிமன்ற சம்மன் வந்துள்ளது, என்ன செய்ய வேண்டும் என அறிய வேண்டும்.",Tamil,GENERAL_LEGAL_AID
-"Regarding my issue: कोर्ट समन मिला है, कानूनी सहायता की आवश्यकता है।",Hindi,GENERAL_LEGAL_AID
-Regarding my issue: सरकारी वकील की सहायता पाने के लिए क्या नियम हैं।,Hindi,GENERAL_LEGAL_AID
-Urgent legal help needed. My company did not pay my salary for 3 months.,English,LABOUR_DISPUTE
-Urgent legal help needed. Employer terminated me without notice or severance pay.,English,LABOUR_DISPUTE
-Urgent legal help needed. Working extra hours but no overtime pay given.,English,LABOUR_DISPUTE
-Urgent legal help needed. Ennoda office-la 3 maasamaa sambalam tharala.,Tanglish,LABOUR_DISPUTE
-Urgent legal help needed. Company karanga ennoda salary tharama emathuranga.,Tanglish,LABOUR_DISPUTE
-Urgent legal help needed. 3 மாதங்களாக என் நிறுவனம் எனக்கு சம்பளம் வழங்கவில்லை.,Tamil,LABOUR_DISPUTE
-Urgent legal help needed. முன்னறிவிப்பு இல்லாமல் வேலைநீக்கம் செய்யப்பட்டேன்.,Tamil,LABOUR_DISPUTE
-Urgent legal help needed. कंपनी ने पिछले तीन महीने का वेतन नहीं दिया है।,Hindi,LABOUR_DISPUTE
-Urgent legal help needed. बिना किसी नोटिस के नौकरी से निकाल दिया गया।,Hindi,LABOUR_DISPUTE
-Urgent legal help needed. Bought a mobile phone online but received a soap bar.,English,CONSUMER_COMPLAINT
-Urgent legal help needed. Store refusing to honor the 1-year product warranty.,English,CONSUMER_COMPLAINT
-Urgent legal help needed. Charged extra double amount than the MRP printed.,English,CONSUMER_COMPLAINT
-"Urgent legal help needed. Online-la phone order panna, aana dummy box vandhuchu.",Tanglish,CONSUMER_COMPLAINT
-"Urgent legal help needed. Shopkeeper warranty card kudukala, replace panna maatranga.",Tanglish,CONSUMER_COMPLAINT
-"Urgent legal help needed. ஆன்லைனில் வாங்கிய தயாரிப்பு சேதமடைந்துள்ளது, திரும்பப் பெற மறுக்கிறார்கள்.",Tamil,CONSUMER_COMPLAINT
-Urgent legal help needed. அதிகப்படியான விலை வசூலிக்கும் கடைக்காரர்.,Tamil,CONSUMER_COMPLAINT
-Urgent legal help needed. अमेज़न से नकली प्रोडक्ट मिला है और पैसे वापस नहीं कर रहे।,Hindi,CONSUMER_COMPLAINT
-Urgent legal help needed. दुकानदार वारंटी में सामान बदलने से मना कर रहा है।,Hindi,CONSUMER_COMPLAINT
-Urgent legal help needed. Lost 50000 rupees due to a fake UPI QR code scam.,English,CYBER_CRIME
-Urgent legal help needed. Bank account hacked and savings transferred online.,English,CYBER_CRIME
-Urgent legal help needed. Received phishing links asking for my net banking OTP.,English,CYBER_CRIME
-Urgent legal help needed. Ennoda bank account hacking aagi panam pochu.,Tanglish,CYBER_CRIME
-Urgent legal help needed. UPI scanner scam-la 10000 rubaa tholachuten.,Tanglish,CYBER_CRIME
-Urgent legal help needed. போலி ஓடிபி மூலம் எனது கணக்கிலிருந்து பணம் திருடப்பட்டது.,Tamil,CYBER_CRIME
-Urgent legal help needed. வங்கி கணக்கு ஹேக் செய்யப்பட்டு பரிவர்த்தனை நடந்துள்ளது.,Tamil,CYBER_CRIME
-Urgent legal help needed. फेसबुक अकाउंट हैक करके पैसे मांगे जा रहे हैं।,Hindi,CYBER_CRIME
-Urgent legal help needed. बैंक मैनेजर बनकर ओटीपी पूछा और पैसे निकाल लिए।,Hindi,CYBER_CRIME
-Urgent legal help needed. Neighbor encroached my boundary wall and built a gate.,English,PROPERTY_DISPUTE
-Urgent legal help needed. Landlord refusing to return my security deposit.,English,PROPERTY_DISPUTE
-Urgent legal help needed. Forged property patta documents used to sell my land.,English,PROPERTY_DISPUTE
-Urgent legal help needed. Pakkathu veetukaaran enga idathula encroaching panran.,Tanglish,PROPERTY_DISPUTE
-Urgent legal help needed. Landlord advance panatha thiruppi tharama emathuran.,Tanglish,PROPERTY_DISPUTE
-Urgent legal help needed. அண்டை வீட்டார் எனது நில எல்லையை ஆக்கிரமித்து கட்டியுள்ளனர்.,Tamil,PROPERTY_DISPUTE
-Urgent legal help needed. போலி பத்திரம் தயாரித்து எனது வீட்டை விற்க முயல்கிறார்கள்.,Tamil,PROPERTY_DISPUTE
-Urgent legal help needed. पड़ोसी ने मेरी जमीन पर अवैध कब्जा कर लिया है।,Hindi,PROPERTY_DISPUTE
-Urgent legal help needed. मकान मालिक सिक्योरिटी डिपॉजिट वापस नहीं कर रहा है।,Hindi,PROPERTY_DISPUTE
-Urgent legal help needed. Colleague continuously stalking and sending inappropriate texts.,English,WOMEN_SAFETY
-Urgent legal help needed. Facing verbal harassment at public bus stop daily.,English,WOMEN_SAFETY
-Urgent legal help needed. Some guys following me home from college metro station.,English,WOMEN_SAFETY
-"Urgent legal help needed. Office-la oru officer thappa pesuran, stalk panran.",Tanglish,WOMEN_SAFETY
-Urgent legal help needed. College poitu varra valiyila silaper follow panranga.,Tanglish,WOMEN_SAFETY
-Urgent legal help needed. பேருந்து நிலையத்தில் ஒரு நபர் என்னைத் தொடர்ந்து பின்தொடர்கிறார்.,Tamil,WOMEN_SAFETY
-Urgent legal help needed. பணியிடத்தில் எனக்கு தொடர்ந்து பாலியல் தொல்லைகள் வருகின்றன.,Tamil,WOMEN_SAFETY
-Urgent legal help needed. रास्ते में कुछ लड़के रोज पीछा करते हैं और फब्तियां कसते हैं।,Hindi,WOMEN_SAFETY
-Urgent legal help needed. ऑफिस में सहकर्मी द्वारा परेशान किया जा रहा है।,Hindi,WOMEN_SAFETY
-Urgent legal help needed. Husband beats me under the influence of alcohol.,English,DOMESTIC_VIOLENCE
-Urgent legal help needed. In-laws abusing and threatening for dowry money.,English,DOMESTIC_VIOLENCE
-Urgent legal help needed. Locked inside the house and starved by my husband.,English,DOMESTIC_VIOLENCE
-Urgent legal help needed. Enga veetla purushan thittamal adikiraru.,Tanglish,DOMESTIC_VIOLENCE
-"Urgent legal help needed. Dowry ketu maamiyaar thollai tharanga, room-la lock panranga.",Tanglish,DOMESTIC_VIOLENCE
-Urgent legal help needed. மது குடித்துவிட்டு கணவர் தினமும் என்னை அடிக்கிறார்.,Tamil,DOMESTIC_VIOLENCE
-Urgent legal help needed. வரதட்சணை கேட்டு மாமியார் கொடுமைப்படுத்துகிறார்கள்.,Tamil,DOMESTIC_VIOLENCE
-Urgent legal help needed. पति शराब पीकर रोज मारता-पीटता है।,Hindi,DOMESTIC_VIOLENCE
-Urgent legal help needed. ससुराल वाले दहेज के लिए प्रताड़ित कर रहे हैं।,Hindi,DOMESTIC_VIOLENCE
-Urgent legal help needed. Gang attacked me with weapons near the market area.,English,CRIMINAL_COMPLAINT
-Urgent legal help needed. My motorcycle was stolen from outside my house entry.,English,CRIMINAL_COMPLAINT
-Urgent legal help needed. Robbers broke into my home and stole gold jewelry.,English,CRIMINAL_COMPLAINT
-Urgent legal help needed. Market kitta gang kathi vechu adichanga.,Tanglish,CRIMINAL_COMPLAINT
-Urgent legal help needed. Enga veetu bike-a thiruditu poitinga.,Tanglish,CRIMINAL_COMPLAINT
-Urgent legal help needed. இரவில் வீட்டை உடைத்து தங்க நகைகள் திருடப்பட்டுள்ளன.,Tamil,CRIMINAL_COMPLAINT
-Urgent legal help needed. சாலையில் சிலர் என்னைத் தாக்கி எனது பணத்தைப் பறித்தனர்.,Tamil,CRIMINAL_COMPLAINT
-Urgent legal help needed. घर के बाहर से मेरी बाइक चोरी हो गई है।,Hindi,CRIMINAL_COMPLAINT
-Urgent legal help needed. कुछ गुंडों ने हथियार दिखाकर मुझे लूटा।,Hindi,CRIMINAL_COMPLAINT
-Urgent legal help needed. Filing for divorce and seeking child custody support.,English,FAMILY_DISPUTE
-Urgent legal help needed. Parents forcing me to get married against my will.,English,FAMILY_DISPUTE
-Urgent legal help needed. Brothers refusing to divide ancestral inheritance fairly.,English,FAMILY_DISPUTE
-"Urgent legal help needed. Divorce venum, aana baby custody thara matengranga.",Tanglish,FAMILY_DISPUTE
-Urgent legal help needed. Enga appa force panni marriage panna soldranga.,Tanglish,FAMILY_DISPUTE
-Urgent legal help needed. விருப்பம் இல்லாமல் குடும்பத்தினர் திருமணம் செய்ய வற்புறுத்துகிறார்கள்.,Tamil,FAMILY_DISPUTE
-Urgent legal help needed. பூர்வீக சொத்தை பிரிப்பதில் சகோதரர்களுக்குள் தகராறு.,Tamil,FAMILY_DISPUTE
-Urgent legal help needed. पैतृक संपत्ति के बंटवारे को लेकर भाइयों में विवाद है।,Hindi,FAMILY_DISPUTE
-Urgent legal help needed. तलाक और बच्चे की कस्टडी के लिए मामला दर्ज करना है।,Hindi,FAMILY_DISPUTE
-Urgent legal help needed. Denied benefits of housing scheme despite having all eligibility.,English,GOVERNMENT_SCHEME
-Urgent legal help needed. Panchayat office demanding bribe for widow pension approval.,English,GOVERNMENT_SCHEME
-Urgent legal help needed. Ration card distribution office delayed my card for a year.,English,GOVERNMENT_SCHEME
-Urgent legal help needed. Housing scheme-la ellam documents irundhum select aagala.,Tanglish,GOVERNMENT_SCHEME
-Urgent legal help needed. Widow pension kuduka bribe panam kekuranga.,Tanglish,GOVERNMENT_SCHEME
-Urgent legal help needed. விபத்து நிவாரணத் தொகை பெற தகுதி இருந்தும் கிடைக்கவில்லை.,Tamil,GOVERNMENT_SCHEME
-Urgent legal help needed. ரேஷன் கார்டு வழங்க அதிகாரிகள் லஞ்சம் கேட்கிறார்கள்.,Tamil,GOVERNMENT_SCHEME
-Urgent legal help needed. पात्र होने के बावजूद आवास योजना की सूची में नाम नहीं है।,Hindi,GOVERNMENT_SCHEME
-Urgent legal help needed. विधवा पेंशन के लिए सरकारी कर्मचारी रिश्वत मांग रहे हैं।,Hindi,GOVERNMENT_SCHEME
-Urgent legal help needed. I need free legal advice regarding a contract discrepancy.,English,GENERAL_LEGAL_AID
-Urgent legal help needed. How to apply for free legal representation in district court.,English,GENERAL_LEGAL_AID
-Urgent legal help needed. Need guidance on court procedures for a witness summon.,English,GENERAL_LEGAL_AID
-"Urgent legal help needed. Enaku free lawyer venum, court case pathi legal aid thairya.",Tanglish,GENERAL_LEGAL_AID
-"Urgent legal help needed. Court sumons vandhuruku, step by step guidance enna.",Tanglish,GENERAL_LEGAL_AID
-Urgent legal help needed. இலவச சட்ட உதவி பெற எங்கு விண்ணப்பிக்க வேண்டும்?,Tamil,GENERAL_LEGAL_AID
-"Urgent legal help needed. நீதிமன்ற சம்மன் வந்துள்ளது, என்ன செய்ய வேண்டும் என அறிய வேண்டும்.",Tamil,GENERAL_LEGAL_AID
-"Urgent legal help needed. कोर्ट समन मिला है, कानूनी सहायता की आवश्यकता है।",Hindi,GENERAL_LEGAL_AID
-Urgent legal help needed. सरकारी वकील की सहायता पाने के लिए क्या नियम हैं।,Hindi,GENERAL_LEGAL_AID
+Free legal consultation documents apply panrathuku link enna.,Tanglish,GENERAL_LEGAL_AID
+Claiming compensation for severe injuries from truck collision.,English,MOTOR_ACCIDENT_CLAIM
+Third party insurance claim pending for car accident.,English,MOTOR_ACCIDENT_CLAIM
+Road accident accident compensation application block panranga.,Tanglish,MOTOR_ACCIDENT_CLAIM
+மோட்டார் வாகன விபத்து இழப்பீடு கோரி விண்ணப்பிக்க வேண்டும்.,Tamil,MOTOR_ACCIDENT_CLAIM
+இருசக்கர வாகன விபத்தில் அடிபட்டு காப்பீடு பெற முடியவில்லை.,Tamil,MOTOR_ACCIDENT_CLAIM
+Car damage accident claim process insurance company delayed.,Tanglish,MOTOR_ACCIDENT_CLAIM
+Life insurance payout rejected due to false technical reasons.,English,INSURANCE_CLAIM
+Health insurance company not releasing money for surgery.,English,INSURANCE_CLAIM
+Insurance claim deny pannitanga documentation complete-a irundhum.,Tanglish,INSURANCE_CLAIM
+மருத்துவக் காப்பீட்டுத் தொகையை நிறுவனம் வழங்க மறுக்கிறது.,Tamil,INSURANCE_CLAIM
+பயிர்க் காப்பீட்டுத் தொகை கிடைக்காமல் விவசாயிகள் தவிக்கிறார்கள்.,Tamil,INSURANCE_CLAIM
+Crop insurance failure payout delay by corporate agent.,Tanglish,INSURANCE_CLAIM
+Unauthorized credit card transaction charges billed to account.,English,BANKING_DISPUTE
+Bank frozen my account without sending any written notice.,English,BANKING_DISPUTE
+Bank account unauthorized charge cut pannitanga return tharala.,Tanglish,BANKING_DISPUTE
+எனது அனுமதியின்றி வங்கிக் கணக்கிலிருந்து பணம் எடுக்கப்பட்டுள்ளது.,Tamil,BANKING_DISPUTE
+வங்கிக் கடன் வட்டி விகிதத்தில் மோசடி செய்துள்ளனர்.,Tamil,BANKING_DISPUTE
+Personal loan EMI extra auto debit dispute with manager.,Tanglish,BANKING_DISPUTE
+Landlord attempting illegal eviction without notice window.,English,RENT_TENANT_DISPUTE
+Tenant not paying rent and refusing to vacate building.,English,RENT_TENANT_DISPUTE
+House owner room lease advance return tharama vacate panna soldran.,Tanglish,RENT_TENANT_DISPUTE
+வாடகை ஒப்பந்தம் முடியும் முன்பே வீட்டை விட்டு வெளியேறச் சொல்கிறார்.,Tamil,RENT_TENANT_DISPUTE
+வாடகை தராமல் வீட்டை ஆக்கிரமித்துள்ள வாடகைதாரர்.,Tamil,RENT_TENANT_DISPUTE
+Rental agreement renewal dispute tenant refusing to exit.,Tanglish,RENT_TENANT_DISPUTE
+Doctor left surgical gauze inside patient body after surgery.,English,MEDICAL_NEGLIGENCE
+Wrong medication dosage caused severe brain damage to child.,English,MEDICAL_NEGLIGENCE
+Hospital wrong injection wrong treatment patient death negligence.,Tanglish,MEDICAL_NEGLIGENCE
+மருத்துவரின் அலட்சியத்தால் அறுவை சிகிச்சை தோல்வி அடைந்தது.,Tamil,MEDICAL_NEGLIGENCE
+தவறான மருந்து வழங்கியதால் நோயாளிக்கு பக்கவாதம் ஏற்பட்டது.,Tamil,MEDICAL_NEGLIGENCE
+Government hospital delivery operation negligence of duty doctor.,Tanglish,MEDICAL_NEGLIGENCE
+College refusing to return original certificates upon exit.,English,EDUCATION_DISPUTE
+Private school demanding capitation fee violating RTE Act.,English,EDUCATION_DISPUTE
+RTE admission block school extra fee demand panranga.,Tanglish,EDUCATION_DISPUTE
+கல்லூரி மாற்றுச் சான்றிதழை தர மறுத்து அலைக்கழிக்கிறது.,Tamil,EDUCATION_DISPUTE
+அனுமதி பெறாத பள்ளியில் சேர்ந்து மாணவர்கள் ஏமாற்றம் அடைந்தனர்.,Tamil,EDUCATION_DISPUTE
+Scholarship application process college staff bribe demanding.,Tanglish,EDUCATION_DISPUTE
+Supervisor threatening termination for refusing sexual advances.,English,WORKPLACE_HARASSMENT
+Abusive toxic manager creating hostile environment at office.,English,WORKPLACE_HARASSMENT
+Office management toxic pressure workplace mental harassment.,Tanglish,WORKPLACE_HARASSMENT
+பணியிடத்தில் பெண் ஊழியர்களுக்கு தொடர்ந்து பாலியல் அச்சுறுத்தல்.,Tamil,WORKPLACE_HARASSMENT
+மேலதிகாரி தகாத வார்த்தைகளால் பேசி அவமதிக்கிறார்.,Tamil,WORKPLACE_HARASSMENT
+Salary cut threaten HR harassment workplace safety failure.,Tanglish,WORKPLACE_HARASSMENT
+Children abandoned parents and grabbed all pension property.,English,SENIOR_CITIZEN_ABUSE
+Physical abuse and starvation of elderly father by son.,English,SENIOR_CITIZEN_ABUSE
+Elderly mother property sign register panni thurathitaanga children.,Tanglish,SENIOR_CITIZEN_ABUSE
+முதியோர் உதவித்தொகையை பறித்துக் கொண்டு மகன் வீட்டை விட்டு துரத்தினார்.,Tamil,SENIOR_CITIZEN_ABUSE
+வயதான பெற்றோரை கவனித்துக் கொள்ளாமல் பிள்ளைகள் கைவிட்டனர்.,Tamil,SENIOR_CITIZEN_ABUSE
+Maintenance claim against son senior citizen protection act help.,Tanglish,SENIOR_CITIZEN_ABUSE
+Reporting active child labor in local tea shop market.,English,CHILD_WELFARE
+Minor girl forced into child marriage arrangement by relatives.,English,CHILD_WELFARE
+Child labor hotel work street child welfare rescue help.,Tanglish,CHILD_WELFARE
+குழந்தை தொழிலாளர்களை கடைகளில் வேலைக்கு வைத்துள்ளனர்.,Tamil,CHILD_WELFARE
+மைனர் சிறுமிக்கு கட்டாயத் திருமணம் செய்ய ஏற்பாடு நடக்கிறது.,Tamil,CHILD_WELFARE
+School dropout child labor brick kiln factory minor abuse.,Tanglish,CHILD_WELFARE
+Denied accessibility ramps in public government bank office.,English,DISABILITY_RIGHTS
+Employer rejected job application solely due to visual impairment.,English,DISABILITY_RIGHTS
+Differently abled quota job skip reservation violations office.,Tanglish,DISABILITY_RIGHTS
+மாற்றுத்திறனாளிகளுக்கான அரசு சலுகைகள் மற்றும் வேலைவாய்ப்பு மறுப்பு.,Tamil,DISABILITY_RIGHTS
+பள்ளி வளாகத்தில் மாற்றுத்திறனாளி மாணவர்களுக்கு கழிப்பறை வசதி இல்லை.,Tamil,DISABILITY_RIGHTS
+Disability certificate application issue welfare card delayed.,Tanglish,DISABILITY_RIGHTS
+Social boycott of SC community from local village temple festival.,English,CASTE_DISCRIMINATION
+Casteist slurs thrown at water well community sharing point.,English,CASTE_DISCRIMINATION
+Caste name calling discrimination tea shop separate glass.,Tanglish,CASTE_DISCRIMINATION
+பட்டியலின மக்களை பொதுக் கிணற்றில் தண்ணீர் எடுக்க விடாமல் தடுக்கிறார்கள்.,Tamil,CASTE_DISCRIMINATION
+சாதிப் பெயரைச் சொல்லி இழிவுபடுத்தி ஊரை விட்டு ஒதுக்கி வைத்தனர்.,Tamil,CASTE_DISCRIMINATION
+Caste barrier temple entry village panchayat discrimination.,Tanglish,CASTE_DISCRIMINATION
+Police officer refused to register FIR for a theft case.,English,POLICE_MISCONDUCT
+Illegal police detention and custodial violence in lockup.,English,POLICE_MISCONDUCT
+Police custody beating bribe demand local FIR registration fail.,Tanglish,POLICE_MISCONDUCT
+காவல் துறையினர் புகார் மனுவை வாங்க மறுத்து திருப்பி அனுப்பினர்.,Tamil,POLICE_MISCONDUCT
+விசாரணை என்ற பெயரில் லாக்அப்பில் வைத்து கடுமையாக தாக்கினர்.,Tamil,POLICE_MISCONDUCT
+False case threat bribery police station lockup assault.,Tanglish,POLICE_MISCONDUCT
+Public officer demanding bribe of 5000 for death certificate.,English,CORRUPTION_BRIBERY
+Contractor paying kickbacks to municipal engineer for road works.,English,CORRUPTION_BRIBERY
+Bribe demand office corruption latcham registration patta.,Tanglish,CORRUPTION_BRIBERY
+அரசு அலுவலகத்தில் ஓட்டுநர் உரிமம் பெற லஞ்சம் கேட்கிறார்கள்.,Tamil,CORRUPTION_BRIBERY
+பில் பாஸ் செய்ய இன்ஜினியர் பெருந்தொகை லஞ்சம் கேட்கிறார்.,Tamil,CORRUPTION_BRIBERY
+Vigilance anti corruption bribe recording complaint help.,Tanglish,CORRUPTION_BRIBERY
+Broken sewage pipe causing raw sewage drinking water mix.,English,CIVIC_INFRASTRUCTURE
+Severe potholes on main road causing fatal bike accidents.,English,CIVIC_INFRASTRUCTURE
+Street light repair block dark street chain snatching threat.,Tanglish,CIVIC_INFRASTRUCTURE
+குடிநீருடன் கழிவுநீர் கலந்து வருவதால் தொற்றுநோய் பரவுகிறது.,Tamil,CIVIC_INFRASTRUCTURE
+சாலையில் உள்ள ஆழமான பள்ளங்களால் வாகன ஓட்டிகள் விபத்துக்குள்ளாகிறார்கள்.,Tamil,CIVIC_INFRASTRUCTURE
+Garbage dumping issue street corner corporate cleaning delay.,Tanglish,CIVIC_INFRASTRUCTURE
+RTI request regarding village budget spending not answered.,English,RTI_APPLICATION
+Public information officer intentionally gave wrong fake answers.,English,RTI_APPLICATION
+RTI reply delay timeline over no info provided by office.,Tanglish,RTI_APPLICATION
+தகவல் அறியும் உரிமை சட்டத்தின் கீழ் கேட்ட கேள்விக்கு பதில் அளிக்கவில்லை.,Tamil,RTI_APPLICATION
+அரசு திட்ட செலவு விபரங்கள் குறித்த ஆர்டிஐ மனு நிராகரிக்கப்பட்டது.,Tamil,RTI_APPLICATION
+PIO officer RTI appeal process documentation rejection.,Tanglish,RTI_APPLICATION
+"Dear Sir, My company did not pay my salary for 3 months.",English,LABOUR_DISPUTE
+"Dear Sir, Employer terminated me without notice or severance pay.",English,LABOUR_DISPUTE
+"Dear Sir, Ennoda office-la 3 maasamaa sambalam tharala.",Tanglish,LABOUR_DISPUTE
+"Dear Sir, 3 மாதங்களாக என் நிறுவனம் எனக்கு சம்பளம் வழங்கவில்லை.",Tamil,LABOUR_DISPUTE
+"Dear Sir, முன்னறிவிப்பு இல்லாமல் வேலைநீக்கம் செய்யப்பட்டேன்.",Tamil,LABOUR_DISPUTE
+"Dear Sir, Company-la salary tharama delay panranga.",Tanglish,LABOUR_DISPUTE
+"Dear Sir, Bought a mobile phone online but received a soap bar.",English,CONSUMER_COMPLAINT
+"Dear Sir, Store refusing to honor the 1-year product warranty.",English,CONSUMER_COMPLAINT
+"Dear Sir, Online-la phone order panna, aana dummy box vandhuchu.",Tanglish,CONSUMER_COMPLAINT
+"Dear Sir, ஆன்லைனில் வாங்கிய தயாரிப்பு சேதமடைந்துள்ளது, திரும்பப் பெற மறுக்கிறார்கள்.",Tamil,CONSUMER_COMPLAINT
+"Dear Sir, அதிகப்படியான விலை வசூலிக்கும் கடைக்காரர்.",Tamil,CONSUMER_COMPLAINT
+"Dear Sir, Defective TV purchase panni response illa store la.",Tanglish,CONSUMER_COMPLAINT
+"Dear Sir, Lost 50000 rupees due to a fake UPI QR code scam.",English,CYBER_CRIME
+"Dear Sir, Bank account hacked and savings transferred online.",English,CYBER_CRIME
+"Dear Sir, Ennoda bank account hacking aagi panam pochu.",Tanglish,CYBER_CRIME
+"Dear Sir, போலி ஓடிபி மூலம் எனது கணக்கிலிருந்து பணம் திருடப்பட்டது.",Tamil,CYBER_CRIME
+"Dear Sir, வங்கி கணக்கு ஹேக் செய்யப்பட்டு பரிவர்த்தனை நடந்துள்ளது.",Tamil,CYBER_CRIME
+"Dear Sir, Scam links click panni bank balance tholachuten.",Tanglish,CYBER_CRIME
+"Dear Sir, Neighbor encroached my boundary wall and built a gate.",English,PROPERTY_DISPUTE
+"Dear Sir, Landlord refusing to return my security deposit.",English,PROPERTY_DISPUTE
+"Dear Sir, Pakkathu veetukaaran enga idathula encroaching panran.",Tanglish,PROPERTY_DISPUTE
+"Dear Sir, அண்டை வீட்டார் எனது நில எல்லையை ஆக்கிரமித்து கட்டியுள்ளனர்.",Tamil,PROPERTY_DISPUTE
+"Dear Sir, போலி பத்திரம் தயாரித்து எனது வீட்டை விற்க முயல்கிறார்கள்.",Tamil,PROPERTY_DISPUTE
+"Dear Sir, Patta transfer panna registration office-la legal issue.",Tanglish,PROPERTY_DISPUTE
+"Dear Sir, Colleague continuously stalking and sending inappropriate texts.",English,WOMEN_SAFETY
+"Dear Sir, Facing verbal harassment at public bus stop daily.",English,WOMEN_SAFETY
+"Dear Sir, Office-la oru officer thappa pesuran, stalk panran.",Tanglish,WOMEN_SAFETY
+"Dear Sir, பேருந்து நிலையத்தில் ஒரு நபர் என்னைத் தொடர்ந்து பின்தொடர்கிறார்.",Tamil,WOMEN_SAFETY
+"Dear Sir, பணியிடத்தில் எனக்கு தொடர்ந்து பாலியல் தொல்லைகள் வருகின்றன.",Tamil,WOMEN_SAFETY
+"Dear Sir, Stalker follow panran evening college vitu varra vazhila.",Tanglish,WOMEN_SAFETY
+"Dear Sir, Husband beats me under the influence of alcohol.",English,DOMESTIC_VIOLENCE
+"Dear Sir, In-laws abusing and threatening for dowry money.",English,DOMESTIC_VIOLENCE
+"Dear Sir, Enga veetla purushan thittamal adikiraru.",Tanglish,DOMESTIC_VIOLENCE
+"Dear Sir, மது குடித்துவிட்டு கணவர் தினமும் என்னை அடிக்கிறார்.",Tamil,DOMESTIC_VIOLENCE
+"Dear Sir, வரதட்சணை கேட்டு மாமியார் கொடுமைப்படுத்துகிறார்கள்.",Tamil,DOMESTIC_VIOLENCE
+"Dear Sir, Dowry pathathu nu solli purushan abusive-a nadakuran.",Tanglish,DOMESTIC_VIOLENCE
+"Dear Sir, Gang attacked me with weapons near the market area.",English,CRIMINAL_COMPLAINT
+"Dear Sir, My motorcycle was stolen from outside my house entry.",English,CRIMINAL_COMPLAINT
+"Dear Sir, Market kitta gang kathi vechu adichanga.",Tanglish,CRIMINAL_COMPLAINT
+"Dear Sir, இரவில் வீட்டை உடைத்து தங்க நகைகள் திருடப்பட்டுள்ளன.",Tamil,CRIMINAL_COMPLAINT
+"Dear Sir, சாலையில் சிலர் என்னைத் தாக்கி எனது பணத்தைப் பறித்தனர்.",Tamil,CRIMINAL_COMPLAINT
+"Dear Sir, Gold chain robbery nadanthuchu street corner la.",Tanglish,CRIMINAL_COMPLAINT
+"Dear Sir, Filing for divorce and seeking child custody support.",English,FAMILY_DISPUTE
+"Dear Sir, Parents forcing me to get married against my will.",English,FAMILY_DISPUTE
+"Dear Sir, Divorce venum, aana baby custody thara matengranga.",Tanglish,FAMILY_DISPUTE
+"Dear Sir, விருப்பம் இல்லாமல் குடும்பத்தினர் திருமணம் செய்ய வற்புறுத்துகிறார்கள்.",Tamil,FAMILY_DISPUTE
+"Dear Sir, பூர்வீக சொத்தை பிரிப்பதில் சகோதரர்களுக்குள் தகராறு.",Tamil,FAMILY_DISPUTE
+"Dear Sir, Ancesty property share divide panrathula conflict.",Tanglish,FAMILY_DISPUTE
+"Dear Sir, Denied benefits of housing scheme despite having all eligibility.",English,GOVERNMENT_SCHEME
+"Dear Sir, Panchayat office demanding bribe for widow pension approval.",English,GOVERNMENT_SCHEME
+"Dear Sir, Housing scheme-la ellam documents irundhum select aagala.",Tanglish,GOVERNMENT_SCHEME
+"Dear Sir, விபத்து நிவாரணத் தொகை பெற தகுதி இருந்தும் கிடைக்கவில்லை.",Tamil,GOVERNMENT_SCHEME
+"Dear Sir, ரேஷன் கார்டு வழங்க அதிகாரிகள் லஞ்சம் கேட்கிறார்கள்.",Tamil,GOVERNMENT_SCHEME
+"Dear Sir, OAP pension scheme register panna officials reject panranga.",Tanglish,GOVERNMENT_SCHEME
+"Dear Sir, I need free legal advice regarding a contract discrepancy.",English,GENERAL_LEGAL_AID
+"Dear Sir, How to apply for free legal representation in district court.",English,GENERAL_LEGAL_AID
+"Dear Sir, Enaku free lawyer venum, court case pathi legal aid thairya.",Tanglish,GENERAL_LEGAL_AID
+"Dear Sir, இலவச சட்ட உதவி பெற எங்கு விண்ணப்பிக்க வேண்டும்?",Tamil,GENERAL_LEGAL_AID
+"Dear Sir, நீதிமன்ற சம்மன் வந்துள்ளது, என்ன செய்ய வேண்டும் என அறிய வேண்டும்.",Tamil,GENERAL_LEGAL_AID
+"Dear Sir, Free legal consultation documents apply panrathuku link enna.",Tanglish,GENERAL_LEGAL_AID
+"Dear Sir, Claiming compensation for severe injuries from truck collision.",English,MOTOR_ACCIDENT_CLAIM
+"Dear Sir, Third party insurance claim pending for car accident.",English,MOTOR_ACCIDENT_CLAIM
+"Dear Sir, Road accident accident compensation application block panranga.",Tanglish,MOTOR_ACCIDENT_CLAIM
+"Dear Sir, மோட்டார் வாகன விபத்து இழப்பீடு கோரி விண்ணப்பிக்க வேண்டும்.",Tamil,MOTOR_ACCIDENT_CLAIM
+"Dear Sir, இருசக்கர வாகன விபத்தில் அடிபட்டு காப்பீடு பெற முடியவில்லை.",Tamil,MOTOR_ACCIDENT_CLAIM
+"Dear Sir, Car damage accident claim process insurance company delayed.",Tanglish,MOTOR_ACCIDENT_CLAIM
+"Dear Sir, Life insurance payout rejected due to false technical reasons.",English,INSURANCE_CLAIM
+"Dear Sir, Health insurance company not releasing money for surgery.",English,INSURANCE_CLAIM
+"Dear Sir, Insurance claim deny pannitanga documentation complete-a irundhum.",Tanglish,INSURANCE_CLAIM
+"Dear Sir, மருத்துவக் காப்பீட்டுத் தொகையை நிறுவனம் வழங்க மறுக்கிறது.",Tamil,INSURANCE_CLAIM
+"Dear Sir, பயிர்க் காப்பீட்டுத் தொகை கிடைக்காமல் விவசாயிகள் தவிக்கிறார்கள்.",Tamil,INSURANCE_CLAIM
+"Dear Sir, Crop insurance failure payout delay by corporate agent.",Tanglish,INSURANCE_CLAIM
+"Dear Sir, Unauthorized credit card transaction charges billed to account.",English,BANKING_DISPUTE
+"Dear Sir, Bank frozen my account without sending any written notice.",English,BANKING_DISPUTE
+"Dear Sir, Bank account unauthorized charge cut pannitanga return tharala.",Tanglish,BANKING_DISPUTE
+"Dear Sir, எனது அனுமதியின்றி வங்கிக் கணக்கிலிருந்து பணம் எடுக்கப்பட்டுள்ளது.",Tamil,BANKING_DISPUTE
+"Dear Sir, வங்கிக் கடன் வட்டி விகிதத்தில் மோசடி செய்துள்ளனர்.",Tamil,BANKING_DISPUTE
+"Dear Sir, Personal loan EMI extra auto debit dispute with manager.",Tanglish,BANKING_DISPUTE
+"Dear Sir, Landlord attempting illegal eviction without notice window.",English,RENT_TENANT_DISPUTE
+"Dear Sir, Tenant not paying rent and refusing to vacate building.",English,RENT_TENANT_DISPUTE
+"Dear Sir, House owner room lease advance return tharama vacate panna soldran.",Tanglish,RENT_TENANT_DISPUTE
+"Dear Sir, வாடகை ஒப்பந்தம் முடியும் முன்பே வீட்டை விட்டு வெளியேறச் சொல்கிறார்.",Tamil,RENT_TENANT_DISPUTE
+"Dear Sir, வாடகை தராமல் வீட்டை ஆக்கிரமித்துள்ள வாடகைதாரர்.",Tamil,RENT_TENANT_DISPUTE
+"Dear Sir, Rental agreement renewal dispute tenant refusing to exit.",Tanglish,RENT_TENANT_DISPUTE
+"Dear Sir, Doctor left surgical gauze inside patient body after surgery.",English,MEDICAL_NEGLIGENCE
+"Dear Sir, Wrong medication dosage caused severe brain damage to child.",English,MEDICAL_NEGLIGENCE
+"Dear Sir, Hospital wrong injection wrong treatment patient death negligence.",Tanglish,MEDICAL_NEGLIGENCE
+"Dear Sir, மருத்துவரின் அலட்சியத்தால் அறுவை சிகிச்சை தோல்வி அடைந்தது.",Tamil,MEDICAL_NEGLIGENCE
+"Dear Sir, தவறான மருந்து வழங்கியதால் நோயாளிக்கு பக்கவாதம் ஏற்பட்டது.",Tamil,MEDICAL_NEGLIGENCE
+"Dear Sir, Government hospital delivery operation negligence of duty doctor.",Tanglish,MEDICAL_NEGLIGENCE
+"Dear Sir, College refusing to return original certificates upon exit.",English,EDUCATION_DISPUTE
+"Dear Sir, Private school demanding capitation fee violating RTE Act.",English,EDUCATION_DISPUTE
+"Dear Sir, RTE admission block school extra fee demand panranga.",Tanglish,EDUCATION_DISPUTE
+"Dear Sir, கல்லூரி மாற்றுச் சான்றிதழை தர மறுத்து அலைக்கழிக்கிறது.",Tamil,EDUCATION_DISPUTE
+"Dear Sir, அனுமதி பெறாத பள்ளியில் சேர்ந்து மாணவர்கள் ஏமாற்றம் அடைந்தனர்.",Tamil,EDUCATION_DISPUTE
+"Dear Sir, Scholarship application process college staff bribe demanding.",Tanglish,EDUCATION_DISPUTE
+"Dear Sir, Supervisor threatening termination for refusing sexual advances.",English,WORKPLACE_HARASSMENT
+"Dear Sir, Abusive toxic manager creating hostile environment at office.",English,WORKPLACE_HARASSMENT
+"Dear Sir, Office management toxic pressure workplace mental harassment.",Tanglish,WORKPLACE_HARASSMENT
+"Dear Sir, பணியிடத்தில் பெண் ஊழியர்களுக்கு தொடர்ந்து பாலியல் அச்சுறுத்தல்.",Tamil,WORKPLACE_HARASSMENT
+"Dear Sir, மேலதிகாரி தகாத வார்த்தைகளால் பேசி அவமதிக்கிறார்.",Tamil,WORKPLACE_HARASSMENT
+"Dear Sir, Salary cut threaten HR harassment workplace safety failure.",Tanglish,WORKPLACE_HARASSMENT
+"Dear Sir, Children abandoned parents and grabbed all pension property.",English,SENIOR_CITIZEN_ABUSE
+"Dear Sir, Physical abuse and starvation of elderly father by son.",English,SENIOR_CITIZEN_ABUSE
+"Dear Sir, Elderly mother property sign register panni thurathitaanga children.",Tanglish,SENIOR_CITIZEN_ABUSE
+"Dear Sir, முதியோர் உதவித்தொகையை பறித்துக் கொண்டு மகன் வீட்டை விட்டு துரத்தினார்.",Tamil,SENIOR_CITIZEN_ABUSE
+"Dear Sir, வயதான பெற்றோரை கவனித்துக் கொள்ளாமல் பிள்ளைகள் கைவிட்டனர்.",Tamil,SENIOR_CITIZEN_ABUSE
+"Dear Sir, Maintenance claim against son senior citizen protection act help.",Tanglish,SENIOR_CITIZEN_ABUSE
+"Dear Sir, Reporting active child labor in local tea shop market.",English,CHILD_WELFARE
+"Dear Sir, Minor girl forced into child marriage arrangement by relatives.",English,CHILD_WELFARE
+"Dear Sir, Child labor hotel work street child welfare rescue help.",Tanglish,CHILD_WELFARE
+"Dear Sir, குழந்தை தொழிலாளர்களை கடைகளில் வேலைக்கு வைத்துள்ளனர்.",Tamil,CHILD_WELFARE
+"Dear Sir, மைனர் சிறுமிக்கு கட்டாயத் திருமணம் செய்ய ஏற்பாடு நடக்கிறது.",Tamil,CHILD_WELFARE
+"Dear Sir, School dropout child labor brick kiln factory minor abuse.",Tanglish,CHILD_WELFARE
+"Dear Sir, Denied accessibility ramps in public government bank office.",English,DISABILITY_RIGHTS
+"Dear Sir, Employer rejected job application solely due to visual impairment.",English,DISABILITY_RIGHTS
+"Dear Sir, Differently abled quota job skip reservation violations office.",Tanglish,DISABILITY_RIGHTS
+"Dear Sir, மாற்றுத்திறனாளிகளுக்கான அரசு சலுகைகள் மற்றும் வேலைவாய்ப்பு மறுப்பு.",Tamil,DISABILITY_RIGHTS
+"Dear Sir, பள்ளி வளாகத்தில் மாற்றுத்திறனாளி மாணவர்களுக்கு கழிப்பறை வசதி இல்லை.",Tamil,DISABILITY_RIGHTS
+"Dear Sir, Disability certificate application issue welfare card delayed.",Tanglish,DISABILITY_RIGHTS
+"Dear Sir, Social boycott of SC community from local village temple festival.",English,CASTE_DISCRIMINATION
+"Dear Sir, Casteist slurs thrown at water well community sharing point.",English,CASTE_DISCRIMINATION
+"Dear Sir, Caste name calling discrimination tea shop separate glass.",Tanglish,CASTE_DISCRIMINATION
+"Dear Sir, பட்டியலின மக்களை பொதுக் கிணற்றில் தண்ணீர் எடுக்க விடாமல் தடுக்கிறார்கள்.",Tamil,CASTE_DISCRIMINATION
+"Dear Sir, சாதிப் பெயரைச் சொல்லி இழிவுபடுத்தி ஊரை விட்டு ஒதுக்கி வைத்தனர்.",Tamil,CASTE_DISCRIMINATION
+"Dear Sir, Caste barrier temple entry village panchayat discrimination.",Tanglish,CASTE_DISCRIMINATION
+"Dear Sir, Police officer refused to register FIR for a theft case.",English,POLICE_MISCONDUCT
+"Dear Sir, Illegal police detention and custodial violence in lockup.",English,POLICE_MISCONDUCT
+"Dear Sir, Police custody beating bribe demand local FIR registration fail.",Tanglish,POLICE_MISCONDUCT
+"Dear Sir, காவல் துறையினர் புகார் மனுவை வாங்க மறுத்து திருப்பி அனுப்பினர்.",Tamil,POLICE_MISCONDUCT
+"Dear Sir, விசாரணை என்ற பெயரில் லாக்அப்பில் வைத்து கடுமையாக தாக்கினர்.",Tamil,POLICE_MISCONDUCT
+"Dear Sir, False case threat bribery police station lockup assault.",Tanglish,POLICE_MISCONDUCT
+"Dear Sir, Public officer demanding bribe of 5000 for death certificate.",English,CORRUPTION_BRIBERY
+"Dear Sir, Contractor paying kickbacks to municipal engineer for road works.",English,CORRUPTION_BRIBERY
+"Dear Sir, Bribe demand office corruption latcham registration patta.",Tanglish,CORRUPTION_BRIBERY
+"Dear Sir, அரசு அலுவலகத்தில் ஓட்டுநர் உரிமம் பெற லஞ்சம் கேட்கிறார்கள்.",Tamil,CORRUPTION_BRIBERY
+"Dear Sir, பில் பாஸ் செய்ய இன்ஜினியர் பெருந்தொகை லஞ்சம் கேட்கிறார்.",Tamil,CORRUPTION_BRIBERY
+"Dear Sir, Vigilance anti corruption bribe recording complaint help.",Tanglish,CORRUPTION_BRIBERY
+"Dear Sir, Broken sewage pipe causing raw sewage drinking water mix.",English,CIVIC_INFRASTRUCTURE
+"Dear Sir, Severe potholes on main road causing fatal bike accidents.",English,CIVIC_INFRASTRUCTURE
+"Dear Sir, Street light repair block dark street chain snatching threat.",Tanglish,CIVIC_INFRASTRUCTURE
+"Dear Sir, குடிநீருடன் கழிவுநீர் கலந்து வருவதால் தொற்றுநோய் பரவுகிறது.",Tamil,CIVIC_INFRASTRUCTURE
+"Dear Sir, சாலையில் உள்ள ஆழமான பள்ளங்களால் வாகன ஓட்டிகள் விபத்துக்குள்ளாகிறார்கள்.",Tamil,CIVIC_INFRASTRUCTURE
+"Dear Sir, Garbage dumping issue street corner corporate cleaning delay.",Tanglish,CIVIC_INFRASTRUCTURE
+"Dear Sir, RTI request regarding village budget spending not answered.",English,RTI_APPLICATION
+"Dear Sir, Public information officer intentionally gave wrong fake answers.",English,RTI_APPLICATION
+"Dear Sir, RTI reply delay timeline over no info provided by office.",Tanglish,RTI_APPLICATION
+"Dear Sir, தகவல் அறியும் உரிமை சட்டத்தின் கீழ் கேட்ட கேள்விக்கு பதில் அளிக்கவில்லை.",Tamil,RTI_APPLICATION
+"Dear Sir, அரசு திட்ட செலவு விபரங்கள் குறித்த ஆர்டிஐ மனு நிராகரிக்கப்பட்டது.",Tamil,RTI_APPLICATION
+"Dear Sir, PIO officer RTI appeal process documentation rejection.",Tanglish,RTI_APPLICATION
+Regarding my grievance: My company did not pay my salary for 3 months.,English,LABOUR_DISPUTE
+Regarding my grievance: Employer terminated me without notice or severance pay.,English,LABOUR_DISPUTE
+Regarding my grievance: Ennoda office-la 3 maasamaa sambalam tharala.,Tanglish,LABOUR_DISPUTE
+Regarding my grievance: 3 மாதங்களாக என் நிறுவனம் எனக்கு சம்பளம் வழங்கவில்லை.,Tamil,LABOUR_DISPUTE
+Regarding my grievance: முன்னறிவிப்பு இல்லாமல் வேலைநீக்கம் செய்யப்பட்டேன்.,Tamil,LABOUR_DISPUTE
+Regarding my grievance: Company-la salary tharama delay panranga.,Tanglish,LABOUR_DISPUTE
+Regarding my grievance: Bought a mobile phone online but received a soap bar.,English,CONSUMER_COMPLAINT
+Regarding my grievance: Store refusing to honor the 1-year product warranty.,English,CONSUMER_COMPLAINT
+"Regarding my grievance: Online-la phone order panna, aana dummy box vandhuchu.",Tanglish,CONSUMER_COMPLAINT
+"Regarding my grievance: ஆன்லைனில் வாங்கிய தயாரிப்பு சேதமடைந்துள்ளது, திரும்பப் பெற மறுக்கிறார்கள்.",Tamil,CONSUMER_COMPLAINT
+Regarding my grievance: அதிகப்படியான விலை வசூலிக்கும் கடைக்காரர்.,Tamil,CONSUMER_COMPLAINT
+Regarding my grievance: Defective TV purchase panni response illa store la.,Tanglish,CONSUMER_COMPLAINT
+Regarding my grievance: Lost 50000 rupees due to a fake UPI QR code scam.,English,CYBER_CRIME
+Regarding my grievance: Bank account hacked and savings transferred online.,English,CYBER_CRIME
+Regarding my grievance: Ennoda bank account hacking aagi panam pochu.,Tanglish,CYBER_CRIME
+Regarding my grievance: போலி ஓடிபி மூலம் எனது கணக்கிலிருந்து பணம் திருடப்பட்டது.,Tamil,CYBER_CRIME
+Regarding my grievance: வங்கி கணக்கு ஹேக் செய்யப்பட்டு பரிவர்த்தனை நடந்துள்ளது.,Tamil,CYBER_CRIME
+Regarding my grievance: Scam links click panni bank balance tholachuten.,Tanglish,CYBER_CRIME
+Regarding my grievance: Neighbor encroached my boundary wall and built a gate.,English,PROPERTY_DISPUTE
+Regarding my grievance: Landlord refusing to return my security deposit.,English,PROPERTY_DISPUTE
+Regarding my grievance: Pakkathu veetukaaran enga idathula encroaching panran.,Tanglish,PROPERTY_DISPUTE
+Regarding my grievance: அண்டை வீட்டார் எனது நில எல்லையை ஆக்கிரமித்து கட்டியுள்ளனர்.,Tamil,PROPERTY_DISPUTE
+Regarding my grievance: போலி பத்திரம் தயாரித்து எனது வீட்டை விற்க முயல்கிறார்கள்.,Tamil,PROPERTY_DISPUTE
+Regarding my grievance: Patta transfer panna registration office-la legal issue.,Tanglish,PROPERTY_DISPUTE
+Regarding my grievance: Colleague continuously stalking and sending inappropriate texts.,English,WOMEN_SAFETY
+Regarding my grievance: Facing verbal harassment at public bus stop daily.,English,WOMEN_SAFETY
+"Regarding my grievance: Office-la oru officer thappa pesuran, stalk panran.",Tanglish,WOMEN_SAFETY
+Regarding my grievance: பேருந்து நிலையத்தில் ஒரு நபர் என்னைத் தொடர்ந்து பின்தொடர்கிறார்.,Tamil,WOMEN_SAFETY
+Regarding my grievance: பணியிடத்தில் எனக்கு தொடர்ந்து பாலியல் தொல்லைகள் வருகின்றன.,Tamil,WOMEN_SAFETY
+Regarding my grievance: Stalker follow panran evening college vitu varra vazhila.,Tanglish,WOMEN_SAFETY
+Regarding my grievance: Husband beats me under the influence of alcohol.,English,DOMESTIC_VIOLENCE
+Regarding my grievance: In-laws abusing and threatening for dowry money.,English,DOMESTIC_VIOLENCE
+Regarding my grievance: Enga veetla purushan thittamal adikiraru.,Tanglish,DOMESTIC_VIOLENCE
+Regarding my grievance: மது குடித்துவிட்டு கணவர் தினமும் என்னை அடிக்கிறார்.,Tamil,DOMESTIC_VIOLENCE
+Regarding my grievance: வரதட்சணை கேட்டு மாமியார் கொடுமைப்படுத்துகிறார்கள்.,Tamil,DOMESTIC_VIOLENCE
+Regarding my grievance: Dowry pathathu nu solli purushan abusive-a nadakuran.,Tanglish,DOMESTIC_VIOLENCE
+Regarding my grievance: Gang attacked me with weapons near the market area.,English,CRIMINAL_COMPLAINT
+Regarding my grievance: My motorcycle was stolen from outside my house entry.,English,CRIMINAL_COMPLAINT
+Regarding my grievance: Market kitta gang kathi vechu adichanga.,Tanglish,CRIMINAL_COMPLAINT
+Regarding my grievance: இரவில் வீட்டை உடைத்து தங்க நகைகள் திருடப்பட்டுள்ளன.,Tamil,CRIMINAL_COMPLAINT
+Regarding my grievance: சாலையில் சிலர் என்னைத் தாக்கி எனது பணத்தைப் பறித்தனர்.,Tamil,CRIMINAL_COMPLAINT
+Regarding my grievance: Gold chain robbery nadanthuchu street corner la.,Tanglish,CRIMINAL_COMPLAINT
+Regarding my grievance: Filing for divorce and seeking child custody support.,English,FAMILY_DISPUTE
+Regarding my grievance: Parents forcing me to get married against my will.,English,FAMILY_DISPUTE
+"Regarding my grievance: Divorce venum, aana baby custody thara matengranga.",Tanglish,FAMILY_DISPUTE
+Regarding my grievance: விருப்பம் இல்லாமல் குடும்பத்தினர் திருமணம் செய்ய வற்புறுத்துகிறார்கள்.,Tamil,FAMILY_DISPUTE
+Regarding my grievance: பூர்வீக சொத்தை பிரிப்பதில் சகோதரர்களுக்குள் தகராறு.,Tamil,FAMILY_DISPUTE
+Regarding my grievance: Ancesty property share divide panrathula conflict.,Tanglish,FAMILY_DISPUTE
+Regarding my grievance: Denied benefits of housing scheme despite having all eligibility.,English,GOVERNMENT_SCHEME
+Regarding my grievance: Panchayat office demanding bribe for widow pension approval.,English,GOVERNMENT_SCHEME
+Regarding my grievance: Housing scheme-la ellam documents irundhum select aagala.,Tanglish,GOVERNMENT_SCHEME
+Regarding my grievance: விபத்து நிவாரணத் தொகை பெற தகுதி இருந்தும் கிடைக்கவில்லை.,Tamil,GOVERNMENT_SCHEME
+Regarding my grievance: ரேஷன் கார்டு வழங்க அதிகாரிகள் லஞ்சம் கேட்கிறார்கள்.,Tamil,GOVERNMENT_SCHEME
+Regarding my grievance: OAP pension scheme register panna officials reject panranga.,Tanglish,GOVERNMENT_SCHEME
+Regarding my grievance: I need free legal advice regarding a contract discrepancy.,English,GENERAL_LEGAL_AID
+Regarding my grievance: How to apply for free legal representation in district court.,English,GENERAL_LEGAL_AID
+"Regarding my grievance: Enaku free lawyer venum, court case pathi legal aid thairya.",Tanglish,GENERAL_LEGAL_AID
+Regarding my grievance: இலவச சட்ட உதவி பெற எங்கு விண்ணப்பிக்க வேண்டும்?,Tamil,GENERAL_LEGAL_AID
+"Regarding my grievance: நீதிமன்ற சம்மன் வந்துள்ளது, என்ன செய்ய வேண்டும் என அறிய வேண்டும்.",Tamil,GENERAL_LEGAL_AID
+Regarding my grievance: Free legal consultation documents apply panrathuku link enna.,Tanglish,GENERAL_LEGAL_AID
+Regarding my grievance: Claiming compensation for severe injuries from truck collision.,English,MOTOR_ACCIDENT_CLAIM
+Regarding my grievance: Third party insurance claim pending for car accident.,English,MOTOR_ACCIDENT_CLAIM
+Regarding my grievance: Road accident accident compensation application block panranga.,Tanglish,MOTOR_ACCIDENT_CLAIM
+Regarding my grievance: மோட்டார் வாகன விபத்து இழப்பீடு கோரி விண்ணப்பிக்க வேண்டும்.,Tamil,MOTOR_ACCIDENT_CLAIM
+Regarding my grievance: இருசக்கர வாகன விபத்தில் அடிபட்டு காப்பீடு பெற முடியவில்லை.,Tamil,MOTOR_ACCIDENT_CLAIM
+Regarding my grievance: Car damage accident claim process insurance company delayed.,Tanglish,MOTOR_ACCIDENT_CLAIM
+Regarding my grievance: Life insurance payout rejected due to false technical reasons.,English,INSURANCE_CLAIM
+Regarding my grievance: Health insurance company not releasing money for surgery.,English,INSURANCE_CLAIM
+Regarding my grievance: Insurance claim deny pannitanga documentation complete-a irundhum.,Tanglish,INSURANCE_CLAIM
+Regarding my grievance: மருத்துவக் காப்பீட்டுத் தொகையை நிறுவனம் வழங்க மறுக்கிறது.,Tamil,INSURANCE_CLAIM
+Regarding my grievance: பயிர்க் காப்பீட்டுத் தொகை கிடைக்காமல் விவசாயிகள் தவிக்கிறார்கள்.,Tamil,INSURANCE_CLAIM
+Regarding my grievance: Crop insurance failure payout delay by corporate agent.,Tanglish,INSURANCE_CLAIM
+Regarding my grievance: Unauthorized credit card transaction charges billed to account.,English,BANKING_DISPUTE
+Regarding my grievance: Bank frozen my account without sending any written notice.,English,BANKING_DISPUTE
+Regarding my grievance: Bank account unauthorized charge cut pannitanga return tharala.,Tanglish,BANKING_DISPUTE
+Regarding my grievance: எனது அனுமதியின்றி வங்கிக் கணக்கிலிருந்து பணம் எடுக்கப்பட்டுள்ளது.,Tamil,BANKING_DISPUTE
+Regarding my grievance: வங்கிக் கடன் வட்டி விகிதத்தில் மோசடி செய்துள்ளனர்.,Tamil,BANKING_DISPUTE
+Regarding my grievance: Personal loan EMI extra auto debit dispute with manager.,Tanglish,BANKING_DISPUTE
+Regarding my grievance: Landlord attempting illegal eviction without notice window.,English,RENT_TENANT_DISPUTE
+Regarding my grievance: Tenant not paying rent and refusing to vacate building.,English,RENT_TENANT_DISPUTE
+Regarding my grievance: House owner room lease advance return tharama vacate panna soldran.,Tanglish,RENT_TENANT_DISPUTE
+Regarding my grievance: வாடகை ஒப்பந்தம் முடியும் முன்பே வீட்டை விட்டு வெளியேறச் சொல்கிறார்.,Tamil,RENT_TENANT_DISPUTE
+Regarding my grievance: வாடகை தராமல் வீட்டை ஆக்கிரமித்துள்ள வாடகைதாரர்.,Tamil,RENT_TENANT_DISPUTE
+Regarding my grievance: Rental agreement renewal dispute tenant refusing to exit.,Tanglish,RENT_TENANT_DISPUTE
+Regarding my grievance: Doctor left surgical gauze inside patient body after surgery.,English,MEDICAL_NEGLIGENCE
+Regarding my grievance: Wrong medication dosage caused severe brain damage to child.,English,MEDICAL_NEGLIGENCE
+Regarding my grievance: Hospital wrong injection wrong treatment patient death negligence.,Tanglish,MEDICAL_NEGLIGENCE
+Regarding my grievance: மருத்துவரின் அலட்சியத்தால் அறுவை சிகிச்சை தோல்வி அடைந்தது.,Tamil,MEDICAL_NEGLIGENCE
+Regarding my grievance: தவறான மருந்து வழங்கியதால் நோயாளிக்கு பக்கவாதம் ஏற்பட்டது.,Tamil,MEDICAL_NEGLIGENCE
+Regarding my grievance: Government hospital delivery operation negligence of duty doctor.,Tanglish,MEDICAL_NEGLIGENCE
+Regarding my grievance: College refusing to return original certificates upon exit.,English,EDUCATION_DISPUTE
+Regarding my grievance: Private school demanding capitation fee violating RTE Act.,English,EDUCATION_DISPUTE
+Regarding my grievance: RTE admission block school extra fee demand panranga.,Tanglish,EDUCATION_DISPUTE
+Regarding my grievance: கல்லூரி மாற்றுச் சான்றிதழை தர மறுத்து அலைக்கழிக்கிறது.,Tamil,EDUCATION_DISPUTE
+Regarding my grievance: அனுமதி பெறாத பள்ளியில் சேர்ந்து மாணவர்கள் ஏமாற்றம் அடைந்தனர்.,Tamil,EDUCATION_DISPUTE
+Regarding my grievance: Scholarship application process college staff bribe demanding.,Tanglish,EDUCATION_DISPUTE
+Regarding my grievance: Supervisor threatening termination for refusing sexual advances.,English,WORKPLACE_HARASSMENT
+Regarding my grievance: Abusive toxic manager creating hostile environment at office.,English,WORKPLACE_HARASSMENT
+Regarding my grievance: Office management toxic pressure workplace mental harassment.,Tanglish,WORKPLACE_HARASSMENT
+Regarding my grievance: பணியிடத்தில் பெண் ஊழியர்களுக்கு தொடர்ந்து பாலியல் அச்சுறுத்தல்.,Tamil,WORKPLACE_HARASSMENT
+Regarding my grievance: மேலதிகாரி தகாத வார்த்தைகளால் பேசி அவமதிக்கிறார்.,Tamil,WORKPLACE_HARASSMENT
+Regarding my grievance: Salary cut threaten HR harassment workplace safety failure.,Tanglish,WORKPLACE_HARASSMENT
+Regarding my grievance: Children abandoned parents and grabbed all pension property.,English,SENIOR_CITIZEN_ABUSE
+Regarding my grievance: Physical abuse and starvation of elderly father by son.,English,SENIOR_CITIZEN_ABUSE
+Regarding my grievance: Elderly mother property sign register panni thurathitaanga children.,Tanglish,SENIOR_CITIZEN_ABUSE
+Regarding my grievance: முதியோர் உதவித்தொகையை பறித்துக் கொண்டு மகன் வீட்டை விட்டு துரத்தினார்.,Tamil,SENIOR_CITIZEN_ABUSE
+Regarding my grievance: வயதான பெற்றோரை கவனித்துக் கொள்ளாமல் பிள்ளைகள் கைவிட்டனர்.,Tamil,SENIOR_CITIZEN_ABUSE
+Regarding my grievance: Maintenance claim against son senior citizen protection act help.,Tanglish,SENIOR_CITIZEN_ABUSE
+Regarding my grievance: Reporting active child labor in local tea shop market.,English,CHILD_WELFARE
+Regarding my grievance: Minor girl forced into child marriage arrangement by relatives.,English,CHILD_WELFARE
+Regarding my grievance: Child labor hotel work street child welfare rescue help.,Tanglish,CHILD_WELFARE
+Regarding my grievance: குழந்தை தொழிலாளர்களை கடைகளில் வேலைக்கு வைத்துள்ளனர்.,Tamil,CHILD_WELFARE
+Regarding my grievance: மைனர் சிறுமிக்கு கட்டாயத் திருமணம் செய்ய ஏற்பாடு நடக்கிறது.,Tamil,CHILD_WELFARE
+Regarding my grievance: School dropout child labor brick kiln factory minor abuse.,Tanglish,CHILD_WELFARE
+Regarding my grievance: Denied accessibility ramps in public government bank office.,English,DISABILITY_RIGHTS
+Regarding my grievance: Employer rejected job application solely due to visual impairment.,English,DISABILITY_RIGHTS
+Regarding my grievance: Differently abled quota job skip reservation violations office.,Tanglish,DISABILITY_RIGHTS
+Regarding my grievance: மாற்றுத்திறனாளிகளுக்கான அரசு சலுகைகள் மற்றும் வேலைவாய்ப்பு மறுப்பு.,Tamil,DISABILITY_RIGHTS
+Regarding my grievance: பள்ளி வளாகத்தில் மாற்றுத்திறனாளி மாணவர்களுக்கு கழிப்பறை வசதி இல்லை.,Tamil,DISABILITY_RIGHTS
+Regarding my grievance: Disability certificate application issue welfare card delayed.,Tanglish,DISABILITY_RIGHTS
+Regarding my grievance: Social boycott of SC community from local village temple festival.,English,CASTE_DISCRIMINATION
+Regarding my grievance: Casteist slurs thrown at water well community sharing point.,English,CASTE_DISCRIMINATION
+Regarding my grievance: Caste name calling discrimination tea shop separate glass.,Tanglish,CASTE_DISCRIMINATION
+Regarding my grievance: பட்டியலின மக்களை பொதுக் கிணற்றில் தண்ணீர் எடுக்க விடாமல் தடுக்கிறார்கள்.,Tamil,CASTE_DISCRIMINATION
+Regarding my grievance: சாதிப் பெயரைச் சொல்லி இழிவுபடுத்தி ஊரை விட்டு ஒதுக்கி வைத்தனர்.,Tamil,CASTE_DISCRIMINATION
+Regarding my grievance: Caste barrier temple entry village panchayat discrimination.,Tanglish,CASTE_DISCRIMINATION
+Regarding my grievance: Police officer refused to register FIR for a theft case.,English,POLICE_MISCONDUCT
+Regarding my grievance: Illegal police detention and custodial violence in lockup.,English,POLICE_MISCONDUCT
+Regarding my grievance: Police custody beating bribe demand local FIR registration fail.,Tanglish,POLICE_MISCONDUCT
+Regarding my grievance: காவல் துறையினர் புகார் மனுவை வாங்க மறுத்து திருப்பி அனுப்பினர்.,Tamil,POLICE_MISCONDUCT
+Regarding my grievance: விசாரணை என்ற பெயரில் லாக்அப்பில் வைத்து கடுமையாக தாக்கினர்.,Tamil,POLICE_MISCONDUCT
+Regarding my grievance: False case threat bribery police station lockup assault.,Tanglish,POLICE_MISCONDUCT
+Regarding my grievance: Public officer demanding bribe of 5000 for death certificate.,English,CORRUPTION_BRIBERY
+Regarding my grievance: Contractor paying kickbacks to municipal engineer for road works.,English,CORRUPTION_BRIBERY
+Regarding my grievance: Bribe demand office corruption latcham registration patta.,Tanglish,CORRUPTION_BRIBERY
+Regarding my grievance: அரசு அலுவலகத்தில் ஓட்டுநர் உரிமம் பெற லஞ்சம் கேட்கிறார்கள்.,Tamil,CORRUPTION_BRIBERY
+Regarding my grievance: பில் பாஸ் செய்ய இன்ஜினியர் பெருந்தொகை லஞ்சம் கேட்கிறார்.,Tamil,CORRUPTION_BRIBERY
+Regarding my grievance: Vigilance anti corruption bribe recording complaint help.,Tanglish,CORRUPTION_BRIBERY
+Regarding my grievance: Broken sewage pipe causing raw sewage drinking water mix.,English,CIVIC_INFRASTRUCTURE
+Regarding my grievance: Severe potholes on main road causing fatal bike accidents.,English,CIVIC_INFRASTRUCTURE
+Regarding my grievance: Street light repair block dark street chain snatching threat.,Tanglish,CIVIC_INFRASTRUCTURE
+Regarding my grievance: குடிநீருடன் கழிவுநீர் கலந்து வருவதால் தொற்றுநோய் பரவுகிறது.,Tamil,CIVIC_INFRASTRUCTURE
+Regarding my grievance: சாலையில் உள்ள ஆழமான பள்ளங்களால் வாகன ஓட்டிகள் விபத்துக்குள்ளாகிறார்கள்.,Tamil,CIVIC_INFRASTRUCTURE
+Regarding my grievance: Garbage dumping issue street corner corporate cleaning delay.,Tanglish,CIVIC_INFRASTRUCTURE
+Regarding my grievance: RTI request regarding village budget spending not answered.,English,RTI_APPLICATION
+Regarding my grievance: Public information officer intentionally gave wrong fake answers.,English,RTI_APPLICATION
+Regarding my grievance: RTI reply delay timeline over no info provided by office.,Tanglish,RTI_APPLICATION
+Regarding my grievance: தகவல் அறியும் உரிமை சட்டத்தின் கீழ் கேட்ட கேள்விக்கு பதில் அளிக்கவில்லை.,Tamil,RTI_APPLICATION
+Regarding my grievance: அரசு திட்ட செலவு விபரங்கள் குறித்த ஆர்டிஐ மனு நிராகரிக்கப்பட்டது.,Tamil,RTI_APPLICATION
+Regarding my grievance: PIO officer RTI appeal process documentation rejection.,Tanglish,RTI_APPLICATION
+Urgent action required on this case. My company did not pay my salary for 3 months.,English,LABOUR_DISPUTE
+Urgent action required on this case. Employer terminated me without notice or severance pay.,English,LABOUR_DISPUTE
+Urgent action required on this case. Ennoda office-la 3 maasamaa sambalam tharala.,Tanglish,LABOUR_DISPUTE
+Urgent action required on this case. 3 மாதங்களாக என் நிறுவனம் எனக்கு சம்பளம் வழங்கவில்லை.,Tamil,LABOUR_DISPUTE
+Urgent action required on this case. முன்னறிவிப்பு இல்லாமல் வேலைநீக்கம் செய்யப்பட்டேன்.,Tamil,LABOUR_DISPUTE
+Urgent action required on this case. Company-la salary tharama delay panranga.,Tanglish,LABOUR_DISPUTE
+Urgent action required on this case. Bought a mobile phone online but received a soap bar.,English,CONSUMER_COMPLAINT
+Urgent action required on this case. Store refusing to honor the 1-year product warranty.,English,CONSUMER_COMPLAINT
+"Urgent action required on this case. Online-la phone order panna, aana dummy box vandhuchu.",Tanglish,CONSUMER_COMPLAINT
+"Urgent action required on this case. ஆன்லைனில் வாங்கிய தயாரிப்பு சேதமடைந்துள்ளது, திரும்பப் பெற மறுக்கிறார்கள்.",Tamil,CONSUMER_COMPLAINT
+Urgent action required on this case. அதிகப்படியான விலை வசூலிக்கும் கடைக்காரர்.,Tamil,CONSUMER_COMPLAINT
+Urgent action required on this case. Defective TV purchase panni response illa store la.,Tanglish,CONSUMER_COMPLAINT
+Urgent action required on this case. Lost 50000 rupees due to a fake UPI QR code scam.,English,CYBER_CRIME
+Urgent action required on this case. Bank account hacked and savings transferred online.,English,CYBER_CRIME
+Urgent action required on this case. Ennoda bank account hacking aagi panam pochu.,Tanglish,CYBER_CRIME
+Urgent action required on this case. போலி ஓடிபி மூலம் எனது கணக்கிலிருந்து பணம் திருடப்பட்டது.,Tamil,CYBER_CRIME
+Urgent action required on this case. வங்கி கணக்கு ஹேக் செய்யப்பட்டு பரிவர்த்தனை நடந்துள்ளது.,Tamil,CYBER_CRIME
+Urgent action required on this case. Scam links click panni bank balance tholachuten.,Tanglish,CYBER_CRIME
+Urgent action required on this case. Neighbor encroached my boundary wall and built a gate.,English,PROPERTY_DISPUTE
+Urgent action required on this case. Landlord refusing to return my security deposit.,English,PROPERTY_DISPUTE
+Urgent action required on this case. Pakkathu veetukaaran enga idathula encroaching panran.,Tanglish,PROPERTY_DISPUTE
+Urgent action required on this case. அண்டை வீட்டார் எனது நில எல்லையை ஆக்கிரமித்து கட்டியுள்ளனர்.,Tamil,PROPERTY_DISPUTE
+Urgent action required on this case. போலி பத்திரம் தயாரித்து எனது வீட்டை விற்க முயல்கிறார்கள்.,Tamil,PROPERTY_DISPUTE
+Urgent action required on this case. Patta transfer panna registration office-la legal issue.,Tanglish,PROPERTY_DISPUTE
+Urgent action required on this case. Colleague continuously stalking and sending inappropriate texts.,English,WOMEN_SAFETY
+Urgent action required on this case. Facing verbal harassment at public bus stop daily.,English,WOMEN_SAFETY
+"Urgent action required on this case. Office-la oru officer thappa pesuran, stalk panran.",Tanglish,WOMEN_SAFETY
+Urgent action required on this case. பேருந்து நிலையத்தில் ஒரு நபர் என்னைத் தொடர்ந்து பின்தொடர்கிறார்.,Tamil,WOMEN_SAFETY
+Urgent action required on this case. பணியிடத்தில் எனக்கு தொடர்ந்து பாலியல் தொல்லைகள் வருகின்றன.,Tamil,WOMEN_SAFETY
+Urgent action required on this case. Stalker follow panran evening college vitu varra vazhila.,Tanglish,WOMEN_SAFETY
+Urgent action required on this case. Husband beats me under the influence of alcohol.,English,DOMESTIC_VIOLENCE
+Urgent action required on this case. In-laws abusing and threatening for dowry money.,English,DOMESTIC_VIOLENCE
+Urgent action required on this case. Enga veetla purushan thittamal adikiraru.,Tanglish,DOMESTIC_VIOLENCE
+Urgent action required on this case. மது குடித்துவிட்டு கணவர் தினமும் என்னை அடிக்கிறார்.,Tamil,DOMESTIC_VIOLENCE
+Urgent action required on this case. வரதட்சணை கேட்டு மாமியார் கொடுமைப்படுத்துகிறார்கள்.,Tamil,DOMESTIC_VIOLENCE
+Urgent action required on this case. Dowry pathathu nu solli purushan abusive-a nadakuran.,Tanglish,DOMESTIC_VIOLENCE
+Urgent action required on this case. Gang attacked me with weapons near the market area.,English,CRIMINAL_COMPLAINT
+Urgent action required on this case. My motorcycle was stolen from outside my house entry.,English,CRIMINAL_COMPLAINT
+Urgent action required on this case. Market kitta gang kathi vechu adichanga.,Tanglish,CRIMINAL_COMPLAINT
+Urgent action required on this case. இரவில் வீட்டை உடைத்து தங்க நகைகள் திருடப்பட்டுள்ளன.,Tamil,CRIMINAL_COMPLAINT
+Urgent action required on this case. சாலையில் சிலர் என்னைத் தாக்கி எனது பணத்தைப் பறித்தனர்.,Tamil,CRIMINAL_COMPLAINT
+Urgent action required on this case. Gold chain robbery nadanthuchu street corner la.,Tanglish,CRIMINAL_COMPLAINT
+Urgent action required on this case. Filing for divorce and seeking child custody support.,English,FAMILY_DISPUTE
+Urgent action required on this case. Parents forcing me to get married against my will.,English,FAMILY_DISPUTE
+"Urgent action required on this case. Divorce venum, aana baby custody thara matengranga.",Tanglish,FAMILY_DISPUTE
+Urgent action required on this case. விருப்பம் இல்லாமல் குடும்பத்தினர் திருமணம் செய்ய வற்புறுத்துகிறார்கள்.,Tamil,FAMILY_DISPUTE
+Urgent action required on this case. பூர்வீக சொத்தை பிரிப்பதில் சகோதரர்களுக்குள் தகராறு.,Tamil,FAMILY_DISPUTE
+Urgent action required on this case. Ancesty property share divide panrathula conflict.,Tanglish,FAMILY_DISPUTE
+Urgent action required on this case. Denied benefits of housing scheme despite having all eligibility.,English,GOVERNMENT_SCHEME
+Urgent action required on this case. Panchayat office demanding bribe for widow pension approval.,English,GOVERNMENT_SCHEME
+Urgent action required on this case. Housing scheme-la ellam documents irundhum select aagala.,Tanglish,GOVERNMENT_SCHEME
+Urgent action required on this case. விபத்து நிவாரணத் தொகை பெற தகுதி இருந்தும் கிடைக்கவில்லை.,Tamil,GOVERNMENT_SCHEME
+Urgent action required on this case. ரேஷன் கார்டு வழங்க அதிகாரிகள் லஞ்சம் கேட்கிறார்கள்.,Tamil,GOVERNMENT_SCHEME
+Urgent action required on this case. OAP pension scheme register panna officials reject panranga.,Tanglish,GOVERNMENT_SCHEME
+Urgent action required on this case. I need free legal advice regarding a contract discrepancy.,English,GENERAL_LEGAL_AID
+Urgent action required on this case. How to apply for free legal representation in district court.,English,GENERAL_LEGAL_AID
+"Urgent action required on this case. Enaku free lawyer venum, court case pathi legal aid thairya.",Tanglish,GENERAL_LEGAL_AID
+Urgent action required on this case. இலவச சட்ட உதவி பெற எங்கு விண்ணப்பிக்க வேண்டும்?,Tamil,GENERAL_LEGAL_AID
+"Urgent action required on this case. நீதிமன்ற சம்மன் வந்துள்ளது, என்ன செய்ய வேண்டும் என அறிய வேண்டும்.",Tamil,GENERAL_LEGAL_AID
+Urgent action required on this case. Free legal consultation documents apply panrathuku link enna.,Tanglish,GENERAL_LEGAL_AID
+Urgent action required on this case. Claiming compensation for severe injuries from truck collision.,English,MOTOR_ACCIDENT_CLAIM
+Urgent action required on this case. Third party insurance claim pending for car accident.,English,MOTOR_ACCIDENT_CLAIM
+Urgent action required on this case. Road accident accident compensation application block panranga.,Tanglish,MOTOR_ACCIDENT_CLAIM
+Urgent action required on this case. மோட்டார் வாகன விபத்து இழப்பீடு கோரி விண்ணப்பிக்க வேண்டும்.,Tamil,MOTOR_ACCIDENT_CLAIM
+Urgent action required on this case. இருசக்கர வாகன விபத்தில் அடிபட்டு காப்பீடு பெற முடியவில்லை.,Tamil,MOTOR_ACCIDENT_CLAIM
+Urgent action required on this case. Car damage accident claim process insurance company delayed.,Tanglish,MOTOR_ACCIDENT_CLAIM
+Urgent action required on this case. Life insurance payout rejected due to false technical reasons.,English,INSURANCE_CLAIM
+Urgent action required on this case. Health insurance company not releasing money for surgery.,English,INSURANCE_CLAIM
+Urgent action required on this case. Insurance claim deny pannitanga documentation complete-a irundhum.,Tanglish,INSURANCE_CLAIM
+Urgent action required on this case. மருத்துவக் காப்பீட்டுத் தொகையை நிறுவனம் வழங்க மறுக்கிறது.,Tamil,INSURANCE_CLAIM
+Urgent action required on this case. பயிர்க் காப்பீட்டுத் தொகை கிடைக்காமல் விவசாயிகள் தவிக்கிறார்கள்.,Tamil,INSURANCE_CLAIM
+Urgent action required on this case. Crop insurance failure payout delay by corporate agent.,Tanglish,INSURANCE_CLAIM
+Urgent action required on this case. Unauthorized credit card transaction charges billed to account.,English,BANKING_DISPUTE
+Urgent action required on this case. Bank frozen my account without sending any written notice.,English,BANKING_DISPUTE
+Urgent action required on this case. Bank account unauthorized charge cut pannitanga return tharala.,Tanglish,BANKING_DISPUTE
+Urgent action required on this case. எனது அனுமதியின்றி வங்கிக் கணக்கிலிருந்து பணம் எடுக்கப்பட்டுள்ளது.,Tamil,BANKING_DISPUTE
+Urgent action required on this case. வங்கிக் கடன் வட்டி விகிதத்தில் மோசடி செய்துள்ளனர்.,Tamil,BANKING_DISPUTE
+Urgent action required on this case. Personal loan EMI extra auto debit dispute with manager.,Tanglish,BANKING_DISPUTE
+Urgent action required on this case. Landlord attempting illegal eviction without notice window.,English,RENT_TENANT_DISPUTE
+Urgent action required on this case. Tenant not paying rent and refusing to vacate building.,English,RENT_TENANT_DISPUTE
+Urgent action required on this case. House owner room lease advance return tharama vacate panna soldran.,Tanglish,RENT_TENANT_DISPUTE
+Urgent action required on this case. வாடகை ஒப்பந்தம் முடியும் முன்பே வீட்டை விட்டு வெளியேறச் சொல்கிறார்.,Tamil,RENT_TENANT_DISPUTE
+Urgent action required on this case. வாடகை தராமல் வீட்டை ஆக்கிரமித்துள்ள வாடகைதாரர்.,Tamil,RENT_TENANT_DISPUTE
+Urgent action required on this case. Rental agreement renewal dispute tenant refusing to exit.,Tanglish,RENT_TENANT_DISPUTE
+Urgent action required on this case. Doctor left surgical gauze inside patient body after surgery.,English,MEDICAL_NEGLIGENCE
+Urgent action required on this case. Wrong medication dosage caused severe brain damage to child.,English,MEDICAL_NEGLIGENCE
+Urgent action required on this case. Hospital wrong injection wrong treatment patient death negligence.,Tanglish,MEDICAL_NEGLIGENCE
+Urgent action required on this case. மருத்துவரின் அலட்சியத்தால் அறுவை சிகிச்சை தோல்வி அடைந்தது.,Tamil,MEDICAL_NEGLIGENCE
+Urgent action required on this case. தவறான மருந்து வழங்கியதால் நோயாளிக்கு பக்கவாதம் ஏற்பட்டது.,Tamil,MEDICAL_NEGLIGENCE
+Urgent action required on this case. Government hospital delivery operation negligence of duty doctor.,Tanglish,MEDICAL_NEGLIGENCE
+Urgent action required on this case. College refusing to return original certificates upon exit.,English,EDUCATION_DISPUTE
+Urgent action required on this case. Private school demanding capitation fee violating RTE Act.,English,EDUCATION_DISPUTE
+Urgent action required on this case. RTE admission block school extra fee demand panranga.,Tanglish,EDUCATION_DISPUTE
+Urgent action required on this case. கல்லூரி மாற்றுச் சான்றிதழை தர மறுத்து அலைக்கழிக்கிறது.,Tamil,EDUCATION_DISPUTE
+Urgent action required on this case. அனுமதி பெறாத பள்ளியில் சேர்ந்து மாணவர்கள் ஏமாற்றம் அடைந்தனர்.,Tamil,EDUCATION_DISPUTE
+Urgent action required on this case. Scholarship application process college staff bribe demanding.,Tanglish,EDUCATION_DISPUTE
+Urgent action required on this case. Supervisor threatening termination for refusing sexual advances.,English,WORKPLACE_HARASSMENT
+Urgent action required on this case. Abusive toxic manager creating hostile environment at office.,English,WORKPLACE_HARASSMENT
+Urgent action required on this case. Office management toxic pressure workplace mental harassment.,Tanglish,WORKPLACE_HARASSMENT
+Urgent action required on this case. பணியிடத்தில் பெண் ஊழியர்களுக்கு தொடர்ந்து பாலியல் அச்சுறுத்தல்.,Tamil,WORKPLACE_HARASSMENT
+Urgent action required on this case. மேலதிகாரி தகாத வார்த்தைகளால் பேசி அவமதிக்கிறார்.,Tamil,WORKPLACE_HARASSMENT
+Urgent action required on this case. Salary cut threaten HR harassment workplace safety failure.,Tanglish,WORKPLACE_HARASSMENT
+Urgent action required on this case. Children abandoned parents and grabbed all pension property.,English,SENIOR_CITIZEN_ABUSE
+Urgent action required on this case. Physical abuse and starvation of elderly father by son.,English,SENIOR_CITIZEN_ABUSE
+Urgent action required on this case. Elderly mother property sign register panni thurathitaanga children.,Tanglish,SENIOR_CITIZEN_ABUSE
+Urgent action required on this case. முதியோர் உதவித்தொகையை பறித்துக் கொண்டு மகன் வீட்டை விட்டு துரத்தினார்.,Tamil,SENIOR_CITIZEN_ABUSE
+Urgent action required on this case. வயதான பெற்றோரை கவனித்துக் கொள்ளாமல் பிள்ளைகள் கைவிட்டனர்.,Tamil,SENIOR_CITIZEN_ABUSE
+Urgent action required on this case. Maintenance claim against son senior citizen protection act help.,Tanglish,SENIOR_CITIZEN_ABUSE
+Urgent action required on this case. Reporting active child labor in local tea shop market.,English,CHILD_WELFARE
+Urgent action required on this case. Minor girl forced into child marriage arrangement by relatives.,English,CHILD_WELFARE
+Urgent action required on this case. Child labor hotel work street child welfare rescue help.,Tanglish,CHILD_WELFARE
+Urgent action required on this case. குழந்தை தொழிலாளர்களை கடைகளில் வேலைக்கு வைத்துள்ளனர்.,Tamil,CHILD_WELFARE
+Urgent action required on this case. மைனர் சிறுமிக்கு கட்டாயத் திருமணம் செய்ய ஏற்பாடு நடக்கிறது.,Tamil,CHILD_WELFARE
+Urgent action required on this case. School dropout child labor brick kiln factory minor abuse.,Tanglish,CHILD_WELFARE
+Urgent action required on this case. Denied accessibility ramps in public government bank office.,English,DISABILITY_RIGHTS
+Urgent action required on this case. Employer rejected job application solely due to visual impairment.,English,DISABILITY_RIGHTS
+Urgent action required on this case. Differently abled quota job skip reservation violations office.,Tanglish,DISABILITY_RIGHTS
+Urgent action required on this case. மாற்றுத்திறனாளிகளுக்கான அரசு சலுகைகள் மற்றும் வேலைவாய்ப்பு மறுப்பு.,Tamil,DISABILITY_RIGHTS
+Urgent action required on this case. பள்ளி வளாகத்தில் மாற்றுத்திறனாளி மாணவர்களுக்கு கழிப்பறை வசதி இல்லை.,Tamil,DISABILITY_RIGHTS
+Urgent action required on this case. Disability certificate application issue welfare card delayed.,Tanglish,DISABILITY_RIGHTS
+Urgent action required on this case. Social boycott of SC community from local village temple festival.,English,CASTE_DISCRIMINATION
+Urgent action required on this case. Casteist slurs thrown at water well community sharing point.,English,CASTE_DISCRIMINATION
+Urgent action required on this case. Caste name calling discrimination tea shop separate glass.,Tanglish,CASTE_DISCRIMINATION
+Urgent action required on this case. பட்டியலின மக்களை பொதுக் கிணற்றில் தண்ணீர் எடுக்க விடாமல் தடுக்கிறார்கள்.,Tamil,CASTE_DISCRIMINATION
+Urgent action required on this case. சாதிப் பெயரைச் சொல்லி இழிவுபடுத்தி ஊரை விட்டு ஒதுக்கி வைத்தனர்.,Tamil,CASTE_DISCRIMINATION
+Urgent action required on this case. Caste barrier temple entry village panchayat discrimination.,Tanglish,CASTE_DISCRIMINATION
+Urgent action required on this case. Police officer refused to register FIR for a theft case.,English,POLICE_MISCONDUCT
+Urgent action required on this case. Illegal police detention and custodial violence in lockup.,English,POLICE_MISCONDUCT
+Urgent action required on this case. Police custody beating bribe demand local FIR registration fail.,Tanglish,POLICE_MISCONDUCT
+Urgent action required on this case. காவல் துறையினர் புகார் மனுவை வாங்க மறுத்து திருப்பி அனுப்பினர்.,Tamil,POLICE_MISCONDUCT
+Urgent action required on this case. விசாரணை என்ற பெயரில் லாக்அப்பில் வைத்து கடுமையாக தாக்கினர்.,Tamil,POLICE_MISCONDUCT
+Urgent action required on this case. False case threat bribery police station lockup assault.,Tanglish,POLICE_MISCONDUCT
+Urgent action required on this case. Public officer demanding bribe of 5000 for death certificate.,English,CORRUPTION_BRIBERY
+Urgent action required on this case. Contractor paying kickbacks to municipal engineer for road works.,English,CORRUPTION_BRIBERY
+Urgent action required on this case. Bribe demand office corruption latcham registration patta.,Tanglish,CORRUPTION_BRIBERY
+Urgent action required on this case. அரசு அலுவலகத்தில் ஓட்டுநர் உரிமம் பெற லஞ்சம் கேட்கிறார்கள்.,Tamil,CORRUPTION_BRIBERY
+Urgent action required on this case. பில் பாஸ் செய்ய இன்ஜினியர் பெருந்தொகை லஞ்சம் கேட்கிறார்.,Tamil,CORRUPTION_BRIBERY
+Urgent action required on this case. Vigilance anti corruption bribe recording complaint help.,Tanglish,CORRUPTION_BRIBERY
+Urgent action required on this case. Broken sewage pipe causing raw sewage drinking water mix.,English,CIVIC_INFRASTRUCTURE
+Urgent action required on this case. Severe potholes on main road causing fatal bike accidents.,English,CIVIC_INFRASTRUCTURE
+Urgent action required on this case. Street light repair block dark street chain snatching threat.,Tanglish,CIVIC_INFRASTRUCTURE
+Urgent action required on this case. குடிநீருடன் கழிவுநீர் கலந்து வருவதால் தொற்றுநோய் பரவுகிறது.,Tamil,CIVIC_INFRASTRUCTURE
+Urgent action required on this case. சாலையில் உள்ள ஆழமான பள்ளங்களால் வாகன ஓட்டிகள் விபத்துக்குள்ளாகிறார்கள்.,Tamil,CIVIC_INFRASTRUCTURE
+Urgent action required on this case. Garbage dumping issue street corner corporate cleaning delay.,Tanglish,CIVIC_INFRASTRUCTURE
+Urgent action required on this case. RTI request regarding village budget spending not answered.,English,RTI_APPLICATION
+Urgent action required on this case. Public information officer intentionally gave wrong fake answers.,English,RTI_APPLICATION
+Urgent action required on this case. RTI reply delay timeline over no info provided by office.,Tanglish,RTI_APPLICATION
+Urgent action required on this case. தகவல் அறியும் உரிமை சட்டத்தின் கீழ் கேட்ட கேள்விக்கு பதில் அளிக்கவில்லை.,Tamil,RTI_APPLICATION
+Urgent action required on this case. அரசு திட்ட செலவு விபரங்கள் குறித்த ஆர்டிஐ மனு நிராகரிக்கப்பட்டது.,Tamil,RTI_APPLICATION
+Urgent action required on this case. PIO officer RTI appeal process documentation rejection.,Tanglish,RTI_APPLICATION
+I am writing to report that: My company did not pay my salary for 3 months.,English,LABOUR_DISPUTE
+I am writing to report that: Employer terminated me without notice or severance pay.,English,LABOUR_DISPUTE
+I am writing to report that: Ennoda office-la 3 maasamaa sambalam tharala.,Tanglish,LABOUR_DISPUTE
+I am writing to report that: 3 மாதங்களாக என் நிறுவனம் எனக்கு சம்பளம் வழங்கவில்லை.,Tamil,LABOUR_DISPUTE
+I am writing to report that: முன்னறிவிப்பு இல்லாமல் வேலைநீக்கம் செய்யப்பட்டேன்.,Tamil,LABOUR_DISPUTE
+I am writing to report that: Company-la salary tharama delay panranga.,Tanglish,LABOUR_DISPUTE
+I am writing to report that: Bought a mobile phone online but received a soap bar.,English,CONSUMER_COMPLAINT
+I am writing to report that: Store refusing to honor the 1-year product warranty.,English,CONSUMER_COMPLAINT
+"I am writing to report that: Online-la phone order panna, aana dummy box vandhuchu.",Tanglish,CONSUMER_COMPLAINT
+"I am writing to report that: ஆன்லைனில் வாங்கிய தயாரிப்பு சேதமடைந்துள்ளது, திரும்பப் பெற மறுக்கிறார்கள்.",Tamil,CONSUMER_COMPLAINT
+I am writing to report that: அதிகப்படியான விலை வசூலிக்கும் கடைக்காரர்.,Tamil,CONSUMER_COMPLAINT
+I am writing to report that: Defective TV purchase panni response illa store la.,Tanglish,CONSUMER_COMPLAINT
+I am writing to report that: Lost 50000 rupees due to a fake UPI QR code scam.,English,CYBER_CRIME
+I am writing to report that: Bank account hacked and savings transferred online.,English,CYBER_CRIME
+I am writing to report that: Ennoda bank account hacking aagi panam pochu.,Tanglish,CYBER_CRIME
+I am writing to report that: போலி ஓடிபி மூலம் எனது கணக்கிலிருந்து பணம் திருடப்பட்டது.,Tamil,CYBER_CRIME
+I am writing to report that: வங்கி கணக்கு ஹேக் செய்யப்பட்டு பரிவர்த்தனை நடந்துள்ளது.,Tamil,CYBER_CRIME
+I am writing to report that: Scam links click panni bank balance tholachuten.,Tanglish,CYBER_CRIME
+I am writing to report that: Neighbor encroached my boundary wall and built a gate.,English,PROPERTY_DISPUTE
+I am writing to report that: Landlord refusing to return my security deposit.,English,PROPERTY_DISPUTE
+I am writing to report that: Pakkathu veetukaaran enga idathula encroaching panran.,Tanglish,PROPERTY_DISPUTE
+I am writing to report that: அண்டை வீட்டார் எனது நில எல்லையை ஆக்கிரமித்து கட்டியுள்ளனர்.,Tamil,PROPERTY_DISPUTE
+I am writing to report that: போலி பத்திரம் தயாரித்து எனது வீட்டை விற்க முயல்கிறார்கள்.,Tamil,PROPERTY_DISPUTE
+I am writing to report that: Patta transfer panna registration office-la legal issue.,Tanglish,PROPERTY_DISPUTE
+I am writing to report that: Colleague continuously stalking and sending inappropriate texts.,English,WOMEN_SAFETY
+I am writing to report that: Facing verbal harassment at public bus stop daily.,English,WOMEN_SAFETY
+"I am writing to report that: Office-la oru officer thappa pesuran, stalk panran.",Tanglish,WOMEN_SAFETY
+I am writing to report that: பேருந்து நிலையத்தில் ஒரு நபர் என்னைத் தொடர்ந்து பின்தொடர்கிறார்.,Tamil,WOMEN_SAFETY
+I am writing to report that: பணியிடத்தில் எனக்கு தொடர்ந்து பாலியல் தொல்லைகள் வருகின்றன.,Tamil,WOMEN_SAFETY
+I am writing to report that: Stalker follow panran evening college vitu varra vazhila.,Tanglish,WOMEN_SAFETY
+I am writing to report that: Husband beats me under the influence of alcohol.,English,DOMESTIC_VIOLENCE
+I am writing to report that: In-laws abusing and threatening for dowry money.,English,DOMESTIC_VIOLENCE
+I am writing to report that: Enga veetla purushan thittamal adikiraru.,Tanglish,DOMESTIC_VIOLENCE
+I am writing to report that: மது குடித்துவிட்டு கணவர் தினமும் என்னை அடிக்கிறார்.,Tamil,DOMESTIC_VIOLENCE
+I am writing to report that: வரதட்சணை கேட்டு மாமியார் கொடுமைப்படுத்துகிறார்கள்.,Tamil,DOMESTIC_VIOLENCE
+I am writing to report that: Dowry pathathu nu solli purushan abusive-a nadakuran.,Tanglish,DOMESTIC_VIOLENCE
+I am writing to report that: Gang attacked me with weapons near the market area.,English,CRIMINAL_COMPLAINT
+I am writing to report that: My motorcycle was stolen from outside my house entry.,English,CRIMINAL_COMPLAINT
+I am writing to report that: Market kitta gang kathi vechu adichanga.,Tanglish,CRIMINAL_COMPLAINT
+I am writing to report that: இரவில் வீட்டை உடைத்து தங்க நகைகள் திருடப்பட்டுள்ளன.,Tamil,CRIMINAL_COMPLAINT
+I am writing to report that: சாலையில் சிலர் என்னைத் தாக்கி எனது பணத்தைப் பறித்தனர்.,Tamil,CRIMINAL_COMPLAINT
+I am writing to report that: Gold chain robbery nadanthuchu street corner la.,Tanglish,CRIMINAL_COMPLAINT
+I am writing to report that: Filing for divorce and seeking child custody support.,English,FAMILY_DISPUTE
+I am writing to report that: Parents forcing me to get married against my will.,English,FAMILY_DISPUTE
+"I am writing to report that: Divorce venum, aana baby custody thara matengranga.",Tanglish,FAMILY_DISPUTE
+I am writing to report that: விருப்பம் இல்லாமல் குடும்பத்தினர் திருமணம் செய்ய வற்புறுத்துகிறார்கள்.,Tamil,FAMILY_DISPUTE
+I am writing to report that: பூர்வீக சொத்தை பிரிப்பதில் சகோதரர்களுக்குள் தகராறு.,Tamil,FAMILY_DISPUTE
+I am writing to report that: Ancesty property share divide panrathula conflict.,Tanglish,FAMILY_DISPUTE
+I am writing to report that: Denied benefits of housing scheme despite having all eligibility.,English,GOVERNMENT_SCHEME
+I am writing to report that: Panchayat office demanding bribe for widow pension approval.,English,GOVERNMENT_SCHEME
+I am writing to report that: Housing scheme-la ellam documents irundhum select aagala.,Tanglish,GOVERNMENT_SCHEME
+I am writing to report that: விபத்து நிவாரணத் தொகை பெற தகுதி இருந்தும் கிடைக்கவில்லை.,Tamil,GOVERNMENT_SCHEME
+I am writing to report that: ரேஷன் கார்டு வழங்க அதிகாரிகள் லஞ்சம் கேட்கிறார்கள்.,Tamil,GOVERNMENT_SCHEME
+I am writing to report that: OAP pension scheme register panna officials reject panranga.,Tanglish,GOVERNMENT_SCHEME
+I am writing to report that: I need free legal advice regarding a contract discrepancy.,English,GENERAL_LEGAL_AID
+I am writing to report that: How to apply for free legal representation in district court.,English,GENERAL_LEGAL_AID
+"I am writing to report that: Enaku free lawyer venum, court case pathi legal aid thairya.",Tanglish,GENERAL_LEGAL_AID
+I am writing to report that: இலவச சட்ட உதவி பெற எங்கு விண்ணப்பிக்க வேண்டும்?,Tamil,GENERAL_LEGAL_AID
+"I am writing to report that: நீதிமன்ற சம்மன் வந்துள்ளது, என்ன செய்ய வேண்டும் என அறிய வேண்டும்.",Tamil,GENERAL_LEGAL_AID
+I am writing to report that: Free legal consultation documents apply panrathuku link enna.,Tanglish,GENERAL_LEGAL_AID
+I am writing to report that: Claiming compensation for severe injuries from truck collision.,English,MOTOR_ACCIDENT_CLAIM
+I am writing to report that: Third party insurance claim pending for car accident.,English,MOTOR_ACCIDENT_CLAIM
+I am writing to report that: Road accident accident compensation application block panranga.,Tanglish,MOTOR_ACCIDENT_CLAIM
+I am writing to report that: மோட்டார் வாகன விபத்து இழப்பீடு கோரி விண்ணப்பிக்க வேண்டும்.,Tamil,MOTOR_ACCIDENT_CLAIM
+I am writing to report that: இருசக்கர வாகன விபத்தில் அடிபட்டு காப்பீடு பெற முடியவில்லை.,Tamil,MOTOR_ACCIDENT_CLAIM
+I am writing to report that: Car damage accident claim process insurance company delayed.,Tanglish,MOTOR_ACCIDENT_CLAIM
+I am writing to report that: Life insurance payout rejected due to false technical reasons.,English,INSURANCE_CLAIM
+I am writing to report that: Health insurance company not releasing money for surgery.,English,INSURANCE_CLAIM
+I am writing to report that: Insurance claim deny pannitanga documentation complete-a irundhum.,Tanglish,INSURANCE_CLAIM
+I am writing to report that: மருத்துவக் காப்பீட்டுத் தொகையை நிறுவனம் வழங்க மறுக்கிறது.,Tamil,INSURANCE_CLAIM
+I am writing to report that: பயிர்க் காப்பீட்டுத் தொகை கிடைக்காமல் விவசாயிகள் தவிக்கிறார்கள்.,Tamil,INSURANCE_CLAIM
+I am writing to report that: Crop insurance failure payout delay by corporate agent.,Tanglish,INSURANCE_CLAIM
+I am writing to report that: Unauthorized credit card transaction charges billed to account.,English,BANKING_DISPUTE
+I am writing to report that: Bank frozen my account without sending any written notice.,English,BANKING_DISPUTE
+I am writing to report that: Bank account unauthorized charge cut pannitanga return tharala.,Tanglish,BANKING_DISPUTE
+I am writing to report that: எனது அனுமதியின்றி வங்கிக் கணக்கிலிருந்து பணம் எடுக்கப்பட்டுள்ளது.,Tamil,BANKING_DISPUTE
+I am writing to report that: வங்கிக் கடன் வட்டி விகிதத்தில் மோசடி செய்துள்ளனர்.,Tamil,BANKING_DISPUTE
+I am writing to report that: Personal loan EMI extra auto debit dispute with manager.,Tanglish,BANKING_DISPUTE
+I am writing to report that: Landlord attempting illegal eviction without notice window.,English,RENT_TENANT_DISPUTE
+I am writing to report that: Tenant not paying rent and refusing to vacate building.,English,RENT_TENANT_DISPUTE
+I am writing to report that: House owner room lease advance return tharama vacate panna soldran.,Tanglish,RENT_TENANT_DISPUTE
+I am writing to report that: வாடகை ஒப்பந்தம் முடியும் முன்பே வீட்டை விட்டு வெளியேறச் சொல்கிறார்.,Tamil,RENT_TENANT_DISPUTE
+I am writing to report that: வாடகை தராமல் வீட்டை ஆக்கிரமித்துள்ள வாடகைதாரர்.,Tamil,RENT_TENANT_DISPUTE
+I am writing to report that: Rental agreement renewal dispute tenant refusing to exit.,Tanglish,RENT_TENANT_DISPUTE
+I am writing to report that: Doctor left surgical gauze inside patient body after surgery.,English,MEDICAL_NEGLIGENCE
+I am writing to report that: Wrong medication dosage caused severe brain damage to child.,English,MEDICAL_NEGLIGENCE
+I am writing to report that: Hospital wrong injection wrong treatment patient death negligence.,Tanglish,MEDICAL_NEGLIGENCE
+I am writing to report that: மருத்துவரின் அலட்சியத்தால் அறுவை சிகிச்சை தோல்வி அடைந்தது.,Tamil,MEDICAL_NEGLIGENCE
+I am writing to report that: தவறான மருந்து வழங்கியதால் நோயாளிக்கு பக்கவாதம் ஏற்பட்டது.,Tamil,MEDICAL_NEGLIGENCE
+I am writing to report that: Government hospital delivery operation negligence of duty doctor.,Tanglish,MEDICAL_NEGLIGENCE
+I am writing to report that: College refusing to return original certificates upon exit.,English,EDUCATION_DISPUTE
+I am writing to report that: Private school demanding capitation fee violating RTE Act.,English,EDUCATION_DISPUTE
+I am writing to report that: RTE admission block school extra fee demand panranga.,Tanglish,EDUCATION_DISPUTE
+I am writing to report that: கல்லூரி மாற்றுச் சான்றிதழை தர மறுத்து அலைக்கழிக்கிறது.,Tamil,EDUCATION_DISPUTE
+I am writing to report that: அனுமதி பெறாத பள்ளியில் சேர்ந்து மாணவர்கள் ஏமாற்றம் அடைந்தனர்.,Tamil,EDUCATION_DISPUTE
+I am writing to report that: Scholarship application process college staff bribe demanding.,Tanglish,EDUCATION_DISPUTE
+I am writing to report that: Supervisor threatening termination for refusing sexual advances.,English,WORKPLACE_HARASSMENT
+I am writing to report that: Abusive toxic manager creating hostile environment at office.,English,WORKPLACE_HARASSMENT
+I am writing to report that: Office management toxic pressure workplace mental harassment.,Tanglish,WORKPLACE_HARASSMENT
+I am writing to report that: பணியிடத்தில் பெண் ஊழியர்களுக்கு தொடர்ந்து பாலியல் அச்சுறுத்தல்.,Tamil,WORKPLACE_HARASSMENT
+I am writing to report that: மேலதிகாரி தகாத வார்த்தைகளால் பேசி அவமதிக்கிறார்.,Tamil,WORKPLACE_HARASSMENT
+I am writing to report that: Salary cut threaten HR harassment workplace safety failure.,Tanglish,WORKPLACE_HARASSMENT
+I am writing to report that: Children abandoned parents and grabbed all pension property.,English,SENIOR_CITIZEN_ABUSE
+I am writing to report that: Physical abuse and starvation of elderly father by son.,English,SENIOR_CITIZEN_ABUSE
+I am writing to report that: Elderly mother property sign register panni thurathitaanga children.,Tanglish,SENIOR_CITIZEN_ABUSE
+I am writing to report that: முதியோர் உதவித்தொகையை பறித்துக் கொண்டு மகன் வீட்டை விட்டு துரத்தினார்.,Tamil,SENIOR_CITIZEN_ABUSE
+I am writing to report that: வயதான பெற்றோரை கவனித்துக் கொள்ளாமல் பிள்ளைகள் கைவிட்டனர்.,Tamil,SENIOR_CITIZEN_ABUSE
+I am writing to report that: Maintenance claim against son senior citizen protection act help.,Tanglish,SENIOR_CITIZEN_ABUSE
+I am writing to report that: Reporting active child labor in local tea shop market.,English,CHILD_WELFARE
+I am writing to report that: Minor girl forced into child marriage arrangement by relatives.,English,CHILD_WELFARE
+I am writing to report that: Child labor hotel work street child welfare rescue help.,Tanglish,CHILD_WELFARE
+I am writing to report that: குழந்தை தொழிலாளர்களை கடைகளில் வேலைக்கு வைத்துள்ளனர்.,Tamil,CHILD_WELFARE
+I am writing to report that: மைனர் சிறுமிக்கு கட்டாயத் திருமணம் செய்ய ஏற்பாடு நடக்கிறது.,Tamil,CHILD_WELFARE
+I am writing to report that: School dropout child labor brick kiln factory minor abuse.,Tanglish,CHILD_WELFARE
+I am writing to report that: Denied accessibility ramps in public government bank office.,English,DISABILITY_RIGHTS
+I am writing to report that: Employer rejected job application solely due to visual impairment.,English,DISABILITY_RIGHTS
+I am writing to report that: Differently abled quota job skip reservation violations office.,Tanglish,DISABILITY_RIGHTS
+I am writing to report that: மாற்றுத்திறனாளிகளுக்கான அரசு சலுகைகள் மற்றும் வேலைவாய்ப்பு மறுப்பு.,Tamil,DISABILITY_RIGHTS
+I am writing to report that: பள்ளி வளாகத்தில் மாற்றுத்திறனாளி மாணவர்களுக்கு கழிப்பறை வசதி இல்லை.,Tamil,DISABILITY_RIGHTS
+I am writing to report that: Disability certificate application issue welfare card delayed.,Tanglish,DISABILITY_RIGHTS
+I am writing to report that: Social boycott of SC community from local village temple festival.,English,CASTE_DISCRIMINATION
+I am writing to report that: Casteist slurs thrown at water well community sharing point.,English,CASTE_DISCRIMINATION
+I am writing to report that: Caste name calling discrimination tea shop separate glass.,Tanglish,CASTE_DISCRIMINATION
+I am writing to report that: பட்டியலின மக்களை பொதுக் கிணற்றில் தண்ணீர் எடுக்க விடாமல் தடுக்கிறார்கள்.,Tamil,CASTE_DISCRIMINATION
+I am writing to report that: சாதிப் பெயரைச் சொல்லி இழிவுபடுத்தி ஊரை விட்டு ஒதுக்கி வைத்தனர்.,Tamil,CASTE_DISCRIMINATION
+I am writing to report that: Caste barrier temple entry village panchayat discrimination.,Tanglish,CASTE_DISCRIMINATION
+I am writing to report that: Police officer refused to register FIR for a theft case.,English,POLICE_MISCONDUCT
+I am writing to report that: Illegal police detention and custodial violence in lockup.,English,POLICE_MISCONDUCT
+I am writing to report that: Police custody beating bribe demand local FIR registration fail.,Tanglish,POLICE_MISCONDUCT
+I am writing to report that: காவல் துறையினர் புகார் மனுவை வாங்க மறுத்து திருப்பி அனுப்பினர்.,Tamil,POLICE_MISCONDUCT
+I am writing to report that: விசாரணை என்ற பெயரில் லாக்அப்பில் வைத்து கடுமையாக தாக்கினர்.,Tamil,POLICE_MISCONDUCT
+I am writing to report that: False case threat bribery police station lockup assault.,Tanglish,POLICE_MISCONDUCT
+I am writing to report that: Public officer demanding bribe of 5000 for death certificate.,English,CORRUPTION_BRIBERY
+I am writing to report that: Contractor paying kickbacks to municipal engineer for road works.,English,CORRUPTION_BRIBERY
+I am writing to report that: Bribe demand office corruption latcham registration patta.,Tanglish,CORRUPTION_BRIBERY
+I am writing to report that: அரசு அலுவலகத்தில் ஓட்டுநர் உரிமம் பெற லஞ்சம் கேட்கிறார்கள்.,Tamil,CORRUPTION_BRIBERY
+I am writing to report that: பில் பாஸ் செய்ய இன்ஜினியர் பெருந்தொகை லஞ்சம் கேட்கிறார்.,Tamil,CORRUPTION_BRIBERY
+I am writing to report that: Vigilance anti corruption bribe recording complaint help.,Tanglish,CORRUPTION_BRIBERY
+I am writing to report that: Broken sewage pipe causing raw sewage drinking water mix.,English,CIVIC_INFRASTRUCTURE
+I am writing to report that: Severe potholes on main road causing fatal bike accidents.,English,CIVIC_INFRASTRUCTURE
+I am writing to report that: Street light repair block dark street chain snatching threat.,Tanglish,CIVIC_INFRASTRUCTURE
+I am writing to report that: குடிநீருடன் கழிவுநீர் கலந்து வருவதால் தொற்றுநோய் பரவுகிறது.,Tamil,CIVIC_INFRASTRUCTURE
+I am writing to report that: சாலையில் உள்ள ஆழமான பள்ளங்களால் வாகன ஓட்டிகள் விபத்துக்குள்ளாகிறார்கள்.,Tamil,CIVIC_INFRASTRUCTURE
+I am writing to report that: Garbage dumping issue street corner corporate cleaning delay.,Tanglish,CIVIC_INFRASTRUCTURE
+I am writing to report that: RTI request regarding village budget spending not answered.,English,RTI_APPLICATION
+I am writing to report that: Public information officer intentionally gave wrong fake answers.,English,RTI_APPLICATION
+I am writing to report that: RTI reply delay timeline over no info provided by office.,Tanglish,RTI_APPLICATION
+I am writing to report that: தகவல் அறியும் உரிமை சட்டத்தின் கீழ் கேட்ட கேள்விக்கு பதில் அளிக்கவில்லை.,Tamil,RTI_APPLICATION
+I am writing to report that: அரசு திட்ட செலவு விபரங்கள் குறித்த ஆர்டிஐ மனு நிராகரிக்கப்பட்டது.,Tamil,RTI_APPLICATION
+I am writing to report that: PIO officer RTI appeal process documentation rejection.,Tanglish,RTI_APPLICATION

@@ -270,7 +270,7 @@ export default function VolunteerActivityDetails() {
                         {sess.status}
                       </span>
                     </div>
-                    <p className="text-[10px] text-slate-450 mt-1">Device: {sess.deviceInfo || "Web Browser"}</p>
+                    <p className="text-[10px] text-slate-400 mt-1">Device: {sess.deviceInfo || "Web Browser"}</p>
                   </div>
                   <span className="font-mono text-[10px] text-slate-500 font-semibold">{formatDuration(sess.totalDurationSeconds)}</span>
                 </div>
