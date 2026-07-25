@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Modal from "../common/Modal";
 import {
   LayoutDashboard,
@@ -48,41 +48,6 @@ const menuItems = [
 const VolunteerSidebar = () => {
   const { logout } = useAuth();
   const [showConfirmLogout, setShowConfirmLogout] = useState(false);
-  const [topHeight, setTopHeight] = useState(() => {
-    const saved = localStorage.getItem("sidebar_volunteer_top_height");
-    return saved ? parseInt(saved, 10) : 260;
-  });
-  const [isResizing, setIsResizing] = useState(false);
-
-  const startResizing = (mouseDownEvent) => {
-    mouseDownEvent.preventDefault();
-    setIsResizing(true);
-  };
-
-  useEffect(() => {
-    const handleMouseMove = (mouseMoveEvent) => {
-      if (!isResizing) return;
-      const rect = document.getElementById("sidebar-nav-container")?.getBoundingClientRect();
-      if (!rect) return;
-      const newHeight = Math.max(100, Math.min(rect.height - 120, mouseMoveEvent.clientY - rect.top));
-      setTopHeight(newHeight);
-      localStorage.setItem("sidebar_volunteer_top_height", newHeight.toString());
-    };
-
-    const handleMouseUp = () => {
-      setIsResizing(false);
-    };
-
-    if (isResizing) {
-      window.addEventListener("mousemove", handleMouseMove);
-      window.addEventListener("mouseup", handleMouseUp);
-    }
-
-    return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-    };
-  }, [isResizing]);
 
   const handleLogout = () => {
     logout();
@@ -100,16 +65,9 @@ const VolunteerSidebar = () => {
         <p className="mt-1.5 text-xs text-slate-500 font-semibold uppercase tracking-wider">Legal Guide Portal</p>
       </div>
 
-      {/* Navigation Split Container */}
-      <div 
-        id="sidebar-nav-container"
-        className="flex-1 flex flex-col min-h-0 overflow-hidden"
-      >
-        {/* Top Primary Navigation */}
-        <div 
-          className="overflow-y-auto p-4 shrink-0" 
-          style={{ height: `${topHeight}px` }}
-        >
+      {/* Navigation - Single Scrollbar Container */}
+      <nav className="flex-1 overflow-y-auto p-5 sidebar-scroll space-y-6">
+        <div>
           <span className="block text-[9px] font-extrabold text-slate-500 uppercase tracking-widest mb-3 px-3">Primary Action</span>
           <div className="space-y-1.5">
             {primaryItems.map((item) => {
@@ -119,7 +77,7 @@ const VolunteerSidebar = () => {
                   key={item.path}
                   to={item.path}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 rounded-xl px-4 py-2 transition-all duration-150 ${
+                    `flex items-center gap-3 rounded-xl px-4 py-2.5 transition-all duration-150 ${
                       isActive
                         ? "bg-slate-855 text-white font-semibold shadow-sm border-l-4 border-indigo-500 rounded-l-none pl-3"
                         : "text-slate-400 hover:bg-slate-800/60 hover:text-slate-100"
@@ -134,16 +92,7 @@ const VolunteerSidebar = () => {
           </div>
         </div>
 
-        {/* Draggable Horizontal Divider */}
-        <div
-          onMouseDown={startResizing}
-          className="h-2.5 bg-slate-950 border-t border-b border-slate-800 hover:bg-indigo-500/10 cursor-row-resize flex items-center justify-center group shrink-0 select-none z-10"
-        >
-          <div className="w-8 h-1 rounded-full bg-slate-800 group-hover:bg-indigo-500/80 group-active:bg-indigo-500 transition-colors duration-150" />
-        </div>
-
-        {/* Bottom Secondary Navigation */}
-        <div className="flex-1 overflow-y-auto p-4 min-h-0">
+        <div>
           <span className="block text-[9px] font-extrabold text-slate-500 uppercase tracking-widest mb-3 px-3">Account & Settings</span>
           <div className="space-y-1.5">
             {secondaryItems.map((item) => {
@@ -153,7 +102,7 @@ const VolunteerSidebar = () => {
                   key={item.path}
                   to={item.path}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 rounded-xl px-4 py-2 transition-all duration-150 ${
+                    `flex items-center gap-3 rounded-xl px-4 py-2.5 transition-all duration-150 ${
                       isActive
                         ? "bg-slate-855 text-white font-semibold shadow-sm border-l-4 border-indigo-500 rounded-l-none pl-3"
                         : "text-slate-400 hover:bg-slate-800/60 hover:text-slate-100"
@@ -167,10 +116,10 @@ const VolunteerSidebar = () => {
             })}
           </div>
         </div>
-      </div>
+      </nav>
 
       {/* Logout */}
-      <div className="border-t border-slate-800 p-5">
+      <div className="border-t border-slate-800 p-5 shrink-0">
         <button
           onClick={() => setShowConfirmLogout(true)}
           className="flex w-full items-center gap-4 rounded-xl px-5 py-4 text-red-400 hover:bg-red-950/20 hover:text-red-300 transition duration-200"
