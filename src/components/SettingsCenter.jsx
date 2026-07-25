@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { 
   User, Bell, Shield, Lock, Paintbrush, Languages, Info, FileText, 
   Trash2, Smartphone, Check, AlertCircle, ShieldCheck, Eye, EyeOff, 
-  RefreshCw, Award, Sliders, Cpu, Save, X 
+  RefreshCw, Award, Sliders, Cpu, Save, X, AlertTriangle 
 } from "lucide-react";
 import { toast } from "sonner";
 import { userService } from "../services/userService";
