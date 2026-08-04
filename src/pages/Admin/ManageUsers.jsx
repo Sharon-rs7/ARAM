@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import SearchInput from "@/components/common/SearchInput";
+
 
 const users = [
   {
@@ -187,41 +189,24 @@ const ManageUsers = () => {
         </div>
 
         {/* Search */}
-
         <div className="rounded-3xl bg-white p-6 shadow-sm">
-
           <div className="flex flex-col gap-4 lg:flex-row">
-
-            <div className="relative flex-1">
-
-              <Search
-                size={18}
-                className="absolute left-4 top-4 text-slate-400"
-              />
-
-              <input
-                type="text"
-                placeholder="Search users..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="h-14 w-full rounded-xl border border-slate-300 pl-12 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
-              />
-
-            </div>
-
+            <SearchInput
+              placeholder="Search users..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onClear={() => setSearch("")}
+              className="flex-1"
+            />
             <button
-              className="flex items-center justify-center gap-2 rounded-xl border border-slate-300 px-6 transition hover:bg-slate-100"
+              className="flex items-center justify-center gap-2 rounded-xl border border-slate-300 px-6 transition hover:bg-slate-100 cursor-pointer shrink-0"
             >
-
               <Filter size={18} />
-
               Filter
-
             </button>
-
           </div>
-
-        </div>        {/* Users Table */}
+        </div>
+        {/* Users Table */}
 
         <div className="overflow-hidden rounded-3xl bg-white shadow-sm">
 
@@ -338,27 +323,21 @@ const ManageUsers = () => {
 
                       <button
                         onClick={() => navigate("/admin/user-details")}
-                        className="rounded-xl bg-blue-600 p-3 text-white transition hover:bg-blue-700"
+                        className="rounded-xl border border-slate-200 bg-white p-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition duration-150 shadow-sm"
                       >
-
                         <Eye size={18} />
-
                       </button>
 
                       <button
-                        className="rounded-xl bg-yellow-500 p-3 text-white transition hover:bg-yellow-600"
+                        className="rounded-xl border border-slate-200 bg-white p-2.5 text-slate-600 hover:bg-slate-50 hover:text-indigo-600 transition duration-150 shadow-sm"
                       >
-
                         <Pencil size={18} />
-
                       </button>
 
                       <button
-                        className="rounded-xl bg-red-600 p-3 text-white transition hover:bg-red-700"
+                        className="rounded-xl border border-red-100 bg-red-50/30 p-2.5 text-red-600 hover:bg-red-50 hover:text-red-750 transition duration-150 shadow-sm"
                       >
-
                         <Trash2 size={18} />
-
                       </button>
 
                     </div>

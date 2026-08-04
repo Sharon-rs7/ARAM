@@ -247,7 +247,8 @@ export default function VolunteerActivityOverview() {
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
             <h3 className="text-base font-bold text-slate-900">Legal Guide Workload Performance</h3>
             <div className="relative w-full sm:max-w-xs">
-              <Search size={14} className="absolute left-3 top-3.5 text-slate-400" />
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" />
+
               <input
                 type="text"
                 placeholder="Search legal guide..."

@@ -275,43 +275,44 @@ const RegisterForm = () => {
         <div className="border-b border-slate-100 pb-3">
           <h3 className="text-xs font-bold text-blue-600 uppercase tracking-wider mb-2">Password Setup</h3>
           <div className="grid gap-3 sm:grid-cols-2">
-            <div className="relative">
-              <Input
-                label="Password"
-                type={showPassword ? "text" : "password"}
-                name="password"
-                value={form.password}
-                onChange={update}
-                required
-                placeholder="••••••••"
-              />
-              <button
-                type="button"
-                className="absolute right-3 top-[33px] text-slate-400 hover:text-slate-600"
-                onClick={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-              </button>
-            </div>
-            <div className="relative">
-              <Input
-                label="Confirm Password"
-                type={showConfirm ? "text" : "password"}
-                name="confirmPassword"
-                value={form.confirmPassword}
-                onChange={update}
-                required
-                placeholder="••••••••"
-              />
-              <button
-                type="button"
-                className="absolute right-3 top-[33px] text-slate-400 hover:text-slate-600"
-                onClick={() => setShowConfirm(!showConfirm)}
-              >
-                {showConfirm ? <EyeOff size={15} /> : <Eye size={15} />}
-              </button>
-            </div>
+            <Input
+              label="Password"
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value={form.password}
+              onChange={update}
+              required
+              placeholder="••••••••"
+              rightElement={
+                <button
+                  type="button"
+                  className="text-slate-400 hover:text-slate-600 cursor-pointer p-1"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
+                </button>
+              }
+            />
+            <Input
+              label="Confirm Password"
+              type={showConfirm ? "text" : "password"}
+              name="confirmPassword"
+              value={form.confirmPassword}
+              onChange={update}
+              required
+              placeholder="••••••••"
+              rightElement={
+                <button
+                  type="button"
+                  className="text-slate-400 hover:text-slate-600 cursor-pointer p-1"
+                  onClick={() => setShowConfirm(!showConfirm)}
+                >
+                  {showConfirm ? <EyeOff size={15} /> : <Eye size={15} />}
+                </button>
+              }
+            />
           </div>
+
 
           {/* Password Strength Indicator */}
           {form.password && (
@@ -329,16 +330,17 @@ const RegisterForm = () => {
 
         {/* Section 5: Terms checkbox & Submit */}
         <div className="space-y-4 pt-1">
-          <label className="flex items-start gap-2 text-xs text-slate-600 cursor-pointer select-none leading-relaxed">
-            <input
-              type="checkbox"
-              name="termsAccepted"
-              checked={form.termsAccepted}
-              onChange={update}
-              className="h-4 w-4 shrink-0 rounded border-slate-200 text-blue-600 focus:ring-blue-500 mt-0.5 cursor-pointer"
-            />
-            <span>I accept the <Link to="/terms" className="text-blue-600 font-semibold hover:underline">Terms & Conditions</Link> and agree to privacy guidelines.</span>
-          </label>
+          <Checkbox
+            id="termsAccepted"
+            name="termsAccepted"
+            checked={form.termsAccepted}
+            onChange={update}
+            description={
+              <span>
+                I accept the <Link to="/terms" className="text-indigo-600 font-semibold hover:underline">Terms & Conditions</Link> and agree to privacy guidelines.
+              </span>
+            }
+          />
 
           <Button
             type="submit"
@@ -348,6 +350,7 @@ const RegisterForm = () => {
           >
             Create Account
           </Button>
+
 
           <p className="text-center text-slate-500 text-xs">
             Already have an account?{" "}

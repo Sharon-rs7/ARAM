@@ -37,22 +37,25 @@ async def transcribe_speech(
         if selectedLanguage == "Tanglish":
             detected_language = "Tanglish"
 
-        # Mock normalized translation response for demo compliance
-        normalized_map = {
-            "Tamil": "My company has not paid salary for two months.",
-            "Tanglish": "My company has not paid salary for two months.",
-            "Hindi": "My company has not paid salary for two months.",
-            "English": "My company has not paid salary for two months."
-        }
-        normalized = normalized_map.get(detected_language, result.get("transcript"))
+        raw_transcript = result.get("transcript", "").strip()
+        is_empty_speech = not raw_transcript or raw_transcript == "No audible speech detected."
+        
+        if is_empty_speech:
+            transcript = "No audible speech detected."
+            normalized = "No audible speech detected."
+            confidence = 0.0
+        else:
+            transcript = raw_transcript
+            normalized = raw_transcript
+            confidence = result.get("confidence", 0.0)
 
         return {
             "success": True,
-            "transcript": result.get("transcript"),
-            "detectedLanguage": detected_language,
+            "transcript": transcript,
+            "detectedLanguage": detected_language if not is_empty_speech else "Unknown",
             "selectedLanguage": selectedLanguage if selectedLanguage else "Auto",
             "durationSeconds": result.get("duration", 0.0),
-            "confidence": result.get("confidence"),
+            "confidence": confidence,
             "normalizedText": normalized,
             "message": "Speech transcribed successfully"
         }

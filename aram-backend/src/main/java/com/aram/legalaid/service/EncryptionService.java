@@ -20,7 +20,10 @@ public class EncryptionService {
     private static final int IV_LENGTH_BYTE = 12;
     private static final int TAG_LENGTH_BIT = 128;
 
-    public EncryptionService(@Value("${APP_ENCRYPTION_KEY:default_fallback_security_key_for_development_purposes}") String keyString) {
+    public EncryptionService(@Value("${app.encryption.key:${APP_ENCRYPTION_KEY:ARAMLegalAidEncryptionSecretKey2026}}") String keyString) {
+        if (keyString == null || keyString.trim().isEmpty()) {
+            keyString = "ARAMLegalAidEncryptionSecretKey2026";
+        }
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hashedKey = digest.digest(keyString.getBytes(StandardCharsets.UTF_8));
@@ -74,8 +77,7 @@ public class EncryptionService {
             byte[] plainTextBytes = cipher.doFinal(cipherBytes);
             return new String(plainTextBytes, StandardCharsets.UTF_8);
         } catch (Exception e) {
-            // If decryption fails, the string might not be encrypted (migration phase or invalid key)
-            return cipherText;
+            throw new IllegalStateException("CRITICAL DECRYPTION FAILURE: Failed to decrypt record with the configured APP_ENCRYPTION_KEY. Decryption tag verification failed or key mismatch.", e);
         }
     }
 }

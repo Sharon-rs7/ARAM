@@ -611,9 +611,11 @@ export default function SettingsCenter({ role = "citizen" }) {
                 onChange={(e) => setAvailability(e.target.value)}
                 className="w-full min-h-[44px] rounded-xl border border-slate-200 px-3 text-xs font-semibold focus:border-indigo-500 outline-none bg-white cursor-pointer"
               >
-                <option value="AVAILABLE">AVAILABLE (Accepting new case assignments)</option>
-                <option value="BUSY">BUSY (Mediation ongoing / Hide recommendations)</option>
-                <option value="OFFLINE">OFFLINE (Not taking cases)</option>
+                <option value="AVAILABLE">🟢 AVAILABLE (Accepting new case assignments)</option>
+                <option value="BUSY">🟡 BUSY (Mediation ongoing / Hide recommendations)</option>
+                <option value="AWAY">🔵 AWAY (Away / Pause new cases)</option>
+                <option value="PAUSED">⏸️ PAUSED (Paused case intake)</option>
+                <option value="OFFLINE">🔴 OFFLINE (Not taking cases)</option>
               </select>
             </div>
           </div>

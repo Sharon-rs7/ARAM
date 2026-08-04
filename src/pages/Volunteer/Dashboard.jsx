@@ -136,6 +136,8 @@ const Dashboard = () => {
               >
                 <option value="AVAILABLE">🟢 Available</option>
                 <option value="BUSY">🟡 Busy</option>
+                <option value="AWAY">🔵 Away</option>
+                <option value="PAUSED">⏸️ Paused</option>
                 <option value="OFFLINE">🔴 Offline</option>
               </select>
             </div>

@@ -13,6 +13,8 @@ import {
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { adminService } from "../../services/adminService";
+import SearchInput from "@/components/common/SearchInput";
+
 
 const ManageComplaints = () => {
   const navigate = useNavigate();
@@ -204,70 +206,39 @@ const ManageComplaints = () => {
         </div>
 
         {/* Search */}
-
         <div className="rounded-3xl bg-white p-6 shadow-sm">
-
           <div className="flex flex-col gap-4 lg:flex-row">
-
-            <div className="relative flex-1">
-
-              <Search
-                size={18}
-                className="absolute left-4 top-4 text-slate-400"
-              />
-
-              <input
-                type="text"
-                placeholder="Search complaints..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="h-14 w-full rounded-xl border border-slate-300 pl-12 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
-              />
-
-            </div>
-
-            <button className="flex items-center gap-2 rounded-xl border border-slate-300 px-6 hover:bg-slate-100">
-
+            <SearchInput
+              placeholder="Search complaints..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onClear={() => setSearch("")}
+              className="flex-1"
+            />
+            <button className="flex items-center gap-2 rounded-xl border border-slate-300 px-6 hover:bg-slate-100 cursor-pointer shrink-0">
               <Filter size={18} />
-
               Filter
-
             </button>
-
           </div>
+        </div>
 
-        </div>        {/* Complaints Table */}
 
+        {/* Complaints Table */}
         <div className="overflow-hidden rounded-3xl bg-white shadow-sm">
-
           <table className="w-full">
-
             <thead className="bg-slate-100">
-
               <tr>
-
                 <th className="px-6 py-5 text-left">ID</th>
-
                 <th className="px-6 py-5 text-left">Public User</th>
-
                 <th className="px-6 py-5 text-left">Category</th>
-
                 <th className="px-6 py-5 text-left">Department</th>
-
                 <th className="px-6 py-5 text-left">Legal Guide</th>
-
                 <th className="px-6 py-5 text-left">Priority</th>
-
                 <th className="px-6 py-5 text-left">Status</th>
-
                 <th className="px-6 py-5 text-center">Action</th>
-
               </tr>
-
             </thead>
-
             <tbody>
-
               {loading ? (
                 <tr>
                   <td colSpan="8" className="px-6 py-12 text-center text-slate-400">
@@ -300,93 +271,67 @@ const ManageComplaints = () => {
                     key={item.id}
                     className="border-b transition hover:bg-slate-50"
                   >
-
                     <td className="px-6 py-5 font-semibold text-slate-800">
-
                       {id}
-
                     </td>
-
                     <td className="px-6 py-5">
-
                       {citizen}
-
                     </td>
-
                     <td className="px-6 py-5">
-
                       {category}
-
                     </td>
-
                     <td className="px-6 py-5">
-
                       {department}
-
                     </td>
-
                     <td className="px-6 py-5">
-
                       {volunteer}
-
                     </td>
-
                     <td className="px-6 py-5">
-
                       <span className={`rounded-full px-3 py-1 text-xs font-semibold ${priorityClass}`}>
-
                         {priority}
-
                       </span>
-
                     </td>
-
                     <td className="px-6 py-5">
-
                       <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusClass}`}>
-
                         {status.replace("_", " ")}
-
                       </span>
-
                     </td>
-
                     <td className="px-6 py-5">
-
                       <div className="flex justify-center gap-3">
-
                         <button
-                          onClick={() => navigate(`/admin/complaint-details` /* would need ID but fallback or detail page accepts state */)}
-                          className="rounded-xl bg-blue-600 p-3 text-white transition hover:bg-blue-700"
+                          title="View Details"
+                          onClick={() => navigate(`/citizen/complaint/${item.id}`)}
+                          className="rounded-xl border border-slate-200 bg-white p-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition duration-150 shadow-sm cursor-pointer"
                         >
-
                           <Eye size={18} />
-
                         </button>
-
                         <button
-                          className="rounded-xl bg-green-600 p-3 text-white transition hover:bg-green-700"
+                          title="Assign Legal Guide"
+                          onClick={() => {
+                            import("sonner").then(({ toast }) => toast.info(`Assigning Legal Guide to complaint ${id}`));
+                          }}
+                          className="rounded-xl border border-slate-200 bg-white p-2.5 text-slate-600 hover:bg-slate-50 hover:text-emerald-600 transition duration-150 shadow-sm cursor-pointer"
                         >
-
                           <UserCheck size={18} />
-
                         </button>
-
                         <button
-                          className="rounded-xl bg-red-600 p-3 text-white transition hover:bg-red-700"
+                          title="Delete Complaint"
+                          onClick={() => {
+                            if (window.confirm(`Are you sure you want to remove complaint ${id}?`)) {
+                              setComplaints(prev => prev.filter(c => c.id !== item.id));
+                              import("sonner").then(({ toast }) => toast.success(`Complaint ${id} removed.`));
+                            }
+                          }}
+                          className="rounded-xl border border-red-100 bg-red-50/30 p-2.5 text-red-600 hover:bg-red-50 hover:text-red-750 transition duration-150 shadow-sm cursor-pointer"
                         >
-
                           <Trash2 size={18} />
-
                         </button>
-
                       </div>
-
                     </td>
-
                   </tr>
                 );
               })}
+
 
             </tbody>
 

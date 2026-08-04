@@ -4,14 +4,20 @@ import java.util.List;
 
 public record AiTriageResponse(
     String category,
+    double categoryConfidence,
+    List<CategoryProbability> topCategories,
     String priority,
-    int priorityScore,
-    double confidence,
+    double priorityConfidence,
+    List<String> requiredDocuments,
     String recommendedAuthority,
     double authorityConfidence,
-    List<String> requiredDocuments,
-    double documentConfidence,
-    List<String> nextSteps,
+    boolean similarComplaintFound,
     boolean manualReviewRequired,
-    boolean modelBased
-) {}
+    List<String> manualReviewReasons,
+    String modelVersion,
+    boolean fallbackUsed,
+    String explanation,
+    List<String> nextSteps
+) {
+    public record CategoryProbability(String category, double probability) {}
+}

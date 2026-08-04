@@ -1,8 +1,8 @@
 import api from './api.js';
 
 export const aiService = {
-  analyzeComplaint: (complaintText, language = 'en', district = 'Coimbatore', isSensitive = false) => {
-    return api.post('/ai/analyze-complaint', { complaintText, language, district, isSensitive })
+  analyzeComplaint: (complaintText, language = 'en', district = 'Coimbatore', isSensitive = false, title = '', preferredHelperGender = 'ANY', existingComplaints = []) => {
+    return api.post('/ai/analyze-complaint', { complaintText, language, district, isSensitive, title, preferredHelperGender, existingComplaints })
       .then((res) => res.data);
   },
 

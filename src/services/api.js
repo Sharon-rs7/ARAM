@@ -58,11 +58,16 @@ export function getCurrentUser() {
 
 export function saveAuth(auth) {
   const accessToken = auth?.accessToken || auth?.token;
-  const role = auth?.user?.role || auth?.role;
-  const user = auth?.user || (role ? { role } : null);
+  let role = auth?.user?.role || auth?.role;
+  if (role) {
+    role = String(role).toUpperCase().replace(/^ROLE_/, "");
+    if (role === "HELPER") role = "VOLUNTEER";
+  }
+  const user = auth?.user ? { ...auth.user, role } : (role ? { role } : null);
+  
   if (accessToken) localStorage.setItem('accessToken', accessToken);
   if (auth?.refreshToken) localStorage.setItem('refreshToken', auth.refreshToken);
-  if (user) localStorage.setItem('user', JSON.stringify({ ...user, role }));
+  if (user) localStorage.setItem('user', JSON.stringify(user));
   if (role) localStorage.setItem('role', role);
 }
 

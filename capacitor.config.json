@@ -1,0 +1,8 @@
+{
+  "appId": "ai.aram.app",
+  "appName": "ARAM Legal Aid",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  }
+}

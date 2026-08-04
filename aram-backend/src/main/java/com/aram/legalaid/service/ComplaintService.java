@@ -24,10 +24,11 @@ public class ComplaintService {
     private final NotificationService notificationService;
     private final MapperService mapperService;
     private final BlockchainService blockchainService;
+    private final AIClientService aiClientService;
 
     public ComplaintService(ComplaintRepository complaintRepository, AIResultRepository aiResultRepository, UserService userService,
                             AIAnalysisService aiAnalysisService, NotificationService notificationService, MapperService mapperService,
-                            BlockchainService blockchainService) {
+                            BlockchainService blockchainService, AIClientService aiClientService) {
         this.complaintRepository = complaintRepository;
         this.aiResultRepository = aiResultRepository;
         this.userService = userService;
@@ -35,6 +36,7 @@ public class ComplaintService {
         this.notificationService = notificationService;
         this.mapperService = mapperService;
         this.blockchainService = blockchainService;
+        this.aiClientService = aiClientService;
     }
 
     @Transactional
@@ -142,5 +144,46 @@ public class ComplaintService {
         if (language == null || !SUPPORTED_LANGUAGES.contains(language.trim().toUpperCase())) {
             throw new com.aram.legalaid.exception.BadRequestException("Supported languages: TAMIL, ENGLISH, HINDI, TANGLISH");
         }
+    }
+
+    public java.util.Map<String, Object> checkSimilarity(String title, String description) {
+        User user = userService.currentUser();
+        List<Complaint> previous = complaintRepository.findByUserOrderByCreatedAtDesc(user);
+        
+        if (previous.isEmpty()) {
+            return java.util.Map.of("similarComplaintFound", false, "similarityScore", 0.0);
+        }
+        
+        List<java.util.Map<String, Object>> existingPayloads = new java.util.ArrayList<>();
+        for (Complaint p : previous) {
+            existingPayloads.add(java.util.Map.of(
+                "id", p.getId(),
+                "title", p.getTitle() != null ? p.getTitle() : "",
+                "description", p.getDescription() != null ? p.getDescription() : ""
+            ));
+        }
+        
+        AiTriageResponse triageRes = aiClientService.analyzeComplaint(
+            title, description, "en", "Coimbatore", false, "ANY", existingPayloads
+        );
+        
+        Long similarId = null;
+        if (triageRes.similarComplaintFound()) {
+            for (Complaint p : previous) {
+                if (p.getStatus() != ComplaintStatus.RESOLVED) {
+                    similarId = p.getId();
+                    break;
+                }
+            }
+            if (similarId == null && !previous.isEmpty()) {
+                similarId = previous.get(0).getId();
+            }
+        }
+        
+        return java.util.Map.of(
+            "similarComplaintFound", triageRes.similarComplaintFound(),
+            "similarComplaintId", similarId != null ? similarId : 0L,
+            "similarityScore", triageRes.similarComplaintFound() ? 0.85 : 0.0
+        );
     }
 }

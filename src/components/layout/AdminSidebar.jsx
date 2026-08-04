@@ -88,7 +88,7 @@ const AdminSidebar = () => {
   const secondaryItems = menuItems.slice(7);
 
   return (
-    <aside className="sidebar flex min-h-screen w-full flex-col border-r border-slate-800 bg-slate-900 select-none">
+    <aside className="sidebar flex h-full w-full flex-col border-r border-slate-800 bg-slate-900 select-none">
       {/* Logo */}
       <div className="border-b border-slate-800 p-8 shrink-0">
         <h1 className="text-3xl font-extrabold text-white">ARAM</h1>
@@ -109,7 +109,7 @@ const AdminSidebar = () => {
                   className={({ isActive }) =>
                     `flex items-center gap-3 rounded-xl px-4 py-2.5 transition-all duration-150 ${
                       isActive
-                        ? "bg-slate-850 text-white font-semibold shadow-sm border-l-4 border-indigo-500 rounded-l-none pl-3"
+                        ? "bg-indigo-600/20 text-indigo-300 font-semibold shadow-sm border-l-4 border-indigo-500 rounded-l-none pl-3"
                         : "text-slate-400 hover:bg-slate-800/60 hover:text-slate-100"
                     }`
                   }
@@ -134,7 +134,7 @@ const AdminSidebar = () => {
                   className={({ isActive }) =>
                     `flex items-center gap-3 rounded-xl px-4 py-2.5 transition-all duration-150 ${
                       isActive
-                        ? "bg-slate-850 text-white font-semibold shadow-sm border-l-4 border-indigo-500 rounded-l-none pl-3"
+                        ? "bg-indigo-600/20 text-indigo-300 font-semibold shadow-sm border-l-4 border-indigo-500 rounded-l-none pl-3"
                         : "text-slate-400 hover:bg-slate-800/60 hover:text-slate-100"
                     }`
                   }

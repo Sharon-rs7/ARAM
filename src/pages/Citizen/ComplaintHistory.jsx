@@ -9,6 +9,8 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import SearchInput from "@/components/common/SearchInput";
+
 
 const complaints = [
   {
@@ -162,47 +164,26 @@ const ComplaintHistory = () => {
         </div>
 
         {/* Search */}
-
         <div className="rounded-3xl bg-white p-6 shadow-sm">
-
           <div className="flex flex-col gap-4 lg:flex-row">
-
-            <div className="relative flex-1">
-
-              <Search
-                size={18}
-                className="absolute left-4 top-4 text-slate-400"
-              />
-
-              <input
-                type="text"
-                placeholder="Search complaint..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="h-14 w-full rounded-xl border border-slate-300 pl-12 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
-              />
-
-            </div>
-
-            <button className="flex items-center gap-2 rounded-xl border border-slate-300 px-6 hover:bg-slate-100">
-
+            <SearchInput
+              placeholder="Search complaint..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onClear={() => setSearch("")}
+              className="flex-1"
+            />
+            <button className="flex items-center gap-2 rounded-xl border border-slate-300 px-6 hover:bg-slate-100 cursor-pointer shrink-0">
               <Filter size={18} />
-
               Filter
-
             </button>
-
-            <button className="flex items-center gap-2 rounded-xl border border-slate-300 px-6 hover:bg-slate-100">
-
+            <button className="flex items-center gap-2 rounded-xl border border-slate-300 px-6 hover:bg-slate-100 cursor-pointer shrink-0">
               <ArrowUpDown size={18} />
-
               Sort
-
             </button>
-
           </div>
-
         </div>
+
 
         {/* Table */}
 

@@ -22,8 +22,9 @@ export const adminService = {
     
     const res = await api.get("/admin/dashboard");
     const d = res.data;
+    const total = d.totalComplaints || ((d.submittedComplaints || 0) + (d.inProgressComplaints || 0) + (d.resolvedComplaints || 0));
     return {
-      totalComplaints: d.totalComplaints || 0,
+      totalComplaints: total,
       pendingComplaints: d.submittedComplaints || 0,
       underReviewComplaints: d.inProgressComplaints || 0,
       resolvedComplaints: d.resolvedComplaints || 0,

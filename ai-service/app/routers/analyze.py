@@ -1,78 +1,147 @@
 from fastapi import APIRouter, HTTPException
-from typing import List
-from app.schemas import (
-    ComplaintAnalyzeRequest, 
-    VolunteerMatchRequest, 
-    DocumentRecommendRequest, 
-    AuthorityRecommendRequest
-)
-from app.services.language_detector import language_detector
-from app.services.category_classifier import category_classifier
-from app.services.priority_predictor import priority_predictor
-from app.services.document_recommender import document_recommender
-from app.services.authority_recommender import authority_recommender
-from app.services.women_safety_detector import women_safety_detector
-from app.services.volunteer_matcher import volunteer_matcher
+from app.ml.prediction_schema import ComplaintMLRequest, ComplaintMLResponse
+from app.ml.category_model import predict_category
+from app.ml.priority_model import predict_priority
+from app.ml.document_model import recommend_documents
+from app.ml.authority_model import recommend_authority
+from app.ml.similar_complaint_model import find_similar_complaints
+from app.ml.volunteer_ranking_model import rank_volunteers
+from app.ml.model_loader import ml_model_loader
+from app.nlp.language_detector import language_detector
+from app.nlp.response_templates import get_localized_response, get_localized_category, get_localized_priority
+from app.nlp.complaint_summarizer import generate_plain_summary
+from app.schemas import VolunteerMatchRequest, DocumentRecommendRequest, AuthorityRecommendRequest
 
 router = APIRouter()
 
-@router.post("/analyze/complaint")
-@router.post("/complaint/analyze")
-def analyze_complaint(request: ComplaintAnalyzeRequest):
+@router.post("/complaint/analyze", response_model=ComplaintMLResponse)
+@router.post("/analyze/complaint", response_model=ComplaintMLResponse)
+def analyze_complaint(request: ComplaintMLRequest):
     try:
-        text = request.complaintText
+        combined_text = f"{request.title} {request.description}"
         
-        # 1. Language Detection
-        detected_lang = language_detector.detect_language(text)
+        # 1. Normalization & Language Detection
+        norm_res = normalize_text(combined_text)
+        normalized_text = norm_res["normalizedText"]
         
-        # 2. Category Classification
-        cat_res = category_classifier.classify(text)
+        detected_lang = request.detectedLanguage or request.languageHint or norm_res["detectedLanguage"]
+        # Standardize language code format
+        if detected_lang.lower() in ["english", "en", "en-in", "en-us"]:
+            detected_lang = "en"
+        elif detected_lang.lower() in ["tamil", "ta", "ta-in"]:
+            detected_lang = "ta"
+        elif detected_lang.lower() in ["hindi", "hi", "hi-in"]:
+            detected_lang = "hi"
+        elif detected_lang.lower() in ["tanglish", "ta-en"]:
+            detected_lang = "ta-en"
+        elif detected_lang.lower() in ["hinglish", "hi-en"]:
+            detected_lang = "hi-en"
+        else:
+            detected_lang = "en"
+
+        # Detect confidence
+        lang_res = language_detector.detect(combined_text)
+        lang_confidence = lang_res["confidence"]
+
+        # 2. Category Classifier
+        cat_res = predict_category(normalized_text)
         category = cat_res["category"]
-        confidence = cat_res["confidence"]
+        category_conf = cat_res["confidence"]
+        top_categories = cat_res["topCategories"]
         
-        # 3. Priority Prediction
-        prio_res = priority_predictor.predict(text, category, request.isSensitive)
-        priority = prio_res["priorityCode"]
-        priority_name = prio_res["priorityName"]
-        priority_score = prio_res["priorityScore"]
+        # 3. Priority Classifier
+        prio_res = predict_priority(normalized_text)
+        priority = prio_res["priority"]
+        priority_conf = prio_res["confidence"]
         
-        # 4. Women Safety & Gender Comfort Checks
-        safety_res = women_safety_detector.detect(text, category)
-        women_sensitive = safety_res["womenSensitive"]
-        prefer_woman = safety_res["preferWomanVolunteer"] or (request.preferredHelperGender == "FEMALE")
+        # 4. Document Recommendations
+        req_docs = recommend_documents(normalized_text, category, priority, detected_lang)
         
-        # 5. Authority Recommendation
-        recommended_authority = authority_recommender.recommend(text, category)
+        # 5. Authority Recommendations
+        auth_res = recommend_authority(normalized_text, category, priority, request.district)
+        rec_auth = auth_res["recommendedAuthority"]
+        auth_conf = auth_res["confidence"]
         
-        # 6. Required Documents
-        required_docs = document_recommender.recommend(text, category)
+        # 6. Similar Complaint Detection
+        sim_res = find_similar_complaints(normalized_text, request.existingComplaints or [])
+        sim_found = sim_res["similarComplaintFound"]
         
-        # 7. Next Steps mapping based on category default rules
-        next_steps = [
-            f"Collect your {', '.join(required_docs[:2])} and proof of identity.",
-            f"Draft a formal complaint describing the {category.lower().replace('_', ' ')} issue.",
-            f"Submit petition to the local {recommended_authority} office for action."
-        ]
+        # 7. Same Language Response Selection
+        response_lang = detected_lang
+        
+        # Check if any ML model was unavailable/failed
+        any_failed = (not cat_res.get("modelBased", False) or 
+                      not prio_res.get("modelBased", False) or 
+                      not auth_res.get("modelBased", False))
+        
+        if any_failed:
+            fallback_used = True
+            manual_review = True
+            reasons = ["ML model unavailable"]
+            category = None
+            category_conf = 0.0
+            top_categories = []
+            priority = None
+            priority_conf = 0.0
+            rec_auth = None
+            auth_conf = 0.0
+            req_docs = []
+            localized_msg = "Model unavailable, Admin review required"
+            next_steps = ["Your complaint was submitted. Admin will review it."]
+            explanation = "ML models are currently unavailable. Grievance sent to queue for manual review."
+        else:
+            fallback_used = False
+            localized_msg = get_localized_response("complaint_received", response_lang)
+            
+            # 8. Manual Review flags
+            manual_review = cat_res["manualReviewRequired"] or prio_res["manualReviewRequired"] or auth_res["manualReviewRequired"]
+            reasons = []
+            if cat_res["manualReviewRequired"]:
+                reasons.append("Category classifier confidence is low.")
+            if prio_res["manualReviewRequired"]:
+                reasons.append("Priority classifier confidence is low.")
+            if auth_res["manualReviewRequired"]:
+                reasons.append("Authority recommender confidence is low.")
+            if request.sensitive:
+                manual_review = True
+                reasons.append("Complaint is marked sensitive by user.")
+                
+            explanation = f"Processed via ARAM Multilingual NLP pipeline. Detected language: {detected_lang}."
+            
+            loc_cat = get_localized_category(category, response_lang)
+            loc_prio = get_localized_priority(priority, response_lang)
+            headline = f"This is a {loc_cat} requiring {loc_prio}." if response_lang == "en" else f"இது {loc_cat}, இதற்கு {loc_prio}."
+            plain_summary = generate_plain_summary(request.title, request.description, response_lang, category, request.district or "Coimbatore")
+
+            # Construct next steps dynamically
+            next_steps = [
+                get_localized_response("documents_required", response_lang, documents=", ".join(req_docs[:2])),
+                get_localized_response("authority_recommended", response_lang, authority=rec_auth)
+            ]
         
         return {
             "detectedLanguage": detected_lang,
-            "normalizedText": text.strip(),
-            "predictedCategory": category,
-            "predictedSubcategory": "General Grievance",
-            "priorityCode": priority,
-            "priorityName": priority_name,
-            "priorityScore": priority_score,
-            "confidenceScore": int(confidence * 100) if cat_res["modelBased"] else 50,
-            "womenSensitive": women_sensitive,
-            "preferWomanVolunteer": prefer_woman,
-            "recommendedAuthority": recommended_authority,
-            "requiredDocuments": required_docs,
-            "nextSteps": next_steps,
-            "riskSignals": ["safety_override_triggered"] if women_sensitive else [],
-            "disclaimer": "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority.",
+            "languageConfidence": lang_confidence,
+            "normalizedText": normalized_text,
             "category": category,
-            "priority": priority_name,
-            "authorityType": recommended_authority
+            "categoryConfidence": category_conf,
+            "topCategories": top_categories,
+            "priority": priority,
+            "priorityConfidence": priority_conf,
+            "recommendedAuthority": rec_auth,
+            "authorityConfidence": auth_conf,
+            "requiredDocuments": req_docs,
+            "responseLanguage": response_lang,
+            "localizedMessage": localized_msg,
+            "nextSteps": next_steps,
+            "manualReviewRequired": manual_review,
+            "manualReviewReasons": reasons,
+            "modelVersion": ml_model_loader.get_version(),
+            "fallbackUsed": fallback_used,
+            "explanation": explanation,
+            "headline": headline,
+            "plainSummary": plain_summary,
+            "similarComplaintFound": sim_found
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -81,7 +150,7 @@ def analyze_complaint(request: ComplaintAnalyzeRequest):
 def recommend_volunteer(request: VolunteerMatchRequest):
     try:
         vol_list = [v.dict() for v in request.volunteers]
-        matches = volunteer_matcher.match(
+        matches = rank_volunteers(
             category=request.category,
             language=request.language,
             prefer_woman=request.preferWomanVolunteer,
@@ -93,9 +162,9 @@ def recommend_volunteer(request: VolunteerMatchRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/recommend/documents")
-def recommend_documents(request: DocumentRecommendRequest):
+def recommend_documents_endpoint(request: DocumentRecommendRequest):
     try:
-        docs = document_recommender.recommend(request.complaintText, request.category)
+        docs = recommend_documents(request.complaintText, request.category, "MEDIUM", "en")
         return {"requiredDocuments": docs}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -103,7 +172,7 @@ def recommend_documents(request: DocumentRecommendRequest):
 @router.post("/recommend/authority")
 def recommend_authority_endpoint(request: AuthorityRecommendRequest):
     try:
-        auth = authority_recommender.recommend(request.complaintText, request.category)
-        return {"recommendedAuthority": auth}
+        auth_res = recommend_authority(request.complaintText, request.category, "MEDIUM", "Coimbatore")
+        return {"recommendedAuthority": auth_res["recommendedAuthority"]}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

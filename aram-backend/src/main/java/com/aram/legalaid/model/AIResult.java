@@ -51,6 +51,16 @@ public class AIResult {
     private String detectedLanguage;
 
     @Column(columnDefinition = "TEXT")
+    private String normalizedText;
+
+    private Double languageConfidence;
+
+    @Column(length = 50)
+    private String responseLanguage;
+
+    private Boolean authorityLanguageMatch;
+
+    @Column(columnDefinition = "TEXT")
     private String translatedSummary;
 
     @Column(columnDefinition = "TEXT")
@@ -58,6 +68,12 @@ public class AIResult {
 
     @Column(nullable = false)
     private boolean readAloudAvailable = false;
+
+    @Column(length = 50)
+    private String modelVersion;
+
+    @Column(nullable = false)
+    private boolean fallbackUsed = false;
 
     private LocalDateTime createdAt;
 
@@ -90,6 +106,12 @@ public class AIResult {
     public void setManualReviewRequired(boolean manualReviewRequired) { this.manualReviewRequired = manualReviewRequired; }
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+    
+    public String getModelVersion() { return modelVersion; }
+    public void setModelVersion(String modelVersion) { this.modelVersion = modelVersion; }
+    
+    public boolean isFallbackUsed() { return fallbackUsed; }
+    public void setFallbackUsed(boolean fallbackUsed) { this.fallbackUsed = fallbackUsed; }
 
     public String getDetectedLanguage() { return detectedLanguage; }
     public void setDetectedLanguage(String detectedLanguage) { this.detectedLanguage = detectedLanguage; }
@@ -99,4 +121,16 @@ public class AIResult {
     public void setSpokenSummaryText(String spokenSummaryText) { this.spokenSummaryText = spokenSummaryText; }
     public boolean isReadAloudAvailable() { return readAloudAvailable; }
     public void setReadAloudAvailable(boolean readAloudAvailable) { this.readAloudAvailable = readAloudAvailable; }
+
+    public String getNormalizedText() { return normalizedText; }
+    public void setNormalizedText(String normalizedText) { this.normalizedText = normalizedText; }
+
+    public Double getLanguageConfidence() { return languageConfidence; }
+    public void setLanguageConfidence(Double languageConfidence) { this.languageConfidence = languageConfidence; }
+
+    public String getResponseLanguage() { return responseLanguage; }
+    public void setResponseLanguage(String responseLanguage) { this.responseLanguage = responseLanguage; }
+
+    public Boolean getAuthorityLanguageMatch() { return authorityLanguageMatch; }
+    public void setAuthorityLanguageMatch(Boolean authorityLanguageMatch) { this.authorityLanguageMatch = authorityLanguageMatch; }
 }

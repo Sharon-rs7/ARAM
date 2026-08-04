@@ -20,4 +20,5 @@ faster-whisper==1.1.0
 gTTS==2.5.3
 pyttsx3==2.90
 ffmpeg-python==0.2.0
-
+celery==5.4.0
+redis==5.2.1

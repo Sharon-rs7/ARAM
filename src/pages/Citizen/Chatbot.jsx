@@ -143,11 +143,11 @@ const Chatbot = () => {
                       <p className="leading-relaxed text-sm">{message.text}</p>
                       
                       {/* Sub-panel details if bot suggests category/actions */}
-                      {message.sender === "bot" && message.category && (
+                      {message.sender === "bot" && message.category && message.confidence && message.confidence > 0 && (
                         <div className="mt-4 pt-3 border-t border-slate-200 text-xs text-slate-600 space-y-2">
                           <p>
                             <span className="font-semibold text-slate-700">Classification:</span> {message.category} 
-                            {message.confidence && ` (confidence: ${(message.confidence * 100).toFixed(0)}%)`}
+                            {` (confidence: ${(message.confidence * 100).toFixed(0)}%)`}
                           </p>
                           {message.suggestedActions && message.suggestedActions.length > 0 && (
                             <div>
@@ -159,6 +159,18 @@ const Chatbot = () => {
                               </ul>
                             </div>
                           )}
+                        </div>
+                      )}
+                      {message.sender === "bot" && (!message.category || !message.confidence || message.confidence === 0) && message.suggestedActions && message.suggestedActions.length > 0 && (
+                        <div className="mt-4 pt-3 border-t border-slate-200 text-xs text-slate-600 space-y-2">
+                          <div>
+                            <span className="font-semibold text-slate-700 block mb-1">Suggested Next Steps:</span>
+                            <ul className="list-disc pl-4 space-y-1">
+                              {message.suggestedActions.map((action, idx) => (
+                                <li key={idx}>{action}</li>
+                              ))}
+                            </ul>
+                          </div>
                         </div>
                       )}
 

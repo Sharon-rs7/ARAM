@@ -3,7 +3,11 @@ package com.aram.legalaid.enums;
 public enum VerificationStatus {
     NOT_REQUIRED,
     PENDING,
+    UPLOADED,
+    OCR_PROCESSING,
+    OCR_COMPLETED,
     VERIFIED,
-    NEEDS_MANUAL_REVIEW,
-    REJECTED
+    REJECTED,
+    MANUAL_REVIEW_REQUIRED,
+    REUPLOAD_REQUIRED
 }

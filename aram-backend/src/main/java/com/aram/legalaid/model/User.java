@@ -94,6 +94,18 @@ public class User {
     private boolean canHandleSensitiveCases = false;
 
     @Column(nullable = false)
+    private boolean supportsTanglish = false;
+
+    @Column(nullable = false)
+    private boolean supportsHinglish = false;
+
+    @Column(nullable = false)
+    private boolean canReadTamil = false;
+
+    @Column(nullable = false)
+    private boolean canReadHindi = false;
+
+    @Column(nullable = false)
     private boolean voiceAssistanceEnabled = false;
 
     @Column(nullable = false)
@@ -191,6 +203,15 @@ public class User {
     public void setExperienceLevel(String experienceLevel) { this.experienceLevel = experienceLevel; }
     public boolean isCanHandleSensitiveCases() { return canHandleSensitiveCases; }
     public void setCanHandleSensitiveCases(boolean canHandleSensitiveCases) { this.canHandleSensitiveCases = canHandleSensitiveCases; }
+
+    public boolean isSupportsTanglish() { return supportsTanglish; }
+    public void setSupportsTanglish(boolean supportsTanglish) { this.supportsTanglish = supportsTanglish; }
+    public boolean isSupportsHinglish() { return supportsHinglish; }
+    public void setSupportsHinglish(boolean supportsHinglish) { this.supportsHinglish = supportsHinglish; }
+    public boolean isCanReadTamil() { return canReadTamil; }
+    public void setCanReadTamil(boolean canReadTamil) { this.canReadTamil = canReadTamil; }
+    public boolean isCanReadHindi() { return canReadHindi; }
+    public void setCanReadHindi(boolean canReadHindi) { this.canReadHindi = canReadHindi; }
 
     public boolean isVoiceAssistanceEnabled() { return voiceAssistanceEnabled; }
     public void setVoiceAssistanceEnabled(boolean voiceAssistanceEnabled) { this.voiceAssistanceEnabled = voiceAssistanceEnabled; }

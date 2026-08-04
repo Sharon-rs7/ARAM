@@ -1,30 +1,69 @@
-const CACHE_NAME = "aram-offline-cache-v1";
-const OFFLINE_URL = "/offline.html";
+const CACHE_NAME = 'aram-pwa-v1';
+const ASSETS_TO_CACHE = [
+  '/',
+  '/index.html',
+  '/src/main.jsx',
+  '/src/index.css'
+];
 
-self.addEventListener("install", (event) => {
+// Install Event
+self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll([OFFLINE_URL]);
+      console.log('[Service Worker] Pre-caching offline assets');
+      return cache.addAll(ASSETS_TO_CACHE);
     })
   );
   self.skipWaiting();
 });
 
-self.addEventListener("activate", (event) => {
-  event.waitUntil(self.clients.claim());
+// Activate Event
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((keys) => {
+      return Promise.all(
+        keys.map((key) => {
+          if (key !== CACHE_NAME) {
+            console.log('[Service Worker] Removing old cache', key);
+            return caches.delete(key);
+          }
+        })
+      );
+    })
+  );
+  self.clients.claim();
 });
 
-self.addEventListener("fetch", (event) => {
-  // Only intercept navigate requests (HTML pages) to display offline fallback
-  if (event.request.mode === "navigate") {
-    const url = event.request.url;
-    if (url.includes("/api/") || url.includes("/chat/")) {
-      return;
-    }
-    event.respondWith(
-      fetch(event.request).catch(() => {
-        return caches.match(OFFLINE_URL);
-      })
-    );
-  }
+// Fetch Event
+self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+  
+  event.respondWith(
+    caches.match(event.request).then((cachedResponse) => {
+      if (cachedResponse) {
+        return cachedResponse;
+      }
+      
+      return fetch(event.request)
+        .then((networkResponse) => {
+          if (!networkResponse || networkResponse.status !== 200) {
+            return networkResponse;
+          }
+          
+          // Cache newly requested GET resources on the fly
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
+          
+          return networkResponse;
+        })
+        .catch(() => {
+          // Offline fallback
+          if (event.request.headers.get('accept').includes('text/html')) {
+            return caches.match('/index.html');
+          }
+        });
+    })
+  );
 });

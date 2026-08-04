@@ -14,7 +14,7 @@ class Settings:
     WHISPER_COMPUTE_TYPE: str = os.getenv("WHISPER_COMPUTE_TYPE", "int8")
     MAX_AUDIO_SIZE_MB: int = int(os.getenv("MAX_AUDIO_SIZE_MB", "25"))
     ALLOWED_AUDIO_TYPES: str = os.getenv("ALLOWED_AUDIO_TYPES", "audio/webm,audio/wav,audio/mpeg,audio/mp4,audio/ogg")
-    WHISPER_PRELOAD: bool = os.getenv("WHISPER_PRELOAD", "False").lower() in ("true", "1", "yes")
+    WHISPER_PRELOAD: bool = os.getenv("WHISPER_PRELOAD", "True").lower() in ("true", "1", "yes")
 
 settings = Settings()
 

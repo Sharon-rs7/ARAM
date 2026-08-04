@@ -1,0 +1,35 @@
+======================================================================
+STEP 3: SENTENCE-TRANSFORMERS EMBEDDINGS MODEL BENCHMARK & SIMILARITY TEST
+======================================================================
+
+[1] MODEL IDENTIFICATION & TECHNICAL SPECIFICATION:
+    - Model Name: 'paraphrase-multilingual-MiniLM-L12-v2'
+    - Architecture: Multilingual MiniLM Transformer (12 layers)
+    - Vector Output Dimension: 384 dimensions (dense float32 array)
+    - Multilingual Support: 50+ languages (English, Tamil, Hindi, Code-switched Tanglish/Hinglish)
+
+[2] COLD/WARM CACHE LOAD & RAM IMPACT BENCHMARK:
+    - Process RAM Before Loading Model: 29.93 MB
+    - Cold/Warm Model Load Duration: 71.444 seconds
+    - Process RAM After Model Load: 757.74 MB
+    - Model RAM Weight Impact: +727.81 MB
+    - Warm In-Memory Re-instantiation: 18.5606 seconds
+
+[3] EMBEDDING GENERATION & SEMANTIC SIMILARITY TEST:
+    - Sentence Batch Count: 5
+    - Total Encoding Execution Time: 3.262 seconds (652.4 ms/sentence)
+    - Generated Embeddings Matrix Shape: (5, 384)
+
+    [COSINE SIMILARITY PAIRWISE RESULTS]:
+    a) Original ('My employer has not paid salary') vs Paraphrase ('Manager withholding wages'):
+       -> Cosine Similarity = 0.6532 [HIGH CLUSTER MATCH]
+    b) Original ('My employer has not paid salary' EN) vs Tamil ('என் முதலாளி சம்பளம் தரவில்லை' TA):
+       -> Cosine Similarity = 0.3612 [HIGH CROSS-LINGUAL MATCH]
+    c) Original ('My employer has not paid salary') vs Unrelated ('Land boundary wall encroachment'):
+       -> Cosine Similarity = -0.0702 [LOW UNRELATED SCORE]
+    d) Original ('My employer has not paid salary') vs Unrelated ('Online banking OTP scam'):
+       -> Cosine Similarity = 0.2270 [LOW UNRELATED SCORE]
+
+======================================================================
+STEP 3 BENCHMARK & SIMILARITY TEST COMPLETED SUCCESSFULLY!
+======================================================================

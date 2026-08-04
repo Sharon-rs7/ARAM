@@ -2,6 +2,15 @@ import api, { USE_MOCKS } from "./api";
 import { getMockComplaints, setMockComplaints } from "../data/mock";
 
 export const complaintService = {
+  checkSimilarity: async (payload) => {
+    if (USE_MOCKS) {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      return { similarComplaintFound: false, similarityScore: 0.0 };
+    }
+    const res = await api.post("/complaints/check-similarity", payload);
+    return res.data;
+  },
+
   submitComplaint: async (payload) => {
     if (USE_MOCKS) {
       await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -146,6 +155,23 @@ export const complaintService = {
     if (lat !== undefined && lat !== null) params.latitude = lat;
     if (lng !== undefined && lng !== null) params.longitude = lng;
     const res = await api.get(`/citizen/complaints/${complaintId}/authority-locations`, { params });
+    return res.data;
+  },
+
+  getCostEstimate: async (complaintId) => {
+    if (USE_MOCKS) {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      return {
+        estimatedMinAmount: 0,
+        estimatedMaxAmount: 300,
+        currency: "INR",
+        freeLegalAidAvailable: true,
+        includes: "Print/photocopy/travel estimate",
+        excludes: "Professional legal fees",
+        notes: "Filing is free under legal aid rules."
+      };
+    }
+    const res = await api.get(`/citizen/complaints/${complaintId}/cost-estimate`);
     return res.data;
   },
 

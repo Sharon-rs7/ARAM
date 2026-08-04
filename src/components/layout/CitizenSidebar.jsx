@@ -76,7 +76,7 @@ const CitizenSidebar = () => {
   const secondaryItems = menuItems.slice(5);
 
   return (
-    <aside className="sidebar flex min-h-screen w-full flex-col border-r border-slate-800 bg-slate-900 select-none">
+    <aside className="sidebar flex h-full w-full flex-col border-r border-slate-800 bg-slate-900 select-none">
       {/* Logo */}
       <div className="border-b border-slate-800 p-8 shrink-0">
         <h1 className="text-3xl font-extrabold text-white">ARAM</h1>

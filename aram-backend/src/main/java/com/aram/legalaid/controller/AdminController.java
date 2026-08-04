@@ -7,6 +7,7 @@ import com.aram.legalaid.enums.UserStatus;
 import com.aram.legalaid.model.AuditLog;
 import com.aram.legalaid.model.User;
 import com.aram.legalaid.model.Complaint;
+import com.aram.legalaid.model.AIResult;
 import com.aram.legalaid.repository.AuditLogRepository;
 import com.aram.legalaid.repository.ComplaintRepository;
 import com.aram.legalaid.repository.UserRepository;
@@ -43,12 +44,24 @@ public class AdminController {
     private final PasswordEncoder passwordEncoder;
     private final com.aram.legalaid.service.AIClientService aiClientService;
     private final VolunteerActivityService volunteerActivityService;
+    private final com.aram.legalaid.repository.AiCorrectionLogRepository aiCorrectionLogRepository;
+    private final com.aram.legalaid.repository.AIResultRepository aiResultRepository;
+    private final com.aram.legalaid.repository.LegalGuideProfileRepository guideProfileRepository;
+    private final com.aram.legalaid.repository.LegalGuidePerformanceProfileRepository performanceProfileRepository;
+    private final com.aram.legalaid.service.LegalGuideLevelService levelService;
+    private final com.aram.legalaid.repository.GuideAssignmentDecisionLogRepository guideAssignmentDecisionLogRepository;
 
     public AdminController(AdminService adminService, ComplaintService complaintService, UserRepository userRepository,
                            ComplaintRepository complaintRepository, MapperService mapperService,
                            AuditLogService auditLogService, AuditLogRepository auditLogRepository,
                            PasswordEncoder passwordEncoder, com.aram.legalaid.service.AIClientService aiClientService,
-                           VolunteerActivityService volunteerActivityService) {
+                           VolunteerActivityService volunteerActivityService,
+                           com.aram.legalaid.repository.AiCorrectionLogRepository aiCorrectionLogRepository,
+                           com.aram.legalaid.repository.AIResultRepository aiResultRepository,
+                           com.aram.legalaid.repository.LegalGuideProfileRepository guideProfileRepository,
+                           com.aram.legalaid.repository.LegalGuidePerformanceProfileRepository performanceProfileRepository,
+                           com.aram.legalaid.service.LegalGuideLevelService levelService,
+                           com.aram.legalaid.repository.GuideAssignmentDecisionLogRepository guideAssignmentDecisionLogRepository) {
         this.adminService = adminService;
         this.complaintService = complaintService;
         this.userRepository = userRepository;
@@ -59,6 +72,12 @@ public class AdminController {
         this.passwordEncoder = passwordEncoder;
         this.aiClientService = aiClientService;
         this.volunteerActivityService = volunteerActivityService;
+        this.aiCorrectionLogRepository = aiCorrectionLogRepository;
+        this.aiResultRepository = aiResultRepository;
+        this.guideProfileRepository = guideProfileRepository;
+        this.performanceProfileRepository = performanceProfileRepository;
+        this.levelService = levelService;
+        this.guideAssignmentDecisionLogRepository = guideAssignmentDecisionLogRepository;
     }
 
     @GetMapping("/dashboard")
@@ -147,14 +166,41 @@ public class AdminController {
     }
 
     @PutMapping("/complaints/{id}/assign-helper")
-    public ResponseEntity<ComplaintResponse> assignHelper(@PathVariable Long id, @RequestBody java.util.Map<String, Long> body, Principal principal) {
+    public ResponseEntity<ComplaintResponse> assignHelper(@PathVariable Long id, @RequestBody java.util.Map<String, Object> body, Principal principal) {
         Complaint complaint = complaintRepository.findById(id).orElseThrow(() -> new com.aram.legalaid.exception.ResourceNotFoundException("Complaint not found"));
-        User helper = userRepository.findById(body.get("helperId")).orElseThrow(() -> new com.aram.legalaid.exception.ResourceNotFoundException("Helper not found"));
+        Long helperId = ((Number) body.get("helperId")).longValue();
+        User helper = userRepository.findById(helperId).orElseThrow(() -> new com.aram.legalaid.exception.ResourceNotFoundException("Helper not found"));
         complaint.setAssignedHelper(helper);
         complaint.setStatus(ComplaintStatus.HELPER_ASSIGNED);
         Complaint saved = complaintRepository.save(complaint);
         String adminName = principal != null ? principal.getName() : "admin@aram.ai";
         auditLogService.log("COMPLAINT_ASSIGNED", adminName, "Assigned helper " + helper.getEmail() + " to complaint ID " + id);
+
+        // Record GuideAssignmentDecisionLog
+        try {
+            com.aram.legalaid.model.GuideAssignmentDecisionLog decisionLog = new com.aram.legalaid.model.GuideAssignmentDecisionLog();
+            decisionLog.setComplaintId(id);
+            decisionLog.setAssignedGuideId(helper.getId());
+            if (principal != null) {
+                userRepository.findByEmail(principal.getName()).ifPresent(admin -> decisionLog.setAdminId(admin.getId()));
+            }
+            if (body.containsKey("recommendedGuideId") && body.get("recommendedGuideId") != null) {
+                decisionLog.setRecommendedGuideId(((Number) body.get("recommendedGuideId")).longValue());
+            }
+            if (body.containsKey("recommendationScore") && body.get("recommendationScore") != null) {
+                decisionLog.setRecommendationScore(((Number) body.get("recommendationScore")).doubleValue());
+            }
+            if (body.containsKey("modelVersion") && body.get("modelVersion") != null) {
+                decisionLog.setModelVersion(String.valueOf(body.get("modelVersion")));
+            }
+            if (body.containsKey("overrideReason") && body.get("overrideReason") != null) {
+                decisionLog.setOverrideReason(String.valueOf(body.get("overrideReason")));
+            }
+            guideAssignmentDecisionLogRepository.save(decisionLog);
+        } catch (Exception e) {
+            // log fallback warning but do not break transaction
+        }
+
         return ResponseEntity.ok(mapperService.toComplaintResponse(saved, null));
     }
 
@@ -311,8 +357,47 @@ public class AdminController {
         helper.setCurrentActiveCases(0);
         
         User saved = userRepository.save(helper);
+
+        // Create LegalGuideProfile
+        com.aram.legalaid.model.LegalGuideProfile guideProfile = new com.aram.legalaid.model.LegalGuideProfile();
+        guideProfile.setUserId(saved.getId());
+        guideProfile.setFullName(saved.getName());
+        guideProfile.setEmail(saved.getEmail());
+        guideProfile.setPhone(saved.getMobile());
+        guideProfile.setGender(saved.getGender());
+        guideProfile.setDistrict(saved.getDistrict());
+        guideProfile.setServiceAreas(saved.getServiceArea());
+        guideProfile.setLanguagesKnown(saved.getLanguagesKnown());
+        guideProfile.setSupportsTanglish(saved.isSupportsTanglish());
+        guideProfile.setSupportsHinglish(saved.isSupportsHinglish());
+        guideProfile.setCanReadTamil(saved.isCanReadTamil());
+        guideProfile.setCanReadHindi(saved.isCanReadHindi());
+        guideProfile.setExpertiseCategories(saved.getSpecializationCategories());
+        
+        int expYears = 2;
+        try {
+            if (saved.getExperienceLevel() != null) {
+                String expStr = saved.getExperienceLevel().replaceAll("[^0-9]", "");
+                if (!expStr.isEmpty()) expYears = Integer.parseInt(expStr);
+            }
+        } catch (Exception e) {}
+        guideProfile.setExperienceYears(expYears);
+        guideProfile.setMaxCaseCapacity(saved.getMaxActiveCases());
+        guideProfile.setCurrentWorkload(0);
+        guideProfile.setAvailable(true);
+        guideProfile.setWomenSupportTrained(saved.isWomenSupportTrained());
+        guideProfile.setVerificationStatus("VERIFIED");
+        guideProfileRepository.save(guideProfile);
+
+        // Create performance profile (Level 1 Beginner, credits = 0)
+        com.aram.legalaid.model.LegalGuidePerformanceProfile perf = levelService.getOrCreatePerformanceProfile(saved.getId());
+        perf.setCurrentLevelNumber(1);
+        perf.setCurrentLevelName("Beginner Legal Guide");
+        perf.setCreditScore(0);
+        performanceProfileRepository.save(perf);
+
         String adminName = principal != null ? principal.getName() : "admin@aram.ai";
-        auditLogService.log("VOLUNTEER_CREATED", adminName, "Admin created volunteer account: " + request.email() + " with temp password " + tempPassword);
+        auditLogService.log("LEGAL_GUIDE_CREATED", adminName, "Admin created volunteer account and Legal Guide profile: " + request.email() + " with temp password " + tempPassword);
         
         return ResponseEntity.ok(mapperService.toUserResponse(saved));
     }
@@ -399,5 +484,105 @@ public class AdminController {
         auditLogService.log("COMPLAINT_ASSIGNED", adminName, "Assigned volunteer " + volunteer.getEmail() + " to complaint ID " + id);
         
         return ResponseEntity.ok(mapperService.toComplaintResponse(saved, null));
+    }
+
+    @PutMapping("/complaints/{id}/correct-ai")
+    public ResponseEntity<ComplaintResponse> correctAi(
+            @PathVariable Long id,
+            @RequestBody Map<String, Object> body,
+            Principal principal
+    ) {
+        Complaint complaint = complaintRepository.findById(id)
+                .orElseThrow(() -> new com.aram.legalaid.exception.ResourceNotFoundException("Complaint not found"));
+
+        AIResult aiResult = aiResultRepository.findByComplaint(complaint)
+                .orElseThrow(() -> new com.aram.legalaid.exception.ResourceNotFoundException("AI Result not found"));
+
+        String correctedCatStr = (String) body.get("correctedCategory");
+        String correctedPrioStr = (String) body.get("correctedPriority");
+        String correctedAuthStr = (String) body.get("correctedAuthority");
+        String reason = (String) body.get("correctionReason");
+
+        // Save log
+        com.aram.legalaid.model.AiCorrectionLog log = new com.aram.legalaid.model.AiCorrectionLog();
+        log.setComplaintId(complaint.getId());
+        log.setModelVersion(aiResult.getModelVersion());
+        log.setOriginalCategory(complaint.getCategory() != null ? complaint.getCategory().name() : "GENERAL_LEGAL_AID");
+        log.setOriginalPriority(complaint.getPriority() != null ? complaint.getPriority().name() : "LOW");
+        log.setOriginalAuthority(complaint.getAuthority() != null ? complaint.getAuthority() : "");
+
+        if (correctedCatStr != null) {
+            com.aram.legalaid.enums.ComplaintCategory correctedCat = com.aram.legalaid.enums.ComplaintCategory.valueOf(correctedCatStr);
+            complaint.setCategory(correctedCat);
+            aiResult.setCategory(correctedCat);
+            log.setCorrectedCategory(correctedCatStr);
+        }
+        if (correctedPrioStr != null) {
+            com.aram.legalaid.enums.PriorityLevel correctedPrio = com.aram.legalaid.enums.PriorityLevel.valueOf(correctedPrioStr);
+            complaint.setPriority(correctedPrio);
+            aiResult.setPriority(correctedPrio);
+            log.setCorrectedPriority(correctedPrioStr);
+        }
+        if (correctedAuthStr != null) {
+            complaint.setAuthority(correctedAuthStr);
+            aiResult.setRecommendedAuthority(correctedAuthStr);
+            log.setCorrectedAuthority(correctedAuthStr);
+        }
+        
+        log.setCorrectionReason(reason);
+        
+        String adminName = principal != null ? principal.getName() : "admin@aram.ai";
+        User admin = userRepository.findByEmail(adminName).orElse(null);
+        if (admin != null) {
+            log.setCorrectedByAdminId(admin.getId());
+        }
+        
+        aiResultRepository.save(aiResult);
+        complaintRepository.save(complaint);
+        aiCorrectionLogRepository.save(log);
+
+        auditLogService.log("AI_TRIAGE_CORRECTED", adminName, "Admin corrected AI result for complaint ID " + id + ". Reason: " + reason);
+
+        return ResponseEntity.ok(mapperService.toComplaintResponse(complaint, aiResult));
+    }
+
+    @GetMapping("/ai/correction-logs/export-csv")
+    public ResponseEntity<byte[]> exportCorrectionLogsCSV(Principal principal) {
+        List<com.aram.legalaid.model.AiCorrectionLog> logs = aiCorrectionLogRepository.findAll();
+        StringBuilder csv = new StringBuilder();
+        csv.append("id,complaintId,modelVersion,originalCategory,correctedCategory,originalPriority,correctedPriority,originalAuthority,correctedAuthority,correctionReason,correctedByAdminId,createdAt\n");
+        for (com.aram.legalaid.model.AiCorrectionLog log : logs) {
+            csv.append(log.getId()).append(",")
+               .append(log.getComplaintId()).append(",")
+               .append(escapeCsv(log.getModelVersion())).append(",")
+               .append(escapeCsv(log.getOriginalCategory())).append(",")
+               .append(escapeCsv(log.getCorrectedCategory())).append(",")
+               .append(escapeCsv(log.getOriginalPriority())).append(",")
+               .append(escapeCsv(log.getCorrectedPriority())).append(",")
+               .append(escapeCsv(log.getOriginalAuthority())).append(",")
+               .append(escapeCsv(log.getCorrectedAuthority())).append(",")
+               .append(escapeCsv(log.getCorrectionReason())).append(",")
+               .append(log.getCorrectedByAdminId()).append(",")
+               .append(log.getCreatedAt()).append("\n");
+        }
+        
+        byte[] csvData = csv.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
+        String adminName = principal != null ? principal.getName() : "admin@aram.ai";
+        auditLogService.log("CSV_EXPORT", adminName, "Exported AI correction logs to CSV.");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("text/csv"));
+        headers.setContentDispositionFormData("attachment", "ai_correction_logs.csv");
+        headers.setCacheControl("must-revalidate, post-check=0, pre-check=0");
+
+        return ResponseEntity.ok().headers(headers).body(csvData);
+    }
+    
+    private String escapeCsv(String val) {
+        if (val == null) return "";
+        if (val.contains(",") || val.contains("\"") || val.contains("\n")) {
+            return "\"" + val.replace("\"", "\"\"") + "\"";
+        }
+        return val;
     }
 }

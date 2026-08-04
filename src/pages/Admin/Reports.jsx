@@ -8,7 +8,23 @@ import {
   BrainCircuit,
 } from "lucide-react";
 
+import { useState, useEffect } from "react";
+import { adminService } from "../../services/adminService";
+
 const Reports = () => {
+  const [totalCount, setTotalCount] = useState(0);
+
+  useEffect(() => {
+    async function loadStats() {
+      try {
+        const complaints = await adminService.getComplaints();
+        setTotalCount(complaints ? complaints.length : 0);
+      } catch (err) {
+        console.error("Failed to load reports stats:", err);
+      }
+    }
+    loadStats();
+  }, []);
 
   return (
 
@@ -135,7 +151,7 @@ const Reports = () => {
 
             <h2 className="mt-4 text-4xl font-bold">
 
-              1286
+              {totalCount}
 
             </h2>
 

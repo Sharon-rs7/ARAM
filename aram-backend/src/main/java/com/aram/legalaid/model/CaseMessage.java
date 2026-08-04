@@ -40,6 +40,17 @@ public class CaseMessage {
     @Column(nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Column(length = 50)
+    private String language;
+
+    @Column(nullable = false)
+    private boolean voiceMessageUsed = false;
+
+    private Double transcriptConfidence;
+
+    @Column(nullable = false)
+    private boolean readAloudSupported = false;
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -69,4 +80,16 @@ public class CaseMessage {
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public String getLanguage() { return language; }
+    public void setLanguage(String language) { this.language = language; }
+
+    public boolean isVoiceMessageUsed() { return voiceMessageUsed; }
+    public void setVoiceMessageUsed(boolean voiceMessageUsed) { this.voiceMessageUsed = voiceMessageUsed; }
+
+    public Double getTranscriptConfidence() { return transcriptConfidence; }
+    public void setTranscriptConfidence(Double transcriptConfidence) { this.transcriptConfidence = transcriptConfidence; }
+
+    public boolean isReadAloudSupported() { return readAloudSupported; }
+    public void setReadAloudSupported(boolean readAloudSupported) { this.readAloudSupported = readAloudSupported; }
 }

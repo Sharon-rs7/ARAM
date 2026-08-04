@@ -12,6 +12,7 @@ const Input = ({
   error = "",
   className = "",
   icon: Icon = null,
+  rightElement = null,
   ...props
 }) => {
   return (
@@ -22,9 +23,9 @@ const Input = ({
         </label>
       )}
       
-      <div className="relative">
+      <div className="relative flex items-center">
         {Icon && (
-          <div className="absolute left-3.5 top-3.5 text-slate-400">
+          <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center justify-center">
             <Icon size={16} />
           </div>
         )}
@@ -35,8 +36,10 @@ const Input = ({
           onChange={onChange}
           placeholder={placeholder}
           required={required}
-          className={`h-11 w-full rounded-xl border pr-4 outline-none text-xs transition text-slate-800 focus:ring-4 focus:ring-blue-50/50 ${
-            Icon ? "pl-11" : "pl-4"
+          className={`h-11 w-full rounded-xl border outline-none text-xs transition text-slate-800 focus:ring-4 focus:ring-blue-50/50 ${
+            Icon ? "pl-10" : "pl-3.5"
+          } ${
+            rightElement ? "pr-10" : "pr-3.5"
           } ${
             error 
               ? "border-red-400 focus:border-red-500 focus:ring-red-50/50" 
@@ -44,6 +47,11 @@ const Input = ({
           }`}
           {...props}
         />
+        {rightElement && (
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center">
+            {rightElement}
+          </div>
+        )}
       </div>
 
       {error && (
@@ -57,3 +65,4 @@ const Input = ({
 };
 
 export default Input;
+

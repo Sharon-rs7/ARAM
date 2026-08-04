@@ -42,4 +42,11 @@ public class ComplaintController {
     public ResponseEntity<ComplaintResponse> updateStatus(@PathVariable Long id, @Valid @RequestBody StatusUpdateRequest request) {
         return ResponseEntity.ok(complaintService.updateStatus(id, request));
     }
+
+    @PostMapping("/check-similarity")
+    public ResponseEntity<java.util.Map<String, Object>> checkSimilarity(@RequestBody java.util.Map<String, String> payload) {
+        String title = payload.getOrDefault("title", "");
+        String description = payload.getOrDefault("description", "");
+        return ResponseEntity.ok(complaintService.checkSimilarity(title, description));
+    }
 }

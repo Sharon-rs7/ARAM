@@ -54,7 +54,7 @@ export const volunteerService = {
       if (!currentUser) return [];
       
       const complaints = getMockComplaints();
-      return complaints.filter((c) => c.assignedHelperId === currentUser.id);
+      return complaints.filter((c) => String(c.assignedHelperId) === String(currentUser.id) || String(c.assignedHelper?.id) === String(currentUser.id));
     }
     
     const res = await api.get("/helper/cases");
@@ -384,6 +384,74 @@ export const volunteerService = {
       status: "RESOLVED_BY_GUIDE",
       details: summary
     });
+    return res.data;
+  },
+
+  getCostEstimate: async (complaintId) => {
+    if (USE_MOCKS) {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      return {
+        estimatedMinAmount: 0,
+        estimatedMaxAmount: 300,
+        currency: "INR",
+        freeLegalAidAvailable: true,
+        costType: "Free Legal Aid",
+        includes: "Print/photocopy/travel estimate",
+        excludes: "Professional legal fees",
+        notes: "Filing is free under legal aid rules."
+      };
+    }
+    const res = await api.get(`/volunteer/cases/${complaintId}/cost-estimate`);
+    return res.data;
+  },
+
+  updateCostEstimate: async (complaintId, payload) => {
+    if (USE_MOCKS) {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      return { success: true, ...payload };
+    }
+    const res = await api.put(`/volunteer/cases/${complaintId}/cost-estimate`, payload);
+    return res.data;
+  },
+
+  getAuthorityLocations: async (complaintId, lat, lng) => {
+    if (USE_MOCKS) {
+      await new Promise((resolve) => setTimeout(resolve, 350));
+      return [
+        {
+          id: 1,
+          name: "Coimbatore Labour Department Office",
+          authorityType: "Labour Department",
+          categorySupported: "LABOUR_DISPUTE",
+          district: "Coimbatore",
+          area: "Coimbatore Town",
+          address: "Labour Commissioner Office, Chinthamani, Coimbatore - 641045",
+          workingHours: "10:00 AM - 05:45 PM",
+          latitude: 11.0168,
+          longitude: 76.9558,
+          mapsUrl: "https://www.google.com/maps/search/?api=1&query=Labour+Department+Office+Coimbatore"
+        }
+      ];
+    }
+    const params = {};
+    if (lat !== undefined && lat !== null) params.lat = lat;
+    if (lng !== undefined && lng !== null) params.lng = lng;
+    const res = await api.get(`/volunteer/cases/${complaintId}/authority-locations`, { params });
+    return res.data;
+  },
+
+  updateAuthorityLocation: async (complaintId, authorityName) => {
+    if (USE_MOCKS) {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      const complaints = getMockComplaints();
+      const idx = complaints.findIndex(c => String(c.id) === String(complaintId));
+      if (idx !== -1) {
+        complaints[idx].authority = authorityName;
+        setMockComplaints(complaints);
+      }
+      return { success: true, authority: authorityName };
+    }
+    const res = await api.put(`/volunteer/cases/${complaintId}/authority-location`, { authorityName });
     return res.data;
   }
 };

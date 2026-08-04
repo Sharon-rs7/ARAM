@@ -1,6 +1,8 @@
-import { Menu, Search, Bell, Settings, Moon, User } from "lucide-react";
+import { Menu, Bell, Settings, Moon, User } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import SearchInput from "../common/SearchInput";
+
 
 const Topbar = ({ onToggleSidebar }) => {
   const { user, role } = useAuth();
@@ -37,7 +39,7 @@ const Topbar = ({ onToggleSidebar }) => {
   };
 
   return (
-    <header className="flex items-center justify-between border-b bg-white px-4 md:px-8 py-4 shadow-sm">
+    <header className="flex items-center justify-between border-b bg-white px-4 md:px-8 py-4 shadow-sm sticky top-0 z-40">
       <div className="flex items-center gap-3">
         {/* Hamburger Menu button */}
         <button
@@ -48,17 +50,13 @@ const Topbar = ({ onToggleSidebar }) => {
         </button>
 
         {/* Search */}
-        <div className="relative w-full max-w-[200px] md:max-w-md hidden sm:block">
-          <Search
-            size={18}
-            className="absolute left-4 top-3 text-slate-400"
-          />
-          <input
-            type="text"
+        <div className="w-full max-w-[200px] md:max-w-md hidden sm:block">
+          <SearchInput
             placeholder="Search..."
-            className="h-10 w-full rounded-xl border border-slate-300 pl-11 pr-4 outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 text-sm"
+            size="sm"
           />
         </div>
+
       </div>
 
       {/* Right Side */}

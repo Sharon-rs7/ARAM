@@ -58,7 +58,8 @@ export default function AuditLogs() {
         {/* Filter Bar */}
         <form onSubmit={handleSearchSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
           <div className="relative">
-            <Search className="absolute left-4 top-3 text-slate-400" size={18} />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none" size={18} />
+
             <input
               type="text"
               placeholder="Search actions..."

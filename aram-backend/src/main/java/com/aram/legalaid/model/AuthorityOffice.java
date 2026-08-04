@@ -43,6 +43,23 @@ public class AuthorityOffice {
     @Column(length = 255)
     private String onlinePortalUrl;
 
+    @Column(length = 255)
+    private String supportedLanguages;
+
+    private java.time.LocalDateTime createdAt;
+    private java.time.LocalDateTime updatedAt;
+
+    @PrePersist
+    void onCreate() {
+        createdAt = java.time.LocalDateTime.now();
+        updatedAt = java.time.LocalDateTime.now();
+    }
+
+    @PreUpdate
+    void onUpdate() {
+        updatedAt = java.time.LocalDateTime.now();
+    }
+
     private boolean active = true;
 
     public AuthorityOffice() {}
@@ -112,4 +129,13 @@ public class AuthorityOffice {
 
     public boolean isActive() { return active; }
     public void setActive(boolean active) { this.active = active; }
+
+    public String getSupportedLanguages() { return supportedLanguages; }
+    public void setSupportedLanguages(String supportedLanguages) { this.supportedLanguages = supportedLanguages; }
+
+    public java.time.LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(java.time.LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public java.time.LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(java.time.LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
 }

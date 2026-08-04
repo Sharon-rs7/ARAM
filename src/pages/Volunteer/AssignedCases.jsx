@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { volunteerService } from "../../services/volunteerService";
 import { toast } from "sonner";
 import { USE_MOCKS } from "../../services/api";
+import SearchInput from "@/components/common/SearchInput";
+
 
 const AssignedCases = () => {
   const navigate = useNavigate();
@@ -75,26 +77,23 @@ const AssignedCases = () => {
         {/* Search */}
         <div className="rounded-3xl bg-white p-6 shadow-sm border border-slate-150">
           <div className="flex flex-col gap-4 lg:flex-row">
-            <div className="relative flex-1">
-              <Search size={18} className="absolute left-4 top-4 text-slate-400" />
-              <input
-                type="text"
-                placeholder="Search by ID, citizen name, or category..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="h-12 w-full rounded-xl border border-slate-200 pl-12 pr-4 outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-50 text-slate-800 text-sm"
-              />
-            </div>
-
+            <SearchInput
+              placeholder="Search by ID, citizen name, or category..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              onClear={() => setSearch("")}
+              className="flex-1"
+            />
             <button
               onClick={() => toast.success("Filters applied successfully")}
-              className="flex items-center justify-center gap-2 rounded-xl border border-slate-300 px-6 hover:bg-slate-50 transition cursor-pointer text-slate-750 font-bold text-xs"
+              className="flex items-center justify-center gap-2 rounded-xl border border-slate-300 px-6 hover:bg-slate-50 transition cursor-pointer text-slate-750 font-bold text-xs shrink-0"
             >
               <Filter size={14} />
               Filter List
             </button>
           </div>
         </div>
+
 
         {/* Table */}
         <div className="overflow-hidden rounded-3xl bg-white shadow-sm border border-slate-150">

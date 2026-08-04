@@ -2,10 +2,13 @@ package com.aram.legalaid.service;
 
 import com.aram.legalaid.model.AuthorityOffice;
 import com.aram.legalaid.repository.AuthorityOfficeRepository;
+import com.aram.legalaid.exception.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthorityOfficeService {
@@ -24,64 +27,93 @@ public class AuthorityOfficeService {
     }
 
     public void delete(Long id) {
-        authorityOfficeRepository.deleteById(id);
+        AuthorityOffice office = authorityOfficeRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Office not found with id " + id));
+        office.setActive(false);
+        authorityOfficeRepository.save(office);
     }
 
-    public List<AuthorityOffice> findMatchingOffices(String category, String district, String area, Double userLat, Double userLng) {
-        List<AuthorityOffice> offices;
-        if (category != null && district != null) {
-            offices = authorityOfficeRepository.findByCategorySupportedIgnoreCaseAndDistrictIgnoreCase(category, district);
-        } else if (district != null) {
-            offices = authorityOfficeRepository.findByDistrictIgnoreCase(district);
-        } else if (category != null) {
-            offices = authorityOfficeRepository.findByCategorySupportedIgnoreCase(category);
-        } else {
-            offices = authorityOfficeRepository.findAll();
-        }
+    // 5-argument version for backward compatibility
+    public List<AuthorityOffice> findMatchingOffices(
+            String category, 
+            String district, 
+            String area, 
+            Double lat, 
+            Double lng
+    ) {
+        return findMatchingOffices(category, null, district, area, null, lat, lng);
+    }
 
-        if (offices.isEmpty() && category != null) {
-            offices = authorityOfficeRepository.findByCategorySupportedIgnoreCase(category);
-        }
+    // 7-argument version for advanced NLP matching
+    public List<AuthorityOffice> findMatchingOffices(
+            String category, 
+            String priority, 
+            String district, 
+            String area, 
+            String language, 
+            Double userLat, 
+            Double userLng
+    ) {
+        // Find by category
+        List<AuthorityOffice> offices = authorityOfficeRepository.findByCategorySupportedAndActiveTrue(category != null ? category : "GENERAL_LEGAL_AID");
         
         if (offices.isEmpty()) {
-            offices = authorityOfficeRepository.findAll().stream().filter(AuthorityOffice::isActive).toList();
+            // Fallback to all active offices
+            offices = authorityOfficeRepository.findByActiveTrue();
         }
 
-        List<AuthorityOffice> mutableList = new ArrayList<>(offices);
+        List<MatchedOfficeWrapper> matchedList = new ArrayList<>();
 
-        if (area != null && !area.trim().isEmpty()) {
-            mutableList.sort((o1, o2) -> {
-                boolean o1AreaMatch = o1.getArea() != null && o1.getArea().equalsIgnoreCase(area);
-                boolean o2AreaMatch = o2.getArea() != null && o2.getArea().equalsIgnoreCase(area);
-                if (o1AreaMatch && !o2AreaMatch) return -1;
-                if (!o1AreaMatch && o2AreaMatch) return 1;
-                return 0;
-            });
+        for (AuthorityOffice office : offices) {
+            double score = 0.0;
+
+            // 1. Category match
+            if (category != null && office.getCategorySupported().equalsIgnoreCase(category)) {
+                score += 100.0;
+            }
+
+            // 2. District match
+            if (district != null && office.getDistrict().equalsIgnoreCase(district)) {
+                score += 50.0;
+            }
+
+            // 3. Area match
+            if (area != null && office.getArea().equalsIgnoreCase(area)) {
+                score += 25.0;
+            }
+
+            // 4. Language match
+            if (language != null && office.getSupportedLanguages() != null 
+                    && office.getSupportedLanguages().toLowerCase().contains(language.toLowerCase())) {
+                score += 10.0;
+            }
+
+            // 5. Distance calculation if coordinates are present
+            Double distance = null;
+            if (userLat != null && userLng != null && office.getLatitude() != null && office.getLongitude() != null) {
+                distance = calculateHaversineDistance(userLat, userLng, office.getLatitude(), office.getLongitude());
+                // Distance bonus: closer is better
+                score += Math.max(0.0, 50.0 - distance);
+            }
+
+            matchedList.add(new MatchedOfficeWrapper(office, score, distance));
         }
 
-        if (userLat != null && userLng != null) {
-            mutableList.sort((o1, o2) -> {
-                Double dist1 = getDistance(o1, userLat, userLng);
-                Double dist2 = getDistance(o2, userLat, userLng);
-                if (dist1 == null && dist2 == null) return 0;
-                if (dist1 == null) return 1;
-                if (dist2 == null) return -1;
-                return Double.compare(dist1, dist2);
-            });
-        }
+        // Sort by score descending, then by distance ascending if present
+        matchedList.sort((a, b) -> {
+            int comp = Double.compare(b.score, a.score);
+            if (comp != 0) return comp;
+            if (a.distance != null && b.distance != null) {
+                return Double.compare(a.distance, b.distance);
+            }
+            return 0;
+        });
 
-        return mutableList;
+        return matchedList.stream().map(w -> w.office).collect(Collectors.toList());
     }
 
-    public Double getDistance(AuthorityOffice office, double userLat, double userLng) {
-        if (office.getLatitude() == null || office.getLongitude() == null) {
-            return null;
-        }
-        return calculateDistance(userLat, userLng, office.getLatitude(), office.getLongitude());
-    }
-
-    private double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
-        final int R = 6371; // Earth radius in km
+    private double calculateHaversineDistance(double lat1, double lon1, double lat2, double lon2) {
+        final int R = 6371; // Radius of the earth in km
         double latDistance = Math.toRadians(lat2 - lat1);
         double lonDistance = Math.toRadians(lon2 - lon1);
         double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
@@ -89,5 +121,17 @@ public class AuthorityOfficeService {
                 * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         return R * c;
+    }
+
+    private static class MatchedOfficeWrapper {
+        final AuthorityOffice office;
+        final double score;
+        final Double distance;
+
+        MatchedOfficeWrapper(AuthorityOffice office, double score, Double distance) {
+            this.office = office;
+            this.score = score;
+            this.distance = distance;
+        }
     }
 }

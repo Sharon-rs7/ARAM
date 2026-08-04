@@ -1,67 +1,76 @@
+import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-
-/* Landing */
-import LandingPage from "./pages/Landing/LandingPage";
-import Login from "./pages/Auth/Login";
-import Register from "./pages/Auth/Register";
-import ForgotPassword from "./pages/Auth/ForgotPassword";
-import OTPVerification from "./pages/Auth/OTPVerification";
-
-/* Citizen */
-import Dashboard from "./pages/Citizen/Dashboard";
-import SubmitComplaint from "./pages/Citizen/SubmitComplaint";
-import AIAnalysis from "./pages/Citizen/AIAnalysis";
-import ComplaintHistory from "./pages/Citizen/ComplaintHistory";
-import ComplaintDetails from "./pages/Citizen/ComplaintDetails";
-import Notifications from "./pages/Citizen/Notifications";
-import Chatbot from "./pages/Citizen/Chatbot";
-import Profile from "./pages/Citizen/Profile";
-import Settings from "./pages/Citizen/Settings";
-import CitizenDocuments from "./pages/Citizen/CitizenDocuments";
-import TrackComplaint from "./pages/Citizen/TrackComplaint";
-import HelpCenter from "./pages/Citizen/HelpCenter";
-
-/* Volunteer */
-import VolunteerDashboard from "./pages/Volunteer/Dashboard";
-import AssignedCases from "./pages/Volunteer/AssignedCases";
-import VolunteerComplaintDetails from "./pages/Volunteer/ComplaintDetails";
-import CaseReview from "./pages/Volunteer/CaseReview";
-import VolunteerProfile from "./pages/Volunteer/Profile";
-import VolunteerSettings from "./pages/Volunteer/Settings";
-import MyAnalytics from "./pages/Volunteer/MyAnalytics";
-
-/* Admin */
-import AdminDashboard from "./pages/Admin/Dashboard";
-import ManageUsers from "./pages/Admin/ManageUsers";
-import ManageComplaints from "./pages/Admin/ManageComplaints";
-import AdminComplaintDetails from "./pages/Admin/ComplaintDetails";
-import ManageVolunteers from "./pages/Admin/ManageVolunteers";
-import Departments from "./pages/Admin/Departments";
-import Analytics from "./pages/Admin/Analytics";
-import Reports from "./pages/Admin/Reports";
-import AdminProfile from "./pages/Admin/Profile";
-import AdminSettings from "./pages/Admin/Settings";
-import AuditLogs from "./pages/Admin/AuditLogs";
-import VolunteerActivityOverview from "./pages/Admin/VolunteerActivityOverview";
-import VolunteerActivityDetails from "./pages/Admin/VolunteerActivityDetails";
-import VolunteerAnalytics from "./pages/Admin/VolunteerAnalytics";
-
-/* Legal & Errors */
-import TermsConditions from "./pages/Legal/TermsConditions";
-import PrivacyPolicy from "./pages/Legal/PrivacyPolicy";
-import Disclaimer from "./pages/Legal/Disclaimer";
-import CookiePolicy from "./pages/Legal/CookiePolicy";
-import NotFound from "./pages/Errors/NotFound";
-import ServerError from "./pages/Errors/ServerError";
-import Unauthorized from "./pages/Errors/Unauthorized";
-
-/* Routing Guards */
 import ProtectedRoute from "./routes/ProtectedRoute";
 import PublicRoute from "./routes/PublicRoute";
+
+/* Landing & Auth */
+const LandingPage = lazy(() => import("./pages/Landing/LandingPage"));
+const Login = lazy(() => import("./pages/Auth/Login"));
+const Register = lazy(() => import("./pages/Auth/Register"));
+const ForgotPassword = lazy(() => import("./pages/Auth/ForgotPassword"));
+const OTPVerification = lazy(() => import("./pages/Auth/OTPVerification"));
+
+/* Citizen */
+const Dashboard = lazy(() => import("./pages/Citizen/Dashboard"));
+const SubmitComplaint = lazy(() => import("./pages/Citizen/SubmitComplaint"));
+const AIAnalysis = lazy(() => import("./pages/Citizen/AIAnalysis"));
+const ComplaintHistory = lazy(() => import("./pages/Citizen/ComplaintHistory"));
+const ComplaintDetails = lazy(() => import("./pages/Citizen/ComplaintDetails"));
+const Notifications = lazy(() => import("./pages/Citizen/Notifications"));
+const Chatbot = lazy(() => import("./pages/Citizen/Chatbot"));
+const Profile = lazy(() => import("./pages/Citizen/Profile"));
+const Settings = lazy(() => import("./pages/Citizen/Settings"));
+const CitizenDocuments = lazy(() => import("./pages/Citizen/CitizenDocuments"));
+const TrackComplaint = lazy(() => import("./pages/Citizen/TrackComplaint"));
+const HelpCenter = lazy(() => import("./pages/Citizen/HelpCenter"));
+
+/* Volunteer */
+const VolunteerDashboard = lazy(() => import("./pages/Volunteer/Dashboard"));
+const AssignedCases = lazy(() => import("./pages/Volunteer/AssignedCases"));
+const VolunteerComplaintDetails = lazy(() => import("./pages/Volunteer/ComplaintDetails"));
+const CaseReview = lazy(() => import("./pages/Volunteer/CaseReview"));
+const VolunteerProfile = lazy(() => import("./pages/Volunteer/Profile"));
+const VolunteerSettings = lazy(() => import("./pages/Volunteer/Settings"));
+const MyAnalytics = lazy(() => import("./pages/Volunteer/MyAnalytics"));
+
+/* Admin */
+const AdminDashboard = lazy(() => import("./pages/Admin/Dashboard"));
+const ManageUsers = lazy(() => import("./pages/Admin/ManageUsers"));
+const ManageComplaints = lazy(() => import("./pages/Admin/ManageComplaints"));
+const AdminComplaintDetails = lazy(() => import("./pages/Admin/ComplaintDetails"));
+const ManageVolunteers = lazy(() => import("./pages/Admin/ManageVolunteers"));
+const Departments = lazy(() => import("./pages/Admin/Departments"));
+const Analytics = lazy(() => import("./pages/Admin/Analytics"));
+const Reports = lazy(() => import("./pages/Admin/Reports"));
+const AdminProfile = lazy(() => import("./pages/Admin/Profile"));
+const AdminSettings = lazy(() => import("./pages/Admin/Settings"));
+const AuditLogs = lazy(() => import("./pages/Admin/AuditLogs"));
+const VolunteerActivityOverview = lazy(() => import("./pages/Admin/VolunteerActivityOverview"));
+const VolunteerActivityDetails = lazy(() => import("./pages/Admin/VolunteerActivityDetails"));
+const VolunteerAnalytics = lazy(() => import("./pages/Admin/VolunteerAnalytics"));
+
+/* Legal & Errors */
+const TermsConditions = lazy(() => import("./pages/Legal/TermsConditions"));
+const PrivacyPolicy = lazy(() => import("./pages/Legal/PrivacyPolicy"));
+const Disclaimer = lazy(() => import("./pages/Legal/Disclaimer"));
+const CookiePolicy = lazy(() => import("./pages/Legal/CookiePolicy"));
+const NotFound = lazy(() => import("./pages/Errors/NotFound"));
+const ServerError = lazy(() => import("./pages/Errors/ServerError"));
+const Unauthorized = lazy(() => import("./pages/Errors/Unauthorized"));
+
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-slate-900 text-slate-100">
+    <div className="flex flex-col items-center space-y-3">
+      <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+      <p className="text-sm font-medium text-slate-400">Loading ARAM...</p>
+    </div>
+  </div>
+);
 
 function App() {
   return (
     <BrowserRouter>
+      <Suspense fallback={<PageLoader />}>
       <Routes>
         {/* Public Landing & Policy Pages */}
         <Route path="/" element={<LandingPage />} />
@@ -142,6 +151,7 @@ function App() {
         {/* 404 Catch All */}
         <Route path="*" element={<NotFound />} />
       </Routes>
+      </Suspense>
     </BrowserRouter>
   );
 }

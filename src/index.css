@@ -119,23 +119,55 @@
   }
 }
 
-/* Custom premium scrollbar for sidebar scrolling */
+/* Custom premium scrollbar for sidebar scrolling with up/down arrows */
 .sidebar-scroll::-webkit-scrollbar {
-  width: 6px;
+  width: 10px;
 }
 
 .sidebar-scroll::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(15, 23, 42, 0.05);
+  border-radius: 99px;
 }
 
 .sidebar-scroll::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.25);
+  background: rgba(148, 163, 184, 0.3);
   border-radius: 99px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
   transition: background 0.15s ease;
 }
 
 .sidebar-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.5);
+  background: rgba(148, 163, 184, 0.6);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+
+/* Custom scrollbar buttons (up/down arrows) */
+.sidebar-scroll::-webkit-scrollbar-button:single-button {
+  background-color: transparent;
+  display: block;
+  border-style: solid;
+  height: 12px;
+  width: 10px;
+}
+
+/* Up arrow button */
+.sidebar-scroll::-webkit-scrollbar-button:single-button:vertical:decrement {
+  border-width: 0 4px 5px 4px;
+  border-color: transparent transparent rgba(148, 163, 184, 0.7) transparent;
+}
+.sidebar-scroll::-webkit-scrollbar-button:single-button:vertical:decrement:hover {
+  border-color: transparent transparent rgba(99, 102, 241, 1) transparent;
+}
+
+/* Down arrow button */
+.sidebar-scroll::-webkit-scrollbar-button:single-button:vertical:increment {
+  border-width: 5px 4px 0 4px;
+  border-color: rgba(148, 163, 184, 0.7) transparent transparent transparent;
+}
+.sidebar-scroll::-webkit-scrollbar-button:single-button:vertical:increment:hover {
+  border-color: rgba(99, 102, 241, 1) transparent transparent transparent;
 }
 
 .sidebar-scroll {

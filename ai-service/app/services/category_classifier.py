@@ -1,39 +1,41 @@
 import os
-import joblib
+import numpy as np
+import onnxruntime as ort
 from app.complaint_classifier import keyword_category
 
 class CategoryClassifier:
     def __init__(self):
-        self.model_path = "models/saved/complaint_classifier.pkl"
-        self.encoder_path = "models/saved/complaint_label_encoder.pkl"
-        self.vectorizer_path = "models/saved/complaint_vectorizer.pkl"
-        self.model = None
-        self.encoder = None
-        self.vectorizer = None
-        
-        if os.path.exists(self.model_path) and os.path.exists(self.encoder_path) and os.path.exists(self.vectorizer_path):
+        self.models_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "models")
+        self.onnx_path = os.path.join(self.models_dir, "category_model.onnx")
+        self.session = None
+        self.load_model()
+
+    def load_model(self):
+        if os.path.exists(self.onnx_path):
             try:
-                self.model = joblib.load(self.model_path)
-                self.encoder = joblib.load(self.encoder_path)
-                self.vectorizer = joblib.load(self.vectorizer_path)
-                print("CategoryClassifier loaded trained ML models successfully.")
+                self.session = ort.InferenceSession(self.onnx_path, providers=['CPUExecutionProvider'])
+                print("[ONNX LOADED] CategoryClassifier session active.")
             except Exception as e:
-                print(f"Error loading trained CategoryClassifier: {e}")
+                print(f"Error loading ONNX CategoryClassifier: {e}")
 
     def classify(self, text: str) -> dict:
         if not text or not text.strip():
             return {"category": "GENERAL_LEGAL_AID", "confidence": 1.0, "modelBased": False}
 
-        # Try ML prediction
-        if self.model and self.vectorizer and self.encoder:
+        # Try ONNX prediction
+        if self.session:
             try:
-                vec = self.vectorizer.transform([text])
-                pred_encoded = self.model.predict(vec)[0]
-                pred_category = self.encoder.inverse_transform([pred_encoded])[0]
+                input_name = self.session.get_inputs()[0].name
+                output_names = [o.name for o in self.session.get_outputs()]
+                res = self.session.run(output_names, {input_name: np.array([[text]], dtype=object)})
                 
-                # Get probabilities
-                probs = self.model.predict_proba(vec)[0]
-                confidence = float(probs[pred_encoded])
+                pred_category = str(res[0][0])
+                confidence = 0.95
+                
+                if len(res) > 1 and isinstance(res[1], list) and len(res[1]) > 0:
+                    probs = res[1][0]
+                    if isinstance(probs, dict):
+                        confidence = float(probs.get(pred_category, 0.95))
                 
                 return {
                     "category": pred_category,
@@ -41,9 +43,8 @@ class CategoryClassifier:
                     "modelBased": True
                 }
             except Exception as e:
-                print(f"ML classification failed: {e}. Falling back to keywords.")
+                print(f"ONNX classification failed: {e}. Falling back to keywords.")
                 
-        # Keyword-based fallback
         fallback = keyword_category(text)
         return {
             "category": fallback,

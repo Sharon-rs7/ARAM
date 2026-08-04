@@ -1,6 +1,6 @@
 import { Outlet, useLocation, NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { X, Home, PlusCircle, ClipboardList, MessageSquare, User, Settings, Briefcase } from "lucide-react";
+import { X, Home, PlusCircle, ClipboardList, MessageSquare, User, Settings, Briefcase, ShieldOff, ShieldAlert } from "lucide-react";
 import Topbar from "./Topbar";
 import useActivityTracker from "../../hooks/useActivityTracker";
 
@@ -12,6 +12,7 @@ const DashboardLayout = ({ children }) => {
   useActivityTracker();
   const location = useLocation();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [stealthMode, setStealthMode] = useState(false);
   const [sidebarWidth, setSidebarWidth] = useState(() => {
     const saved = localStorage.getItem("dashboard_sidebar_width");
     return saved ? parseInt(saved, 10) : 260;
@@ -196,7 +197,7 @@ const DashboardLayout = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F6F8FC] overflow-x-hidden pb-16 md:pb-0">
+    <div className="min-h-screen md:h-screen md:overflow-hidden bg-[#F6F8FC] flex flex-col pb-16 md:pb-0">
       {/* Mobile Drawer (Visible on < md screens) */}
       {isMobileOpen && (
         <div className="fixed inset-0 z-50 flex md:hidden">
@@ -219,13 +220,13 @@ const DashboardLayout = ({ children }) => {
         </div>
       )}
 
-      <div className="flex">
+      <div className="flex flex-1 md:h-full md:overflow-hidden min-w-0">
         {/* Desktop Sidebar (Permanent on md/lg viewports) */}
         <div 
-          className="hidden md:flex shrink-0 relative"
+          className="hidden md:flex shrink-0 relative h-full"
           style={{ width: `${sidebarWidth}px` }}
         >
-          <div className="w-full h-full overflow-hidden">
+          <div className="w-full h-full overflow-hidden flex flex-col">
             {renderSidebar()}
           </div>
           {/* Draggable Divider Handler */}
@@ -242,11 +243,54 @@ const DashboardLayout = ({ children }) => {
           </div>
         </div>
 
-        <div className="flex flex-1 flex-col min-w-0">
+        <div className="flex flex-1 flex-col min-w-0 md:h-full md:overflow-hidden">
           <Topbar onToggleSidebar={() => setIsMobileOpen(!isMobileOpen)} />
 
-          <main className="flex-1 p-4 md:p-8 min-w-0">
-            {children ? children : <Outlet />}
+          {/* Update 2: Stealth Privacy Shield Toggle Button */}
+          <button
+            onClick={() => setStealthMode(s => !s)}
+            title={stealthMode ? "Exit Privacy Shield" : "Privacy Shield (Panic Button)"}
+            className={`fixed bottom-20 md:bottom-6 right-4 z-50 flex items-center gap-2 px-3 py-2 rounded-full shadow-xl text-xs font-bold transition-all duration-300 ${
+              stealthMode
+                ? "bg-rose-600 text-white hover:bg-rose-700 animate-pulse"
+                : "bg-slate-800/80 text-slate-300 hover:bg-rose-600 hover:text-white backdrop-blur-sm border border-slate-700"
+            }`}
+          >
+            {stealthMode ? <ShieldOff size={14} /> : <ShieldAlert size={14} />}
+            {stealthMode ? "Exit Shield" : "Privacy Shield"}
+          </button>
+
+          <main className="flex-1 md:overflow-y-auto md:overflow-x-hidden p-4 md:p-8 min-w-0">
+            {stealthMode ? (
+              /* Update 2: Fake Tamil Nadu Daily News feed */
+              <div className="space-y-6 max-w-3xl mx-auto">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="h-10 w-10 rounded-full bg-orange-600 flex items-center justify-center text-white font-extrabold text-sm">TN</div>
+                  <div>
+                    <h1 className="text-2xl font-extrabold text-slate-900">Tamil Nadu Daily</h1>
+                    <p className="text-xs text-slate-500">Today's Top Headlines — {new Date().toLocaleDateString("en-IN", { weekday: "long", year: "numeric", month: "long", day: "numeric" })}</p>
+                  </div>
+                </div>
+                {[
+                  { tag: "Politics", headline: "CM announces new bus route expansion across 12 districts", time: "2 hours ago", img: "🚌" },
+                  { tag: "Economy", headline: "Chennai IT corridor sees 18% rise in startup registrations this quarter", time: "4 hours ago", img: "💼" },
+                  { tag: "Sports", headline: "Tamil Nadu cricket team qualifies for Ranji Trophy finals", time: "6 hours ago", img: "🏏" },
+                  { tag: "Education", headline: "State govt announces free tablet scheme for Class 11–12 students", time: "8 hours ago", img: "📱" },
+                  { tag: "Weather", headline: "IMD issues yellow alert for coastal districts — moderate rain expected", time: "10 hours ago", img: "🌧" },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-4 p-5 bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-md transition cursor-pointer">
+                    <span className="text-3xl mt-1 shrink-0">{item.img}</span>
+                    <div className="flex-1">
+                      <span className="text-[10px] font-extrabold uppercase tracking-wider text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full">{item.tag}</span>
+                      <p className="mt-1.5 text-sm font-bold text-slate-800 leading-snug">{item.headline}</p>
+                      <p className="mt-1 text-[11px] text-slate-400">{item.time}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              children ? children : <Outlet />
+            )}
           </main>
         </div>
       </div>

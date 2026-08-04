@@ -8,34 +8,55 @@ export const AuthProvider = ({ children }) => {
   const [accessToken, setAccessToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const normalizeRole = (rawRole) => {
+    if (!rawRole) return null;
+    let r = String(rawRole).toUpperCase().replace(/^ROLE_/, "");
+    if (r === "HELPER") r = "VOLUNTEER";
+    return r;
+  };
+
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     const storedRole = localStorage.getItem("role");
     const storedUser = localStorage.getItem("user");
 
-    if (token && storedRole && storedUser) {
+    if (token) {
       setAccessToken(token);
-      setRole(storedRole);
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (e) {
-        // Fallback
-        setUser({ role: storedRole });
+      
+      let parsedUser = null;
+      if (storedUser) {
+        try {
+          parsedUser = JSON.parse(storedUser);
+        } catch (e) {
+          parsedUser = null;
+        }
       }
+
+      const effectiveRole = normalizeRole(parsedUser?.role || storedRole);
+      setRole(effectiveRole);
+      setUser(parsedUser || (effectiveRole ? { role: effectiveRole } : null));
     }
     setLoading(false);
   }, []);
 
   const saveAuth = (authData) => {
-    const { accessToken: token, refreshToken, user: authUser, role: authRole } = authData;
+    if (!authData) return;
+    const token = authData.accessToken || authData.token;
+    const rawRole = authData.role || authData.user?.role;
+    const cleanRole = normalizeRole(rawRole);
+
+    let authUser = authData.user || (cleanRole ? { role: cleanRole } : null);
+    if (authUser && cleanRole) {
+      authUser = { ...authUser, role: cleanRole };
+    }
 
     if (token) localStorage.setItem("accessToken", token);
-    if (refreshToken) localStorage.setItem("refreshToken", refreshToken);
+    if (authData.refreshToken) localStorage.setItem("refreshToken", authData.refreshToken);
     if (authUser) localStorage.setItem("user", JSON.stringify(authUser));
-    if (authRole) localStorage.setItem("role", authRole);
+    if (cleanRole) localStorage.setItem("role", cleanRole);
 
     setAccessToken(token);
-    setRole(authRole);
+    setRole(cleanRole);
     setUser(authUser);
   };
 
@@ -74,7 +95,7 @@ export const AuthProvider = ({ children }) => {
         loading
       }}
     >
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   );
 };

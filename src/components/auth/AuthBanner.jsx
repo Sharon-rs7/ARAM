@@ -53,13 +53,13 @@ const AuthBanner = () => {
 
   return (
     <div 
-      className="w-full lg:w-[42%] bg-[#060a13] text-white flex flex-col justify-between p-8 lg:p-14 shrink-0 relative overflow-hidden select-none border-b lg:border-b-0 lg:border-r border-slate-900"
+      className="w-full lg:w-[42%] bg-[#0a0c10] text-white flex flex-col justify-between p-8 lg:p-14 shrink-0 relative overflow-hidden select-none border-b lg:border-b-0 lg:border-r border-slate-900"
       style={{
         backgroundImage: `
-          radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.12) 0%, transparent 50%),
-          radial-gradient(circle at 90% 80%, rgba(79, 70, 229, 0.08) 0%, transparent 50%),
-          linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-          linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px)
+          radial-gradient(circle at 10% 20%, rgba(14, 165, 233, 0.08) 0%, transparent 50%),
+          radial-gradient(circle at 90% 80%, rgba(99, 102, 241, 0.06) 0%, transparent 50%),
+          linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px)
         `,
         backgroundSize: "100% 100%, 100% 100%, 28px 28px, 28px 28px"
       }}

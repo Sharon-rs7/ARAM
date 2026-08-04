@@ -38,7 +38,8 @@ public class DataInitializer {
             com.aram.legalaid.repository.VolunteerActivityRepository volunteerActivityRepository,
             PasswordEncoder passwordEncoder,
             com.aram.legalaid.service.BlockchainService blockchainService,
-            com.aram.legalaid.repository.AuthorityOfficeRepository authorityOfficeRepository) {
+            com.aram.legalaid.repository.AuthorityOfficeRepository authorityOfficeRepository,
+            com.aram.legalaid.repository.CostEstimateRuleRepository costEstimateRuleRepository) {
         return args -> {
             // Seed Admin User
             if (!userRepository.existsByEmail("admin@aram.ai")) {
@@ -121,6 +122,45 @@ public class DataInitializer {
                         "https://nalsa.gov.in"
                 ));
                 System.out.println("Seeded database with regional authority offices.");
+            }
+
+            if (costEstimateRuleRepository.count() == 0) {
+                costEstimateRuleRepository.save(new com.aram.legalaid.model.CostEstimateRule(
+                        "LABOUR_DISPUTE", "Labour Office", 0, 300, "INR", true,
+                        "Print/photocopy/travel estimate", "Professional legal fees",
+                        "Demo estimates. Replace with verified official fee data before production."
+                ));
+                costEstimateRuleRepository.save(new com.aram.legalaid.model.CostEstimateRule(
+                        "CONSUMER_COMPLAINT", "Consumer Forum", 0, 500, "INR", true,
+                        "Court fee/Filing fee/Photocopies", "Private lawyer fees",
+                        "Demo estimates. Replace with verified official fee data before production."
+                ));
+                costEstimateRuleRepository.save(new com.aram.legalaid.model.CostEstimateRule(
+                        "CYBER_CRIME", "Cyber Crime Portal", 0, 500, "INR", true,
+                        "Filing proof/travel", "Professional service charges",
+                        "Demo estimates. Replace with verified official fee data before production."
+                ));
+                costEstimateRuleRepository.save(new com.aram.legalaid.model.CostEstimateRule(
+                        "PROPERTY_CIVIL_DISPUTE", "Police Station", 50, 2000, "INR", false,
+                        "Stamp duty/Certified deed copy", "Lawyer court fees",
+                        "Demo estimates. Replace with verified official fee data before production."
+                ));
+                costEstimateRuleRepository.save(new com.aram.legalaid.model.CostEstimateRule(
+                        "WOMEN_SAFETY_DOMESTIC_VIOLENCE", "Women Helpline", 0, 200, "INR", true,
+                        "Incident document printing", "Legal fees",
+                        "Demo estimates. Replace with verified official fee data before production."
+                ));
+                costEstimateRuleRepository.save(new com.aram.legalaid.model.CostEstimateRule(
+                        "CRIMINAL_COMPLAINT", "Police Station", 0, 200, "INR", true,
+                        "FIR copy print/travel", "Bail/Private lawyer charges",
+                        "Demo estimates. Replace with verified official fee data before production."
+                ));
+                costEstimateRuleRepository.save(new com.aram.legalaid.model.CostEstimateRule(
+                        "GENERAL_LEGAL_AID", "District Legal Services Authority", 0, 100, "INR", true,
+                        "Application printing/travel", "Advocate counseling fees",
+                        "Demo estimates. Replace with verified official fee data before production."
+                ));
+                System.out.println("Seeded database with master cost estimate rules.");
             }
 
             // Seed LegalCategory & LegalProblemTemplates from packaged JSON

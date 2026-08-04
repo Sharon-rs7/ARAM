@@ -1,0 +1,8 @@
+category,authorityType,minAmount,maxAmount,currency,freeLegalAidAvailable,includes,excludes,notes
+LABOUR_DISPUTE,Labour Office,0,300,INR,True,Print/photocopy/travel estimate,Professional legal fees,Filing is free under legal aid rules.
+CONSUMER_COMPLAINT,Consumer Forum,0,500,INR,True,Court fee/Filing fee/Photocopies,Private lawyer fees,Eligible citizens get free counsel.
+CYBER_CRIME,Cyber Crime Portal,0,500,INR,True,Filing proof/travel,Professional service charges,Free registration online.
+PROPERTY_CIVIL_DISPUTE,Police Station,50,2000,INR,False,Stamp duty/Certified deed copy,Lawyer court fees,Civil suits require stamp paper.
+WOMEN_SAFETY_DOMESTIC_VIOLENCE,Women Helpline,0,200,INR,True,Incident document printing,Legal fees,Completely free government support.
+CRIMINAL_COMPLAINT,Police Station,0,200,INR,True,FIR copy print/travel,Bail/Private lawyer charges,Police reports are free to file.
+GENERAL_LEGAL_AID,District Legal Services Authority,0,100,INR,True,Application printing/travel,Advocate counseling fees,Legal Aid Authority provides free representation.

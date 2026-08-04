@@ -36,13 +36,11 @@ class WhisperService:
         model = self._get_model()
         
         if settings.WHISPER_MODE == "api" or model == "fallback" or model is None:
-            # Fallback/Placeholder transcribe logic
-            # We return template transcripts based on common Tamil/English phrases in our templates.
             return {
-                "transcript": "En company-la rendu maasam salary tharala, please help me file a case.",
-                "detectedLanguage": "Tamil",
-                "duration": 5.0,
-                "confidence": 0.90
+                "transcript": "No audible speech detected.",
+                "detectedLanguage": "Unknown",
+                "duration": 0.0,
+                "confidence": 0.0
             }
 
         try:
@@ -60,18 +58,34 @@ class WhisperService:
             
             segments, info = self.model.transcribe(audio_path, language=lang, beam_size=5)
             
-            # Combine segments
+            # Combine segments and compute token-level confidence
+            import math
             text_segments = []
+            segment_confidences = []
             for segment in segments:
-                text_segments.append(segment.text)
+                if segment.text and segment.text.strip():
+                    text_segments.append(segment.text.strip())
+                    # Convert avg_logprob to probability (0.0 to 1.0)
+                    prob = math.exp(segment.avg_logprob)
+                    segment_confidences.append(prob)
                 
-            full_transcript = "".join(text_segments).strip()
+            full_transcript = " ".join(text_segments).strip()
+            
+            if not full_transcript:
+                return {
+                    "transcript": "No audible speech detected.",
+                    "detectedLanguage": "Unknown",
+                    "duration": round(info.duration, 2),
+                    "confidence": 0.0
+                }
+
+            avg_confidence = (sum(segment_confidences) / len(segment_confidences)) if segment_confidences else info.language_probability
             
             return {
-                "transcript": full_transcript if full_transcript else "No audible speech detected.",
+                "transcript": full_transcript,
                 "detectedLanguage": info.language,
                 "duration": round(info.duration, 2),
-                "confidence": round(info.language_probability, 2)
+                "confidence": round(avg_confidence, 4)
             }
         except Exception as e:
             print(f"Whisper transcription execution failed: {e}")

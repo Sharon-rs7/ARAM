@@ -46,39 +46,6 @@ TRANSLATION_MAP = {
     "latcham": "bribe"
 }
 
-@router.post("/speech/transcribe")
-@router.post("/voice/transcribe")
-def transcribe_speech_endpoint(
-    file: UploadFile = File(...),
-    language: Optional[str] = Form(None)
-):
-    temp_dir = tempfile.gettempdir()
-    temp_file_path = os.path.join(temp_dir, f"audio_{file.filename}")
-    
-    try:
-        with open(temp_file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-            
-        transcription_result = transcribe_audio(temp_file_path)
-        transcript = transcription_result.get("text", "")
-        confidence = transcription_result.get("confidence", 0.85)
-        
-        # Detect language of transcript
-        detected = language_detector.detect_language(transcript)
-        
-        return {
-            "transcript": transcript,
-            "detectedLanguage": detected,
-            "confidence": round(confidence, 2),
-            "normalizedText": transcript.strip(),
-            "translatedText": transcript.strip()
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    finally:
-        if os.path.exists(temp_file_path):
-            os.remove(temp_file_path)
-
 @router.post("/language/detect")
 def detect_language_endpoint(request: LanguageDetectRequest):
     try:

@@ -19,12 +19,16 @@ public class AIProxyController {
     }
 
     @PostMapping("/analyze-complaint")
+    @SuppressWarnings("unchecked")
     public ResponseEntity<AiTriageResponse> analyzeComplaint(@RequestBody Map<String, Object> body) {
-        String text = (String) body.get("complaintText");
-        String language = (String) body.get("language");
-        String district = (String) body.get("district");
+        String title = (String) body.getOrDefault("title", "");
+        String description = (String) body.getOrDefault("description", body.getOrDefault("complaintText", ""));
+        String language = (String) body.getOrDefault("language", "en");
+        String district = (String) body.getOrDefault("district", "Coimbatore");
         boolean isSensitive = body.containsKey("isSensitive") && (boolean) body.get("isSensitive");
-        return ResponseEntity.ok(aiClientService.analyzeComplaint(text, language, district, isSensitive));
+        String preferredGender = (String) body.getOrDefault("preferredHelperGender", "ANY");
+        java.util.List<Map<String, Object>> existing = (java.util.List<Map<String, Object>>) body.getOrDefault("existingComplaints", java.util.List.of());
+        return ResponseEntity.ok(aiClientService.analyzeComplaint(title, description, language, district, isSensitive, preferredGender, existing));
     }
 
     @PostMapping("/chat")

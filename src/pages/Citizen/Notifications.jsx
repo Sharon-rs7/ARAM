@@ -13,33 +13,39 @@ import { useNavigate } from "react-router-dom";
 const initialNotifications = [
   {
     id: 1,
-    title: "Complaint Submitted",
-    message: "Your complaint CMP1023 has been submitted successfully.",
-    type: "success",
+    title: "Evidence Document Requested",
+    message: "Legal Guide Sharon Mary has requested you to upload 'Salary Slip / Employment Offer Letter' for verification.",
+    type: "warning",
     time: "5 mins ago",
     read: false,
+    actionLabel: "Upload Document Now",
+    actionPath: "/citizen/complaints/1"
   },
   {
     id: 2,
-    title: "Officer Assigned",
-    message: "Municipality Officer has been assigned to your complaint.",
+    title: "Legal Guide Assigned",
+    message: "Legal Guide Sharon Mary has been assigned to support you with case mediation.",
     type: "info",
     time: "30 mins ago",
     read: false,
+    actionLabel: "Open Secure Chat",
+    actionPath: "/citizen/complaints/1"
   },
   {
     id: 3,
-    title: "AI Analysis Completed",
-    message: "AI has generated legal recommendations.",
-    type: "warning",
+    title: "Grievance Resolved",
+    message: "Case reference #CMP1018 has been resolved. Please submit your feedback rating.",
+    type: "success",
     time: "1 hour ago",
     read: true,
+    actionLabel: "Submit Rating Feedback",
+    actionPath: "/citizen/complaints/1"
   },
   {
     id: 4,
-    title: "Complaint Resolved",
-    message: "Complaint CMP1018 has been marked as resolved.",
-    type: "success",
+    title: "AI Triage Complete",
+    message: "ARAM AI has finished analyzing your text and mapped regional jurisdiction authority offices.",
+    type: "info",
     time: "Yesterday",
     read: true,
   },
@@ -207,12 +213,20 @@ const Notifications = () => {
 
                   </div>
 
-                  <p className="mt-3 leading-7 text-slate-600">
-
+                  <p className="mt-3 leading-7 text-slate-650">
                     {item.message}
-
                   </p>
-
+                  {item.actionLabel && item.actionPath && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(item.actionPath);
+                      }}
+                      className="mt-3 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm shrink-0 cursor-pointer block border-none outline-none"
+                    >
+                      {item.actionLabel}
+                    </button>
+                  )}
                   <div className="mt-5 flex items-center gap-2 text-slate-400">
 
                     <Clock3 size={16} />

@@ -13,6 +13,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { adminService } from "../../services/adminService";
+import DemoHealthPanel from "@/components/common/DemoHealthPanel";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -319,8 +320,13 @@ const Dashboard = () => {
           </div>
         </div>
 
+        {/* Operational Health Control Panel */}
+        <div className="my-6">
+          <DemoHealthPanel />
+        </div>
+
         {/* Volunteer Workload Overview */}
-        <div className="rounded-3xl bg-white p-8 shadow-sm border border-slate-100">
+        <div className="rounded-3xl bg-white p-8 shadow-sm border border-slate-105">
           <h3 className="text-2xl font-bold mb-4 text-slate-900">Legal Guide Workload Capacity</h3>
           <div className="grid gap-6 md:grid-cols-3">
             {workload.districts && workload.districts.length > 0 ? (

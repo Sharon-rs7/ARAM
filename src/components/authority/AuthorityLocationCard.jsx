@@ -74,6 +74,22 @@ const AuthorityLocationCard = ({ office, distance }) => {
         )}
       </div>
 
+      {office.latitude && office.longitude && (
+        <div className="w-full h-32 rounded-xl overflow-hidden border border-slate-200 shadow-inner relative z-0">
+          <iframe
+            title={`Map for ${office.name}`}
+            width="100%"
+            height="100%"
+            frameBorder="0"
+            scrolling="no"
+            marginHeight="0"
+            marginWidth="0"
+            src={`https://www.openstreetmap.org/export/embed.html?bbox=${office.longitude - 0.005}%2C${office.latitude - 0.005}%2C${office.longitude + 0.005}%2C${office.latitude + 0.005}&layer=mapnik&marker=${office.latitude}%2C${office.longitude}`}
+            className="filter contrast-[1.05]"
+          ></iframe>
+        </div>
+      )}
+
       <div className="grid grid-cols-2 gap-2 pt-2 border-t border-slate-100">
         <a
           href={getDirectionsUrl()}

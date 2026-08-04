@@ -23,6 +23,8 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { adminService } from "../../services/adminService";
 import { toast } from "sonner";
+import SearchInput from "@/components/common/SearchInput";
+
 
 const ManageVolunteers = () => {
   const navigate = useNavigate();
@@ -200,21 +202,20 @@ const ManageVolunteers = () => {
 
         {/* Filter controls */}
         <div className="rounded-2xl border border-slate-150 bg-white p-4 shadow-sm flex items-center gap-4">
-          <div className="relative flex-1">
-            <Search size={18} className="absolute left-3.5 top-3 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search by name, email, or district..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="h-10 w-full rounded-xl border border-slate-200 pl-10 pr-4 text-sm outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-50 transition"
-            />
-          </div>
-          <button className="flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition">
+          <SearchInput
+            placeholder="Search by name, email, or district..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onClear={() => setSearch("")}
+            className="flex-1"
+          />
+          <button className="flex items-center gap-2 rounded-xl border border-slate-200 px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition cursor-pointer shrink-0">
             <Filter size={14} />
             Filter
           </button>
         </div>
+
+
 
         {/* Table representation */}
         <div className="rounded-2xl border border-slate-150 bg-white shadow-sm overflow-hidden">

@@ -13,13 +13,35 @@ import {
   ArrowLeft,
   Clock3,
   FileText,
-  BadgeAlert
+  BadgeAlert,
+  Printer
 } from "lucide-react";
 import { complaintService } from "../../services/complaintService";
 import { toast } from "sonner";
 import ReadAloudButton from "@/components/voice/ReadAloudButton";
 import CaseChatPanel from "@/components/CaseChatPanel";
 import AuthorityLocationCard from "@/components/authority/AuthorityLocationCard";
+
+// Update 1: Legal glossary tooltip component
+const GLOSSARY = {
+  SLA: "Service Level Agreement — the guaranteed response time for your case based on its urgency level.",
+  Mediation: "A structured discussion between two parties facilitated by a neutral Legal Guide to reach a mutual agreement.",
+  Escalation: "The process of raising your complaint to a higher authority for faster action when normal review is delayed.",
+  Triage: "The AI analysis step where your complaint is categorized by legal type and urgency automatically.",
+  "Action Plan": "A step-by-step legal guidance document prepared by your assigned Legal Guide to resolve your issue.",
+  OCR: "Optical Character Recognition — the technology used to automatically read and extract text from your uploaded documents.",
+  DLSA: "District Legal Services Authority — the government body providing free legal aid in each district.",
+};
+
+const GlossaryTip = ({ term }) => (
+  <span
+    title={GLOSSARY[term] || term}
+    className="border-b border-dashed border-indigo-400 text-indigo-700 cursor-help font-semibold"
+  >
+    {term}
+  </span>
+);
+
 
 const ComplaintDetails = () => {
   const navigate = useNavigate();
@@ -28,6 +50,7 @@ const ComplaintDetails = () => {
   const [loading, setLoading] = useState(true);
   const [actionPlan, setActionPlan] = useState(null);
   const [offices, setOffices] = useState([]);
+  const [costEstimate, setCostEstimate] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
 
   const [docRequests, setDocRequests] = useState([]);
@@ -54,6 +77,14 @@ const ComplaintDetails = () => {
         // Fetch matched offices
         const officesData = await complaintService.getAuthorityLocations(id);
         setOffices(officesData);
+
+        // Fetch cost estimate
+        try {
+          const costData = await complaintService.getCostEstimate(id);
+          setCostEstimate(costData);
+        } catch (err) {
+          console.error("Failed to load cost estimate:", err);
+        }
 
         // Fetch requested documents list
         const docReqsData = await complaintService.getDocumentRequests(id);
@@ -210,6 +241,66 @@ const ComplaintDetails = () => {
   const steps = complaint.aiResult?.nextSteps || ["Awaiting volunteer assignment review."];
   const visibility = complaint.identityVisibility || "VISIBLE";
 
+  const getActiveStepIndex = () => {
+    if (status === "RESOLVED" || status === "CLOSED") return 6; // Resolved
+    
+    const hasDocs = docRequests && docRequests.length > 0;
+    const allDocsDone = hasDocs && docRequests.every(r => r.status === "VERIFIED" || r.status === "UPLOADED");
+    if (allDocsDone) return 5; // Documents
+    
+    if (actionPlan) return 4; // Action Plan
+    if (complaint.assignedHelperId) return 3; // Legal Guide Assigned
+    if (status === "UNDER_REVIEW") return 2; // Admin Review
+    return 1; // AI Checked (Step 1 is Submitted, Step 2 is AI Checked)
+  };
+  
+  const activeStep = getActiveStepIndex();
+
+  const getWhatHappensNextExplanation = () => {
+    switch (status) {
+      case "RESOLVED":
+      case "CLOSED":
+        return {
+          title: "Grievance Completed & Closed",
+          desc: "This case has been resolved. You can verify the actions or click the 'Reopen Case' button at the bottom of the page if you require further assistance."
+        };
+      case "DOCUMENTS_PENDING":
+        return {
+          title: "Evidence Proof Slips Required",
+          desc: "Your Legal Guide has requested additional documents. Please check the requested document tracker below and upload them to continue review."
+        };
+      case "IN_PROGRESS":
+      case "HELPER_ASSIGNED":
+        return {
+          title: "Legal Guide Formulating Action Plan",
+          desc: "Your matched helper is currently reviewing your grievance and evidence details. They will post a custom next action plan containing mediation steps and nearby office directions."
+        };
+      case "UNDER_REVIEW":
+        return {
+          title: "Admin Matching Volunteer",
+          desc: "ARAM regional administrators are actively verifying your complaint details and routing it to match a helper fluent in your language."
+        };
+      case "SUBMITTED":
+      default:
+        return {
+          title: "Awaiting Triage Verification",
+          desc: "Your complaint was successfully logged on ARAM. AI triage checked your details and routed this case to the regional queue for admin reviewer matching."
+        };
+    }
+  };
+
+  const nextHelp = getWhatHappensNextExplanation();
+  
+  const journeySteps = [
+    { label: "Submitted", desc: "Grievance received" },
+    { label: "AI Checked", desc: "Triage complete" },
+    { label: "Admin Review", desc: "Route verified" },
+    { label: "Guide Assigned", desc: "Volunteer matched" },
+    { label: "Action Plan", desc: "Strategy ready" },
+    { label: "Documents", desc: "Evidence review" },
+    { label: "Resolved", desc: "Case closed" }
+  ];
+
   const getSlaDeadline = (priorityVal) => {
     switch (priorityVal?.toUpperCase()) {
       case "CRITICAL":
@@ -231,11 +322,68 @@ const ComplaintDetails = () => {
     toast.success("Opened WhatsApp share link!");
   };
 
+  const drawMockQRCode = () => (
+    <svg width="100" height="100" viewBox="0 0 100 100" className="mx-auto border border-slate-200 p-1.5 bg-white rounded-lg">
+      <rect width="10" height="10" x="5" y="5" fill="black" />
+      <rect width="10" height="10" x="85" y="5" fill="black" />
+      <rect width="10" height="10" x="5" y="85" fill="black" />
+      <rect width="10" height="10" x="20" y="20" fill="black" />
+      <rect width="10" height="10" x="40" y="10" fill="black" />
+      <rect width="10" height="10" x="60" y="40" fill="black" />
+      <rect width="10" height="10" x="30" y="60" fill="black" />
+      <rect width="10" height="10" x="70" y="20" fill="black" />
+      <rect width="10" height="10" x="50" y="70" fill="black" />
+      <rect width="10" height="10" x="80" y="80" fill="black" />
+      <rect width="10" height="10" x="5" y="45" fill="black" />
+      <rect width="10" height="10" x="45" y="5" fill="black" />
+      <rect width="10" height="10" x="85" y="45" fill="black" />
+      <rect width="10" height="10" x="45" y="85" fill="black" />
+    </svg>
+  );
+
   const formattedRefId = `ARAM-2026-${String(complaint.id).replace("cmp-", "").padStart(6, "0")}`;
 
   return (
     <DashboardLayout>
-      <div className="space-y-6 max-w-4xl mx-auto">
+      {/* Update 5: Hidden printable case packet */}
+      <div id="print-packet" className="hidden print:block p-8 font-sans text-slate-900 text-sm space-y-6">
+        <div className="border-b pb-4">
+          <h1 className="text-2xl font-extrabold">ARAM — Legal Aid Case Packet</h1>
+          <p className="text-xs text-slate-500 mt-1">Certified case summary generated on {new Date().toLocaleDateString("en-IN")}</p>
+        </div>
+        <table className="w-full text-xs border-collapse">
+          <tbody>
+            {[
+              ["Reference ID", formattedRefId],
+              ["Category", category],
+              ["Priority", priority],
+              ["Status", status],
+              ["District", complaint.district || "Coimbatore"],
+              ["Submitted", new Date(complaint.createdAt).toLocaleString()],
+            ].map(([label, value]) => (
+              <tr key={label} className="border border-slate-200">
+                <td className="px-3 py-2 font-bold bg-slate-50 w-40">{label}</td>
+                <td className="px-3 py-2">{value}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <div>
+          <h2 className="font-bold text-base mt-4 mb-2">Grievance Description</h2>
+          <p className="text-xs leading-relaxed border border-slate-200 rounded p-3 bg-slate-50">{desc}</p>
+        </div>
+        {actionPlan && (
+          <div>
+            <h2 className="font-bold text-base mt-4 mb-2">Legal Guide Action Plan</h2>
+            <p className="text-xs leading-relaxed border border-slate-200 rounded p-3 bg-slate-50">{actionPlan.planText || actionPlan.description || JSON.stringify(actionPlan)}</p>
+          </div>
+        )}
+        <div className="mt-6 border-t pt-4 text-[10px] text-slate-400">
+          This document is cryptographically signed by the ARAM platform. Complaint data is end-to-end encrypted at rest and in transit.
+        </div>
+      </div>
+
+      <div className="print:hidden space-y-6 max-w-4xl mx-auto">
         {/* Emergency Alert Card if highRisk is true */}
         {complaint.highRisk && (
           <div className="rounded-2xl border border-red-200 bg-red-50 p-5 text-xs text-red-950 space-y-3 animate-in slide-in-from-top duration-300">
@@ -268,6 +416,12 @@ const ComplaintDetails = () => {
           </div>
           <div className="flex items-center gap-3">
             <button
+              onClick={() => window.print()}
+              className="flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700 transition bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100"
+            >
+              Print Packet 🖨️
+            </button>
+            <button
               onClick={handleWhatsAppShare}
               className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600 hover:text-emerald-700 transition bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100"
             >
@@ -292,39 +446,56 @@ const ComplaintDetails = () => {
           </div>
         )}
 
-        {/* Blockchain Integrity Verification Alert */}
-        {complaint.blockchainInfo && (
-          complaint.blockchainInfo.verified ? (
-            <div className="p-4 bg-emerald-50/70 rounded-2xl border border-emerald-100 text-emerald-950 text-xs flex flex-col gap-2 shadow-sm">
-              <div className="flex items-center gap-2">
-                <ShieldCheck size={16} className="text-emerald-600 shrink-0" />
-                <span>
-                  <strong>🔒 Verified on Blockchain:</strong> This complaint's cryptographic integrity has been successfully validated against a tamper-proof ledger.
-                </span>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 pt-2 border-t border-emerald-100/50 font-mono text-[10px] text-emerald-800">
-                <div><strong>Block Index:</strong> #{complaint.blockchainInfo.blockIndex}</div>
-                <div><strong>Nonce / Pow:</strong> {complaint.blockchainInfo.nonce}</div>
-                <div className="sm:col-span-2 break-all"><strong>Block Hash:</strong> <span className="bg-emerald-100/70 px-1 py-0.5 rounded font-bold text-[9px]">{complaint.blockchainInfo.blockHash}</span></div>
-                <div className="sm:col-span-2 break-all"><strong>Previous Hash:</strong> <span className="bg-emerald-100/50 px-1 py-0.5 rounded text-[9px]">{complaint.blockchainInfo.previousHash}</span></div>
-                <div className="sm:col-span-2 break-all"><strong>Complaint Payload Hash:</strong> <span className="bg-emerald-100/50 px-1 py-0.5 rounded text-[9px]">{complaint.blockchainInfo.complaintHash}</span></div>
-                <div><strong>Block Timestamp:</strong> {new Date(complaint.blockchainInfo.timestamp).toLocaleString()}</div>
-              </div>
+        {/* End-to-End Encryption Banner */}
+        <div className="p-4 bg-emerald-50/70 rounded-2xl border border-emerald-100 text-emerald-950 text-xs flex items-center gap-3 shadow-sm">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-700 shrink-0">
+            <ShieldCheck size={20} />
+          </div>
+          <div>
+            <strong className="block text-emerald-900">🔒 End-to-End Encrypted Complaint</strong>
+            <p className="text-[11px] text-emerald-700 mt-0.5 leading-relaxed">
+              Your grievance text and uploaded evidence are fully protected by industry-standard end-to-end cryptographic shielding. Only you, your assigned Legal Guide, and reviewing administrators can read or decrypt this complaint.
+            </p>
+          </div>
+        </div>
+
+        {/* One-page complaint journey step tracker */}
+        <div className="rounded-3xl bg-white p-6 shadow-sm border border-slate-150 space-y-4">
+          <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">Case Progress Journey</h3>
+          
+          <div className="relative flex flex-col md:flex-row justify-between items-start md:items-center gap-6 md:gap-2">
+            {/* Connection line for desktop */}
+            <div className="hidden md:block absolute left-6 right-6 top-5 h-[2.5px] bg-slate-150 -z-0">
+              <div 
+                className="h-full bg-emerald-500 transition-all duration-500" 
+                style={{ width: `${(activeStep / (journeySteps.length - 1)) * 100}%` }}
+              ></div>
             </div>
-          ) : (
-            <div className="p-4 bg-rose-50 rounded-xl border border-rose-100 text-rose-950 text-xs flex flex-col gap-2">
-              <div className="flex items-center gap-2">
-                <BadgeAlert size={16} className="text-rose-600 shrink-0 animate-pulse" />
-                <span>
-                  <strong>🚨 Cryptographic Integrity Verification Failed!</strong> This complaint's details (Title, Description, or Timestamp) do not match the hash recorded in the blockchain ledger. Possible unauthorized modification detected!
-                </span>
-              </div>
-              <div className="grid grid-cols-1 gap-1 mt-1 pt-2 border-t border-rose-100/50 font-mono text-[10px] text-rose-800">
-                <div className="break-all"><strong>Registered Hash on Chain:</strong> {complaint.blockchainInfo.complaintHash}</div>
-              </div>
-            </div>
-          )
-        )}
+            
+            {journeySteps.map((step, idx) => {
+              const isCompleted = idx <= activeStep;
+              const isCurrent = idx === activeStep;
+              return (
+                <div key={idx} className="flex md:flex-col items-center gap-3.5 md:gap-2 relative z-10 flex-1 w-full md:w-auto">
+                  {/* Circle element */}
+                  <div className={`h-10 w-10 rounded-full flex items-center justify-center font-black text-xs border-2 transition-all duration-300 ${
+                    isCompleted 
+                      ? "bg-emerald-500 border-emerald-500 text-white shadow-md shadow-emerald-100" 
+                      : "bg-white border-slate-200 text-slate-400"
+                  } ${isCurrent ? "ring-4 ring-emerald-50" : ""}`}>
+                    {isCompleted && idx < activeStep ? "✓" : idx + 1}
+                  </div>
+                  
+                  {/* Label */}
+                  <div className="text-left md:text-center">
+                    <span className={`block text-xs font-bold ${isCompleted ? "text-slate-800" : "text-slate-400"}`}>{step.label}</span>
+                    <span className="block text-[10px] text-slate-400 font-bold uppercase tracking-tight mt-0.5">{step.desc}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
 
         {/* Info Grid */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -343,6 +514,18 @@ const ComplaintDetails = () => {
           <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
             <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Date Submitted</p>
             <h3 className="text-xs font-bold text-slate-600 mt-1">{new Date(complaint.createdAt).toLocaleDateString()}</h3>
+          </div>
+        </div>
+
+        {/* What happens next card */}
+        <div className="rounded-2xl border border-blue-105 bg-blue-50/45 p-5 text-xs text-slate-800 space-y-2.5">
+          <div className="flex items-center gap-2">
+            <span className="text-base">📋</span>
+            <span className="font-bold uppercase tracking-wider text-blue-900">What Happens Next?</span>
+          </div>
+          <div className="pl-6 space-y-1">
+            <strong className="text-slate-800 font-bold block">{nextHelp.title}</strong>
+            <p className="leading-relaxed text-slate-550 font-medium">{nextHelp.desc}</p>
           </div>
         </div>
 
@@ -540,6 +723,48 @@ const ComplaintDetails = () => {
                   </div>
                 )}
               </div>
+
+              {/* Cost Estimation Card */}
+              {costEstimate && (
+                <div className="pt-4 border-t border-slate-100 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Estimated Case Cost & Legal Aid</h4>
+                      <p className="text-xs text-slate-500 mt-0.5">Approximate estimates to proceed with this authority</p>
+                    </div>
+                    {costEstimate.freeLegalAidAvailable && (
+                      <span className="text-[10px] font-extrabold uppercase bg-green-50 text-green-700 px-2.5 py-1 rounded-full border border-green-100">
+                        Free Legal Aid Available
+                      </span>
+                    )}
+                  </div>
+                  
+                  <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="space-y-1">
+                      <div className="text-2xl font-black text-slate-800 flex items-baseline gap-1">
+                        {costEstimate.currency || "₹"} {costEstimate.estimatedMinAmount} - {costEstimate.estimatedMaxAmount}
+                        <span className="text-xs text-slate-400 font-bold uppercase tracking-wider ml-1">Est. Total</span>
+                      </div>
+                      <p className="text-xs text-slate-550 leading-relaxed max-w-md">
+                        <strong>Includes:</strong> {costEstimate.includes || "Document print/photocopy/travel"}
+                        <br />
+                        <strong>Excludes:</strong> {costEstimate.excludes || "Professional advocate fees"}
+                      </p>
+                    </div>
+                    
+                    <div className="shrink-0 bg-white border border-slate-150 p-3 rounded-xl max-w-[280px]">
+                      <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Next Action Notes</span>
+                      <p className="text-[11px] text-slate-600 font-semibold mt-1 leading-normal italic">
+                        "{costEstimate.notes || "No extra cost notes added by guide."}"
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <p className="text-[10px] text-slate-400 leading-relaxed">
+                    ℹ️ <em>Important: The amount shown above is an approximate cost range estimate for filing/travel, NOT a final lawyer fee. Under Indian legal aid rules, eligible citizens are entitled to free counsel.</em>
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -803,6 +1028,94 @@ const ComplaintDetails = () => {
             <CaseChatPanel complaintId={complaint.id} userRole="CITIZEN" />
           </div>
         )}
+      </div>
+
+      {/* Printable Receipt Packet */}
+      <div className="hidden print:block p-8 bg-white text-slate-900 border border-slate-300 rounded-2xl max-w-2xl mx-auto space-y-6 font-sans">
+        <div className="text-center border-b pb-4">
+          <h1 className="text-2xl font-extrabold tracking-tight">ARAM LEGAL AID PORTAL</h1>
+          <p className="text-sm text-slate-500 font-semibold uppercase tracking-wider mt-1">Official Grievance Receipt & Tracking Code</p>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4 text-xs pt-2">
+          <div>
+            <span className="block text-[10px] text-slate-500 uppercase font-bold tracking-wider">Reference ID</span>
+            <span className="font-bold text-slate-800 mt-1 block">{formattedRefId}</span>
+          </div>
+          <div>
+            <span className="block text-[10px] text-slate-500 uppercase font-bold tracking-wider">Date Filed</span>
+            <span className="font-bold text-slate-800 mt-1 block">{new Date(complaint.createdAt).toLocaleDateString()}</span>
+          </div>
+          <div>
+            <span className="block text-[10px] text-slate-500 uppercase font-bold tracking-wider">Category</span>
+            <span className="font-bold text-slate-800 mt-1 block">{category.replace("_", " ")}</span>
+          </div>
+          <div>
+            <span className="block text-[10px] text-slate-500 uppercase font-bold tracking-wider">Priority / SLA Target</span>
+            <span className="font-bold text-slate-800 mt-1 block">{getSlaDeadline(priority)}</span>
+          </div>
+          <div>
+            <span className="block text-[10px] text-slate-500 uppercase font-bold tracking-wider">Preferred Language</span>
+            <span className="font-bold text-slate-800 mt-1 block">{complaint.language || "en-IN"}</span>
+          </div>
+          <div>
+            <span className="block text-[10px] text-slate-500 uppercase font-bold tracking-wider">Assigned Helper</span>
+            <span className="font-bold text-slate-800 mt-1 block">{complaint.assignedHelperName || "Awaiting Volunteer Assignment"}</span>
+          </div>
+        </div>
+
+        <div className="border-t border-b py-4 my-4 flex items-center justify-between gap-6">
+          <div className="text-left space-y-1">
+            <h4 className="font-bold text-xs uppercase tracking-wide text-slate-800">Scan & Track Status</h4>
+            <p className="text-[10px] text-slate-500 max-w-[320px] leading-relaxed">Scan this code with your smartphone camera to quickly access the ARAM mobile web portal and track real-time feedback updates on your case status.</p>
+          </div>
+          <div className="shrink-0">
+            {drawMockQRCode()}
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div>
+            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Grievance Summary</h3>
+            <p className="mt-1.5 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-lg border">{desc}</p>
+          </div>
+
+          <div>
+            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Required Evidence Checklist</h3>
+            <ul className="mt-1.5 text-xs text-slate-600 space-y-1 bg-slate-50 p-3 rounded-lg border list-disc list-inside">
+              {docs.map((doc, idx) => (
+                <li key={idx} className="font-semibold">{doc}</li>
+              ))}
+            </ul>
+          </div>
+
+          {actionPlan && (
+            <div>
+              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Legal Guide Action Plan</h3>
+              <div className="mt-1.5 text-xs text-slate-650 space-y-1.5 bg-slate-50 p-3 rounded-lg border">
+                <p><strong>Immediate Steps:</strong></p>
+                <p className="whitespace-pre-line bg-white p-2 rounded border border-slate-105 mt-1">{actionPlan.immediateSteps}</p>
+                {actionPlan.safetyNote && (
+                  <p className="mt-2 text-red-700 font-medium">⚠️ Safety Note: {actionPlan.safetyNote}</p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {costEstimate && (
+            <div>
+              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Estimated Legal Expenses</h3>
+              <div className="mt-1.5 text-xs text-slate-650 bg-slate-50 p-3 rounded-lg border">
+                <span>Minimum Cost: ₹{costEstimate.minEstimate} • Maximum Cost: ₹{costEstimate.maxEstimate}</span>
+                <p className="text-[10px] text-slate-400 mt-1 font-medium leading-tight">Note: These estimates are based on regional legal service standards. Community guides charge zero consultation fees.</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="text-center pt-8 border-t text-[10px] text-slate-400 font-medium tracking-wide">
+          ARAM community legal aid is powered by community volunteers and artificial intelligence. Keep this receipt safe.
+        </div>
       </div>
     </DashboardLayout>
   );

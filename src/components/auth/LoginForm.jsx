@@ -4,6 +4,7 @@ import { Mail, Lock, Eye, EyeOff, Info, ArrowRight, User, BookOpen, ShieldAlert 
 import { useAuth } from "../../context/AuthContext";
 import { authService } from "../../services/authService";
 import { toast } from "sonner";
+import Checkbox from "../common/Checkbox";
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -20,7 +21,6 @@ const LoginForm = () => {
     e?.preventDefault();
     setError("");
 
-    // Front-end email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       setError("Please enter a valid email address.");
@@ -69,7 +69,7 @@ const LoginForm = () => {
   };
 
   return (
-    <div className="w-full max-w-[430px] rounded-2xl bg-white p-7 lg:p-10 border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.015)]">
+    <div className="w-full max-w-[430px] rounded-2xl bg-white p-7 lg:p-10 border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
       
       {/* Pill Badge */}
       <span className="inline-block px-3 py-1 rounded-full text-[10px] font-extrabold uppercase bg-indigo-50 text-indigo-700 tracking-wider mb-4 border border-indigo-100/50">
@@ -84,8 +84,8 @@ const LoginForm = () => {
 
       {/* Backend / Val Error Alert */}
       {error && (
-        <div className="mt-5 p-3.5 bg-red-50 text-red-650 rounded-xl text-xs border border-red-100 flex items-start gap-2.5 animate-in fade-in duration-150">
-          <Info size={14} className="mt-0.5 shrink-0" />
+        <div className="mt-5 p-3.5 bg-red-50 text-red-700 rounded-xl text-xs border border-red-100 flex items-start gap-2.5 animate-in fade-in duration-150 font-medium">
+          <Info size={16} className="mt-0.5 shrink-0 text-red-600" />
           <span>{error}</span>
         </div>
       )}
@@ -97,14 +97,17 @@ const LoginForm = () => {
           <label className="block text-[10px] font-extrabold text-slate-400 uppercase tracking-widest">
             Email Address
           </label>
-          <div className="relative">
+          <div className="relative flex items-center">
+            <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center justify-center">
+              <Mail size={16} />
+            </div>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="name@example.com"
-              className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-4 text-xs font-medium text-slate-700 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
+              className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-11 pr-4 text-xs font-medium text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
             />
           </div>
         </div>
@@ -119,19 +122,23 @@ const LoginForm = () => {
               Forgot password?
             </Link>
           </div>
-          <div className="relative">
+          <div className="relative flex items-center">
+            <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center justify-center">
+              <Lock size={16} />
+            </div>
             <input
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               placeholder="••••••••"
-              className="h-12 w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-4 pr-12 text-xs font-medium text-slate-750 outline-none transition placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
+              className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50/50 pl-11 pr-12 text-xs font-medium text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-indigo-600 focus:bg-white focus:ring-4 focus:ring-indigo-500/10"
             />
             <button
               type="button"
-              className="absolute right-3.5 top-3.5 text-slate-400 hover:text-slate-600 cursor-pointer transition"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 h-10 w-10 min-h-[40px] min-w-[40px] text-slate-400 hover:text-slate-600 cursor-pointer transition flex items-center justify-center rounded-lg hover:bg-slate-100/50"
               onClick={() => setShowPassword(!showPassword)}
+              title={showPassword ? "Hide password" : "Show password"}
             >
               {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
             </button>
@@ -139,23 +146,21 @@ const LoginForm = () => {
         </div>
 
         {/* Remember me for 30 days */}
-        <div className="flex items-center text-xs pt-0.5">
-          <label className="flex items-center gap-2.5 text-slate-500 cursor-pointer select-none font-medium">
-            <input
-              type="checkbox"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-              className="h-4 w-4 shrink-0 rounded border-slate-350 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
-            />
-            Remember me for 30 days
-          </label>
+        <div className="pt-0.5">
+          <Checkbox
+            id="rememberMe"
+            name="rememberMe"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
+            label="Remember me for 30 days"
+          />
         </div>
 
-        {/* Submit button with sliding arrow */}
+        {/* Submit button */}
         <button
           type="submit"
           disabled={loading}
-          className="group relative flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-slate-900 text-xs font-bold text-white hover:bg-indigo-650 active:scale-[0.99] transition duration-150 cursor-pointer"
+          className="group relative flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-indigo-600 text-xs font-bold text-white hover:bg-indigo-700 active:scale-[0.99] transition duration-150 cursor-pointer shadow-md shadow-indigo-600/10 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {loading ? (
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
@@ -193,7 +198,7 @@ const LoginForm = () => {
               onClick={() => loadDemoCredentials("citizen@aram.ai", "Citizen@123", "Citizen")}
               className="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/10 cursor-pointer transition text-center group"
             >
-              <div className="h-8 w-8 rounded-lg bg-emerald-50 text-emerald-650 flex items-center justify-center group-hover:scale-105 transition shrink-0">
+              <div className="h-8 w-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:scale-105 transition shrink-0">
                 <User size={14} />
               </div>
               <span className="text-[10px] font-extrabold text-slate-650 mt-2">Citizen</span>
@@ -205,7 +210,7 @@ const LoginForm = () => {
               onClick={() => loadDemoCredentials("volunteer@aram.ai", "Helper@123", "Legal Guide")}
               className="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/10 cursor-pointer transition text-center group"
             >
-              <div className="h-8 w-8 rounded-lg bg-indigo-50 text-indigo-650 flex items-center justify-center group-hover:scale-105 transition shrink-0">
+              <div className="h-8 w-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:scale-105 transition shrink-0">
                 <BookOpen size={14} />
               </div>
               <span className="text-[10px] font-extrabold text-slate-650 mt-2">Guide</span>
@@ -217,7 +222,7 @@ const LoginForm = () => {
               onClick={() => loadDemoCredentials("admin@aram.ai", "Admin@123", "Admin")}
               className="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-100 hover:border-indigo-200 hover:bg-indigo-50/10 cursor-pointer transition text-center group"
             >
-              <div className="h-8 w-8 rounded-lg bg-amber-50 text-amber-650 flex items-center justify-center group-hover:scale-105 transition shrink-0">
+              <div className="h-8 w-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-105 transition shrink-0">
                 <ShieldAlert size={14} />
               </div>
               <span className="text-[10px] font-extrabold text-slate-650 mt-2">Admin</span>
@@ -227,7 +232,7 @@ const LoginForm = () => {
         </div>
 
         {/* Footer info */}
-        <div className="text-center text-[10px] text-slate-400 leading-normal pt-1.5">
+        <div className="text-center text-[10px] text-slate-400 leading-normal pt-1.5 font-medium">
           By continuing, you agree to ARAM's{" "}
           <Link to="/terms" className="hover:underline font-semibold text-slate-500">Terms of Service</Link> and{" "}
           <Link to="/privacy" className="hover:underline font-semibold text-slate-500">Privacy Policy</Link>.

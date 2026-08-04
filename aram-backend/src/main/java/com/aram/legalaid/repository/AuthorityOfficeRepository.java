@@ -8,7 +8,7 @@ import java.util.List;
 
 @Repository
 public interface AuthorityOfficeRepository extends JpaRepository<AuthorityOffice, Long> {
-    List<AuthorityOffice> findByDistrictIgnoreCase(String district);
-    List<AuthorityOffice> findByCategorySupportedIgnoreCase(String categorySupported);
-    List<AuthorityOffice> findByCategorySupportedIgnoreCaseAndDistrictIgnoreCase(String categorySupported, String district);
+    List<AuthorityOffice> findByActiveTrue();
+    List<AuthorityOffice> findByCategorySupportedAndDistrictAndActiveTrue(String categorySupported, String district);
+    List<AuthorityOffice> findByCategorySupportedAndActiveTrue(String categorySupported);
 }

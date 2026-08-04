@@ -15,6 +15,14 @@ const CaseReview = () => {
   const [notes, setNotes] = useState("");
   const [saving, setSaving] = useState(false);
 
+  // Overrides States
+  const [minCost, setMinCost] = useState(0);
+  const [maxCost, setMaxCost] = useState(500);
+  const [costNotes, setCostNotes] = useState("");
+  const [freeAid, setFreeAid] = useState(true);
+  const [matchingOffices, setMatchingOffices] = useState([]);
+  const [selectedOffice, setSelectedOffice] = useState("");
+
   useEffect(() => {
     const fetchCase = async () => {
       try {
@@ -32,6 +40,28 @@ const CaseReview = () => {
         setComplaint(data);
         setStatus(data.status || "IN_PROGRESS");
         setNotes(data.legalOpinion || "");
+        setSelectedOffice(data.authority || "");
+
+        // Fetch cost estimate
+        try {
+          const costData = await volunteerService.getCostEstimate(targetId);
+          if (costData) {
+            setMinCost(costData.estimatedMinAmount);
+            setMaxCost(costData.estimatedMaxAmount);
+            setCostNotes(costData.notes || "");
+            setFreeAid(costData.freeLegalAidAvailable);
+          }
+        } catch (cErr) {
+          console.error("Failed to load cost estimate:", cErr);
+        }
+
+        // Fetch matching authority offices
+        try {
+          const officesData = await volunteerService.getAuthorityLocations(targetId);
+          setMatchingOffices(officesData || []);
+        } catch (oErr) {
+          console.error("Failed to load matching offices:", oErr);
+        }
       } catch (err) {
         console.error("Failed to load case for review:", err);
         toast.error(err.message || "Failed to load complaint data.");
@@ -55,8 +85,24 @@ const CaseReview = () => {
         status: isSubmit ? "RESOLVED" : status
       };
 
+      // 1. Save standard case notes and status update
       await volunteerService.submitReview(complaint.id, payload);
-      toast.success(isSubmit ? "Case review submitted & resolved successfully!" : "Case review progress saved.");
+
+      // 2. Save cost estimate overrides
+      await volunteerService.updateCostEstimate(complaint.id, {
+        estimatedMinAmount: minCost,
+        estimatedMaxAmount: maxCost,
+        freeLegalAidAvailable: freeAid,
+        costType: freeAid ? "Free Legal Aid" : "Custom Fee",
+        notes: costNotes
+      });
+
+      // 3. Save authority office location override
+      if (selectedOffice && selectedOffice !== complaint.authority) {
+        await volunteerService.updateAuthorityLocation(complaint.id, selectedOffice);
+      }
+
+      toast.success(isSubmit ? "Case review submitted & resolved successfully!" : "Case review overrides and progress saved.");
       
       if (isSubmit) {
         navigate("/volunteer/assigned-cases");
@@ -210,6 +256,78 @@ const CaseReview = () => {
                   <option value="RESOLVED">Resolved</option>
                   <option value="REJECTED">Rejected</option>
                 </select>
+              </div>
+
+              {/* Overrides section */}
+              <div className="pt-4 border-t space-y-4">
+                <h4 className="text-[11px] font-extrabold text-slate-800 uppercase tracking-wider">Triage Overrides</h4>
+                
+                {/* 1. Authority Office Override */}
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Recommended Authority Office</label>
+                  <select
+                    value={selectedOffice}
+                    onChange={(e) => setSelectedOffice(e.target.value)}
+                    className="h-11 w-full rounded-xl border border-slate-200 px-3 text-xs outline-none text-slate-800 bg-white font-semibold cursor-pointer"
+                  >
+                    <option value="">-- Select Authority Office --</option>
+                    {matchingOffices.map((office) => (
+                      <option key={office.id} value={office.name}>
+                        {office.name} ({office.district})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* 2. Cost Estimate Override */}
+                <div className="space-y-3 p-3 bg-slate-50 rounded-2xl border border-slate-150">
+                  <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider">Cost Estimate Range</span>
+                  
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-[8px] font-bold text-slate-450 uppercase mb-1">Min Amount (INR)</label>
+                      <input
+                        type="number"
+                        value={minCost}
+                        onChange={(e) => setMinCost(Number(e.target.value))}
+                        className="h-9 w-full rounded-lg border border-slate-200 px-2 text-xs outline-none text-slate-850"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[8px] font-bold text-slate-450 uppercase mb-1">Max Amount (INR)</label>
+                      <input
+                        type="number"
+                        value={maxCost}
+                        onChange={(e) => setMaxCost(Number(e.target.value))}
+                        className="h-9 w-full rounded-lg border border-slate-200 px-2 text-xs outline-none text-slate-855"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="freeAidCheck"
+                      checked={freeAid}
+                      onChange={(e) => setFreeAid(e.target.checked)}
+                      className="rounded border-slate-350 text-indigo-650 focus:ring-indigo-500"
+                    />
+                    <label htmlFor="freeAidCheck" className="text-[10px] font-semibold text-slate-650 cursor-pointer">
+                      Free Legal Aid Available
+                    </label>
+                  </div>
+
+                  <div>
+                    <label className="block text-[8px] font-bold text-slate-455 uppercase mb-1">Cost range explanation / Travel notes</label>
+                    <textarea
+                      rows="2"
+                      value={costNotes}
+                      onChange={(e) => setCostNotes(e.target.value)}
+                      placeholder="e.g. print charges + travel to district court"
+                      className="w-full rounded-lg border border-slate-200 p-2 text-xs outline-none text-slate-800"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="pt-4 border-t space-y-3">

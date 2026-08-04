@@ -57,6 +57,8 @@ from app.routers.train import router as train_router
 from app.routers.analyze import router as analyze_router
 from app.routers.language import router as language_router
 from app.routers.speech import router as speech_router
+from app.routers.rank import router as rank_router
+from app.routers.ocr import router as ocr_router
 
 app = FastAPI(title="ARAM AI Service")
 
@@ -65,6 +67,24 @@ app.include_router(train_router)
 app.include_router(analyze_router)
 app.include_router(language_router)
 app.include_router(speech_router)
+app.include_router(rank_router)
+app.include_router(ocr_router)
+
+@app.get("/")
+def root():
+    return {
+        "service": "ARAM AI Service",
+        "status": "online",
+        "docs": "/docs",
+        "endpoints": [
+            "/complaint/analyze",
+            "/chat/ask",
+            "/documents/ocr",
+            "/documents/verify",
+            "/voice/transcribe",
+            "/health"
+        ]
+    }
 
 @app.post("/chat/ask")
 def chat_ask(request: ChatAskRequest):
@@ -123,23 +143,7 @@ def documents_verify(
         if os.path.exists(temp_file_path):
             os.remove(temp_file_path)
 
-@app.post("/voice/transcribe")
-def voice_transcribe(file: UploadFile = File(...)):
-    temp_dir = tempfile.gettempdir()
-    temp_file_path = os.path.join(temp_dir, f"transcribe_{uuid_filename(file.filename)}")
-    
-    try:
-        with open(temp_file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-            
-        res = transcribe_audio(temp_file_path)
-        log_ai_action("voice_transcription_logs", res)
-        return res
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-    finally:
-        if os.path.exists(temp_file_path):
-            os.remove(temp_file_path)
+
 
 def uuid_filename(filename: str) -> str:
     import uuid

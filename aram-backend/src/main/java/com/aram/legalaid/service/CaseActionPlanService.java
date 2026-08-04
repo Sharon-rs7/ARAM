@@ -28,17 +28,20 @@ public class CaseActionPlanService {
     private final ComplaintRepository complaintRepository;
     private final AuditLogService auditLogService;
     private final NotificationService notificationService;
+    private final LegalGuideLevelService levelService;
 
     public CaseActionPlanService(
             CaseActionPlanRepository caseActionPlanRepository,
             ComplaintRepository complaintRepository,
             AuditLogService auditLogService,
-            NotificationService notificationService
+            NotificationService notificationService,
+            LegalGuideLevelService levelService
     ) {
         this.caseActionPlanRepository = caseActionPlanRepository;
         this.complaintRepository = complaintRepository;
         this.auditLogService = auditLogService;
         this.notificationService = notificationService;
+        this.levelService = levelService;
     }
 
     public CaseActionPlanResponse getPlanByComplaintId(Long complaintId, User currentUser) {
@@ -128,6 +131,9 @@ public class CaseActionPlanService {
             // Update status and audit log
             complaint.setStatus(ComplaintStatus.IN_PROGRESS);
             complaintRepository.save(complaint);
+
+            // Award credit
+            levelService.addCredit(saved.getLegalGuideId(), complaintId, "ACTION_PLAN_SHARED", 10, "Shared Next Action Plan with citizen", currentUser.getId(), currentUser.getRole().name(), "SYSTEM");
 
             auditLogService.log("ACTION_PLAN_SHARED", currentUser.getEmail(), "Action plan shared for complaint ID " + complaintId);
             

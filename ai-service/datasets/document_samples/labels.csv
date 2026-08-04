@@ -1,0 +1,3 @@
+file_path,document_type,expected_text,expected_fields_json,language,quality_label
+datasets/document_samples/salary_slip/salary1.png,Salary Slip,Aram Solutions Gross Salary 45000,{},en,GOOD
+datasets/document_samples/invoice/invoice1.png,Consumer Bill / Invoice,Invoice INV-2026-981 Total 15499,{},en,GOOD

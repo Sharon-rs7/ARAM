@@ -19,6 +19,7 @@ public class AdditionalFlowsService {
     private final ComplaintRepository complaintRepository;
     private final AuditLogService auditLogService;
     private final NotificationService notificationService;
+    private final LegalGuideLevelService levelService;
 
     public AdditionalFlowsService(
             CaseDocumentRequestRepository caseDocumentRequestRepository,
@@ -26,7 +27,8 @@ public class AdditionalFlowsService {
             CaseFeedbackRepository caseFeedbackRepository,
             ComplaintRepository complaintRepository,
             AuditLogService auditLogService,
-            NotificationService notificationService
+            NotificationService notificationService,
+            LegalGuideLevelService levelService
     ) {
         this.caseDocumentRequestRepository = caseDocumentRequestRepository;
         this.caseAppointmentRepository = caseAppointmentRepository;
@@ -34,6 +36,7 @@ public class AdditionalFlowsService {
         this.complaintRepository = complaintRepository;
         this.auditLogService = auditLogService;
         this.notificationService = notificationService;
+        this.levelService = levelService;
     }
 
     // Document Requests
@@ -54,6 +57,9 @@ public class AdditionalFlowsService {
         req.setStatus("REQUESTED");
 
         CaseDocumentRequest saved = caseDocumentRequestRepository.save(req);
+
+        // Award credit
+        levelService.addCredit(saved.getLegalGuideId(), complaintId, "DOCUMENT_REQUEST_CREATED", 5, "Requested document: " + documentName, currentUser.getId(), currentUser.getRole().name(), "SYSTEM");
 
         // Update status of complaint to documents pending
         complaint.setStatus(ComplaintStatus.DOCUMENTS_PENDING);
@@ -245,6 +251,19 @@ public class AdditionalFlowsService {
         fb.setHelpful(helpful);
 
         CaseFeedback saved = caseFeedbackRepository.save(fb);
+
+        // Award credit based on feedback rating
+        int points = 0;
+        String type = "";
+        if (rating == 5) { points = 10; type = "USER_FEEDBACK_5_STAR"; }
+        else if (rating == 4) { points = 7; type = "USER_FEEDBACK_4_STAR"; }
+        else if (rating == 2) { points = -10; type = "LOW_USER_FEEDBACK_2_STAR"; }
+        else if (rating == 1) { points = -15; type = "LOW_USER_FEEDBACK_1_STAR"; }
+        
+        if (points != 0 && saved.getLegalGuideId() != null) {
+            levelService.addCredit(saved.getLegalGuideId(), complaintId, type, points, "User gave " + rating + " star feedback rating", currentUser.getId(), "CITIZEN", "USER_FEEDBACK");
+        }
+
         auditLogService.log("CASE_FEEDBACK_SUBMITTED", currentUser.getEmail(), "User submitted feedback: " + rating + " stars");
 
         return saved;
@@ -264,6 +283,11 @@ public class AdditionalFlowsService {
                 }
                 complaint.setStatus(ComplaintStatus.RESOLVED_BY_GUIDE);
                 complaint.setResolutionSummary(details);
+                
+                if (complaint.getAssignedHelper() != null) {
+                    levelService.addCredit(complaint.getAssignedHelper().getId(), complaintId, "CASE_RESOLVED_BY_GUIDE", 20, "Guide resolved case", currentUser.getId(), "HELPER", "SYSTEM");
+                }
+                
                 auditLogService.log("RESOLUTION_SHARED", currentUser.getEmail(), "Legal Guide resolved case " + complaintId);
                 notificationService.create(
                         complaint.getUser(),
@@ -278,6 +302,11 @@ public class AdditionalFlowsService {
                     throw new ForbiddenException("Unauthorized status modification");
                 }
                 complaint.setStatus(ComplaintStatus.CLOSED_BY_USER);
+                
+                if (complaint.getAssignedHelper() != null) {
+                    levelService.addCredit(complaint.getAssignedHelper().getId(), complaintId, "USER_CONFIRMED_RESOLVED", 20, "Citizen confirmed resolved case", currentUser.getId(), "CITIZEN", "SYSTEM");
+                }
+                
                 auditLogService.log("USER_CONFIRMED_RESOLVED", currentUser.getEmail(), "Citizen marked complaint " + complaintId + " as closed");
                 break;
 
@@ -288,6 +317,11 @@ public class AdditionalFlowsService {
                 }
                 complaint.setStatus(ComplaintStatus.REOPEN_REQUESTED);
                 complaint.setReopenReason(details);
+                
+                if (complaint.getAssignedHelper() != null) {
+                    levelService.addCredit(complaint.getAssignedHelper().getId(), complaintId, "CASE_REOPENED_POOR_GUIDANCE", -15, "Citizen reopened case due to poor guidance", currentUser.getId(), "CITIZEN", "SYSTEM");
+                }
+                
                 auditLogService.log("REOPEN_REQUESTED", currentUser.getEmail(), "Citizen requested reopening case: " + details);
                 
                 // Notify admin

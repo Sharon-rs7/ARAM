@@ -24,14 +24,18 @@ public class AIClientService {
         this.properties = properties;
     }
 
-    public AiTriageResponse analyzeComplaint(String text, String language, String district, boolean isSensitive) {
+    public AiTriageResponse analyzeComplaint(String title, String description, String language, String district, boolean isSensitive, String preferredGender, List<Map<String, Object>> existingComplaints) {
         String url = properties.getUrl() + "/complaint/analyze";
         try {
             Map<String, Object> payload = Map.of(
-                "complaintText", text,
-                "language", language != null ? language : "en",
+                "title", title != null ? title : "",
+                "description", description != null ? description : "",
+                "languageHint", language != null ? language : "en",
                 "district", district != null ? district : "Coimbatore",
-                "isSensitive", isSensitive
+                "area", "",
+                "sensitive", isSensitive,
+                "preferredLegalGuideGender", preferredGender != null ? preferredGender : "ANY",
+                "existingComplaints", existingComplaints != null ? existingComplaints : List.of()
             );
             return restTemplate.postForObject(url, payload, AiTriageResponse.class);
         } catch (Exception e) {
@@ -39,16 +43,20 @@ public class AIClientService {
             // Safe fallback response mapping if service is down
             return new AiTriageResponse(
                 "GENERAL_LEGAL_AID",
+                0.40,
+                List.of(),
                 "MEDIUM",
-                50,
-                0.50,
-                "District Legal Services Authority",
-                0.50,
+                0.40,
                 List.of("Aadhaar Card"),
-                0.50,
-                List.of("Submit complaint details", "Consult legal aid representative"),
-                true, // manualReviewRequired = true on failure
-                false
+                "District Legal Services Authority",
+                0.40,
+                false,
+                true,
+                List.of("FastAPI service is down"),
+                "fallback_rules_v1.0.0",
+                true,
+                "FastAPI analyzeComplaint failed, fallback used.",
+                List.of("Submit complaint details", "Consult legal aid representative")
             );
         }
     }
@@ -62,8 +70,8 @@ public class AIClientService {
             return new AiChatResponse(
                 "I am sorry, the AI service is currently undergoing maintenance. Please reach out to your local helper. This is preliminary legal aid guidance only.",
                 "I am sorry, the AI service is currently undergoing maintenance. Please reach out to your local helper. This is preliminary legal aid guidance only.",
-                "GENERAL_LEGAL_AID",
-                0.50,
+                null,
+                0.0,
                 List.of("Retry connection", "Consult counselor"),
                 "This is preliminary legal aid guidance only."
             );
@@ -111,14 +119,17 @@ public class AIClientService {
             System.err.println("FastAPI verifyDocument failed: " + e.getMessage());
             return new AiDocumentVerifyResponse(
                 expectedType,
-                "Unable to process OCR copy.",
-                0.50,
-                0.50,
+                "OCR Service Failed.",
                 0.0,
-                0.50,
-                "NEEDS_MANUAL_REVIEW",
+                0.0,
+                0.0,
+                "REUPLOAD_REQUIRED",
+                List.of("OCR processing failed due to connection error"),
+                List.of("CONNECTION_ERROR"),
                 List.of(),
-                List.of()
+                Map.of(),
+                "none",
+                "none"
             );
         }
     }

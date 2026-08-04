@@ -8,18 +8,12 @@ import com.aram.legalaid.model.AIResult;
 import com.aram.legalaid.model.Complaint;
 import com.aram.legalaid.repository.AIResultRepository;
 import com.aram.legalaid.repository.ComplaintRepository;
-import com.aram.legalaid.util.AuthorityMapper;
 import com.aram.legalaid.util.DelimitedStringUtil;
-import com.aram.legalaid.util.DocumentChecklistMapper;
-import com.aram.legalaid.util.NextStepMapper;
+import com.aram.legalaid.dto.AiTriageResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import com.aram.legalaid.dto.AiTriageResponse;
 
 @Service
 public class AIAnalysisService {
@@ -29,6 +23,9 @@ public class AIAnalysisService {
     private final MongoLogService mongoLogService;
     private final AIClientService aiClientService;
     private final AuditLogService auditLogService;
+    private final FallbackAIAnalysisService fallbackAIAnalysisService;
+    private final com.aram.legalaid.repository.CaseCostEstimateRepository caseCostEstimateRepository;
+    private final CostEstimateService costEstimateService;
 
     public AIAnalysisService(
             AIResultRepository aiResultRepository, 
@@ -36,7 +33,10 @@ public class AIAnalysisService {
             MapperService mapperService, 
             MongoLogService mongoLogService,
             AIClientService aiClientService,
-            AuditLogService auditLogService
+            AuditLogService auditLogService,
+            FallbackAIAnalysisService fallbackAIAnalysisService,
+            com.aram.legalaid.repository.CaseCostEstimateRepository caseCostEstimateRepository,
+            CostEstimateService costEstimateService
     ) {
         this.aiResultRepository = aiResultRepository;
         this.complaintRepository = complaintRepository;
@@ -44,50 +44,65 @@ public class AIAnalysisService {
         this.mongoLogService = mongoLogService;
         this.aiClientService = aiClientService;
         this.auditLogService = auditLogService;
+        this.fallbackAIAnalysisService = fallbackAIAnalysisService;
+        this.caseCostEstimateRepository = caseCostEstimateRepository;
+        this.costEstimateService = costEstimateService;
     }
-
-    private static final Map<ComplaintCategory, List<String>> CATEGORY_KEYWORDS = Map.of(
-            ComplaintCategory.LABOUR_DISPUTE, List.of("salary", "wage", "employer", "employee", "job", "termination", "company", "sambalam", "velai", "kudukala", "tankha", "kaam", "mazdoori"),
-            ComplaintCategory.CONSUMER_COMPLAINT, List.of("refund", "product", "damaged", "seller", "order", "invoice", "delivery", "warranty", "mobile", "phone", "bill", "kharid", "vastu"),
-            ComplaintCategory.CYBER_CRIME, List.of("upi", "fraud", "scam", "otp", "bank", "account", "transaction", "hacked", "online fraud", "cyber", "password"),
-            ComplaintCategory.PROPERTY_CIVIL_DISPUTE, List.of("land", "property", "house", "neighbour", "neighbor", "encroach", "patta", "deed", "boundary", "nilam", "zameen", "bhoomi"),
-            ComplaintCategory.WOMEN_SAFETY_DOMESTIC_VIOLENCE, List.of("husband", "wife", "domestic", "violence", "beating", "harassment", "abuse", "dowry", "threaten", "adikraru", "mahila", "woman", "women"),
-            ComplaintCategory.CRIMINAL_COMPLAINT, List.of("theft", "stole", "stolen", "attack", "assault", "murder", "kidnap", "police", "bike stolen", "robbery"),
-            ComplaintCategory.GENERAL_LEGAL_AID, List.of("legal help", "legal aid", "advice", "guidance", "case", "notice")
-    );
-
-    private static final List<String> CRITICAL_KEYWORDS = List.of("kill", "murder", "rape", "kidnap", "danger", "life threat", "suicide", "blood", "weapon", "emergency");
-    private static final List<String> HIGH_KEYWORDS = List.of("threat", "threatening", "violence", "assault", "abuse", "harassment", "fraud", "hacked", "bank fraud", "beating");
-    private static final List<String> URGENCY_KEYWORDS = List.of("urgent", "immediate", "help", "now", "danger", "emergency", "today", "quick");
 
     @Transactional
     public AIResult analyzeAndSave(Complaint complaint) {
         Optional<AIResult> existing = aiResultRepository.findByComplaint(complaint);
         if (existing.isPresent()) return existing.get();
 
-        String rawText = complaint.getDescription() + " " + Optional.ofNullable(complaint.getTranscribedText()).orElse("");
-        String text = normalize(rawText);
+        // 1. Fetch previous complaints for this user to calculate similarity
+        List<Complaint> previous = complaintRepository.findByUserOrderByCreatedAtDesc(complaint.getUser());
+        List<Map<String, Object>> existingPayloads = new ArrayList<>();
+        for (Complaint p : previous) {
+            if (!p.getId().equals(complaint.getId())) {
+                existingPayloads.add(Map.of(
+                    "id", p.getId(),
+                    "title", p.getTitle() != null ? p.getTitle() : "",
+                    "description", p.getDescription() != null ? p.getDescription() : ""
+                ));
+            }
+        }
 
-        // 1. Invoke external FastAPI via AIClientService
+        // 2. Invoke external FastAPI via AIClientService
         AiTriageResponse triageRes = aiClientService.analyzeComplaint(
+            complaint.getTitle(),
             complaint.getDescription(),
             complaint.getLanguage(),
             complaint.getDistrict(),
-            complaint.isSensitive()
+            complaint.isSensitive(),
+            complaint.getPreferredHelperGender() != null ? complaint.getPreferredHelperGender().name() : "ANY",
+            existingPayloads
         );
 
-        // 2. Map fields from external model outputs
+        // Check if FastAPI failed and returned a fallback response
+        if (triageRes.fallbackUsed()) {
+            System.out.println("FastAPI service returned fallback. Running FallbackAIAnalysisService.");
+            return fallbackAIAnalysisService.analyzeAndSave(complaint);
+        }
+
+        // 3. Map fields from external model outputs
         ComplaintCategory category = mapCategory(triageRes.category());
         PriorityLevel priorityLevel = mapPriority(triageRes.priority());
-        int score = triageRes.priorityScore();
-        double confidence = triageRes.confidence();
+        
+        int score = switch (priorityLevel) {
+            case LOW -> 30;
+            case MEDIUM -> 55;
+            case HIGH -> 78;
+            case CRITICAL -> 92;
+        };
+        
+        double confidence = triageRes.categoryConfidence();
         String authority = triageRes.recommendedAuthority();
         List<String> docs = triageRes.requiredDocuments();
         List<String> nextSteps = triageRes.nextSteps();
         boolean manualReview = triageRes.manualReviewRequired();
 
-        // 3. Fallback logic: check reason or safety overrides
-        String reason = "External AI Model prediction: " + triageRes.category() + " category, with confidence " + triageRes.confidence() + ".";
+        String reason = triageRes.explanation() != null ? triageRes.explanation() : 
+                "ML model prediction: " + triageRes.category() + " category, confidence " + confidence;
 
         AIResult result = new AIResult();
         result.setComplaint(complaint);
@@ -100,6 +115,9 @@ public class AIAnalysisService {
         result.setRequiredDocuments(DelimitedStringUtil.join(docs));
         result.setNextSteps(DelimitedStringUtil.join(nextSteps));
         result.setManualReviewRequired(manualReview);
+        result.setFallbackUsed(false);
+        result.setModelVersion(triageRes.modelVersion() != null ? triageRes.modelVersion() : "aram_ml_v1.0.0");
+        
         AIResult saved = aiResultRepository.save(result);
 
         complaint.setCategory(category);
@@ -113,11 +131,39 @@ public class AIAnalysisService {
                 || priorityLevel == PriorityLevel.HIGH
                 || complaint.isSensitive();
         complaint.setHighRisk(highRisk);
+        
         if (highRisk) {
-            auditLogService.log("HIGH_RISK_FLAGGED", "SYSTEM", "High risk flagged automatically for complaint ID " + complaint.getId());
+            auditLogService.log("HIGH_RISK_FLAGGED", "SYSTEM", "High risk flagged automatically by ML triage for complaint ID " + complaint.getId());
         }
 
         complaintRepository.save(complaint);
+
+        // Generate and save CaseCostEstimate
+        try {
+            Map<String, Object> costCalc = costEstimateService.calculateEstimate(
+                category.name(), priorityLevel.name(), authority, complaint.getDistrict(), docs.size(), true
+            );
+            
+            com.aram.legalaid.model.CaseCostEstimate costEstimate = new com.aram.legalaid.model.CaseCostEstimate();
+            costEstimate.setComplaintId(complaint.getId());
+            costEstimate.setCategory(category.name());
+            costEstimate.setAuthorityType(authority);
+            costEstimate.setEstimatedMinAmount((Integer) costCalc.get("estimatedMinAmount"));
+            costEstimate.setEstimatedMaxAmount((Integer) costCalc.get("estimatedMaxAmount"));
+            costEstimate.setCurrency((String) costCalc.get("currency"));
+            costEstimate.setFreeLegalAidAvailable((Boolean) costCalc.get("freeLegalAidAvailable"));
+            costEstimate.setIncludes((String) costCalc.get("includes"));
+            costEstimate.setExcludes((String) costCalc.get("excludes"));
+            costEstimate.setNotes((String) costCalc.get("notes"));
+            costEstimate.setEstimateSource("SYSTEM");
+            costEstimate.setVerifiedByAdmin(false);
+            costEstimate.setVerifiedByLegalGuide(false);
+            
+            caseCostEstimateRepository.save(costEstimate);
+            auditLogService.log("COST_ESTIMATE_GENERATED", "SYSTEM", "Generated cost estimate for complaint ID " + complaint.getId());
+        } catch (Exception e) {
+            System.err.println("Failed to calculate/save cost estimate: " + e.getMessage());
+        }
 
         Map<String, Object> log = new LinkedHashMap<>();
         log.put("complaintId", complaint.getId());
@@ -126,6 +172,7 @@ public class AIAnalysisService {
         log.put("priorityScore", score);
         log.put("priority", priorityLevel.name());
         log.put("manualReviewRequired", manualReview);
+        log.put("modelVersion", result.getModelVersion());
         mongoLogService.log("ai_classification_logs", log);
 
         return saved;
@@ -160,94 +207,4 @@ public class AIAnalysisService {
     public AIResultResponse response(AIResult result) {
         return mapperService.toAIResultResponse(result);
     }
-
-    private CategoryPrediction classify(String text) {
-        ComplaintCategory bestCategory = ComplaintCategory.GENERAL_LEGAL_AID;
-        int bestScore = 0;
-        List<String> matched = new ArrayList<>();
-
-        for (Map.Entry<ComplaintCategory, List<String>> entry : CATEGORY_KEYWORDS.entrySet()) {
-            int score = 0;
-            List<String> localMatched = new ArrayList<>();
-            for (String keyword : entry.getValue()) {
-                if (text.contains(keyword.toLowerCase())) {
-                    score++;
-                    localMatched.add(keyword);
-                }
-            }
-            if (score > bestScore) {
-                bestScore = score;
-                bestCategory = entry.getKey();
-                matched = localMatched;
-            }
-        }
-
-        if (bestScore == 0) {
-            return new CategoryPrediction(ComplaintCategory.GENERAL_LEGAL_AID, 0.45, List.of());
-        }
-        double confidence = Math.min(0.95, 0.55 + (bestScore * 0.10));
-        return new CategoryPrediction(bestCategory, confidence, matched);
-    }
-
-    private int calculatePriorityScore(String text, ComplaintCategory category, boolean sensitive) {
-        int score = switch (category) {
-            case WOMEN_SAFETY_DOMESTIC_VIOLENCE -> 70;
-            case CRIMINAL_COMPLAINT -> 60;
-            case CYBER_CRIME -> 55;
-            case PROPERTY_CIVIL_DISPUTE -> 40;
-            case LABOUR_DISPUTE -> 35;
-            case CONSUMER_COMPLAINT -> 30;
-            case GENERAL_LEGAL_AID -> 20;
-        };
-        score += countAny(text, CRITICAL_KEYWORDS) * 15;
-        score += countAny(text, HIGH_KEYWORDS) * 8;
-        score += countAny(text, URGENCY_KEYWORDS) * 5;
-        if (sensitive) score += 12;
-        if (text.contains("money") || text.contains("amount") || text.contains("rs") || text.contains("₹")) score += 5;
-        score += durationScore(text);
-        return Math.max(0, Math.min(100, score));
-    }
-
-    private int durationScore(String text) {
-        Pattern pattern = Pattern.compile("(\\d+)\\s*(month|months|maasam|mahine|year|years)");
-        Matcher matcher = pattern.matcher(text);
-        if (matcher.find()) {
-            int value = Integer.parseInt(matcher.group(1));
-            String unit = matcher.group(2);
-            if (unit.startsWith("year")) return 20;
-            if (value >= 3) return 15;
-            if (value >= 1) return 8;
-        }
-        return 0;
-    }
-
-    private PriorityLevel priorityLevel(int score) {
-        if (score >= 90) return PriorityLevel.CRITICAL;
-        if (score >= 70) return PriorityLevel.HIGH;
-        if (score >= 40) return PriorityLevel.MEDIUM;
-        return PriorityLevel.LOW;
-    }
-
-    private int countAny(String text, List<String> keywords) {
-        int count = 0;
-        for (String keyword : keywords) {
-            if (text.contains(keyword.toLowerCase())) count++;
-        }
-        return count;
-    }
-
-    private String normalize(String text) {
-        return text == null ? "" : text.toLowerCase(Locale.ROOT).replaceAll("\\s+", " ").trim();
-    }
-
-    private String buildReason(String text, ComplaintCategory category, List<String> matchedKeywords, PriorityLevel priority, boolean sensitive) {
-        String keywordText = matchedKeywords.isEmpty() ? "general legal issue terms" : String.join(", ", matchedKeywords);
-        StringBuilder builder = new StringBuilder();
-        builder.append("Detected ").append(category.getDisplayName()).append(" based on keywords: ").append(keywordText).append(". ");
-        builder.append("Priority is ").append(priority).append(" based on severity, urgency and case type.");
-        if (sensitive) builder.append(" Privacy mode is enabled because the complaint was marked sensitive.");
-        return builder.toString();
-    }
-
-    private record CategoryPrediction(ComplaintCategory category, double confidence, List<String> matchedKeywords) {}
 }

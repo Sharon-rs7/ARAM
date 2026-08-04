@@ -67,6 +67,17 @@ public class Complaint {
     private Double voiceTranscriptConfidence;
 
     @Column(length = 50)
+    private String inputLanguage;
+
+    @Column(length = 50)
+    private String detectedLanguage;
+
+    private Double languageConfidence;
+
+    @Column(nullable = false)
+    private boolean transcriptConfirmed = false;
+
+    @Column(length = 50)
     private String preferredResponseLanguage;
 
     @Enumerated(EnumType.STRING)
@@ -201,6 +212,19 @@ public class Complaint {
     public void setOriginalText(String originalText) { this.originalText = originalText; }
     public String getOriginalLanguage() { return originalLanguage; }
     public void setOriginalLanguage(String originalLanguage) { this.originalLanguage = originalLanguage; }
+    
+    public String getInputLanguage() { return inputLanguage; }
+    public void setInputLanguage(String inputLanguage) { this.inputLanguage = inputLanguage; }
+    
+    public String getDetectedLanguage() { return detectedLanguage; }
+    public void setDetectedLanguage(String detectedLanguage) { this.detectedLanguage = detectedLanguage; }
+    
+    public Double getLanguageConfidence() { return languageConfidence; }
+    public void setLanguageConfidence(Double languageConfidence) { this.languageConfidence = languageConfidence; }
+    
+    public boolean isTranscriptConfirmed() { return transcriptConfirmed; }
+    public void setTranscriptConfirmed(boolean transcriptConfirmed) { this.transcriptConfirmed = transcriptConfirmed; }
+
     public String getNormalizedText() { return normalizedText; }
     public void setNormalizedText(String normalizedText) { this.normalizedText = normalizedText; }
     public String getTranslatedText() { return translatedText; }
