@@ -10,3 +10,9 @@ __pycache__/
 *.log
 ai-service/.pytest_cache/
 *.pyc
+mysql_clean/
+mysql_data_clean/
+mysql_data_standalone/
+mysql_local_data/
+temp_mysql_data/
+_cleanup_archive/

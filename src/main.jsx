@@ -5,7 +5,6 @@ import { AuthProvider } from './context/AuthContext.jsx';
 import { ThemeProvider } from './context/ThemeContext.jsx';
 import { Toaster } from 'sonner';
 import './index.css';
-import './styles/global.css';
 import './styles/theme.css';
 import './styles/responsive.css';
 
