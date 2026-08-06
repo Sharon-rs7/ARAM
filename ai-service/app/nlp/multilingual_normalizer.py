@@ -10,7 +10,7 @@ def normalize_text(text: str) -> dict:
             "tokens": []
         }
 
-    # Detect language first
+    # Detect language first before normalization
     lang_res = language_detector.detect(text)
     detected_lang = lang_res["language"]
 
@@ -19,12 +19,11 @@ def normalize_text(text: str) -> dict:
     normalized = text.lower().strip()
     normalized = re.sub(r"\s+", " ", normalized)
 
-    # 2. Remove repeated letters (e.g. "salaryyyy" -> "salary", "pleaseeee" -> "please")
-    # Only collapse 3 or more repeating characters to 1 to preserve double letters like "ee", "ll", "oo"
+    # 2. Remove repeated letters
     normalized = re.sub(r"(.)\1{2,}", r"\1", normalized)
 
-    # 3. Handle common transliteration and translation variants for Tanglish and Native Tamil Script
-    if detected_lang in ["ta-en", "ta"] or any(w in normalized for w in ["tharala", "tarala", "kudukala", "sambalam", "enaku", "rendu", "moonu", "maasam", "சம்பளம்", "முதலாளி", "மாதங்களாக", "தரவில்லை"]):
+    # 3. Handle common transliteration and translation variants for Tamil/Tanglish
+    if detected_lang == "ta":
         replacements = {
             # Native Tamil Script
             r"சம்பளம்": "salary",
@@ -61,9 +60,23 @@ def normalize_text(text: str) -> dict:
         for pattern, repl in replacements.items():
             normalized = re.sub(pattern, repl, normalized)
 
-    # 4. Handle common transliteration and translation variants for Hinglish
-    elif detected_lang in ["hi-en", "hi"] or any(w in normalized for w in ["mujhe", "nahi", "mili", "mahine"]):
+    # 4. Handle common transliteration and translation variants for Hindi/Hinglish
+    elif detected_lang == "hi":
         replacements = {
+            # Native Hindi Script
+            r"वेतन बकाया": "pending wages",
+            r"वेतन": "salary",
+            r"मालिक": "employer",
+            r"काम": "work",
+            r"पैसा": "money",
+            r"महीने": "months",
+            r"महीना": "month",
+            r"नहीं": "not",
+            r"मिला": "received",
+            r"घर": "house",
+            r"जमीन": "land",
+            r"बकाया": "pending",
+            # Hinglish Romanized Script
             r"\bmujhe\b": "my",
             r"\bmujhae\b": "my",
             r"\bnahi\b": "not",

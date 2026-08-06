@@ -97,7 +97,7 @@ public class Complaint {
     @Column(nullable = false, length = 40)
     private ComplaintStatus status = ComplaintStatus.SUBMITTED;
 
-    @Column(nullable = false)
+    @Column(name = "sensitivity_flag", nullable = false)
     private boolean sensitive = false;
 
     @Enumerated(EnumType.STRING)

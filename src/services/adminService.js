@@ -189,6 +189,18 @@ export const adminService = {
     return res.data;
   },
 
+  updateComplaintStatus: async (complaintId, status, note = "") => {
+    if (USE_MOCKS) {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      const complaints = getMockComplaints();
+      const updated = complaints.map(c => c.id === complaintId ? { ...c, status } : c);
+      setMockComplaints(updated);
+      return { success: true };
+    }
+    const res = await api.put(`/admin/complaints/${complaintId}/status`, { status, note });
+    return res.data;
+  },
+
   getRecommendedGuides: async (complaintId) => {
     if (USE_MOCKS) {
       await new Promise((resolve) => setTimeout(resolve, 300));

@@ -7,7 +7,14 @@ export const complaintService = {
       await new Promise((resolve) => setTimeout(resolve, 300));
       return { similarComplaintFound: false, similarityScore: 0.0 };
     }
-    const res = await api.post("/complaints/check-similarity", payload);
+    let category = payload.category;
+    if (category === "PROPERTY_DISPUTE") {
+      category = "PROPERTY_CIVIL_DISPUTE";
+    } else if (category === "GOVERNMENT_SCHEME") {
+      category = "GENERAL_LEGAL_AID";
+    }
+    const apiPayload = { ...payload, category };
+    const res = await api.post("/complaints/check-similarity", apiPayload);
     return res.data;
   },
 
@@ -47,8 +54,19 @@ export const complaintService = {
       return newComplaint;
     }
     
-    const res = await api.post("/complaints", payload);
+    let category = payload.category;
+    if (category === "PROPERTY_DISPUTE") {
+      category = "PROPERTY_CIVIL_DISPUTE";
+    } else if (category === "GOVERNMENT_SCHEME") {
+      category = "GENERAL_LEGAL_AID";
+    }
+    const apiPayload = { ...payload, category };
+    const res = await api.post("/complaints", apiPayload);
     return res.data;
+  },
+
+  createComplaint: async (payload) => {
+    return complaintService.submitComplaint(payload);
   },
 
   getMyComplaints: async () => {

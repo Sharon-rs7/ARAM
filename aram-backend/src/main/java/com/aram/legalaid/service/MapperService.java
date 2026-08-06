@@ -36,7 +36,9 @@ public class MapperService {
                 DelimitedStringUtil.split(result.getRequiredDocuments()), DelimitedStringUtil.split(result.getNextSteps()),
                 result.isManualReviewRequired(), result.getCreatedAt(),
                 result.getDetectedLanguage(), result.getTranslatedSummary(),
-                result.getSpokenSummaryText(), result.isReadAloudAvailable()
+                result.getSpokenSummaryText(), result.isReadAloudAvailable(),
+                result.getComplexity() != null ? result.getComplexity() : "MEDIUM",
+                result.getDetectedIssues() != null ? DelimitedStringUtil.split(result.getDetectedIssues()) : java.util.List.of()
         );
     }
 

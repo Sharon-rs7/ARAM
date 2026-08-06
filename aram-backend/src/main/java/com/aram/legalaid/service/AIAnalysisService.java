@@ -78,15 +78,14 @@ public class AIAnalysisService {
             existingPayloads
         );
 
-        // Check if FastAPI failed and returned a fallback response
+        // Throw exception if fallback is flagged
         if (triageRes.fallbackUsed()) {
-            System.out.println("FastAPI service returned fallback. Running FallbackAIAnalysisService.");
-            return fallbackAIAnalysisService.analyzeAndSave(complaint);
+            throw new RuntimeException("AI analysis service failed to classify complaint using ML models.");
         }
 
         // 3. Map fields from external model outputs
-        ComplaintCategory category = mapCategory(triageRes.category());
-        PriorityLevel priorityLevel = mapPriority(triageRes.priority());
+        ComplaintCategory category = complaint.getCategory() != null ? complaint.getCategory() : mapCategory(triageRes.category());
+        PriorityLevel priorityLevel = complaint.getPriority() != null ? complaint.getPriority() : mapPriority(triageRes.priority());
         
         int score = switch (priorityLevel) {
             case LOW -> 30;
@@ -117,6 +116,12 @@ public class AIAnalysisService {
         result.setManualReviewRequired(manualReview);
         result.setFallbackUsed(false);
         result.setModelVersion(triageRes.modelVersion() != null ? triageRes.modelVersion() : "aram_ml_v1.0.0");
+        if (triageRes.detectedIssues() != null) {
+            result.setDetectedIssues(String.join(",", triageRes.detectedIssues()));
+        }
+        if (triageRes.complexity() != null) {
+            result.setComplexity(triageRes.complexity());
+        }
         
         AIResult saved = aiResultRepository.save(result);
 

@@ -17,7 +17,11 @@ public record AiTriageResponse(
     String modelVersion,
     boolean fallbackUsed,
     String explanation,
-    List<String> nextSteps
+    List<String> nextSteps,
+    List<String> detectedIssues,
+    List<String> urgencyFlags,
+    String complexity,
+    String recommendedRouting
 ) {
     public record CategoryProbability(String category, double probability) {}
 }

@@ -197,7 +197,7 @@ const DashboardLayout = ({ children }) => {
   };
 
   return (
-    <div className="min-h-screen md:h-screen md:overflow-hidden bg-[#F6F8FC] flex flex-col pb-16 md:pb-0">
+    <div className="min-h-screen md:h-screen md:overflow-hidden bg-background flex flex-col pb-16 md:pb-0">
       {/* Mobile Drawer (Visible on < md screens) */}
       {isMobileOpen && (
         <div className="fixed inset-0 z-50 flex md:hidden">

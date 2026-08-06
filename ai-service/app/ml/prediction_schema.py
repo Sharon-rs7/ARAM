@@ -38,3 +38,8 @@ class ComplaintMLResponse(BaseModel):
     headline: Optional[str] = ""
     plainSummary: Optional[str] = ""
     similarComplaintFound: bool
+    primaryCategory: Optional[str] = None
+    detectedIssues: Optional[List[str]] = []
+    urgencyFlags: Optional[List[str]] = []
+    complexity: Optional[str] = "MEDIUM"
+    recommendedRouting: Optional[str] = "District Legal Services Authority"

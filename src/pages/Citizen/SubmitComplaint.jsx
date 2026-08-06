@@ -1,298 +1,245 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import Input from "@/components/common/Input";
 import Button from "@/components/common/Button";
-import Card from "@/components/common/Card";
 import { 
-  Upload, Mic, MapPin, FileText, BrainCircuit, Save, Send, Trash, 
-  ShieldAlert, Sparkles, ChevronLeft, ChevronRight, CheckCircle, Copy, 
-  Share2, WifiOff, Wifi, Volume2, ShieldCheck, Lock, Briefcase, 
-  CreditCard, ShoppingBag, Home, FileSpreadsheet, Info, Shield, EyeOff, LogOut
+  Upload, Mic, MapPin, Sparkles, ArrowRight, ArrowLeft,
+  CheckCircle, FileText, Globe, Home, Square
 } from "lucide-react";
 import { complaintService } from "../../services/complaintService";
 import { documentService } from "../../services/documentService";
+import { speechService } from "../../services/speechService";
+import { aiService } from "../../services/aiService";
 import { offlineDraftService } from "../../services/offlineDraftService";
 import { toast } from "sonner";
 
-// Accessibility voice components
-import VoiceRecorder from "@/components/voice/VoiceRecorder";
-import ReadAloudButton from "@/components/voice/ReadAloudButton";
-import SimpleModeToggle from "@/components/voice/SimpleModeToggle";
-
-const VISUAL_CATEGORIES = [
-  {
-    id: "LABOUR_DISPUTE",
-    name: "Labour & Salary Issue",
-    tamil: "சம்பளம் / வேலை பிரச்சனை",
-    icon: Briefcase,
-    color: "from-blue-500 to-indigo-600",
-    bgColor: "bg-blue-50 border-blue-200 text-blue-900"
-  },
-  {
-    id: "WOMEN_SAFETY_DOMESTIC_VIOLENCE",
-    name: "Personal Safety & Welfare",
-    tamil: "தனிப்பட்ட பாதுகாப்பு & நலன்",
-    icon: Shield,
-    color: "from-purple-500 to-pink-600",
-    bgColor: "bg-purple-50 border-purple-200 text-purple-900",
-    discreteNote: "Discrete category for personal & safety concerns"
-  },
-  {
-    id: "CYBER_CRIME",
-    name: "Cyber Fraud & Bank OTP Scam",
-    tamil: "சைபர் ஏமாற்று / வங்கி மோசடி",
-    icon: CreditCard,
-    color: "from-amber-500 to-orange-600",
-    bgColor: "bg-amber-50 border-amber-200 text-amber-900"
-  },
-  {
-    id: "CONSUMER_COMPLAINT",
-    name: "Consumer & Defective Product",
-    tamil: "நுகர்வோர் / பொருள் பிரச்சனை",
-    icon: ShoppingBag,
-    color: "from-emerald-500 to-teal-600",
-    bgColor: "bg-emerald-50 border-emerald-200 text-emerald-900"
-  },
-  {
-    id: "PROPERTY_DISPUTE",
-    name: "Property & Land Dispute",
-    tamil: "நிலம் / சொத்து பிரச்சனை",
-    icon: Home,
-    color: "from-indigo-500 to-violet-600",
-    bgColor: "bg-indigo-50 border-indigo-200 text-indigo-900"
-  },
-  {
-    id: "GOVERNMENT_SCHEME",
-    name: "Government Scheme & Pension",
-    tamil: "அரசு திட்டம் / ஓய்வூதியம்",
-    icon: FileSpreadsheet,
-    color: "from-cyan-500 to-blue-600",
-    bgColor: "bg-cyan-50 border-cyan-200 text-cyan-900"
-  }
-];
-
-const DISTRICTS = [
-  "Coimbatore", "Chennai", "Madurai", "Salem", "Tiruchirappalli",
-  "Tirunelveli", "Erode", "Vellore", "Thanjavur", "Dindigul", "Kanchipuram"
-];
-
 const SubmitComplaint = () => {
   const navigate = useNavigate();
-
-  const [formData, setFormData] = useState({
-    title: "",
-    category: "LABOUR_DISPUTE",
-    department: "",
-    priority: "MEDIUM",
-    location: "Coimbatore",
-    description: "",
-    identityVisibility: "VISIBLE",
-    language: "ta-IN"
-  });
-
-  const [simpleMode, setSimpleMode] = useState(() => {
-    return localStorage.getItem("aram_simple_mode") !== "false";
-  });
-
-  const [wizardStep, setWizardStep] = useState(1);
-  const [loading, setLoading] = useState(false);
-  const [uploadingDoc, setUploadingDoc] = useState(false);
+  
+  // Tab selector state: 'simple' or 'detailed'
+  const [mode, setMode] = useState("simple");
+  
+  // Multi-step sub-views: 'intake' -> 'analysis' -> 'success'
+  const [currentStep, setCurrentStep] = useState("intake");
+  
+  // Main form states
+  const [description, setDescription] = useState("");
+  const [title, setTitle] = useState("");
+  const [location, setLocation] = useState("Coimbatore");
+  const [language, setLanguage] = useState("Tamil"); // 'Tamil', 'English', 'Hindi'
+  const [incidentDate, setIncidentDate] = useState("");
+  const [peopleInvolved, setPeopleInvolved] = useState("");
   const [evidenceFile, setEvidenceFile] = useState(null);
-  const [ocrData, setOcrData] = useState(null);
-  const [disclaimerAgreed, setDisclaimerAgreed] = useState(false);
-  const [sensitiveComplaint, setSensitiveComplaint] = useState(false);
-  const [preferWoman, setPreferWoman] = useState(false);
   const [rawFile, setRawFile] = useState(null);
-  const [createdComplaint, setCreatedComplaint] = useState(null);
-  const [similarComplaintAlert, setSimilarComplaintAlert] = useState({ show: false, complaintId: null, score: 0 });
-  const [proceedAnywayConfirmed, setProceedAnywayConfirmed] = useState(false);
-  const [safeContactMethod, setSafeContactMethod] = useState("APP");
-  const [safeContactTime, setSafeContactTime] = useState("ANYTIME");
+  
+  // AI analysis extraction states (reviewed before submit)
+  const [aiSummary, setAiSummary] = useState("");
+  const [aiConcerns, setAiConcerns] = useState([]);
+  const [aiPriority, setAiPriority] = useState("MEDIUM");
+  const [aiCategory, setAiCategory] = useState("GENERAL_LEGAL_AID");
+  
+  // States for final created complaint
+  const [createdComplaintId, setCreatedComplaintId] = useState(null);
+  
+  const [loading, setLoading] = useState(false);
+  const [recording, setRecording] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState(null);
 
-  const [hasChanges, setHasChanges] = useState(false);
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [offlineDraftRestored, setOfflineDraftRestored] = useState(false);
+  // Draft Auto-save notice state
+  const [draftStatusText, setDraftStatusText] = useState("");
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-    setHasChanges(true);
-  };
-
-  // Discrete Quick Exit for shared device safety
-  const handleQuickExit = () => {
-    setFormData({
-      title: "",
-      category: "LABOUR_DISPUTE",
-      department: "",
-      priority: "MEDIUM",
-      location: "Coimbatore",
-      description: "",
-      identityVisibility: "VISIBLE",
-      language: "ta-IN"
-    });
-    setSensitiveComplaint(false);
-    setPreferWoman(false);
-    setEvidenceFile(null);
-    setOcrData(null);
-    offlineDraftService.clearDraft();
-    window.location.href = "https://www.google.com";
-  };
-
-  // Monitor network online/offline transitions
+  // Restore Draft on mount
   useEffect(() => {
-    const handleOnline = () => {
-      setIsOnline(true);
-      toast.success("Network connection restored! Synchronizing with ARAM server...");
-    };
-    const handleOffline = () => {
-      setIsOnline(false);
-      toast.warning("Network connection lost. Your draft is auto-saved locally in device storage.");
-    };
-    window.addEventListener("online", handleOnline);
-    window.addEventListener("offline", handleOffline);
-    return () => {
-      window.removeEventListener("online", handleOnline);
-      window.removeEventListener("offline", handleOffline);
-    };
-  }, []);
-
-  // Restore draft from IndexedDB on initial mount
-  useEffect(() => {
-    const restoreIndexedDBDraft = async () => {
-      const dbDraft = await offlineDraftService.getDraft();
-      if (dbDraft && (dbDraft.title || dbDraft.description)) {
-        setFormData({
-          title: dbDraft.title || "",
-          category: dbDraft.category || "LABOUR_DISPUTE",
-          department: dbDraft.department || "",
-          priority: dbDraft.priority || "MEDIUM",
-          location: dbDraft.location || "Coimbatore",
-          description: dbDraft.description || "",
-          identityVisibility: dbDraft.identityVisibility || "VISIBLE",
-          language: dbDraft.language || "ta-IN"
-        });
-        setHasChanges(true);
-        setOfflineDraftRestored(true);
-        toast.info("Auto-restored complaint draft from device storage (IndexedDB).");
+    const restoreDraft = async () => {
+      try {
+        const draft = await offlineDraftService.getDraft();
+        if (draft) {
+          if (draft.mode) setMode(draft.mode);
+          if (draft.title) setTitle(draft.title);
+          if (draft.description) setDescription(draft.description);
+          if (draft.location) setLocation(draft.location);
+          if (draft.language) setLanguage(draft.language);
+          if (draft.incidentDate) setIncidentDate(draft.incidentDate);
+          if (draft.peopleInvolved) setPeopleInvolved(draft.peopleInvolved);
+          setDraftStatusText("Draft restored");
+          setTimeout(() => setDraftStatusText(""), 3000);
+        }
+      } catch (err) {
+        console.warn("Failed to restore draft:", err);
       }
     };
-    restoreIndexedDBDraft();
+    restoreDraft();
   }, []);
 
-  // Continuous auto-save to IndexedDB
+  // Debounced Auto-save to Local IndexedDB Storage
   useEffect(() => {
-    const isSensitive = sensitiveComplaint || preferWoman || formData.category === "WOMEN_SAFETY_DOMESTIC_VIOLENCE";
-    if (hasChanges && !isSensitive && (formData.title || formData.description)) {
-      offlineDraftService.saveDraft(formData);
-    } else if (isSensitive) {
-      offlineDraftService.clearDraft();
+    if (!description.trim() && !title.trim()) {
+      return;
     }
-  }, [formData, sensitiveComplaint, preferWoman, hasChanges]);
 
-  const handleFileUpload = async (e) => {
+    setDraftStatusText("Saving...");
+    const delayDebounceFn = setTimeout(async () => {
+      try {
+        const draftData = {
+          mode,
+          title,
+          description,
+          location,
+          language,
+          incidentDate,
+          peopleInvolved
+        };
+        await offlineDraftService.saveDraft(draftData);
+        setDraftStatusText("✓ Draft saved");
+        setTimeout(() => setDraftStatusText(""), 2000);
+      } catch (err) {
+        console.warn("Failed to auto-save draft:", err);
+      }
+    }, 1000); // 1-second debounce
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [mode, title, description, location, language, incidentDate, peopleInvolved]);
+
+  const handleClearDraft = async () => {
+    try {
+      await offlineDraftService.clearDraft();
+      setTitle("");
+      setDescription("");
+      setLocation("Coimbatore");
+      setIncidentDate("");
+      setPeopleInvolved("");
+      setEvidenceFile(null);
+      setRawFile(null);
+      setDraftStatusText("Draft cleared");
+      toast.success("Draft cleared successfully");
+      setTimeout(() => setDraftStatusText(""), 2000);
+    } catch (err) {
+      toast.error("Failed to clear draft.");
+    }
+  };
+
+  // Handle actual microphone capture & Faster-Whisper backend upload
+  const handleVoiceRecord = async () => {
+    if (recording) {
+      if (mediaRecorder && mediaRecorder.state !== "inactive") {
+        mediaRecorder.stop();
+        mediaRecorder.stream.getTracks().forEach(track => track.stop());
+        setRecording(false);
+      }
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      const chunks = [];
+      
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) chunks.push(e.data);
+      };
+      
+      recorder.onstop = async () => {
+        const audioBlob = new Blob(chunks, { type: "audio/wav" });
+        toast.loading("Uploading voice to Faster-Whisper backend...");
+        try {
+          const langCode = language === "Tamil" ? "ta" : language === "Hindi" ? "hi" : "en";
+          const res = await speechService.transcribeAudio(audioBlob, langCode);
+          if (res && res.transcript) {
+            setDescription(prev => (prev ? prev + " " : "") + res.transcript);
+            toast.success("Voice transcribed successfully!");
+          } else {
+            toast.error("Failed to transcribe voice.");
+          }
+        } catch (err) {
+          toast.error("Faster-Whisper service connection error. Please verify the AI service is running.");
+        } finally {
+          toast.dismiss();
+        }
+      };
+      
+      recorder.start();
+      setMediaRecorder(recorder);
+      setRecording(true);
+      toast.info("Microphone recording... Click mic again to stop.");
+    } catch (err) {
+      toast.error("Microphone permission denied.");
+    }
+  };
+
+  const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     if (file.size > 5 * 1024 * 1024) {
-      toast.error("File size exceeds the 5MB evidence limit.");
+      toast.error("File exceeds 5MB size limit.");
       return;
     }
+    setEvidenceFile(file.name);
+    setRawFile(file);
+    toast.success("Document attached successfully.");
+  };
 
-    setUploadingDoc(true);
-    toast.loading("Analyzing document via OCR...");
-
+  const handleAnalyseWithAi = async () => {
+    if (description.trim().length < 15) {
+      toast.error("Please explain your problem in at least 15 characters.");
+      return;
+    }
+    
+    setLoading(true);
+    toast.loading("Querying backend AI triage service...");
+    
     try {
-      const verifyFormData = new FormData();
-      verifyFormData.append("file", file);
-      verifyFormData.append("expectedDocumentType", "Receipt / Proof Slip");
-      verifyFormData.append("complaintCategory", formData.category);
+      const langCode = language === "Tamil" ? "ta" : language === "Hindi" ? "hi" : "en";
+      const finalTitle = title.trim() || description.slice(0, 40).trim();
       
-      const verifyRes = await documentService.verifyDocument(verifyFormData);
+      const res = await aiService.analyzeComplaint(
+        description,
+        langCode,
+        location,
+        false,
+        finalTitle
+      );
       
-      setEvidenceFile({
-        id: `temp-${Date.now()}`,
-        name: file.name,
-        size: `${(file.size / 1024 / 1024).toFixed(2)} MB`
-      });
-      setRawFile(file);
-      setOcrData(verifyRes);
+      setAiSummary(res.summary || description);
+      setAiPriority(res.priority || "MEDIUM");
+      setAiCategory(res.category || "GENERAL_LEGAL_AID");
+      
+      const concernsList = [];
+      if (res.category) concernsList.push(res.category.replace(/_/g, " "));
+      if (res.subcategory) concernsList.push(res.subcategory.replace(/_/g, " "));
+      if (res.priority === "HIGH" || res.priority === "CRITICAL") concernsList.push("High Urgency");
+      
+      setAiConcerns(concernsList.length > 0 ? concernsList : ["General Legal Aid"]);
+      
       toast.dismiss();
-      toast.success("Document analyzed successfully!");
+      setCurrentStep("analysis");
     } catch (err) {
       toast.dismiss();
-      toast.error("OCR scan completed with basic file upload.");
-      setEvidenceFile({
-        id: `doc-${Date.now()}`,
-        name: file.name,
-        size: `${(file.size / 1024 / 1024).toFixed(2)} MB`
-      });
-      setRawFile(file);
+      toast.error("Failed to fetch pre-submit AI analysis from server. Please verify the AI service is running.");
     } finally {
-      setUploadingDoc(false);
+      setLoading(false);
     }
   };
 
-  const handleSubmit = async (e) => {
-    if (e) e.preventDefault();
-
-    const finalTitle = formData.title.trim() || formData.description.slice(0, 40).trim() || "Legal Aid Complaint";
-    const finalDescription = formData.description.trim();
-
-    if (finalDescription.length < 15) {
-      toast.error("Please explain your problem in detail or record your voice.");
-      return;
-    }
-
-    if (!disclaimerAgreed) {
-      toast.error("Please confirm you agree to submit this grievance.");
-      return;
-    }
-
-    if (!proceedAnywayConfirmed) {
-      setLoading(true);
-      try {
-        const checkRes = await complaintService.checkSimilarity({
-          title: finalTitle,
-          description: finalDescription
-        });
-
-        if (checkRes && checkRes.similarComplaintFound && checkRes.similarComplaintIds && checkRes.similarComplaintIds.length > 0) {
-          setSimilarComplaintAlert({
-            show: true,
-            complaintId: checkRes.similarComplaintIds[0],
-            score: checkRes.similarityScore || 0.85
-          });
-          setLoading(false);
-          return;
-        }
-      } catch (simErr) {
-        console.warn("Similarity check failed, proceeding to submit:", simErr);
-      }
-    }
-
+  const handleConfirmSubmit = async () => {
     setLoading(true);
     try {
+      const finalTitle = title.trim() || description.slice(0, 40).trim() || "Legal Aid Complaint";
+      
       const payload = {
         title: finalTitle,
-        category: formData.category,
-        department: formData.department || "Legal Aid Cell",
-        priority: formData.priority,
-        location: formData.location,
-        description: finalDescription,
-        identityVisibility: formData.identityVisibility,
-        sensitiveShield: sensitiveComplaint,
-        preferWomanVolunteer: preferWoman,
-        contactMethod: safeContactMethod,
-        contactTime: safeContactTime,
-        language: formData.language
+        category: aiCategory,
+        location: location,
+        district: location,
+        description: description,
+        priority: aiPriority,
+        language: language === "Tamil" ? "TAMIL" : language === "Hindi" ? "HINDI" : "ENGLISH",
+        identityVisibility: "VISIBLE",
+        inputMode: "TEXT",
+        disclaimerAccepted: true
       };
-
+      
       const res = await complaintService.createComplaint(payload);
-
+      
       if (rawFile && res && res.id) {
         try {
           const docFormData = new FormData();
@@ -301,599 +248,479 @@ const SubmitComplaint = () => {
           docFormData.append("documentType", "EVIDENCE_PROOF");
           await documentService.uploadDocument(docFormData);
         } catch (docErr) {
-          console.warn("Evidence attachment notice:", docErr);
+          console.warn("Evidence upload failed:", docErr);
         }
       }
-
-      setCreatedComplaint(res);
-      setHasChanges(false);
-      offlineDraftService.clearDraft();
-      toast.success("Complaint submitted successfully to ARAM Legal Aid!");
+      
+      await offlineDraftService.clearDraft();
+      setCreatedComplaintId(res.id || `ARAM-${Date.now()}`);
+      setCurrentStep("success");
+      toast.success("Complaint submitted successfully!");
     } catch (err) {
-      console.error(err);
-      toast.error("Failed to submit complaint. Please check connection.");
+      toast.error("Failed to register complaint. Please check your connection.");
     } finally {
       setLoading(false);
     }
   };
 
-  const getStepTitle = (step) => {
-    switch (step) {
-      case 1: return "Step 1 of 5: Explain Problem (Voice / Text)";
-      case 2: return "Step 2 of 5: Select Issue Category";
-      case 3: return "Step 3 of 5: Location & Identity Masking";
-      case 4: return "Step 4 of 5: Attach Document (Optional)";
-      case 5: return "Step 5 of 5: Review & Submit";
-      default: return "Step 1 of 5";
-    }
-  };
-
   return (
     <DashboardLayout>
-      {createdComplaint ? (
-        /* Confirmation Screen */
-        <div className="max-w-xl mx-auto py-8 px-4 animate-in fade-in">
-          <Card className="p-8 text-center space-y-6 border border-emerald-100 bg-white shadow-xl rounded-3xl">
-            <div className="mx-auto w-20 h-20 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shadow-inner">
-              <CheckCircle size={44} />
-            </div>
-            <div>
-              <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
-                Grievance Registered Successfully
-              </span>
-              <h2 className="text-2xl font-black text-slate-900 mt-3">Complaint Reference Created</h2>
-              <p className="text-xs text-slate-500 mt-1">
-                Your complaint has been assigned to the legal aid queue in {createdComplaint.location || formData.location}.
-              </p>
-            </div>
-
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Reference ID</span>
-              <div className="text-xl font-mono font-bold text-purple-700">
-                ARAM-2026-{String(createdComplaint.id || "101").replace("cmp-", "").padStart(6, "0")}
-              </div>
-              <div className="flex gap-2 justify-center pt-2">
-                <button
-                  onClick={() => {
-                    const formattedId = `ARAM-2026-${String(createdComplaint.id || "101").replace("cmp-", "").padStart(6, "0")}`;
-                    navigator.clipboard.writeText(formattedId);
-                    toast.success("Reference ID copied to clipboard!");
-                  }}
-                  className="px-3 py-1.5 text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-xl border border-blue-200 transition flex items-center gap-1 cursor-pointer"
-                >
-                  <Copy size={14} /> Copy ID
-                </button>
-                <button
-                  onClick={() => {
-                    const formattedId = `ARAM-2026-${String(createdComplaint.id || "101").replace("cmp-", "").padStart(6, "0")}`;
-                    const text = `My ARAM legal aid complaint ID is ${formattedId}. You can track updates on the ARAM portal.`;
-                    window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
-                  }}
-                  className="px-3 py-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 rounded-xl border border-emerald-200 transition flex items-center gap-1 cursor-pointer"
-                >
-                  <Share2 size={14} /> WhatsApp
-                </button>
-              </div>
-            </div>
-
-            {/* Reassurance Banner (Softened SLA Copy) */}
-            <div className="p-4 rounded-2xl bg-purple-50 border border-purple-200 text-left text-xs text-purple-950 flex items-start gap-3">
-              <ShieldCheck size={24} className="text-purple-600 shrink-0 mt-0.5" />
+      <div className="max-w-xl mx-auto space-y-6 pb-6">
+        
+        {/* VIEW 1: INTAKE SCREEN */}
+        {currentStep === "intake" && (
+          <div className="space-y-6">
+            <div className="flex justify-between items-start">
               <div>
-                <h4 className="font-bold text-purple-900">What Happens Next?</h4>
-                <p className="text-[11px] text-purple-800 mt-0.5 leading-relaxed">
-                  Your grievance is registered in the legal aid queue for {createdComplaint.location || formData.location}. A verified advocate will be assigned to review your file and provide guidance directly on your portal dashboard.
-                </p>
-              </div>
-            </div>
-
-            <div className="space-y-2 pt-2">
-              <Button
-                variant="primary"
-                className="w-full text-sm font-bold py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-2xl"
-                onClick={() => navigate("/citizen/my-complaints")}
-              >
-                Track from My Complaints
-              </Button>
-            </div>
-          </Card>
-        </div>
-      ) : (
-        /* Main Citizen Complaint Submission Form */
-        <div className="max-w-3xl mx-auto space-y-6 py-4 px-2 sm:px-4">
-          
-          {/* Header with Quick Exit Safety Button */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-4">
-            <div>
-              <h1 className="text-2xl font-black text-slate-900 tracking-tight">Citizen Complaint Registration</h1>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Simple step-by-step legal aid filing for all citizens.
-              </p>
-            </div>
-            <div className="flex items-center gap-3 shrink-0">
-              <button
-                type="button"
-                onClick={handleQuickExit}
-                className="px-3 py-1.5 text-xs font-bold text-red-700 bg-red-50 hover:bg-red-100 rounded-xl border border-red-200 transition flex items-center gap-1.5 cursor-pointer shadow-sm"
-                title="Immediately leave and clear form data for safety on shared devices"
-              >
-                <LogOut size={14} /> Quick Exit
-              </button>
-              <SimpleModeToggle onToggle={(val) => setSimpleMode(val)} />
-            </div>
-          </div>
-
-          {/* Network Guard Notification */}
-          {!isOnline && (
-            <div className="rounded-2xl border border-amber-300 bg-amber-50 p-4 text-xs text-amber-950 flex items-center justify-between shadow-sm">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-amber-100 text-amber-700">
-                  <WifiOff size={20} />
-                </div>
-                <div>
-                  <h4 className="font-bold text-amber-900">Network Offline — Saved to Device Storage</h4>
-                  <p className="text-[11px] text-amber-800 mt-0.5">
-                    Your complaint details are saved locally in your device's IndexedDB storage.
-                  </p>
-                </div>
-              </div>
-              <span className="shrink-0 px-2.5 py-1 text-[10px] font-extrabold uppercase bg-amber-200 text-amber-900 rounded-lg">
-                Saved Locally
-              </span>
-            </div>
-          )}
-
-          {/* Main Card Container */}
-          <Card className="p-6 lg:p-8 space-y-6 shadow-xl border border-slate-200 bg-white rounded-3xl">
-            
-            {/* Plain-Language Progress Bar Indicator */}
-            <div className="space-y-2 border-b border-slate-100 pb-4">
-              <div className="flex items-center justify-between text-xs">
-                <span className="font-extrabold text-purple-700 uppercase tracking-wider">{getStepTitle(wizardStep)}</span>
-                <span className="font-bold text-slate-400">Step {wizardStep} of 5 ({wizardStep * 20}%)</span>
-              </div>
-              <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-gradient-to-r from-purple-600 to-indigo-600 transition-all duration-300"
-                  style={{ width: `${wizardStep * 20}%` }}
-                />
-              </div>
-            </div>
-
-            {/* STEP 1: SPEAK OR TYPE PROBLEM (MIC-FIRST HERO INPUT) */}
-            {wizardStep === 1 && (
-              <div className="space-y-6 animate-in fade-in duration-200">
-                <div className="text-center space-y-1">
-                  <h2 className="text-xl font-black text-slate-900">Step 1: Tell Us Your Problem</h2>
-                  <p className="text-xs text-slate-500">
-                    Tap the microphone below and speak clearly in Tamil, Tanglish, or English.
-                  </p>
-                </div>
-
-                {/* Hero Mic Recording Target */}
-                <div className="p-6 rounded-3xl bg-slate-900 text-white text-center space-y-4 shadow-xl border border-slate-800">
-                  <div className="flex justify-center">
-                    <VoiceRecorder
-                      currentLanguage={formData.language}
-                      onTranscriptReady={(text) => {
-                        setFormData((prev) => ({ 
-                          ...prev, 
-                          description: text,
-                          title: prev.title || text.slice(0, 40)
-                        }));
-                        setHasChanges(true);
-                      }}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <span className="text-xs font-extrabold uppercase tracking-widest text-purple-300 block">Primary Entry Method</span>
-                    <p className="text-[11px] text-slate-400">Press the mic button above, speak your grievance, then press stop.</p>
-                  </div>
-                </div>
-
-                {/* Text Fallback Area */}
-                <div className="space-y-3 pt-2">
-                  <div className="flex items-center justify-between">
-                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                      Or Type Your Description Below
-                    </label>
-                    <ReadAloudButton text={formData.description} language={formData.language} />
-                  </div>
-                  <textarea
-                    rows="4"
-                    name="description"
-                    value={formData.description}
-                    onChange={handleChange}
-                    placeholder="Describe what happened, dates, and people involved... (e.g. My company manager has not paid my salary for 3 months)."
-                    className="w-full rounded-2xl border border-slate-200 p-4 text-sm text-slate-800 focus:border-purple-500 focus:ring-2 focus:ring-purple-100 outline-none resize-none bg-slate-50"
-                  />
-                  <Input
-                    label="Short Title (Optional)"
-                    name="title"
-                    value={formData.title}
-                    onChange={handleChange}
-                    placeholder="e.g. Salary Unpaid by Supervisor"
-                    icon={FileText}
-                    className="h-12 text-sm rounded-xl"
-                  />
-                </div>
-
-                {/* Reassurance Banner */}
-                <div className="p-4 rounded-2xl bg-blue-50 border border-blue-200 text-xs text-blue-950 flex items-start gap-3">
-                  <Lock size={20} className="text-blue-600 shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="font-bold text-blue-900">Privacy Guarantee & What Happens Next</h4>
-                    <p className="text-[11px] text-blue-800 mt-0.5 leading-relaxed">
-                      Your voice recording and description are encrypted and private. We analyze your grievance securely to help match you with free legal aid.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Step Controls */}
-                <div className="pt-4 border-t border-slate-100 flex justify-end">
-                  <Button
-                    variant="primary"
-                    onClick={() => {
-                      if (!formData.description.trim() || formData.description.trim().length < 15) {
-                        toast.error("Please speak or type a problem description (minimum 15 characters).");
-                        return;
-                      }
-                      setWizardStep(2);
-                    }}
-                    className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3.5 px-6 rounded-2xl text-sm cursor-pointer"
-                  >
-                    Next: Choose Category <ChevronRight size={16} className="ml-1" />
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {/* STEP 2: CATEGORY SELECTION VISUAL CARDS (WITH DISCRETE SAFETY LABEL) */}
-            {wizardStep === 2 && (
-              <div className="space-y-6 animate-in fade-in duration-200">
-                <div className="text-center space-y-1">
-                  <h2 className="text-xl font-black text-slate-900">Step 2: Choose Issue Category</h2>
-                  <p className="text-xs text-slate-500">
-                    Select the card that best matches your legal problem.
-                  </p>
-                </div>
-
-                {/* Visual Category Grid Cards */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {VISUAL_CATEGORIES.map((cat) => {
-                    const IconComp = cat.icon;
-                    const isSelected = formData.category === cat.id;
-                    return (
-                      <button
-                        type="button"
-                        key={cat.id}
-                        onClick={() => {
-                          setFormData({ ...formData, category: cat.id });
-                          setHasChanges(true);
-                        }}
-                        className={`p-4 rounded-2xl border text-left transition-all flex items-start gap-3 min-h-[72px] cursor-pointer ${
-                          isSelected 
-                            ? `${cat.bgColor} ring-2 ring-purple-600 shadow-md` 
-                            : "bg-white border-slate-200 hover:bg-slate-50 text-slate-800"
-                        }`}
-                      >
-                        <div className={`p-2.5 rounded-xl text-white bg-gradient-to-r ${cat.color} shrink-0 shadow-sm`}>
-                          <IconComp size={22} />
-                        </div>
-                        <div>
-                          <h4 className="font-extrabold text-xs sm:text-sm">{cat.name}</h4>
-                          <p className="text-[11px] opacity-80 mt-0.5 font-medium">{cat.tamil}</p>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {/* Shared Device Safety Note */}
-                <p className="text-[10px] text-slate-400 text-center italic">
-                  Note: "Personal Safety & Welfare" is a discrete label for domestic, harassment, or safety concerns on shared devices.
-                </p>
-
-                {/* Reassurance Banner */}
-                <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-950 flex items-start gap-3">
-                  <Info size={20} className="text-amber-600 shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="font-bold text-amber-900">Category Assistance Guarantee</h4>
-                    <p className="text-[11px] text-amber-800 mt-0.5 leading-relaxed">
-                      Don't worry if you aren't 100% sure of the exact category — our AI classification engine automatically routes your complaint to the correct legal department.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Step Controls */}
-                <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                  <Button variant="secondary" onClick={() => setWizardStep(1)} className="rounded-2xl py-3 text-xs">
-                    <ChevronLeft size={16} className="mr-1" /> Back
-                  </Button>
-                  <Button
-                    variant="primary"
-                    onClick={() => setWizardStep(3)}
-                    className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3.5 px-6 rounded-2xl text-sm cursor-pointer"
-                  >
-                    Next: Location & Identity <ChevronRight size={16} className="ml-1" />
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {/* STEP 3: LOCATION & EXPLICIT IDENTITY MASKING */}
-            {wizardStep === 3 && (
-              <div className="space-y-6 animate-in fade-in duration-200">
-                <div className="text-center space-y-1">
-                  <h2 className="text-xl font-black text-slate-900">Step 3: Location & Identity Masking</h2>
-                  <p className="text-xs text-slate-500">
-                    Specify your district and configure exact identity visibility rules.
-                  </p>
-                </div>
-
-                <div className="space-y-5">
-                  <div className="space-y-1.5">
-                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">Select Your District</label>
-                    <select
-                      name="location"
-                      value={formData.location}
-                      onChange={handleChange}
-                      className="w-full h-12 rounded-2xl border border-slate-200 px-4 text-sm font-semibold text-slate-800 bg-slate-50 focus:border-purple-500 outline-none cursor-pointer"
-                    >
-                      {DISTRICTS.map((d) => (
-                        <option key={d} value={d}>{d} District</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Explicit Identity Masking Definitions */}
-                  <div className="space-y-3 p-5 rounded-2xl border border-slate-200 bg-slate-50 text-xs">
-                    <span className="font-extrabold text-slate-800 uppercase tracking-wider block">Explicit Identity Masking Setting</span>
-                    
-                    <div className="space-y-2">
-                      {[
-                        {
-                          val: "VISIBLE",
-                          title: "Full Visibility (Recommended for General Complaints)",
-                          desc: "The assigned advocate can see your Name, Phone Number, and Address to contact you directly for assistance."
-                        },
-                        {
-                          val: "PARTIAL",
-                          title: "Partial Masking (Phone Revealed Only After Accept)",
-                          desc: "Volunteers see only your Case Alias/ID. Your phone number is revealed ONLY after you accept an advocate's help."
-                        },
-                        {
-                          val: "HIDDEN",
-                          title: "100% Anonymous / Confidential (Strict In-App Portal Only)",
-                          desc: "Your Name, Phone Number, and Address are COMPLETELY HIDDEN from all advocates. Communication happens strictly through the secure in-app portal."
-                        }
-                      ].map((opt) => (
-                        <label
-                          key={opt.val}
-                          className={`p-3.5 rounded-xl border text-left flex items-start gap-3 cursor-pointer transition ${
-                            formData.identityVisibility === opt.val
-                              ? "bg-purple-50 border-purple-300 ring-2 ring-purple-500 text-purple-950"
-                              : "bg-white border-slate-200 text-slate-700 hover:bg-slate-100"
-                          }`}
-                        >
-                          <input
-                            type="radio"
-                            name="identityVisibility"
-                            value={opt.val}
-                            checked={formData.identityVisibility === opt.val}
-                            onChange={handleChange}
-                            className="mt-1 text-purple-600 cursor-pointer"
-                          />
-                          <div>
-                            <span className="font-bold text-xs block">{opt.title}</span>
-                            <p className="text-[11px] opacity-80 mt-0.5 leading-relaxed">{opt.desc}</p>
-                          </div>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Sensitive Shield Options */}
-                  <div className="p-4 rounded-2xl border border-slate-200 bg-white space-y-3 text-xs">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h5 className="font-bold text-slate-800">Prefer Female Advocate</h5>
-                        <p className="text-[10px] text-slate-500">Request assignment to a female legal aid advocate.</p>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setPreferWoman(!preferWoman)}
-                        className={`h-6 w-11 rounded-full transition flex items-center px-0.5 cursor-pointer ${
-                          preferWoman ? "bg-purple-600" : "bg-slate-300"
-                        }`}
-                      >
-                        <div className={`h-5 w-5 rounded-full bg-white transition-transform ${preferWoman ? "translate-x-5" : "translate-x-0"}`} />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Reassurance Banner */}
-                <div className="p-4 rounded-2xl bg-purple-50 border border-purple-200 text-xs text-purple-950 flex items-start gap-3">
-                  <MapPin size={20} className="text-purple-600 shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="font-bold text-purple-900">District Matching Guarantee</h4>
-                    <p className="text-[11px] text-purple-800 mt-0.5 leading-relaxed">
-                      Your location is used to route your complaint to legal aid offices in {formData.location}. Identity masking rules selected above are strictly enforced.
-                    </p>
-                  </div>
-                </div>
-
-                {/* Step Controls */}
-                <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                  <Button variant="secondary" onClick={() => setWizardStep(2)} className="rounded-2xl py-3 text-xs">
-                    <ChevronLeft size={16} className="mr-1" /> Back
-                  </Button>
-                  <Button
-                    variant="primary"
-                    onClick={() => setWizardStep(4)}
-                    className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3.5 px-6 rounded-2xl text-sm cursor-pointer"
-                  >
-                    Next: Upload Document <ChevronRight size={16} className="ml-1" />
-                  </Button>
-                </div>
-              </div>
-            )}
-
-            {/* STEP 4: OPTIONAL DOCUMENT ATTACHMENT */}
-            {wizardStep === 4 && (
-              <div className="space-y-6 animate-in fade-in duration-200">
-                <div className="text-center space-y-1">
-                  <h2 className="text-xl font-black text-slate-900">Step 4: Attach Proof / Document (Optional)</h2>
-                  <p className="text-xs text-slate-500">
-                    Upload a receipt, letter, or photo related to your issue.
-                  </p>
-                </div>
-
-                <div className="space-y-4">
-                  {!evidenceFile ? (
-                    <div className="border-2 border-dashed border-slate-300 rounded-3xl p-8 text-center bg-slate-50 hover:bg-slate-100 transition space-y-3">
-                      <div className="mx-auto w-14 h-14 rounded-2xl bg-purple-100 flex items-center justify-center text-purple-600">
-                        <Upload size={28} />
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-sm text-slate-800">Upload Photo or PDF File</h4>
-                        <p className="text-xs text-slate-500 mt-0.5">Maximum file size: 5MB</p>
-                      </div>
-                      <label className="inline-block px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-xs font-bold rounded-xl cursor-pointer shadow-sm transition">
-                        Select File
-                        <input type="file" onChange={handleFileUpload} accept="image/*,.pdf" className="hidden" />
-                      </label>
-                    </div>
-                  ) : (
-                    <div className="p-4 rounded-2xl border border-emerald-200 bg-emerald-50/50 flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2.5 rounded-xl bg-emerald-100 text-emerald-700">
-                          <CheckCircle size={20} />
-                        </div>
-                        <div>
-                          <h5 className="font-bold text-xs text-slate-800">{evidenceFile.name}</h5>
-                          <p className="text-[10px] text-slate-500">{evidenceFile.size}</p>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => {
-                          setEvidenceFile(null);
-                          setRawFile(null);
-                          setOcrData(null);
-                        }}
-                        className="p-2 text-slate-400 hover:text-red-600 transition cursor-pointer"
-                      >
-                        <Trash size={16} />
-                      </button>
-                    </div>
+                <div className="flex items-center gap-2">
+                  <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                    Submit a Complaint
+                  </h2>
+                  {draftStatusText && (
+                    <span className="text-[9px] bg-indigo-50 text-indigo-650 px-2 py-0.5 rounded-full font-bold animate-pulse">
+                      {draftStatusText}
+                    </span>
                   )}
                 </div>
+                <p className="text-xs text-slate-500 mt-1 font-semibold">
+                  Tell us what happened. ARAM AI will help understand and route your complaint.
+                </p>
+              </div>
+            </div>
 
-                {/* Reassurance Banner */}
-                <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-950 flex items-start gap-3">
-                  <ShieldCheck size={20} className="text-emerald-600 shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="font-bold text-emerald-900">Documents Are Optional</h4>
-                    <p className="text-[11px] text-emerald-800 mt-0.5 leading-relaxed">
-                      You can submit your complaint even if you don't have paper documents. Legal aid advocates can assist in gathering proof later.
-                    </p>
+            {/* Mode Select Buttons */}
+            <div className="grid grid-cols-2 gap-2 bg-slate-100 dark:bg-slate-950 p-1 rounded-2xl border border-slate-200/50 dark:border-slate-800/40">
+              <button
+                type="button"
+                onClick={() => setMode("simple")}
+                className={`py-3 text-xs font-bold rounded-xl transition ${
+                  mode === "simple"
+                    ? "bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-400 shadow-sm"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                ● Simple Mode
+              </button>
+              <button
+                type="button"
+                onClick={() => setMode("detailed")}
+                className={`py-3 text-xs font-bold rounded-xl transition ${
+                  mode === "detailed"
+                    ? "bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-400 shadow-sm"
+                    : "text-slate-500 hover:text-slate-800"
+                }`}
+              >
+                Detailed Mode
+              </button>
+            </div>
+
+            {/* Mode 1: Simple Intake Panel */}
+            {mode === "simple" ? (
+              <div className="glass-panel p-6 space-y-5">
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-[10px] font-extrabold text-slate-455 uppercase tracking-wider">
+                      Describe your problem
+                    </label>
+                    {(description.trim() || title.trim()) && (
+                      <button
+                        type="button"
+                        onClick={handleClearDraft}
+                        className="text-[9px] font-extrabold text-rose-500 hover:text-rose-700 uppercase tracking-wider cursor-pointer transition"
+                      >
+                        Clear Draft
+                      </button>
+                    )}
+                  </div>
+                  <div className="relative flex items-center">
+                    <textarea
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Tell us what happened in your own words..."
+                      rows={5}
+                      className="w-full p-4 pr-12 rounded-2xl border border-slate-200 dark:border-slate-800 focus:border-indigo-500 outline-none text-xs font-medium bg-white dark:bg-slate-950/40 leading-relaxed"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleVoiceRecord}
+                      className={`absolute right-3 bottom-3 p-2 rounded-xl transition cursor-pointer ${
+                        recording 
+                          ? "bg-red-500 text-white animate-pulse" 
+                          : "hover:bg-slate-100 dark:hover:bg-slate-850 text-slate-400 hover:text-slate-600"
+                      }`}
+                      title={recording ? "Stop" : "Voice mic"}
+                    >
+                      {recording ? <Square size={16} /> : <Mic size={18} />}
+                    </button>
                   </div>
                 </div>
 
-                {/* Step Controls */}
-                <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                  <Button variant="secondary" onClick={() => setWizardStep(3)} className="rounded-2xl py-3 text-xs">
-                    <ChevronLeft size={16} className="mr-1" /> Back
-                  </Button>
+                {/* Language Select buttons */}
+                <div>
+                  <label className="block text-[10px] font-extrabold text-slate-450 uppercase tracking-wider mb-2">
+                    Language
+                  </label>
+                  <div className="flex gap-2">
+                    {["Tamil", "English", "Hindi"].map((lang) => (
+                      <button
+                        key={lang}
+                        type="button"
+                        onClick={() => setLanguage(lang)}
+                        className={`flex-1 py-2.5 rounded-xl border text-xs font-bold transition cursor-pointer ${
+                          language === lang
+                            ? "bg-indigo-600 dark:bg-indigo-500 border-indigo-600 text-white shadow-sm"
+                            : "border-slate-200 dark:border-slate-800 text-slate-650 hover:bg-slate-50 dark:hover:bg-slate-850"
+                        }`}
+                      >
+                        {lang === "Tamil" ? "தமிழ்" : lang === "Hindi" ? "हिंदी" : "English"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Location Input */}
+                <div>
+                  <label className="block text-[10px] font-extrabold text-slate-450 uppercase tracking-wider mb-2">
+                    Location
+                  </label>
+                  <div className="relative flex items-center">
+                    <input
+                      type="text"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      placeholder="Enter location"
+                      className="w-full h-11 pl-4 pr-10 rounded-xl border border-slate-200 dark:border-slate-800 outline-none text-xs font-semibold bg-white dark:bg-slate-950/40"
+                    />
+                    <MapPin className="absolute right-3.5 text-slate-400" size={16} />
+                  </div>
+                </div>
+
+                {/* Evidence Upload */}
+                <div>
+                  <label className="block text-[10px] font-extrabold text-slate-450 uppercase tracking-wider mb-2">
+                    Evidence (Optional)
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="file"
+                      id="simple-upload"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                    />
+                    <label
+                      htmlFor="simple-upload"
+                      className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-850 cursor-pointer text-xs font-semibold text-slate-600 dark:text-slate-355 transition"
+                    >
+                      <Upload size={16} />
+                      {evidenceFile ? evidenceFile : "Add photo or document"}
+                    </label>
+                  </div>
+                </div>
+
+                <div className="pt-2">
                   <Button
                     variant="primary"
-                    onClick={() => setWizardStep(5)}
-                    className="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3.5 px-6 rounded-2xl text-sm cursor-pointer"
+                    onClick={handleAnalyseWithAi}
+                    disabled={loading}
+                    className="w-full py-4 text-xs font-bold rounded-xl bg-indigo-650 hover:bg-indigo-700 dark:bg-indigo-500 text-white flex items-center justify-center gap-2 btn-premium shadow-md cursor-pointer"
                   >
-                    Next: Review & Submit <ChevronRight size={16} className="ml-1" />
+                    Analyse with AI <ArrowRight size={16} />
                   </Button>
                 </div>
               </div>
-            )}
-
-            {/* STEP 5: REVIEW & ONE-TAP SUBMIT (SOFTENED SLA COPY) */}
-            {wizardStep === 5 && (
-              <div className="space-y-6 animate-in fade-in duration-200">
-                <div className="text-center space-y-1">
-                  <h2 className="text-xl font-black text-slate-900">Step 5: Review & Submit</h2>
-                  <p className="text-xs text-slate-500">
-                    Verify your complaint summary before submitting to ARAM Legal Aid.
-                  </p>
-                </div>
-
-                {/* Summary Card with Audio Playback */}
-                <div className="p-5 rounded-3xl border border-purple-100 bg-purple-50/50 space-y-3 text-xs">
-                  <div className="flex items-center justify-between border-b border-purple-100 pb-2">
-                    <span className="font-extrabold text-purple-900 uppercase tracking-wider text-[10px]">Complaint Summary</span>
-                    <ReadAloudButton text={`${formData.title}. ${formData.description}`} language={formData.language} />
+            ) : (
+              /* Mode 2: Detailed Intake Panel */
+              <div className="glass-panel p-6 space-y-4">
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <label className="block text-[10px] font-extrabold text-slate-455 uppercase tracking-wider">
+                      Title
+                    </label>
+                    {(description.trim() || title.trim()) && (
+                      <button
+                        type="button"
+                        onClick={handleClearDraft}
+                        className="text-[9px] font-extrabold text-rose-500 hover:text-rose-700 uppercase tracking-wider cursor-pointer transition"
+                      >
+                        Clear Draft
+                      </button>
+                    )}
                   </div>
-                  <div>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase">Title</span>
-                    <p className="font-bold text-slate-800 text-sm mt-0.5">{formData.title || "Legal Aid Complaint"}</p>
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase">Category & District</span>
-                    <p className="font-bold text-purple-800 mt-0.5">{formData.category} — {formData.location} District</p>
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase">Identity Protection</span>
-                    <p className="font-semibold text-slate-700 mt-0.5">{formData.identityVisibility}</p>
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase">Description</span>
-                    <p className="text-slate-700 mt-0.5 leading-relaxed">{formData.description}</p>
-                  </div>
-                </div>
-
-                {/* Consent Checkbox */}
-                <div className="flex items-start gap-3 p-4 border border-slate-200 rounded-2xl bg-slate-50">
                   <input
-                    type="checkbox"
-                    id="finalConsent"
-                    checked={disclaimerAgreed}
-                    onChange={(e) => setDisclaimerAgreed(e.target.checked)}
-                    className="mt-0.5 h-5 w-5 shrink-0 rounded border-slate-300 text-purple-600 cursor-pointer"
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    placeholder="Enter short title for grievance..."
+                    className="w-full h-11 px-4 rounded-xl border border-slate-200 dark:border-slate-800 outline-none text-xs font-semibold"
                   />
-                  <label htmlFor="finalConsent" className="text-xs text-slate-700 leading-relaxed cursor-pointer select-none">
-                    I confirm that the information provided is true to the best of my knowledge and I want to submit this grievance to ARAM Legal Aid.
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-extrabold text-slate-455 uppercase tracking-wider mb-2">
+                    Describe what happened
+                  </label>
+                  <div className="relative flex items-center">
+                    <textarea
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      placeholder="Explain the incident in detail..."
+                      rows={4}
+                      className="w-full p-4 pr-12 rounded-xl border border-slate-200 dark:border-slate-800 outline-none text-xs font-medium"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleVoiceRecord}
+                      className={`absolute right-3 bottom-3 p-2 rounded-xl transition cursor-pointer ${
+                        recording ? "bg-red-500 text-white animate-pulse" : "text-slate-400 hover:bg-slate-100"
+                      }`}
+                      title={recording ? "Stop" : "Dictate"}
+                    >
+                      {recording ? <Square size={14} /> : <Mic size={16} />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[10px] font-extrabold text-slate-455 uppercase tracking-wider mb-2">
+                      Location
+                    </label>
+                    <input
+                      type="text"
+                      value={location}
+                      onChange={(e) => setLocation(e.target.value)}
+                      className="w-full h-11 px-4 rounded-xl border border-slate-200 dark:border-slate-800 outline-none text-xs font-semibold"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-extrabold text-slate-455 uppercase tracking-wider mb-2">
+                      When did this happen?
+                    </label>
+                    <input
+                      type="date"
+                      value={incidentDate}
+                      onChange={(e) => setIncidentDate(e.target.value)}
+                      className="w-full h-11 px-4 rounded-xl border border-slate-200 dark:border-slate-800 outline-none text-xs font-semibold text-slate-655 cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-extrabold text-slate-455 uppercase tracking-wider mb-2">
+                    People involved (optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={peopleInvolved}
+                    onChange={(e) => setPeopleInvolved(e.target.value)}
+                    placeholder="Names or relationship details..."
+                    className="w-full h-11 px-4 rounded-xl border border-slate-200 dark:border-slate-800 outline-none text-xs font-semibold"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[10px] font-extrabold text-slate-455 uppercase tracking-wider mb-2">
+                    Evidence File (Optional)
+                  </label>
+                  <input
+                    type="file"
+                    id="detailed-upload"
+                    onChange={handleFileUpload}
+                    className="hidden"
+                  />
+                  <label
+                    htmlFor="detailed-upload"
+                    className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-dashed border-slate-350 cursor-pointer text-xs font-bold text-slate-550 transition hover:bg-slate-50"
+                  >
+                    <Upload size={16} />
+                    {evidenceFile ? evidenceFile : "Attach photo or document"}
                   </label>
                 </div>
 
-                {/* Reassurance Banner (Softened Realistic SLA Copy) */}
-                <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-950 flex items-start gap-3">
-                  <ShieldCheck size={24} className="text-emerald-600 shrink-0 mt-0.5" />
-                  <div>
-                    <h4 className="font-bold text-emerald-900">What Happens Next?</h4>
-                    <p className="text-[11px] text-emerald-800 mt-0.5 leading-relaxed">
-                      Your grievance will be registered in the legal aid queue for {formData.location}. A verified advocate will be assigned to review your file and provide guidance on your portal dashboard.
-                    </p>
+                <div>
+                  <label className="block text-[10px] font-extrabold text-slate-455 uppercase tracking-wider mb-2">
+                    Language
+                  </label>
+                  <div className="flex gap-2">
+                    {["Tamil", "English", "Hindi"].map((lang) => (
+                      <button
+                        key={lang}
+                        type="button"
+                        onClick={() => setLanguage(lang)}
+                        className={`flex-1 py-2.5 rounded-xl border text-xs font-bold transition cursor-pointer ${
+                          language === lang
+                            ? "bg-indigo-650 border-indigo-600 text-white"
+                            : "border-slate-200 text-slate-655 hover:bg-slate-50"
+                        }`}
+                      >
+                        {lang === "Tamil" ? "தமிழ்" : lang === "Hindi" ? "हिंदी" : "English"}
+                      </button>
+                    ))}
                   </div>
                 </div>
 
-                {/* Step Controls */}
-                <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                  <Button variant="secondary" onClick={() => setWizardStep(4)} className="rounded-2xl py-3 text-xs">
-                    <ChevronLeft size={16} className="mr-1" /> Back
-                  </Button>
+                <div className="pt-2">
                   <Button
-                    onClick={() => handleSubmit()}
-                    loading={loading}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white font-black py-4 px-8 rounded-2xl text-base shadow-lg cursor-pointer"
+                    variant="primary"
+                    onClick={handleAnalyseWithAi}
+                    disabled={loading}
+                    className="w-full py-4 text-xs font-bold rounded-xl bg-indigo-650 hover:bg-indigo-700 text-white flex items-center justify-center gap-2 btn-premium cursor-pointer"
                   >
-                    <Send size={18} className="mr-2" /> SUBMIT COMPLAINT
+                    Analyse with AI <ArrowRight size={16} />
                   </Button>
                 </div>
               </div>
             )}
-          </Card>
-        </div>
-      )}
+          </div>
+        )}
+
+        {/* VIEW 2: AI ANALYSIS SCREEN */}
+        {currentStep === "analysis" && (
+          <div className="space-y-6">
+            <div className="flex items-center gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
+              <button
+                onClick={() => setCurrentStep("intake")}
+                className="flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-slate-800 transition cursor-pointer"
+              >
+                <ArrowLeft size={16} /> Back
+              </button>
+            </div>
+
+            <div>
+              <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+                <Sparkles className="text-indigo-500" size={22} />
+                AI Complaint Analysis
+              </h2>
+              <p className="text-xs text-slate-500 mt-1 font-semibold">
+                ✓ We understood your complaint. Please confirm details below.
+              </p>
+            </div>
+
+            <div className="space-y-4">
+              <div className="glass-panel p-6 space-y-3">
+                <h3 className="text-[10px] font-extrabold text-slate-450 uppercase tracking-widest">
+                  Summary
+                </h3>
+                <p className="text-xs leading-relaxed text-slate-655 dark:text-slate-355 font-medium">
+                  {aiSummary}
+                </p>
+              </div>
+
+              <div className="glass-panel p-6 space-y-3">
+                <h3 className="text-[10px] font-extrabold text-slate-450 uppercase tracking-widest">
+                  Detected Concerns
+                </h3>
+                <div className="flex flex-wrap gap-2">
+                  {aiConcerns.map((tag) => (
+                    <span 
+                      key={tag}
+                      className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 text-[10px] font-bold"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="glass-panel p-5">
+                  <span className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest">Priority</span>
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className={`h-2.5 w-2.5 rounded-full ${aiPriority === "HIGH" || aiPriority === "CRITICAL" ? "bg-red-500" : "bg-amber-500"}`} />
+                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{aiPriority}</span>
+                  </div>
+                </div>
+                
+                <div className="glass-panel p-5">
+                  <span className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest">Language</span>
+                  <div className="flex items-center gap-2 mt-2">
+                    <Globe size={14} className="text-slate-455" />
+                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200">{language}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-5 bg-slate-50 dark:bg-slate-900/40 border border-slate-100 dark:border-slate-800/40 rounded-2xl text-[11px] leading-relaxed text-slate-500 dark:text-slate-400 font-medium">
+                <strong className="text-slate-700 dark:text-slate-350 block mb-1">What happens next?</strong>
+                After submission, the ARAM Admin team will review your complaint and assign a suitable Guide to assist you.
+              </div>
+
+              <div className="flex gap-3 pt-4 border-t border-slate-100 dark:border-slate-850">
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep("intake")}
+                  className="flex-1 py-3 text-xs font-bold rounded-xl border border-slate-250 hover:bg-slate-50 transition cursor-pointer text-slate-700"
+                >
+                  Edit
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmSubmit}
+                  disabled={loading}
+                  className="flex-2 py-3 text-xs font-bold rounded-xl bg-indigo-650 hover:bg-indigo-700 text-white flex items-center justify-center gap-2 btn-premium shadow-md cursor-pointer"
+                >
+                  Confirm & Submit →
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* VIEW 3: SUCCESS MODAL */}
+        {currentStep === "success" && (
+          <div className="glass-panel p-8 text-center space-y-6 animate-in zoom-in-95 duration-250">
+            <div className="mx-auto h-16 w-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shadow-inner">
+              <CheckCircle size={32} />
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="text-xl font-black text-slate-900 dark:text-white">
+                Complaint Submitted
+              </h3>
+              <p className="text-xs text-slate-500 font-medium">
+                Your complaint has been successfully registered.
+              </p>
+            </div>
+
+            <div className="max-w-xs mx-auto border border-slate-100 dark:border-slate-800/40 rounded-2xl p-4 bg-slate-50/50 dark:bg-slate-950/20 text-left space-y-3.5">
+              <div>
+                <span className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest block">Complaint ID</span>
+                <span className="text-xs font-mono font-bold text-slate-800 dark:text-slate-200 mt-1 block">
+                  {createdComplaintId || "ARAM-2026-00124"}
+                </span>
+              </div>
+              <hr className="border-slate-200/50" />
+              <div>
+                <span className="text-[9px] font-extrabold text-slate-400 uppercase tracking-widest block">Status</span>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-350">Awaiting Admin Review</span>
+                </div>
+              </div>
+            </div>
+
+            <p className="text-[11px] text-slate-400 leading-relaxed max-w-sm mx-auto">
+              We will notify you on your dashboard and via message as soon as a Legal Guide is assigned to your case.
+            </p>
+
+            <div className="flex gap-3 pt-4 max-w-sm mx-auto">
+              <button
+                onClick={() => navigate(`/citizen/my-complaints`)}
+                className="flex-1 py-3 text-xs font-bold rounded-xl border border-slate-250 hover:bg-slate-50 transition cursor-pointer text-slate-700"
+              >
+                View Complaint
+              </button>
+              <button
+                onClick={() => navigate("/citizen/dashboard")}
+                className="flex-1 py-3 text-xs font-bold rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white flex items-center justify-center gap-1.5 btn-premium shadow-md cursor-pointer"
+              >
+                <Home size={14} /> Go Home
+              </button>
+            </div>
+          </div>
+        )}
+
+      </div>
     </DashboardLayout>
   );
 };

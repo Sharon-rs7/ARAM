@@ -66,6 +66,16 @@ public class ComplaintService {
         if (request.safeContactTime() != null) {
             complaint.setSafeContactTime(request.safeContactTime());
         }
+        if (request.category() != null) {
+            try {
+                complaint.setCategory(com.aram.legalaid.enums.ComplaintCategory.valueOf(request.category().toUpperCase()));
+            } catch (Exception e) {}
+        }
+        if (request.priority() != null) {
+            try {
+                complaint.setPriority(com.aram.legalaid.enums.PriorityLevel.valueOf(request.priority().toUpperCase()));
+            } catch (Exception e) {}
+        }
         complaint.setStatus(ComplaintStatus.SUBMITTED);
 
         Complaint savedComplaint = complaintRepository.save(complaint);

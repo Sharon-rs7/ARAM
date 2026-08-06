@@ -30,6 +30,11 @@ export function ThemeProvider({ children }) {
   useEffect(() => {
     localStorage.setItem('themePreference', mode);
     document.documentElement.dataset.theme = resolvedTheme;
+    if (resolvedTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   }, [mode, resolvedTheme]);
 
   async function setMode(nextMode) {

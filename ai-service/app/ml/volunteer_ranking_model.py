@@ -8,6 +8,9 @@ def rank_volunteers(category: str, language: str, prefer_woman: bool, district: 
     model_loaded = ml_model_loader.is_available("volunteer_ranking_model")
     regressor = ml_model_loader.get_model("volunteer_ranking_model")
     
+    if not model_loaded or not regressor:
+        raise Exception("ML Volunteer Ranking Model is not loaded or missing.")
+    
     for vol in volunteers:
         # Extract features
         specs = vol.get("specializationCategories", [])
@@ -28,7 +31,7 @@ def rank_volunteers(category: str, language: str, prefer_woman: bool, district: 
         workload = float(active_cases)
         capacity = float(max_cases)
         
-        exp_years = float(vol.get("experienceLevel", 2))
+        exp_years = float(vol.get("experienceLevel", 2) if str(vol.get("experienceLevel")).isdigit() else 3)
         avg_resp = float(vol.get("avgResponseTime", 24.0)) # hours default
         success = float(vol.get("successRate", 0.75)) # 75% default
         
@@ -53,29 +56,17 @@ def rank_volunteers(category: str, language: str, prefer_woman: bool, district: 
             sensitive_case, past_cases, avail
         ]
         
-        score = 0.0
-        if model_loaded and regressor:
-            try:
-                score = float(regressor.predict([features])[0])
-                # Ensure it is between 0 and 100
-                score = max(0.0, min(100.0, score))
-            except Exception as e:
-                print(f"ML ranking prediction failed: {e}. Using fallback heuristic.")
-                model_loaded = False
-                
-        if not model_loaded:
-            # Fallback heuristic calculation
-            score = 30.0
-            if cat_match: score += 30.0
-            if lang_match: score += 20.0
-            if dist_match: score += 10.0
-            if gender_match: score += 10.0
-            if trained and prefer_woman: score += 10.0
-            # Capacity penalty
-            if active_cases >= max_cases:
-                score = 0.0
-            if avail == 0.0:
-                score = 0.0
+        try:
+            input_name = regressor.get_inputs()[0].name
+            output_name = regressor.get_outputs()[0].name
+            input_data = np.array([features], dtype=np.float32)
+            
+            res = regressor.run([output_name], {input_name: input_data})
+            score = float(res[0][0])
+            score = max(0.0, min(100.0, score))
+        except Exception as e:
+            print(f"ML ranking prediction failed for volunteer {vol.get('name')}: {e}")
+            raise e
                 
         ranked.append({
             "id": vol.get("id"),
@@ -83,7 +74,8 @@ def rank_volunteers(category: str, language: str, prefer_woman: bool, district: 
             "gender": gender,
             "languagesKnown": langs,
             "matchScore": int(score),
-            "reason": f"ML Predicted Match Score: {int(score)}% using volunteer_ranking_model.pkl." if model_loaded else "Fallback heuristic matched parameters."
+            "experienceLevel": vol.get("experienceLevel"),
+            "reason": f"ML Predicted Match Score: {int(score)}% using volunteer_ranking_model.onnx."
         })
         
     # Sort by score descending

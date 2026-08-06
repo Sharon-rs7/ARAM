@@ -784,8 +784,9 @@ export default function SettingsCenter({ role = "citizen" }) {
                 onChange={(e) => setMode(e.target.value)}
                 className="w-full min-h-[44px] rounded-xl border border-slate-200 px-3 text-xs font-semibold focus:border-indigo-500 outline-none bg-white cursor-pointer"
               >
-                <option value="light">Light Scheme</option>
-                <option value="dark">Dark Scheme</option>
+                <option value="LIGHT">Light Scheme</option>
+                <option value="DARK">Dark Scheme</option>
+                <option value="SYSTEM">System Default</option>
               </select>
             </div>
             <div>

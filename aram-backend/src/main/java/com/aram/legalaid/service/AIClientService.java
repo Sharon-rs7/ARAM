@@ -40,24 +40,7 @@ public class AIClientService {
             return restTemplate.postForObject(url, payload, AiTriageResponse.class);
         } catch (Exception e) {
             System.err.println("FastAPI analyzeComplaint failed: " + e.getMessage());
-            // Safe fallback response mapping if service is down
-            return new AiTriageResponse(
-                "GENERAL_LEGAL_AID",
-                0.40,
-                List.of(),
-                "MEDIUM",
-                0.40,
-                List.of("Aadhaar Card"),
-                "District Legal Services Authority",
-                0.40,
-                false,
-                true,
-                List.of("FastAPI service is down"),
-                "fallback_rules_v1.0.0",
-                true,
-                "FastAPI analyzeComplaint failed, fallback used.",
-                List.of("Submit complaint details", "Consult legal aid representative")
-            );
+            throw new RuntimeException("AI Triage service is currently offline. Please try again later.", e);
         }
     }
 

@@ -21,5 +21,7 @@ public record AIResultResponse(
         String detectedLanguage,
         String translatedSummary,
         String spokenSummaryText,
-        boolean readAloudAvailable
+        boolean readAloudAvailable,
+        String complexity,
+        List<String> detectedIssues
 ) {}

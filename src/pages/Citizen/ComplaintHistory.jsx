@@ -1,396 +1,169 @@
-import DashboardLayout from "@/components/layout/DashboardLayout";
-import {
-  Search,
-  Filter,
-  Eye,
-  CalendarDays,
-  Clock3,
-  ArrowUpDown,
-} from "lucide-react";
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import SearchInput from "@/components/common/SearchInput";
-
-
-const complaints = [
-  {
-    id: "CMP1023",
-    title: "Road Damage Complaint",
-    category: "Infrastructure",
-    priority: "High",
-    status: "Pending",
-    date: "12 Jul 2026",
-  },
-  {
-    id: "CMP1024",
-    title: "Water Supply Issue",
-    category: "Water",
-    priority: "Medium",
-    status: "In Progress",
-    date: "10 Jul 2026",
-  },
-  {
-    id: "CMP1025",
-    title: "Street Light Problem",
-    category: "Electricity",
-    priority: "Low",
-    status: "Resolved",
-    date: "08 Jul 2026",
-  },
-  {
-    id: "CMP1026",
-    title: "Garbage Collection Delay",
-    category: "Sanitation",
-    priority: "Medium",
-    status: "Pending",
-    date: "06 Jul 2026",
-  },
-  {
-    id: "CMP1027",
-    title: "Illegal Waste Dumping",
-    category: "Environment",
-    priority: "High",
-    status: "Resolved",
-    date: "04 Jul 2026",
-  },
-];
+import DashboardLayout from "@/components/layout/DashboardLayout";
+import { Search, ChevronRight, Calendar, User, Clock, ArrowLeft } from "lucide-react";
+import { complaintService } from "../../services/complaintService";
+import { toast } from "sonner";
 
 const ComplaintHistory = () => {
-
   const navigate = useNavigate();
+  
+  const [complaints, setComplaints] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("all"); // 'all', 'active', 'resolved'
+  const [searchQuery, setSearchQuery] = useState("");
 
-  const [search, setSearch] = useState("");
+  useEffect(() => {
+    const fetchComplaints = async () => {
+      try {
+        setLoading(true);
+        const data = await complaintService.getMyComplaints();
+        setComplaints(data || []);
+      } catch (err) {
+        toast.error("Failed to load your complaints list.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchComplaints();
+  }, []);
 
-  const filteredComplaints = complaints.filter((item) =>
-    item.title.toLowerCase().includes(search.toLowerCase())
-  );
+  // Filtering logic
+  const filtered = complaints.filter((item) => {
+    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          (item.id && item.id.toString().includes(searchQuery));
+    
+    if (activeTab === "active") {
+      return matchesSearch && item.status !== "RESOLVED";
+    }
+    if (activeTab === "resolved") {
+      return matchesSearch && item.status === "RESOLVED";
+    }
+    return matchesSearch;
+  });
 
   return (
-
     <DashboardLayout>
-
-      <div className="space-y-8">
-
+      <div className="max-w-3xl mx-auto space-y-6 pb-6">
+        
         {/* Header */}
-
-        <div className="flex items-center justify-between">
-
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => navigate("/citizen/dashboard")}
+            className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-900 transition text-slate-500"
+          >
+            <ArrowLeft size={18} />
+          </button>
           <div>
-
-            <h1 className="text-4xl font-bold text-slate-900">
-
-              Complaint History
-
+            <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              My Complaints
             </h1>
-
-            <p className="mt-2 text-slate-500">
-
-              View, search and track all your complaints.
-
+            <p className="text-xs text-slate-500 font-semibold mt-0.5">
+              Track status and message assigned Legal Guides.
             </p>
-
           </div>
-
         </div>
 
-        {/* Statistics */}
-
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-
-          <div className="rounded-3xl bg-white p-6 shadow-sm">
-
-            <p className="text-slate-500">
-
-              Total Complaints
-
-            </p>
-
-            <h2 className="mt-3 text-4xl font-bold">
-
-              24
-
-            </h2>
-
+        {/* Tab Selector & Search Row */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+          <div className="flex gap-1.5 p-1 bg-slate-100 dark:bg-slate-950 rounded-xl border border-slate-200/50 dark:border-slate-850/40">
+            {["all", "active", "resolved"].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`px-4 py-2 text-xs font-bold rounded-lg capitalize transition cursor-pointer ${
+                  activeTab === tab
+                    ? "bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-400 shadow-sm"
+                    : "text-slate-500 hover:text-slate-700"
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
           </div>
 
-          <div className="rounded-3xl bg-white p-6 shadow-sm">
-
-            <p className="text-slate-500">
-
-              Pending
-
-            </p>
-
-            <h2 className="mt-3 text-4xl font-bold text-red-600">
-
-              08
-
-            </h2>
-
-          </div>
-
-          <div className="rounded-3xl bg-white p-6 shadow-sm">
-
-            <p className="text-slate-500">
-
-              In Progress
-
-            </p>
-
-            <h2 className="mt-3 text-4xl font-bold text-blue-600">
-
-              06
-
-            </h2>
-
-          </div>
-
-          <div className="rounded-3xl bg-white p-6 shadow-sm">
-
-            <p className="text-slate-500">
-
-              Resolved
-
-            </p>
-
-            <h2 className="mt-3 text-4xl font-bold text-green-600">
-
-              10
-
-            </h2>
-
-          </div>
-
-        </div>
-
-        {/* Search */}
-        <div className="rounded-3xl bg-white p-6 shadow-sm">
-          <div className="flex flex-col gap-4 lg:flex-row">
-            <SearchInput
-              placeholder="Search complaint..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              onClear={() => setSearch("")}
-              className="flex-1"
+          <div className="relative w-full sm:w-64">
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full h-10 pl-9 pr-4 rounded-xl border border-slate-200 dark:border-slate-800 outline-none text-xs font-medium"
             />
-            <button className="flex items-center gap-2 rounded-xl border border-slate-300 px-6 hover:bg-slate-100 cursor-pointer shrink-0">
-              <Filter size={18} />
-              Filter
-            </button>
-            <button className="flex items-center gap-2 rounded-xl border border-slate-300 px-6 hover:bg-slate-100 cursor-pointer shrink-0">
-              <ArrowUpDown size={18} />
-              Sort
-            </button>
+            <Search className="absolute left-3 text-slate-400" size={14} />
           </div>
         </div>
 
-
-        {/* Table */}
-
-        <div className="overflow-hidden rounded-3xl bg-white shadow-sm">
-
-          <table className="w-full">
-
-            <thead className="bg-slate-100">
-
-              <tr>
-
-                <th className="px-6 py-5 text-left">Complaint ID</th>
-
-                <th className="px-6 py-5 text-left">Title</th>
-
-                <th className="px-6 py-5 text-left">Category</th>
-
-                <th className="px-6 py-5 text-left">Priority</th>
-
-                <th className="px-6 py-5 text-left">Status</th>
-
-                <th className="px-6 py-5 text-left">Date</th>
-
-                <th className="px-6 py-5 text-center">Action</th>
-
-              </tr>
-
-            </thead>
-
-            <tbody>
-
-              {filteredComplaints.map((item) => (
-
-                <tr
+        {/* List Section */}
+        <div className="glass-panel p-6">
+          {loading ? (
+            <div className="py-16 text-center text-xs text-slate-450">Loading complaints list...</div>
+          ) : filtered.length === 0 ? (
+            <div className="py-16 text-center text-xs text-slate-450 font-medium">
+              No complaints match the filters.
+            </div>
+          ) : (
+            <div className="divide-y divide-slate-100 dark:divide-slate-800/40">
+              {filtered.map((item) => (
+                <div
                   key={item.id}
-                  className="border-b hover:bg-slate-50"
+                  onClick={() => navigate(`/citizen/complaints/${item.id}`)}
+                  className="py-5 first:pt-0 last:pb-0 flex items-center justify-between hover:bg-slate-50/20 dark:hover:bg-slate-900/10 transition cursor-pointer"
                 >
-
-                  <td className="px-6 py-5 font-semibold">
-
-                    {item.id}
-
-                  </td>
-
-                  <td className="px-6 py-5">
-
-                    {item.title}
-
-                  </td>
-
-                  <td className="px-6 py-5">
-
-                    {item.category}
-
-                  </td>                  <td className="px-6 py-5">
-
-                    <span
-                      className={`rounded-full px-3 py-1 text-sm font-medium ${
-                        item.priority === "High"
-                          ? "bg-red-100 text-red-600"
-                          : item.priority === "Medium"
-                          ? "bg-yellow-100 text-yellow-600"
-                          : "bg-green-100 text-green-600"
-                      }`}
-                    >
-                      {item.priority}
+                  <div className="min-w-0 pr-4 space-y-1">
+                    <span className="font-mono text-[10px] font-bold text-slate-400 dark:text-slate-500 block">
+                      ARAM-{item.id}
                     </span>
-
-                  </td>
-
-                  <td className="px-6 py-5">
-
-                    <span
-                      className={`rounded-full px-3 py-1 text-sm font-medium ${
-                        item.status === "Resolved"
-                          ? "bg-green-100 text-green-600"
-                          : item.status === "Pending"
-                          ? "bg-red-100 text-red-600"
-                          : "bg-blue-100 text-blue-600"
-                      }`}
-                    >
-                      {item.status}
-                    </span>
-
-                  </td>
-
-                  <td className="px-6 py-5">
-
-                    <div className="flex items-center gap-2">
-
-                      <CalendarDays
-                        size={16}
-                        className="text-slate-400"
-                      />
-
-                      {item.date}
-
+                    <h4 className="font-bold text-sm text-slate-800 dark:text-slate-200 truncate">
+                      {item.title}
+                    </h4>
+                    
+                    {/* Status marker */}
+                    <div className="flex items-center gap-1.5 mt-1.5">
+                      <span className={`h-2 w-2 rounded-full ${
+                        item.status === "RESOLVED"
+                          ? "bg-emerald-500"
+                          : item.status === "PENDING"
+                          ? "bg-amber-500"
+                          : "bg-indigo-500"
+                      }`} />
+                      <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400">
+                        {item.status === "PENDING" 
+                          ? "Awaiting Admin Review" 
+                          : item.status === "IN_PROGRESS"
+                          ? "In Progress"
+                          : "Resolved"}
+                      </span>
                     </div>
 
-                  </td>
+                    {/* Guide Info (only if in progress / guide assigned) */}
+                    {item.status === "IN_PROGRESS" && item.assignedHelperName && (
+                      <div className="mt-2 text-[10px] text-slate-450 flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900/40 p-2 rounded-lg border border-slate-100/50 dark:border-slate-850/40 w-fit">
+                        <User size={10} className="text-indigo-500" />
+                        <span>Guide: <strong>{item.assignedHelperName}</strong> • {item.assignedHelperLevel || "Senior"}</span>
+                      </div>
+                    )}
 
-                  <td className="px-6 py-5 text-center">
+                    <div className="flex items-center gap-1 text-[9px] text-slate-400 mt-2">
+                      <Calendar size={10} />
+                      <span>
+                        {item.status === "RESOLVED" 
+                          ? `Completed ${new Date(item.updatedAt).toLocaleDateString()}` 
+                          : `Submitted ${new Date(item.createdAt).toLocaleDateString()}`}
+                      </span>
+                    </div>
+                  </div>
 
-                    <button
-                      onClick={() =>
-                        navigate("/citizen/complaint/1")
-                      }
-                      className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-white transition hover:bg-blue-700"
-                    >
-
-                      <Eye size={16} />
-
-                      View
-
-                    </button>
-
-                  </td>
-
-                </tr>
-
+                  <ChevronRight size={16} className="text-slate-400 shrink-0" />
+                </div>
               ))}
-
-              {filteredComplaints.length === 0 && (
-
-                <tr>
-
-                  <td
-                    colSpan="7"
-                    className="py-16 text-center text-slate-500"
-                  >
-
-                    No complaints found.
-
-                  </td>
-
-                </tr>
-
-              )}
-
-            </tbody>
-
-          </table>
-
-        </div>
-
-        {/* Pagination */}
-
-        <div className="flex flex-col items-center justify-between gap-5 rounded-3xl bg-white p-6 shadow-sm md:flex-row">
-
-          <div className="flex items-center gap-2 text-slate-500">
-
-            <Clock3 size={18} />
-
-            Showing 1 - {filteredComplaints.length} of {complaints.length} complaints
-
-          </div>
-
-          <div className="flex gap-3">
-
-            <button
-              onClick={() => navigate("/citizen/dashboard")}
-              className="rounded-xl border border-slate-300 px-5 py-2 transition hover:bg-slate-100"
-            >
-
-              Dashboard
-
-            </button>
-
-            <button className="rounded-xl bg-blue-600 px-5 py-2 text-white">
-
-              1
-
-            </button>
-
-            <button className="rounded-xl border border-slate-300 px-5 py-2 transition hover:bg-slate-100">
-
-              2
-
-            </button>
-
-            <button className="rounded-xl border border-slate-300 px-5 py-2 transition hover:bg-slate-100">
-
-              3
-
-            </button>
-
-            <button
-              onClick={() =>
-                navigate("/citizen/complaint/1")
-              }
-              className="rounded-xl border border-slate-300 px-5 py-2 transition hover:bg-slate-100"
-            >
-
-              Next
-
-            </button>
-
-          </div>
-
+            </div>
+          )}
         </div>
 
       </div>
-
     </DashboardLayout>
-
   );
-
 };
 
 export default ComplaintHistory;

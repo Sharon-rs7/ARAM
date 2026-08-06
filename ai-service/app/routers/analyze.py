@@ -8,6 +8,7 @@ from app.ml.similar_complaint_model import find_similar_complaints
 from app.ml.volunteer_ranking_model import rank_volunteers
 from app.ml.model_loader import ml_model_loader
 from app.nlp.language_detector import language_detector
+from app.nlp.multilingual_normalizer import normalize_text
 from app.nlp.response_templates import get_localized_response, get_localized_category, get_localized_priority
 from app.nlp.complaint_summarizer import generate_plain_summary
 from app.schemas import VolunteerMatchRequest, DocumentRecommendRequest, AuthorityRecommendRequest
@@ -75,20 +76,7 @@ def analyze_complaint(request: ComplaintMLRequest):
                       not auth_res.get("modelBased", False))
         
         if any_failed:
-            fallback_used = True
-            manual_review = True
-            reasons = ["ML model unavailable"]
-            category = None
-            category_conf = 0.0
-            top_categories = []
-            priority = None
-            priority_conf = 0.0
-            rec_auth = None
-            auth_conf = 0.0
-            req_docs = []
-            localized_msg = "Model unavailable, Admin review required"
-            next_steps = ["Your complaint was submitted. Admin will review it."]
-            explanation = "ML models are currently unavailable. Grievance sent to queue for manual review."
+            raise HTTPException(status_code=500, detail="ML Classifier models are currently offline. Analysis failed.")
         else:
             fallback_used = False
             localized_msg = get_localized_response("complaint_received", response_lang)
@@ -113,11 +101,31 @@ def analyze_complaint(request: ComplaintMLRequest):
             headline = f"This is a {loc_cat} requiring {loc_prio}." if response_lang == "en" else f"இது {loc_cat}, இதற்கு {loc_prio}."
             plain_summary = generate_plain_summary(request.title, request.description, response_lang, category, request.district or "Coimbatore")
 
-            # Construct next steps dynamically
-            next_steps = [
-                get_localized_response("documents_required", response_lang, documents=", ".join(req_docs[:2])),
-                get_localized_response("authority_recommended", response_lang, authority=rec_auth)
-            ]
+        # V2 features
+        detected_issues = [c["category"] for c in top_categories if c["probability"] >= 0.15] if not fallback_used else [category or "GENERAL_LEGAL_AID"]
+        if not detected_issues:
+            detected_issues = [category]
+        
+        urgency_flags = []
+        if priority in ["HIGH", "CRITICAL"]:
+            urgency_flags.append("HIGH_PRIORITY_REVIEW")
+        if request.sensitive:
+            urgency_flags.append("SENSITIVE_CASE")
+        lower_desc = combined_text.lower()
+        if any(w in lower_desc for w in ["kill", "murder", "threat", "violence", "beat", "தாக்கினர்", "மிரட்டுகிறார்"]):
+            urgency_flags.append("PHYSICAL_VIOLENCE_RISK")
+        
+        complexity = "LOW"
+        if len(combined_text) > 300 or category in ["CRIMINAL_COMPLAINT", "MEDICAL_NEGLIGENCE", "CORRUPTION_BRIBERY"]:
+            complexity = "HIGH"
+        elif len(combined_text) > 150:
+            complexity = "MEDIUM"
+
+        # Construct next steps dynamically
+        next_steps = [
+            get_localized_response("documents_required", response_lang, documents=", ".join(req_docs[:2])),
+            get_localized_response("authority_recommended", response_lang, authority=rec_auth)
+        ]
         
         return {
             "detectedLanguage": detected_lang,
@@ -141,7 +149,12 @@ def analyze_complaint(request: ComplaintMLRequest):
             "explanation": explanation,
             "headline": headline,
             "plainSummary": plain_summary,
-            "similarComplaintFound": sim_found
+            "similarComplaintFound": sim_found,
+            "primaryCategory": category,
+            "detectedIssues": detected_issues,
+            "urgencyFlags": urgency_flags,
+            "complexity": complexity,
+            "recommendedRouting": rec_auth
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

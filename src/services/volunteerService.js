@@ -111,6 +111,18 @@ export const volunteerService = {
     return res.data;
   },
 
+  updateCaseStatus: async (id, payload) => {
+    if (USE_MOCKS) {
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      const complaints = getMockComplaints();
+      const updated = complaints.map(c => c.id === id ? { ...c, status: payload.status, legalOpinion: payload.notes } : c);
+      setMockComplaints(updated);
+      return { success: true };
+    }
+    const res = await api.put(`/helper/cases/${id}/status`, payload);
+    return res.data;
+  },
+
   getVolunteerAnalytics: async (volunteerId) => {
     if (USE_MOCKS) {
       await new Promise((resolve) => setTimeout(resolve, 500));

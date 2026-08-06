@@ -300,7 +300,7 @@ const ManageComplaints = () => {
                       <div className="flex justify-center gap-3">
                         <button
                           title="View Details"
-                          onClick={() => navigate(`/citizen/complaint/${item.id}`)}
+                          onClick={() => navigate(`/admin/complaint/${item.id}`)}
                           className="rounded-xl border border-slate-200 bg-white p-2.5 text-slate-600 hover:bg-slate-50 hover:text-slate-800 transition duration-150 shadow-sm cursor-pointer"
                         >
                           <Eye size={18} />

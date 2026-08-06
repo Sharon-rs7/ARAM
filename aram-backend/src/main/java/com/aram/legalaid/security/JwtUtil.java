@@ -8,6 +8,7 @@ import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import jakarta.annotation.PostConstruct;
 import java.security.Key;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -24,6 +25,16 @@ public class JwtUtil {
 
     @Value("${app.jwt.refresh-token-expiry-days}")
     private long refreshTokenExpiryDays;
+
+    @PostConstruct
+    public void validateSecret() {
+        if ("ARAMLegalAidJwtSecretKeyForDevelopmentOnly2026".equals(secret)) {
+            System.err.println("==========================================================================");
+            System.err.println("WARNING: Running on default JWT secret key! This is insecure for production.");
+            System.err.println("Please configure the JWT_SECRET environment variable.");
+            System.err.println("==========================================================================");
+        }
+    }
 
     public String generateAccessToken(Long userId, String email, Role role) {
         return generateToken(userId, email, role, accessTokenExpiryMinutes, ChronoUnit.MINUTES, "access");

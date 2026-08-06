@@ -72,6 +72,12 @@ public class AIResult {
     @Column(length = 50)
     private String modelVersion;
 
+    @Column(columnDefinition = "TEXT")
+    private String detectedIssues;
+
+    @Column(length = 50)
+    private String complexity;
+
     @Column(nullable = false)
     private boolean fallbackUsed = false;
 
@@ -133,4 +139,10 @@ public class AIResult {
 
     public Boolean getAuthorityLanguageMatch() { return authorityLanguageMatch; }
     public void setAuthorityLanguageMatch(Boolean authorityLanguageMatch) { this.authorityLanguageMatch = authorityLanguageMatch; }
+
+    public String getDetectedIssues() { return detectedIssues; }
+    public void setDetectedIssues(String detectedIssues) { this.detectedIssues = detectedIssues; }
+
+    public String getComplexity() { return complexity; }
+    public void setComplexity(String complexity) { this.complexity = complexity; }
 }

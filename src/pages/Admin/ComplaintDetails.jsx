@@ -319,6 +319,31 @@ const ComplaintDetails = () => {
                 </div>
               </div>
 
+              {/* Approval controls */}
+              {(complaint.status === "SUBMITTED" || complaint.status === "AUTHORITY_RECOMMENDED") && (
+                <div className="rounded-3xl bg-white p-6 shadow-sm border border-slate-100 space-y-4">
+                  <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider mb-2 border-b pb-2">Admin Actions</h4>
+                  <button
+                    onClick={async () => {
+                      try {
+                        setUpdating(true);
+                        await adminService.updateComplaintStatus(complaint.id, "AI_ANALYZED", "Approved by Admin");
+                        toast.success("Complaint approved successfully!");
+                        setComplaint(prev => ({ ...prev, status: "AI_ANALYZED" }));
+                      } catch (err) {
+                        toast.error(err.response?.data?.message || err.message || "Failed to approve complaint.");
+                      } finally {
+                        setUpdating(false);
+                      }
+                    }}
+                    disabled={updating}
+                    className="w-full h-10 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold transition cursor-pointer"
+                  >
+                    Approve Complaint
+                  </button>
+                </div>
+              )}
+
               {/* Department router panel */}
               <div className="rounded-3xl bg-white p-6 shadow-sm border border-slate-100">
                 <h4 className="font-bold text-slate-800 text-xs uppercase tracking-wider mb-4 border-b pb-2">Route Department</h4>

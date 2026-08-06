@@ -1,8 +1,9 @@
 // IndexedDB Offline Draft Storage Service for ARAM Legal Aid Platform
 
 const DB_NAME = "aram_offline_db";
-const DB_VERSION = 1;
+const DB_VERSION = 2; // Incremented database version to trigger upgradeneeded for new store
 const STORE_NAME = "complaint_drafts";
+const QUEUE_STORE = "offline_submissions";
 
 const openDB = () => {
   return new Promise((resolve, reject) => {
@@ -12,6 +13,9 @@ const openDB = () => {
       const db = e.target.result;
       if (!db.objectStoreNames.contains(STORE_NAME)) {
         db.createObjectStore(STORE_NAME, { keyPath: "id" });
+      }
+      if (!db.objectStoreNames.contains(QUEUE_STORE)) {
+        db.createObjectStore(QUEUE_STORE, { keyPath: "queueId", autoIncrement: true });
       }
     };
 
@@ -38,7 +42,6 @@ export const offlineDraftService = {
       });
     } catch (err) {
       console.error("IndexedDB saveDraft error:", err);
-      // Fallback to localStorage
       try {
         localStorage.setItem("aram_active_draft_fallback", JSON.stringify(draftData));
       } catch (e) {}
@@ -84,4 +87,59 @@ export const offlineDraftService = {
       return false;
     }
   },
+
+  // Queue complaint for offline outbox submission
+  queueSubmission: async (complaintData) => {
+    try {
+      const db = await openDB();
+      const tx = db.transaction(QUEUE_STORE, "readwrite");
+      const store = tx.objectStore(QUEUE_STORE);
+      const record = {
+        queuedAt: new Date().toISOString(),
+        ...complaintData
+      };
+      store.add(record);
+      return new Promise((res) => {
+        tx.oncomplete = () => res(true);
+        tx.onerror = () => res(false);
+      });
+    } catch (err) {
+      console.error("Failed to queue offline submission:", err);
+      return false;
+    }
+  },
+
+  // Fetch all queued submissions
+  getQueuedSubmissions: async () => {
+    try {
+      const db = await openDB();
+      const tx = db.transaction(QUEUE_STORE, "readonly");
+      const store = tx.objectStore(QUEUE_STORE);
+      const request = store.getAll();
+      return new Promise((resolve) => {
+        request.onsuccess = () => resolve(request.result || []);
+        request.onerror = () => resolve([]);
+      });
+    } catch (err) {
+      console.error("Failed to retrieve queued submissions:", err);
+      return [];
+    }
+  },
+
+  // Remove submission from queue after successful upload
+  removeQueuedSubmission: async (queueId) => {
+    try {
+      const db = await openDB();
+      const tx = db.transaction(QUEUE_STORE, "readwrite");
+      const store = tx.objectStore(QUEUE_STORE);
+      store.delete(queueId);
+      return new Promise((res) => {
+        tx.oncomplete = () => res(true);
+        tx.onerror = () => res(false);
+      });
+    } catch (err) {
+      console.error("Failed to remove queued submission:", err);
+      return false;
+    }
+  }
 };

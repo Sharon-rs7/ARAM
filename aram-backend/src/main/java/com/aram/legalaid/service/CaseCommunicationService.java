@@ -23,6 +23,7 @@ public class CaseCommunicationService {
     private final NotificationService notificationService;
     private final AuditLogService auditLogService;
     private final UserService userService;
+    private final AIClientService aiClientService;
 
     public CaseCommunicationService(
             ComplaintRepository complaintRepository,
@@ -32,7 +33,8 @@ public class CaseCommunicationService {
             LegalGuideCaseNoteRepository caseNoteRepository,
             NotificationService notificationService,
             AuditLogService auditLogService,
-            UserService userService) {
+            UserService userService,
+            AIClientService aiClientService) {
         this.complaintRepository = complaintRepository;
         this.userRepository = userRepository;
         this.chatThreadRepository = chatThreadRepository;
@@ -41,6 +43,7 @@ public class CaseCommunicationService {
         this.notificationService = notificationService;
         this.auditLogService = auditLogService;
         this.userService = userService;
+        this.aiClientService = aiClientService;
     }
 
     @Transactional
@@ -58,6 +61,16 @@ public class CaseCommunicationService {
 
         if (guide.getRole() != Role.HELPER) {
             throw new BadRequestException("Assigned user must be a Legal Guide");
+        }
+
+        // Priority Level and Experience validation check (override reason check)
+        boolean isHighRiskPriority = complaint.getPriority() == PriorityLevel.HIGH || complaint.getPriority() == PriorityLevel.CRITICAL;
+        boolean isJuniorLevel = guide.getExperienceLevel() == null || "JUNIOR".equalsIgnoreCase(guide.getExperienceLevel().trim());
+        
+        if (isHighRiskPriority && isJuniorLevel) {
+            if (overrideReason == null || overrideReason.trim().length() < 10) {
+                throw new BadRequestException("An override reason of at least 10 meaningful characters is required to assign a Junior Guide to a HIGH priority case.");
+            }
         }
 
         // Sensitive workflow controls
@@ -139,65 +152,32 @@ public class CaseCommunicationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Complaint not found"));
 
         List<User> guides = userRepository.findAll().stream()
-                .filter(u -> u.getRole() == Role.HELPER && "ACTIVE".equalsIgnoreCase(u.getAvailabilityStatus()))
+                .filter(u -> u.getRole() == Role.HELPER)
                 .toList();
 
-        List<Map<String, Object>> recommendations = new ArrayList<>();
-
+        List<Map<String, Object>> volunteerPayloads = new ArrayList<>();
         for (User g : guides) {
-            int score = 0;
-            StringBuilder reason = new StringBuilder();
-
-            // Language match
-            if (complaint.getLanguage() != null && g.getLanguagesKnown() != null 
-                    && g.getLanguagesKnown().toLowerCase().contains(complaint.getLanguage().toLowerCase())) {
-                score += 30;
-                reason.append("Language matched (").append(complaint.getLanguage()).append("). ");
-            }
-
-            // Specialization match
-            String compCat = complaint.getCategory() != null ? complaint.getCategory().name() : "";
-            if (g.getSpecializationCategories() != null && g.getSpecializationCategories().contains(compCat)) {
-                score += 30;
-                reason.append("Specialization matched (").append(compCat).append("). ");
-            }
-
-            // Sensitive / Female Support match
-            if (complaint.isSensitive()) {
-                if ("FEMALE".equalsIgnoreCase(g.getGender())) {
-                    score += 20;
-                    reason.append("Preferred female gender match for sensitive case. ");
-                }
-                if (g.isWomenSupportTrained()) {
-                    score += 20;
-                    reason.append("Women support trained badge. ");
-                }
-            }
-
-            // Workload match
-            if (g.getCurrentActiveCases() < g.getMaxActiveCases()) {
-                score += 20;
-                reason.append("Low workload occupancy. ");
-            }
-
-            Map<String, Object> rec = new HashMap<>();
-            rec.put("legalGuideId", g.getId());
-            rec.put("name", g.getName());
-            rec.put("languages", g.getLanguagesKnown() != null ? g.getLanguagesKnown() : "English");
-            rec.put("specializations", g.getSpecialization() != null ? g.getSpecialization() : "General Legal Aid");
-            rec.put("gender", g.getGender() != null ? g.getGender() : "ANY");
-            rec.put("womenSupportTrained", g.isWomenSupportTrained());
-            rec.put("workload", g.getCurrentActiveCases() + " / " + g.getMaxActiveCases());
-            rec.put("matchScore", score);
-            rec.put("matchLabel", score >= 70 ? "Excellent Match" : score >= 40 ? "Good Match" : "Standard Match");
-            rec.put("recommendationReason", reason.toString());
-            rec.put("adminWarning", complaint.isSensitive() && !g.isWomenSupportTrained() ? "Requires trained guide override approval." : "");
-
-            recommendations.add(rec);
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("id", g.getId());
+            payload.put("name", g.getName());
+            payload.put("gender", g.getGender() != null ? g.getGender() : "ANY");
+            payload.put("languagesKnown", g.getLanguagesKnown() != null ? g.getLanguagesKnown() : "English");
+            payload.put("specializationCategories", g.getSpecializationCategories() != null ? g.getSpecializationCategories() : "GENERAL_LEGAL_AID");
+            payload.put("district", g.getDistrict() != null ? g.getDistrict() : "Coimbatore");
+            payload.put("currentActiveCases", g.getCurrentActiveCases());
+            payload.put("maxActiveCases", g.getMaxActiveCases());
+            payload.put("experienceLevel", g.getExperienceLevel() != null ? g.getExperienceLevel() : "SENIOR");
+            payload.put("womenSupportTrained", g.isWomenSupportTrained());
+            payload.put("canHandleSensitiveCases", g.isCanHandleSensitiveCases());
+            payload.put("availabilityStatus", g.getAvailabilityStatus());
+            volunteerPayloads.add(payload);
         }
 
-        recommendations.sort((a, b) -> (Integer) b.get("matchScore") - (Integer) a.get("matchScore"));
-        return recommendations;
+        String cat = complaint.getCategory() != null ? complaint.getCategory().name() : "GENERAL_LEGAL_AID";
+        String lang = complaint.getLanguage() != null ? complaint.getLanguage() : "en";
+        boolean preferWoman = complaint.isSensitive() || (complaint.getPreferredHelperGender() == HelperGender.FEMALE);
+
+        return aiClientService.recommendVolunteers(cat, lang, preferWoman, complaint.getDistrict(), volunteerPayloads);
     }
 
     public List<CaseMessage> getChatMessages(Long complaintId) {

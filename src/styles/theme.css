@@ -1,12 +1,12 @@
 /* Base CSS Variable Definitions (Light Theme) */
 :root {
-  --color-primary-900: #0f2747;
-  --color-primary-800: #173b66;
-  --color-primary-700: #1e4f86;
-  --color-primary-600: #2563a5;
-  --color-primary-500: #2f78c4;
-  --color-primary-100: #dbeafe;
-  --color-primary-50: #eff6ff;
+  --color-primary-900: #1e1b4b;
+  --color-primary-800: #312e81;
+  --color-primary-700: #3730a3;
+  --color-primary-600: #4338ca;
+  --color-primary-500: #4f46e5;
+  --color-primary-100: #e0e7ff;
+  --color-primary-50: #eef2ff;
 
   --color-ai-700: #0f766e;
   --color-ai-600: #0d9488;
@@ -14,79 +14,106 @@
   --color-ai-100: #ccfbf1;
   --color-ai-50: #f0fdfa;
 
-  --color-background: #f6f8fc;
+  --color-background: #fafbfe;
   --color-surface: #ffffff;
-  --color-sidebar: #0b1f36;
-  --color-border: #e2e8f0;
+  --color-sidebar: #0f111a;
+  --color-border: #f1f3f7;
 
   --color-heading: #0f172a;
   --color-body: #334155;
   --color-muted: #64748b;
 
-  --color-success: #15803d;
-  --color-warning: #b45309;
-  --color-danger: #b91c1c;
-  --color-info: #1d4ed8;
+  --color-success: #10b981;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+  --color-info: #3b82f6;
 
-  --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.25rem;
+  --radius-sm: 0.6rem;
+  --radius-md: 0.9rem;
+  --radius-lg: 1.25rem;
+  --radius-xl: 1.75rem;
 
   --shadow-card:
-    0 1px 2px rgb(15 23 42 / 0.04),
-    0 4px 12px rgb(15 23 42 / 0.06);
+    0 1px 3px rgb(0 0 0 / 0.02),
+    0 8px 24px rgb(79 70 229 / 0.04);
 }
 
 :root,
 html[data-theme="light"] {
-  --bg-main: #f8fafc;
-  --bg-card: #ffffff;
+  --bg-main: #f5f7fc;
+  --bg-card: rgba(255, 255, 255, 0.85);
   --bg-elevated: #ffffff;
-  --text-main: #0f172a;
+  --text-main: #1e293b;
   --text-muted: #64748b;
-  --border: #e2e8f0;
-  --input-bg: #ffffff;
-  --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+  --border: rgba(226, 232, 240, 0.7);
+  --input-bg: rgba(255, 255, 255, 0.9);
+  --shadow: 0 10px 40px rgba(79, 70, 229, 0.05);
 
-  --danger: #dc2626;
-  --danger-soft: rgba(220, 38, 38, 0.12);
-  --success: #16a34a;
-  --warning: #d97706;
+  --danger: #ef4444;
+  --danger-soft: rgba(239, 68, 68, 0.08);
+  --success: #10b981;
+  --warning: #f59e0b;
 
   /* Default role color scheme (Citizen) */
-  --role-primary: #4f46e5;
+  --role-primary: #6366f1;
   --role-accent: #4f46e5;
-  --role-soft: rgba(79, 70, 229, 0.10);
+  --role-soft: rgba(99, 102, 241, 0.08);
+  
+  /* Glassmorphism overrides */
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-blur: 16px;
 }
 
 /* Dark Theme Overrides */
 html[data-theme="dark"] {
-  --bg-main: #0f172a;
-  --bg-card: #111827;
-  --bg-elevated: #1e293b;
-  --text-main: #f8fafc;
+  --bg-main: #0b0f19;
+  --bg-card: rgba(18, 24, 41, 0.82);
+  --bg-elevated: #151d30;
+  --text-main: #f1f5f9;
   --text-muted: #94a3b8;
-  --border: #334155;
-  --input-bg: #0f172a;
-  --shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+  --border: rgba(51, 65, 85, 0.5);
+  --input-bg: rgba(13, 17, 30, 0.9);
+  --shadow: 0 16px 48px rgba(0, 0, 0, 0.4);
+
+  --danger: #f87171;
+  --danger-soft: rgba(248, 113, 113, 0.12);
+  --success: #34d399;
+  --warning: #fbbf24;
+
+  --role-primary: #818cf8;
+  --role-accent: #6366f1;
+  --role-soft: rgba(129, 140, 248, 0.12);
+
+  /* Glassmorphism overrides */
+  --glass-bg: rgba(15, 22, 42, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-blur: 20px;
 }
 
-/* Role Color Schema Overrides (Unified Professional Blue/White) */
+/* Role Color Schema Overrides */
 html[data-role="citizen"],
 html[data-role="helper"],
 html[data-role="admin"],
 html[data-role="advocate"],
 html[data-role="authority"] {
-  --role-primary: #4f46e5;
+  --role-primary: #6366f1;
   --role-accent: #4f46e5;
-  --role-soft: rgba(79, 70, 229, 0.08);
+  --role-soft: rgba(99, 102, 241, 0.08);
 }
 
-/* Map existing global.css variables to theme-aware variables */
+html[data-theme="dark"][data-role="citizen"],
+html[data-theme="dark"][data-role="helper"],
+html[data-theme="dark"][data-role="admin"] {
+  --role-primary: #818cf8;
+  --role-accent: #6366f1;
+  --role-soft: rgba(129, 140, 248, 0.12);
+}
+
+/* Map variables */
 :root {
   --primary: var(--role-primary);
-  --primary-dark: var(--role-primary);
+  --primary-dark: var(--role-accent);
   --primary-soft: var(--role-soft);
   --bg: var(--bg-main);
   --surface: var(--bg-card);
@@ -98,7 +125,7 @@ html[data-role="authority"] {
 body {
   background: var(--bg-main);
   color: var(--text-main);
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Font Size Overrides */
@@ -123,15 +150,27 @@ html.reduced-motion * {
 /* Premium Styles for Cards, Modals, Forms & Inputs */
 .panel-card, .table-card, .auth-card {
   background: var(--bg-card) !important;
-  border: 1px solid var(--border) !important;
+  backdrop-filter: blur(var(--glass-blur)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+  border: 1px solid var(--glass-border) !important;
   color: var(--text-main) !important;
   box-shadow: var(--shadow) !important;
+  border-radius: var(--radius-lg);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 input, select, textarea {
   background: var(--input-bg) !important;
   color: var(--text-main) !important;
   border: 1px solid var(--border) !important;
+  border-radius: var(--radius-md);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--role-primary) !important;
+  box-shadow: 0 0 0 3px var(--role-soft) !important;
+  outline: none !important;
 }
 
 hr {
@@ -140,23 +179,27 @@ hr {
 }
 
 .topbar {
-  background: var(--bg-main) !important;
-  border-bottom: 1px solid var(--border) !important;
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(var(--glass-blur)) !important;
+  -webkit-backdrop-filter: blur(var(--glass-blur)) !important;
+  border-bottom: 1px solid var(--glass-border) !important;
 }
 
 .topbar-right .avatar {
   background: var(--role-soft) !important;
   color: var(--role-primary) !important;
-  border: 1px solid var(--border);
+  border: 1px solid var(--glass-border);
 }
 
 .sidebar {
-  background: var(--bg-card) !important;
-  border-right: 1px solid var(--border) !important;
+  background: var(--sidebar) !important;
+  border-right: 1px solid var(--glass-border) !important;
 }
 
 .side-links a {
   color: var(--text-muted) !important;
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
 }
 
 .side-links a:hover,
@@ -169,6 +212,7 @@ hr {
   background: var(--bg-elevated) !important;
   border: 1px solid var(--border) !important;
   box-shadow: var(--shadow) !important;
+  border-radius: var(--radius-md);
 }
 
 .settings-dropdown-item {
@@ -198,14 +242,14 @@ tr:hover {
   background: var(--role-soft) !important;
 }
 
-/* Fix checkbox scaling issue caused by global input selector overrides */
+/* Fix checkbox scaling issue */
 input[type="checkbox"] {
-  width: 16px !important;
-  height: 16px !important;
+  width: 18px !important;
+  height: 18px !important;
   padding: 0 !important;
   margin: 0 !important;
   background: transparent !important;
-  border: 1px solid #cbd5e1 !important;
+  border: 1.5px solid var(--border) !important;
   border-radius: 4px !important;
   cursor: pointer !important;
   appearance: checkbox !important;

@@ -31,13 +31,16 @@ public class HelperController {
     private final ComplaintService complaintService;
     private final UserRepository userRepository;
 
-    public HelperController(UserService userService, MapperService mapperService, ComplaintRepository complaintRepository, AIResultRepository aiResultRepository, ComplaintService complaintService, UserRepository userRepository) {
+    private final com.aram.legalaid.service.LegalGuideLevelService legalGuideLevelService;
+
+    public HelperController(UserService userService, MapperService mapperService, ComplaintRepository complaintRepository, AIResultRepository aiResultRepository, ComplaintService complaintService, UserRepository userRepository, com.aram.legalaid.service.LegalGuideLevelService legalGuideLevelService) {
         this.userService = userService;
         this.mapperService = mapperService;
         this.complaintRepository = complaintRepository;
         this.aiResultRepository = aiResultRepository;
         this.complaintService = complaintService;
         this.userRepository = userRepository;
+        this.legalGuideLevelService = legalGuideLevelService;
     }
 
     @GetMapping("/profile")
@@ -111,6 +114,12 @@ public class HelperController {
         volunteerInfo.put("specializations", helper.getSpecialization() != null ? List.of(helper.getSpecialization().split(",")) : List.of("Labour Rights", "General Legal Aid"));
         volunteerInfo.put("currentActiveCases", helper.getCurrentActiveCases());
         volunteerInfo.put("maxActiveCases", helper.getMaxActiveCases());
+        
+        com.aram.legalaid.model.LegalGuidePerformanceProfile perf = legalGuideLevelService.getOrCreatePerformanceProfile(helper.getId());
+        volunteerInfo.put("creditScore", perf.getCreditScore());
+        volunteerInfo.put("levelName", perf.getCurrentLevelName());
+        volunteerInfo.put("levelNumber", perf.getCurrentLevelNumber());
+        
         volunteerInfo.put("successRate", 95);
 
         long assigned = cases.size();

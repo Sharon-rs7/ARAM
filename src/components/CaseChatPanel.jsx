@@ -144,7 +144,16 @@ export default function CaseChatPanel({ complaintId, userRole }) {
         return;
       }
       const res = await api.get(`/cases/${complaintId}/messages`);
-      setMessages(res.data || []);
+      const newMsgs = res.data || [];
+      setMessages(prev => {
+        const merged = [...prev];
+        newMsgs.forEach(m => {
+          if (!merged.some(existing => existing.id === m.id)) {
+            merged.push(m);
+          }
+        });
+        return merged.sort((a, b) => a.id - b.id);
+      });
     } catch (err) {
       console.error("Failed to load chat messages", err);
     } finally {

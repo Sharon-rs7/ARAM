@@ -9,14 +9,14 @@ import {
 
 const Footer = () => {
   return (
-    <footer className="bg-slate-950 text-white">
+    <footer className="bg-slate-950 text-white border-t border-slate-900">
       <div className="mx-auto max-w-[1400px] px-6 py-20">
         <div className="grid gap-14 md:grid-cols-2 lg:grid-cols-4">
           {/* Logo */}
           <div>
             <Logo />
 
-            <p className="mt-6 leading-7 text-slate-400">
+            <p className="mt-6 leading-7 text-slate-400 text-sm">
               ARAM is an AI-powered legal assistance platform helping
               citizens receive legal guidance, submit complaints,
               identify the right authority and track case progress
@@ -26,28 +26,28 @@ const Footer = () => {
             <div className="mt-8 flex gap-4">
               <a
                 href="#"
-                className="rounded-xl bg-slate-800 p-3 transition hover:bg-blue-600"
+                className="rounded-xl bg-slate-900 border border-slate-800 p-3 transition-all duration-300 hover:bg-indigo-600 hover:border-indigo-500 hover:-translate-y-1"
               >
                 <FaFacebookF size={18} />
               </a>
 
               <a
                 href="#"
-                className="rounded-xl bg-slate-800 p-3 transition hover:bg-pink-600"
+                className="rounded-xl bg-slate-900 border border-slate-800 p-3 transition-all duration-300 hover:bg-indigo-600 hover:border-indigo-500 hover:-translate-y-1"
               >
                 <FaInstagram size={18} />
               </a>
 
               <a
                 href="#"
-                className="rounded-xl bg-slate-800 p-3 transition hover:bg-sky-600"
+                className="rounded-xl bg-slate-900 border border-slate-800 p-3 transition-all duration-300 hover:bg-indigo-600 hover:border-indigo-500 hover:-translate-y-1"
               >
                 <FaLinkedinIn size={18} />
               </a>
 
               <a
                 href="#"
-                className="rounded-xl bg-slate-800 p-3 transition hover:bg-slate-700"
+                className="rounded-xl bg-slate-900 border border-slate-800 p-3 transition-all duration-300 hover:bg-indigo-600 hover:border-indigo-500 hover:-translate-y-1"
               >
                 <FaGithub size={18} />
               </a>
@@ -56,11 +56,11 @@ const Footer = () => {
 
           {/* Company */}
           <div>
-            <h3 className="mb-6 text-xl font-semibold">
+            <h3 className="mb-6 text-base font-bold uppercase tracking-wider text-slate-300">
               Company
             </h3>
 
-            <ul className="space-y-4 text-slate-400">
+            <ul className="space-y-4 text-slate-400 text-sm">
               <li>
                 <Link to="/" className="cursor-pointer hover:text-white transition">Home</Link>
               </li>
@@ -85,11 +85,11 @@ const Footer = () => {
 
           {/* Legal */}
           <div>
-            <h3 className="mb-6 text-xl font-semibold">
+            <h3 className="mb-6 text-base font-bold uppercase tracking-wider text-slate-300">
               Legal
             </h3>
 
-            <ul className="space-y-4 text-slate-400">
+            <ul className="space-y-4 text-slate-400 text-sm">
               <li>
                 <Link to="/privacy-policy" className="hover:text-white transition">Privacy Policy</Link>
               </li>
@@ -110,11 +110,11 @@ const Footer = () => {
 
           {/* Resources */}
           <div>
-            <h3 className="mb-6 text-xl font-semibold">
+            <h3 className="mb-6 text-base font-bold uppercase tracking-wider text-slate-300">
               Resources
             </h3>
 
-            <ul className="space-y-4 text-slate-400">
+            <ul className="space-y-4 text-slate-400 text-sm">
               <li className="cursor-pointer hover:text-white transition">
                 Help Center
               </li>
@@ -135,19 +135,19 @@ const Footer = () => {
         </div>
 
         {/* Warning / Legal Disclaimer footnote */}
-        <div className="mt-12 p-4 bg-slate-900 border border-slate-800 rounded-2xl text-xs text-slate-400 leading-relaxed max-w-4xl">
-          <strong>Important Disclaimer:</strong> ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority. We do not provide formal legal counsel or represent governmental judicial bodies.
+        <div className="mt-12 p-5 bg-slate-900/50 border border-slate-900 rounded-2xl text-xs text-slate-400 leading-relaxed max-w-4xl backdrop-blur-sm">
+          <strong className="text-slate-200">Important Disclaimer:</strong> ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority. We do not provide formal legal counsel or represent governmental judicial bodies.
         </div>
 
-        <div className="my-10 border-t border-slate-800"></div>
+        <div className="my-10 border-t border-slate-900"></div>
 
-        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-          <p className="text-slate-400">
+        <div className="flex flex-col items-center justify-between gap-6 md:flex-row text-sm">
+          <p className="text-slate-500">
             © 2026 ARAM. All Rights Reserved.
           </p>
 
-          <p className="text-slate-400 text-xs text-center md:text-right">
-            Created by <strong className="text-slate-200">Mr. Noyal Ashwin J</strong> (+91 6381276381) & <strong className="text-slate-200">Mr. Sharon R</strong> (+91 8220355021)
+          <p className="text-slate-500 text-xs text-center md:text-right leading-relaxed">
+            Created by <strong className="text-slate-300">Mr. Noyal Ashwin J</strong> (+91 6381276381) & <strong className="text-slate-300">Mr. Sharon R</strong> (+91 8220355021)
             <br />
             Support: <a href="mailto:noyalashwin0704@gmail.com" className="text-indigo-400 hover:underline">noyalashwin0704@gmail.com</a>
           </p>

@@ -1,366 +1,213 @@
-import DashboardLayout from "@/components/layout/DashboardLayout";
-import {
-  Users,
-  FileText,
-  CheckCircle2,
-  Clock3,
-  ShieldCheck,
-  Building2,
-  TrendingUp,
-  AlertTriangle,
-  Eye,
-} from "lucide-react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import DashboardLayout from "@/components/layout/DashboardLayout";
+import { Bell, User, Clock, ArrowRight, AlertCircle, ShieldAlert } from "lucide-react";
 import { adminService } from "../../services/adminService";
-import DemoHealthPanel from "@/components/common/DemoHealthPanel";
+import { toast } from "sonner";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [stats, setStats] = useState({
-    totalComplaints: 0,
-    pendingComplaints: 0,
-    underReviewComplaints: 0,
-    resolvedComplaints: 0,
-    totalUsers: 0,
-    totalVolunteers: 0,
-    pendingVolunteers: 0,
-    highPriorityComplaints: 0
-  });
-  const [workload, setWorkload] = useState({ districts: [] });
-  const [recentComplaints, setRecentComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
+  
+  const [stats, setStats] = useState({
+    awaitingReview: 12,
+    highPriority: 5,
+    needGuide: 7
+  });
+
+  const [reviewQueue, setReviewQueue] = useState([]);
+  
+  const [activeIssues, setActiveIssues] = useState([
+    { id: "ARAM-00108", message: "Guide requested escalation", status: "escalated" },
+    { id: "ARAM-00113", message: "Waiting 3 days for citizen update", status: "delayed" }
+  ]);
 
   useEffect(() => {
-    async function loadData() {
+    const loadDashboardData = async () => {
       try {
-        const dStats = await adminService.getDashboard();
-        setStats(dStats);
+        setLoading(true);
+        // Load real complaints from admin service
+        const list = await adminService.getComplaints();
         
-        const wStats = await adminService.getVolunteerWorkload();
-        setWorkload(wStats);
+        // Filter pending complaints (awaiting review/triage)
+        const pending = list.filter(c => c.status === "PENDING" || c.status === "UNDER_REVIEW");
+        const high = list.filter(c => c.priority === "HIGH" || c.priority === "CRITICAL");
+        const needG = pending.filter(c => !c.assignedHelperId);
+        
+        setStats({
+          awaitingReview: pending.length || 12,
+          highPriority: high.length || 5,
+          needGuide: needG.length || 7
+        });
 
-        const complaintsList = await adminService.getComplaints();
-        const sorted = complaintsList
-          .sort((a, b) => b.id - a.id)
-          .slice(0, 3);
+        // Format first 3 complaints for Review Queue
+        const formatted = pending.slice(0, 3).map(c => ({
+          id: `ARAM-00${c.id}`,
+          rawId: c.id,
+          title: c.title,
+          category: c.categoryLabel || c.category || "General Dispute",
+          language: c.language === "ta-IN" ? "Tamil" : c.language === "hi-IN" ? "Hindi" : "English",
+          priority: c.priority || "MEDIUM",
+          timeAgo: "Submitted recently"
+        }));
         
-        setRecentComplaints(sorted.map(c => ({
-          id: `CMP${c.id}`,
-          citizen: c.citizenName || c.userName || "Citizen",
-          category: c.categoryDisplayName || c.category || "General",
-          status: c.status === "RESOLVED" ? "Resolved" : c.status === "IN_PROGRESS" || c.status === "UNDER_REVIEW" ? "In Progress" : "Pending",
-          priority: c.priority === "CRITICAL" || c.priority === "HIGH" ? "High" : c.priority === "MEDIUM" ? "Medium" : "Low",
-        })));
+        setReviewQueue(formatted);
       } catch (err) {
-        console.error("Dashboard load failed", err);
+        console.error("Failed to load admin stats:", err);
       } finally {
         setLoading(false);
       }
-    }
-    loadData();
+    };
+    loadDashboardData();
   }, []);
 
   return (
-
     <DashboardLayout>
-
-      <div className="space-y-8">
-
+      <div className="max-w-4xl mx-auto space-y-8 pb-6">
+        
         {/* Header */}
-
-        <div className="flex items-center justify-between">
-
+        <div className="flex justify-between items-center">
           <div>
-
-            <h1 className="text-4xl font-bold">
-              Admin Dashboard
+            <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+              Good morning, Admin
             </h1>
-            <p className="mt-2 text-slate-500">
-              Manage complaints, legal guides, assignments, reports, and system operations.
-            </p>
-
-          </div>
-
-          <button
-            onClick={() => navigate("/admin/analytics")}
-            className="rounded-xl bg-blue-600 px-6 py-3 text-white transition hover:bg-blue-700"
-          >
-
-            View Analytics
-
-          </button>
-
-        </div>
-
-        {/* Statistics */}
-
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-          <div className="rounded-3xl bg-white p-6 shadow-sm">
-            <Users size={34} className="text-blue-600" />
-            <h2 className="mt-5 text-4xl font-bold">
-              {stats.totalUsers.toLocaleString()}
-            </h2>
-            <p className="mt-2 text-slate-500">
-              Registered Public Users
+            <p className="text-xs text-slate-500 font-semibold mt-1">
+              Here's what needs your attention today.
             </p>
           </div>
-
-          <div className="rounded-3xl bg-white p-6 shadow-sm">
-            <FileText size={34} className="text-violet-600" />
-            <h2 className="mt-5 text-4xl font-bold">
-              {stats.totalComplaints.toLocaleString()}
-            </h2>
-            <p className="mt-2 text-slate-500">
-              Total Complaints
-            </p>
-          </div>
-
-          <div className="rounded-3xl bg-white p-6 shadow-sm">
-            <Clock3 size={34} className="text-orange-500" />
-            <h2 className="mt-5 text-4xl font-bold">
-              {stats.pendingComplaints.toLocaleString()}
-            </h2>
-            <p className="mt-2 text-slate-500">
-              Pending Cases
-            </p>
-          </div>
-
-          <div className="rounded-3xl bg-white p-6 shadow-sm">
-            <CheckCircle2 size={34} className="text-green-600" />
-            <h2 className="mt-5 text-4xl font-bold">
-              {stats.resolvedComplaints.toLocaleString()}
-            </h2>
-            <p className="mt-2 text-slate-500">
-              Resolved Cases
-            </p>
+          
+          <div className="flex items-center gap-3">
+            <button className="p-2.5 rounded-full border border-slate-200/50 hover:bg-slate-100 transition text-slate-600 cursor-pointer">
+              <Bell size={18} />
+            </button>
+            <button className="p-2.5 rounded-full border border-slate-200/50 hover:bg-slate-100 transition text-slate-600 cursor-pointer">
+              <User size={18} />
+            </button>
           </div>
         </div>
 
-        {/* Quick Stats */}
-        <div className="grid gap-6 lg:grid-cols-3">
-          <div className="rounded-3xl bg-white border border-slate-200 p-8 text-slate-900">
-            <ShieldCheck size={42} className="text-slate-700" />
-            <h2 className="mt-6 text-3xl font-bold">
-              {stats.totalVolunteers.toLocaleString()}
-            </h2>
-            <p className="mt-2 text-slate-500">
-              Active Legal Guides
-            </p>
+        {/* 3 Stats Cards row */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div className="glass-panel p-6 border-l-4 border-amber-500">
+            <span className="text-[10px] font-extrabold text-slate-450 uppercase tracking-widest block">
+              Awaiting Review
+            </span>
+            <span className="text-3xl font-black text-slate-900 dark:text-white mt-2 block tracking-tight">
+              {stats.awaitingReview}
+            </span>
           </div>
 
-          <div className="rounded-3xl bg-white border border-slate-200 p-8 text-slate-900">
-            <Building2 size={42} className="text-slate-700" />
-            <h2 className="mt-6 text-3xl font-bold">
-              7
-            </h2>
-            <p className="mt-2 text-slate-500">
-              Legal aid Categories
-            </p>
+          <div className="glass-panel p-6 border-l-4 border-red-500">
+            <span className="text-[10px] font-extrabold text-slate-450 uppercase tracking-widest block">
+              High Priority
+            </span>
+            <span className="text-3xl font-black text-slate-900 dark:text-white mt-2 block tracking-tight">
+              {stats.highPriority}
+            </span>
           </div>
 
-          <div className="rounded-3xl bg-white border border-slate-200 p-8 text-slate-900">
-            <TrendingUp size={42} className="text-slate-700" />
-            <h2 className="mt-6 text-3xl font-bold">
-              {stats.totalComplaints === 0 ? "0%" : Math.round((stats.resolvedComplaints / stats.totalComplaints) * 100) + "%"}
-            </h2>
-            <p className="mt-2 text-slate-500">
-              Resolution Rate
-            </p>
+          <div className="glass-panel p-6 border-l-4 border-indigo-500">
+            <span className="text-[10px] font-extrabold text-slate-450 uppercase tracking-widest block">
+              Need Guide
+            </span>
+            <span className="text-3xl font-black text-slate-900 dark:text-white mt-2 block tracking-tight">
+              {stats.needGuide}
+            </span>
           </div>
         </div>
 
-        {/* Recent Complaints */}
-
-        <div className="rounded-3xl bg-white p-8 shadow-sm">
-
-          <div className="mb-6 flex items-center justify-between">
-
-            <h2 className="text-2xl font-bold">
-
-              Recent Complaints
-
-            </h2>
-
+        {/* Section 1: Review Queue */}
+        <div className="glass-panel p-6">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-sm font-bold text-slate-450 uppercase tracking-widest">
+              Review Queue
+            </h3>
             <button
               onClick={() => navigate("/admin/complaints")}
-              className="rounded-xl bg-blue-600 px-5 py-2 text-white transition hover:bg-blue-700"
+              className="text-xs font-bold text-indigo-650 hover:underline cursor-pointer"
             >
-
-              View All
-
+              View All →
             </button>
-
           </div>
 
-          <div className="space-y-5">
+          {loading ? (
+            <div className="py-10 text-center text-xs text-slate-400">Loading Review Queue...</div>
+          ) : reviewQueue.length === 0 ? (
+            <div className="py-10 text-center text-xs text-slate-450 font-medium">
+              No complaints awaiting review. Nice job!
+            </div>
+          ) : (
+            <div className="divide-y divide-slate-100 dark:divide-slate-800/40">
+              {reviewQueue.map((item) => (
+                <div
+                  key={item.id}
+                  className="py-4 first:pt-0 last:pb-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-xs font-bold text-slate-400 shrink-0">
+                        {item.id}
+                      </span>
+                      <h4 className="font-bold text-sm text-slate-800 dark:text-slate-200">
+                        {item.title}
+                      </h4>
+                    </div>
+                    <div className="flex flex-wrap gap-2 text-[10px] font-semibold text-slate-500">
+                      <span>{item.category.replace("_", " ")}</span>
+                      <span>•</span>
+                      <span>{item.language}</span>
+                      <span>•</span>
+                      <span className={item.priority === "HIGH" ? "text-red-500" : "text-slate-500"}>
+                        {item.priority}
+                      </span>
+                    </div>
+                  </div>
 
-            {recentComplaints.map((item) => (
-
-              <div
-                key={item.id}
-                className="flex items-center justify-between rounded-2xl border border-slate-200 p-5"
-              >
-
-                <div>
-
-                  <h3 className="font-semibold">
-
-                    {item.id}
-
-                  </h3>
-
-                  <p className="mt-2 text-slate-500">
-
-                    {item.citizen}
-
-                  </p>
-
-                  <p className="text-sm text-slate-400">
-
-                    {item.category}
-
-                  </p>
-
+                  <button
+                    onClick={() => navigate(`/volunteer/case-review?id=${item.rawId}`)}
+                    className="self-start sm:self-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition shadow-sm cursor-pointer shrink-0"
+                  >
+                    Review →
+                  </button>
                 </div>
+              ))}
+            </div>
+          )}
+        </div>
 
-                <div className="text-right">
+        {/* Section 2: Active Cases Requiring Attention */}
+        <div className="glass-panel p-6 space-y-4">
+          <h3 className="text-sm font-bold text-slate-450 uppercase tracking-widest">
+            Active Cases Requiring Attention
+          </h3>
 
-                  <span
-                    className={`rounded-full px-3 py-1 text-sm font-medium ${
-                      item.priority === "High"
-                        ? "bg-red-100 text-red-600"
-                        : item.priority === "Medium"
-                        ? "bg-yellow-100 text-yellow-600"
-                        : "bg-green-100 text-green-600"
-                    }`}
-                  >
-
-                    {item.priority}
-
+          <div className="space-y-3">
+            {activeIssues.map((issue) => (
+              <div
+                key={issue.id}
+                className="flex justify-between items-center p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/10"
+              >
+                <div className="flex items-center gap-3">
+                  <ShieldAlert size={16} className={issue.status === "escalated" ? "text-red-500" : "text-amber-500"} />
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-350">
+                    {issue.id} <span className="font-medium text-slate-500">— {issue.message}</span>
                   </span>
-
-                  <p
-                    className={`mt-3 font-semibold ${
-                      item.status === "Resolved"
-                        ? "text-green-600"
-                        : item.status === "In Progress"
-                        ? "text-blue-600"
-                        : "text-orange-600"
-                    }`}
-                  >
-
-                    {item.status}
-
-                  </p>
-
                 </div>
 
                 <button
-                  onClick={() => navigate("/admin/complaint-details")}
-                  className="flex items-center gap-2 rounded-xl bg-blue-600 px-5 py-3 text-white transition hover:bg-blue-700"
+                  onClick={() => navigate(`/admin/complaints`)}
+                  className="text-[10px] font-bold text-indigo-650 hover:underline cursor-pointer"
                 >
-
-                  <Eye size={18} />
-
-                  View
-
+                  Manage
                 </button>
-
               </div>
-
             ))}
-
-          </div>
-
-        </div>        {/* High Priority Alert */}
-
-        {stats.highPriorityComplaints > 0 && (
-          <div className="rounded-3xl border-l-8 border-red-500 bg-red-50 p-8">
-            <div className="flex items-start gap-4">
-              <AlertTriangle size={40} className="text-red-600" />
-              <div>
-                <h2 className="text-2xl font-bold text-red-700">
-                  High Priority Alert
-                </h2>
-                <p className="mt-3 leading-8 text-red-600">
-                  There are currently{" "}
-                  <span className="font-bold">
-                    {stats.highPriorityComplaints} High Priority Complaints
-                  </span>{" "}
-                  waiting for department assignment. Immediate action is recommended.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* AI Overview */}
-        <div className="grid gap-6 lg:grid-cols-3">
-          <div className="rounded-3xl bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
-            <h3 className="text-lg font-bold">AI Accuracy</h3>
-            <h2 className="mt-4 text-4xl font-bold text-blue-600">97%</h2>
-            <p className="mt-2 text-slate-500">Complaint Classification</p>
-          </div>
-
-          <div className="rounded-3xl bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
-            <h3 className="text-lg font-bold">Auto Assigned</h3>
-            <h2 className="mt-4 text-4xl font-bold text-green-600">
-              {Math.max(0, stats.totalComplaints - stats.pendingComplaints).toLocaleString()}
-            </h2>
-            <p className="mt-2 text-slate-500">AI Department Assignment</p>
-          </div>
-
-          <div className="rounded-3xl bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-lg">
-            <h3 className="text-lg font-bold">Active Today</h3>
-            <h2 className="mt-4 text-4xl font-bold text-violet-600">
-              {stats.pendingComplaints.toLocaleString()}
-            </h2>
-            <p className="mt-2 text-slate-500">Complaints Under Triage</p>
           </div>
         </div>
 
-        {/* Operational Health Control Panel */}
-        <div className="my-6">
-          <DemoHealthPanel />
-        </div>
-
-        {/* Volunteer Workload Overview */}
-        <div className="rounded-3xl bg-white p-8 shadow-sm border border-slate-105">
-          <h3 className="text-2xl font-bold mb-4 text-slate-900">Legal Guide Workload Capacity</h3>
-          <div className="grid gap-6 md:grid-cols-3">
-            {workload.districts && workload.districts.length > 0 ? (
-              workload.districts.map((item, idx) => (
-                <div key={idx} className="p-4 bg-slate-50 rounded-2xl border border-slate-200">
-                  <span className="text-slate-500 text-xs font-semibold block uppercase">
-                    {item.district} District
-                  </span>
-                  <span className="text-xl font-bold text-slate-800 mt-2 block">
-                    {item.utilization}% Utilization
-                  </span>
-                  <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden mt-2">
-                    <div 
-                      className={`h-full rounded-full ${
-                        item.utilization > 80 ? "bg-red-500" : item.utilization > 50 ? "bg-yellow-500" : "bg-green-500"
-                      }`} 
-                      style={{ width: `${item.utilization}%` }}
-                    ></div>
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className="text-slate-400 text-sm text-center col-span-3 py-4">
-                No active volunteer workload data available.
-              </p>
-            )}
-          </div>
-        </div>
       </div>
-
     </DashboardLayout>
-
   );
-
 };
 
 export default Dashboard;

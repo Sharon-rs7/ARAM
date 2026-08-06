@@ -2,6 +2,11 @@ import { lazy, Suspense } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import PublicRoute from "./routes/PublicRoute";
+import { useEffect } from "react";
+import { toast } from "sonner";
+import { offlineDraftService } from "./services/offlineDraftService";
+import { complaintService } from "./services/complaintService";
+import { documentService } from "./services/documentService";
 
 /* Landing & Auth */
 const LandingPage = lazy(() => import("./pages/Landing/LandingPage"));
@@ -18,6 +23,7 @@ const ComplaintHistory = lazy(() => import("./pages/Citizen/ComplaintHistory"));
 const ComplaintDetails = lazy(() => import("./pages/Citizen/ComplaintDetails"));
 const Notifications = lazy(() => import("./pages/Citizen/Notifications"));
 const Chatbot = lazy(() => import("./pages/Citizen/Chatbot"));
+const MessagesInbox = lazy(() => import("./pages/Citizen/MessagesInbox"));
 const Profile = lazy(() => import("./pages/Citizen/Profile"));
 const Settings = lazy(() => import("./pages/Citizen/Settings"));
 const CitizenDocuments = lazy(() => import("./pages/Citizen/CitizenDocuments"));
@@ -68,6 +74,58 @@ const PageLoader = () => (
 );
 
 function App() {
+  // Sync offline queued complaints
+  useEffect(() => {
+    const syncOfflineComplaints = async () => {
+      try {
+        const queue = await offlineDraftService.getQueuedSubmissions();
+        if (queue.length === 0) return;
+
+        toast.info(`Syncing ${queue.length} offline complaint(s)...`);
+
+        for (const item of queue) {
+          try {
+            const res = await complaintService.createComplaint(item.payload);
+            
+            if (item.evidenceBlob && res && res.id) {
+              try {
+                const file = new File([item.evidenceBlob], item.evidenceName || "evidence.jpg", { type: item.evidenceBlob.type });
+                const docFormData = new FormData();
+                docFormData.append("file", file);
+                docFormData.append("complaintId", res.id);
+                docFormData.append("documentType", "EVIDENCE_PROOF");
+                await documentService.uploadDocument(docFormData);
+              } catch (docErr) {
+                console.warn("Offline evidence attachment error:", docErr);
+              }
+            }
+            
+            await offlineDraftService.removeQueuedSubmission(item.queueId);
+            toast.success(`Offline complaint '${item.payload.title}' successfully synced!`);
+          } catch (err) {
+            console.error("Failed to sync queued complaint:", err);
+            break;
+          }
+        }
+      } catch (globalErr) {
+        console.error("Sync runner error:", globalErr);
+      }
+    };
+
+    if (navigator.onLine) {
+      syncOfflineComplaints();
+    }
+
+    const handleOnline = () => {
+      syncOfflineComplaints();
+    };
+
+    window.addEventListener("online", handleOnline);
+    return () => {
+      window.removeEventListener("online", handleOnline);
+    };
+  }, []);
+
   return (
     <BrowserRouter>
       <Suspense fallback={<PageLoader />}>
@@ -104,6 +162,7 @@ function App() {
           <Route path="/citizen/complaints/:id" element={<ComplaintDetails />} />
           <Route path="/citizen/notifications" element={<Notifications />} />
           <Route path="/citizen/chatbot" element={<Chatbot />} />
+          <Route path="/citizen/messages" element={<MessagesInbox />} />
           <Route path="/citizen/documents" element={<CitizenDocuments />} />
           <Route path="/citizen/profile" element={<Profile />} />
           <Route path="/citizen/settings" element={<Settings />} />
@@ -117,6 +176,7 @@ function App() {
           <Route path="/volunteer/complaint/:id" element={<VolunteerComplaintDetails />} />
           <Route path="/volunteer/case-review" element={<CaseReview />} />
           <Route path="/volunteer/case-review/:id" element={<CaseReview />} />
+          <Route path="/volunteer/messages" element={<MessagesInbox />} />
           <Route path="/volunteer/profile" element={<VolunteerProfile />} />
           <Route path="/volunteer/settings" element={<VolunteerSettings />} />
           <Route path="/volunteer/my-analytics" element={<MyAnalytics />} />

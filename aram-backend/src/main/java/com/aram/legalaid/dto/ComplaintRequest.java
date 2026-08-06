@@ -34,5 +34,7 @@ public record ComplaintRequest(
         IdentityVisibility identityVisibility,
         Boolean disclaimerAccepted,
         String safeContactMethod,
-        String safeContactTime
+        String safeContactTime,
+        String category,
+        String priority
 ) {}
