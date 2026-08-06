@@ -4,10 +4,11 @@ import com.aram.legalaid.config.AIServiceProperties;
 import com.aram.legalaid.dto.*;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -20,8 +21,60 @@ public class AIClientService {
     private final AIServiceProperties properties;
 
     public AIClientService(AIServiceProperties properties) {
-        this.restTemplate = new RestTemplate();
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(2000); // 2 seconds connect timeout
+        requestFactory.setReadTimeout(30000);   // 30 seconds read timeout (covers Whisper & heavy OCR models)
+        this.restTemplate = new RestTemplate(requestFactory);
         this.properties = properties;
+    }
+
+    private <T> T executeWithRetry(String endpoint, java.util.function.Supplier<T> action) {
+        int maxAttempts = 3;
+        int attempt = 0;
+        while (true) {
+            try {
+                attempt++;
+                return action.get();
+            } catch (ResourceAccessException e) {
+                if (attempt >= maxAttempts) {
+                    System.err.println("FastAPI connection failed/timed out on " + endpoint + " after " + attempt + " attempts: " + e.getMessage());
+                    throw e;
+                }
+                System.out.println("Transient ResourceAccess error calling " + endpoint + ", retrying attempt " + attempt + "...");
+                try {
+                    Thread.sleep(150 * attempt);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException("Retry interrupted", ie);
+                }
+            } catch (HttpServerErrorException e) {
+                if (attempt >= maxAttempts) {
+                    System.err.println("FastAPI 5xx Server Error on " + endpoint + " after " + attempt + " attempts: " + e.getMessage());
+                    throw e;
+                }
+                System.out.println("Transient HTTP 5xx error calling " + endpoint + ", retrying attempt " + attempt + "...");
+                try {
+                    Thread.sleep(150 * attempt);
+                } catch (InterruptedException ie) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException("Retry interrupted", ie);
+                }
+            }
+        }
+    }
+
+    private String getDetailedErrorMsg(String method, Exception e) {
+        if (e instanceof ResourceAccessException) {
+            return "Connection timeout / refused calling AI Service (" + method + "): " + e.getMessage();
+        } else if (e instanceof HttpClientErrorException) {
+            HttpClientErrorException ex = (HttpClientErrorException) e;
+            return "AI Service returned client error 4xx (" + method + ", Code: " + ex.getStatusCode() + "): " + ex.getResponseBodyAsString();
+        } else if (e instanceof HttpServerErrorException) {
+            HttpServerErrorException ex = (HttpServerErrorException) e;
+            return "AI Service returned server error 5xx (" + method + ", Code: " + ex.getStatusCode() + "): " + ex.getResponseBodyAsString();
+        } else {
+            return "AI Service call failed (" + method + "): " + e.getMessage();
+        }
     }
 
     public AiTriageResponse analyzeComplaint(String title, String description, String language, String district, boolean isSensitive, String preferredGender, List<Map<String, Object>> existingComplaints) {
@@ -39,8 +92,9 @@ public class AIClientService {
             );
             return restTemplate.postForObject(url, payload, AiTriageResponse.class);
         } catch (Exception e) {
-            System.err.println("FastAPI analyzeComplaint failed: " + e.getMessage());
-            throw new RuntimeException("AI Triage service is currently offline. Please try again later.", e);
+            String errorMsg = getDetailedErrorMsg("analyzeComplaint", e);
+            System.err.println(errorMsg);
+            throw new RuntimeException("AI Triage service is currently offline or failed. Please try again later. Details: " + errorMsg, e);
         }
     }
 
@@ -49,7 +103,8 @@ public class AIClientService {
         try {
             return restTemplate.postForObject(url, request, AiChatResponse.class);
         } catch (Exception e) {
-            System.err.println("FastAPI askChatbot failed: " + e.getMessage());
+            String errorMsg = getDetailedErrorMsg("askChatbot", e);
+            System.err.println(errorMsg);
             return new AiChatResponse(
                 "I am sorry, the AI service is currently undergoing maintenance. Please reach out to your local helper. This is preliminary legal aid guidance only.",
                 "I am sorry, the AI service is currently undergoing maintenance. Please reach out to your local helper. This is preliminary legal aid guidance only.",
@@ -74,7 +129,7 @@ public class AIClientService {
             ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
             return response.getBody();
         } catch (Exception e) {
-            System.err.println("FastAPI ocrDocument failed: " + e.getMessage());
+            System.err.println(getDetailedErrorMsg("ocrDocument", e));
             return Map.of(
                 "extractedText", "",
                 "maskedText", "",
@@ -99,7 +154,7 @@ public class AIClientService {
             ResponseEntity<AiDocumentVerifyResponse> response = restTemplate.postForEntity(url, entity, AiDocumentVerifyResponse.class);
             return response.getBody();
         } catch (Exception e) {
-            System.err.println("FastAPI verifyDocument failed: " + e.getMessage());
+            System.err.println(getDetailedErrorMsg("verifyDocument", e));
             return new AiDocumentVerifyResponse(
                 expectedType,
                 "OCR Service Failed.",
@@ -129,7 +184,7 @@ public class AIClientService {
             );
             return restTemplate.postForObject(url, payload, List.class);
         } catch (Exception e) {
-            System.err.println("FastAPI recommendVolunteers failed: " + e.getMessage());
+            System.err.println(getDetailedErrorMsg("recommendVolunteers", e));
             return List.of();
         }
     }
@@ -150,7 +205,7 @@ public class AIClientService {
             ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
             return response.getBody();
         } catch (Exception e) {
-            System.err.println("FastAPI transcribeSpeech failed: " + e.getMessage());
+            System.err.println(getDetailedErrorMsg("transcribeSpeech", e));
             return Map.of("transcript", "Speech transcription failed. Please check microphone connection or type manually.", "confidence", 0.0);
         }
     }
@@ -158,9 +213,9 @@ public class AIClientService {
     public Map<String, Object> detectLanguage(String text) {
         String url = properties.getUrl() + "/language/detect";
         try {
-            return restTemplate.postForObject(url, Map.of("text", text), Map.class);
+            return executeWithRetry("detectLanguage", () -> restTemplate.postForObject(url, Map.of("text", text), Map.class));
         } catch (Exception e) {
-            System.err.println("FastAPI detectLanguage failed: " + e.getMessage());
+            System.err.println(getDetailedErrorMsg("detectLanguage", e));
             return Map.of("language", "English");
         }
     }
@@ -173,9 +228,9 @@ public class AIClientService {
                 "sourceLanguage", sourceLanguage != null ? sourceLanguage : "Tamil",
                 "targetLanguage", targetLanguage != null ? targetLanguage : "English"
             );
-            return restTemplate.postForObject(url, payload, Map.class);
+            return executeWithRetry("translateText", () -> restTemplate.postForObject(url, payload, Map.class));
         } catch (Exception e) {
-            System.err.println("FastAPI translateText failed: " + e.getMessage());
+            System.err.println(getDetailedErrorMsg("translateText", e));
             return Map.of("originalText", text, "translatedText", text);
         }
     }
@@ -183,9 +238,9 @@ public class AIClientService {
     public Map<String, Object> normalizeText(String text) {
         String url = properties.getUrl() + "/language/normalize";
         try {
-            return restTemplate.postForObject(url, Map.of("text", text), Map.class);
+            return executeWithRetry("normalizeText", () -> restTemplate.postForObject(url, Map.of("text", text), Map.class));
         } catch (Exception e) {
-            System.err.println("FastAPI normalizeText failed: " + e.getMessage());
+            System.err.println(getDetailedErrorMsg("normalizeText", e));
             return Map.of("originalText", text, "normalizedText", text);
         }
     }
@@ -195,7 +250,7 @@ public class AIClientService {
         try {
             return restTemplate.getForObject(url, Map.class);
         } catch (Exception e) {
-            System.err.println("FastAPI getSpeechStatus failed: " + e.getMessage());
+            System.err.println(getDetailedErrorMsg("getSpeechStatus", e));
             return Map.of("modelLoaded", false, "modelSize", "base", "device", "cpu");
         }
     }
