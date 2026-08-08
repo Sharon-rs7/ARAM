@@ -2,6 +2,7 @@ package com.aram.legalaid.service;
 
 import com.aram.legalaid.dto.*;
 import com.aram.legalaid.enums.*;
+import com.aram.legalaid.exception.BadRequestException;
 import com.aram.legalaid.exception.ForbiddenException;
 import com.aram.legalaid.exception.ResourceNotFoundException;
 import com.aram.legalaid.model.*;
@@ -44,6 +45,20 @@ public class ComplaintService {
         User user = userService.currentUser();
         validateLanguage(request.language());
 
+        // Backend double-submit / Idempotency protection
+        java.time.LocalDateTime tenSecsAgo = java.time.LocalDateTime.now().minusSeconds(10);
+        List<Complaint> recentComplaints = complaintRepository.findByUserIdOrderByCreatedAtDesc(user.getId());
+        if (!recentComplaints.isEmpty()) {
+            Complaint latest = recentComplaints.get(0);
+            if (latest.getCreatedAt() != null && latest.getCreatedAt().isAfter(tenSecsAgo)) {
+                if (latest.getTitle().equalsIgnoreCase(request.title().trim()) && 
+                    (latest.getDescription().equalsIgnoreCase(request.description().trim()) || 
+                     (latest.getOriginalText() != null && latest.getOriginalText().equalsIgnoreCase(request.description().trim())))) {
+                    throw new BadRequestException("Duplicate complaint submission detected. Please wait before submitting again.");
+                }
+            }
+        }
+
         Complaint complaint = new Complaint();
         complaint.setUser(user);
         complaint.setTitle(request.title().trim());
@@ -76,6 +91,14 @@ public class ComplaintService {
                 complaint.setPriority(com.aram.legalaid.enums.PriorityLevel.valueOf(request.priority().toUpperCase()));
             } catch (Exception e) {}
         }
+        if (request.citizenOpinion() != null) {
+            complaint.setCitizenOpinion(request.citizenOpinion().trim());
+        }
+        if (request.additionalDetails() != null) {
+            complaint.setAdditionalDetails(request.additionalDetails().trim());
+        }
+        complaint.setOriginalText(request.description().trim());
+        complaint.setSubmissionMode(request.submissionMode() != null ? request.submissionMode().trim().toUpperCase() : "SIMPLE");
         complaint.setStatus(ComplaintStatus.SUBMITTED);
 
         Complaint savedComplaint = complaintRepository.save(complaint);
