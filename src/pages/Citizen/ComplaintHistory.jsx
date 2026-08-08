@@ -34,10 +34,10 @@ const ComplaintHistory = () => {
                           (item.id && item.id.toString().includes(searchQuery));
     
     if (activeTab === "active") {
-      return matchesSearch && item.status !== "RESOLVED";
+      return matchesSearch && item.status !== "RESOLVED" && item.status !== "RESOLVED_BY_GUIDE" && item.status !== "CLOSED_BY_USER";
     }
     if (activeTab === "resolved") {
-      return matchesSearch && item.status === "RESOLVED";
+      return matchesSearch && (item.status === "RESOLVED" || item.status === "RESOLVED_BY_GUIDE" || item.status === "CLOSED_BY_USER");
     }
     return matchesSearch;
   });
@@ -111,8 +111,8 @@ const ComplaintHistory = () => {
                   className="py-5 first:pt-0 last:pb-0 flex items-center justify-between hover:bg-slate-50/20 dark:hover:bg-slate-900/10 transition cursor-pointer"
                 >
                   <div className="min-w-0 pr-4 space-y-1">
-                    <span className="font-mono text-[10px] font-bold text-slate-400 dark:text-slate-500 block">
-                      ARAM-{item.id}
+                    <span className="font-mono text-[10px] font-bold text-indigo-600 dark:text-indigo-400 block">
+                      {item.formattedComplaintId || `CMP-2026-${String(item.id).padStart(6, '0')}`}
                     </span>
                     <h4 className="font-bold text-sm text-slate-800 dark:text-slate-200 truncate">
                       {item.title}
@@ -121,18 +121,18 @@ const ComplaintHistory = () => {
                     {/* Status marker */}
                     <div className="flex items-center gap-1.5 mt-1.5">
                       <span className={`h-2 w-2 rounded-full ${
-                        item.status === "RESOLVED"
+                        (item.status === "RESOLVED" || item.status === "RESOLVED_BY_GUIDE" || item.status === "CLOSED_BY_USER")
                           ? "bg-emerald-500"
-                          : item.status === "PENDING"
+                          : (item.status === "PENDING" || item.status === "SUBMITTED")
                           ? "bg-amber-500"
                           : "bg-indigo-500"
                       }`} />
                       <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400">
-                        {item.status === "PENDING" 
+                        {(item.status === "PENDING" || item.status === "SUBMITTED") 
                           ? "Awaiting Admin Review" 
-                          : item.status === "IN_PROGRESS"
-                          ? "In Progress"
-                          : "Resolved"}
+                          : (item.status === "RESOLVED" || item.status === "RESOLVED_BY_GUIDE" || item.status === "CLOSED_BY_USER")
+                          ? "Resolved"
+                          : "In Progress"}
                       </span>
                     </div>
 

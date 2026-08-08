@@ -55,6 +55,7 @@ const ComplaintDetails = () => {
 
   const [docRequests, setDocRequests] = useState([]);
   const [appointments, setAppointments] = useState([]);
+  const [caseNotes, setCaseNotes] = useState([]);
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [showReopenModal, setShowReopenModal] = useState(false);
   const [reopenReason, setReopenReason] = useState("");
@@ -93,6 +94,14 @@ const ComplaintDetails = () => {
         // Fetch appointments list
         const appsData = await complaintService.getAppointments(id);
         setAppointments(appsData);
+
+        // Fetch case notes list
+        try {
+          const notesData = await complaintService.getCaseNotes(id);
+          setCaseNotes(notesData || []);
+        } catch (notesErr) {
+          console.warn("Failed to load case notes:", notesErr);
+        }
       } catch (err) {
         toast.error("Failed to load complaint details.");
       } finally {
@@ -242,7 +251,7 @@ const ComplaintDetails = () => {
   const visibility = complaint.identityVisibility || "VISIBLE";
 
   const getActiveStepIndex = () => {
-    if (status === "RESOLVED" || status === "CLOSED") return 6; // Resolved
+    if (status === "RESOLVED" || status === "CLOSED" || status === "RESOLVED_BY_GUIDE" || status === "CLOSED_BY_USER") return 6; // Resolved
     
     const hasDocs = docRequests && docRequests.length > 0;
     const allDocsDone = hasDocs && docRequests.every(r => r.status === "VERIFIED" || r.status === "UPLOADED");
@@ -341,7 +350,7 @@ const ComplaintDetails = () => {
     </svg>
   );
 
-  const formattedRefId = `ARAM-2026-${String(complaint.id).replace("cmp-", "").padStart(6, "0")}`;
+  const formattedRefId = complaint.formattedComplaintId || `CMP-2026-${String(complaint.id).replace("cmp-", "").padStart(6, "0")}`;
 
   return (
     <DashboardLayout>
@@ -532,13 +541,36 @@ const ComplaintDetails = () => {
         {/* Description Panel */}
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Grievance Description</h3>
+            <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Original Grievance Description</h3>
             <ReadAloudButton text={desc} language={complaint.language || "en-IN"} />
           </div>
           <div className="rounded-xl bg-slate-50 p-4 text-xs leading-relaxed text-slate-600 border border-slate-100 whitespace-pre-line">
             {desc}
           </div>
         </div>
+
+        {/* Citizen Opinion / Additional Details Panel */}
+        {(complaint.citizenOpinion || complaint.additionalDetails) && (
+          <div className="rounded-2xl border border-indigo-100 bg-indigo-50/40 dark:bg-slate-900 dark:border-slate-800 p-6 shadow-sm space-y-3">
+            <h3 className="text-sm font-bold text-indigo-950 dark:text-indigo-200 uppercase tracking-wider">Citizen Perspective & Details</h3>
+            {complaint.citizenOpinion && (
+              <div className="space-y-1">
+                <span className="text-[10px] font-bold text-slate-500 uppercase">Citizen Opinion / Desired Relief:</span>
+                <p className="rounded-xl bg-white dark:bg-slate-950 p-3.5 text-xs leading-relaxed text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-800">
+                  {complaint.citizenOpinion}
+                </p>
+              </div>
+            )}
+            {complaint.additionalDetails && (
+              <div className="space-y-1 pt-1">
+                <span className="text-[10px] font-bold text-slate-500 uppercase">Additional Context:</span>
+                <p className="rounded-xl bg-white dark:bg-slate-950 p-3.5 text-xs leading-relaxed text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-800">
+                  {complaint.additionalDetails}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* AI Action Checklist */}
         <div className="grid gap-6 md:grid-cols-2">
@@ -768,6 +800,30 @@ const ComplaintDetails = () => {
             </div>
           )}
         </div>
+
+        {/* Case Updates / Notes Section */}
+        {caseNotes.length > 0 && (
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4 mt-6">
+            <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+              <h3 className="text-sm font-bold text-slate-800 tracking-tight flex items-center gap-2 uppercase">
+                <span>📢</span> Case Updates & Progress Notes
+              </h3>
+            </div>
+            <div className="space-y-4">
+              {caseNotes.map((note) => (
+                <div key={note.id} className="p-4 bg-slate-50 border border-slate-100 rounded-xl space-y-1 text-xs">
+                  <div className="flex justify-between items-center text-[10px] text-slate-400 font-bold">
+                    <span>Legal Guide</span>
+                    <span>{new Date(note.createdAt).toLocaleString("en-IN")}</span>
+                  </div>
+                  <p className="text-slate-700 leading-relaxed font-semibold whitespace-pre-line">
+                    {note.noteText}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Resolution Summary Card */}
         {(complaint.resolutionSummary || status === "RESOLVED_BY_GUIDE") && (
