@@ -11,6 +11,7 @@ export const USE_MOCKS = import.meta.env.VITE_USE_MOCKS === "true";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
+  timeout: 30000,
   headers: {
     "Content-Type": "application/json",
   },
@@ -18,6 +19,12 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
+    // Dynamic routing: Auth endpoints -> Port 8081, Business endpoints -> Port 8082
+    if (config.url.startsWith("/auth") || config.url.startsWith("/users/me")) {
+      config.baseURL = "http://localhost:8081/api";
+    } else {
+      config.baseURL = "http://localhost:8082/api";
+    }
     const token = localStorage.getItem("accessToken");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

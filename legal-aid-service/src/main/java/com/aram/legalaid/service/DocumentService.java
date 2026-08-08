@@ -80,25 +80,52 @@ public class DocumentService {
         if (file == null || file.isEmpty()) throw new BadRequestException("Document file is required");
         if (file.getSize() > maxSizeMb * 1024 * 1024) throw new BadRequestException("File size must be below " + maxSizeMb + "MB");
         String contentType = file.getContentType();
-        if (contentType == null || !ALLOWED_TYPES.contains(contentType)) {
+        if (contentType == null || !ALLOWED_TYPES.contains(contentType.toLowerCase())) {
             throw new BadRequestException("Allowed file types: PDF, JPG, PNG");
         }
+
+        // Real magic byte inspection to reject renamed files (e.g. .exe renamed to .pdf)
+        try {
+            byte[] headerBytes = new byte[8];
+            int read = file.getInputStream().read(headerBytes);
+            if (read < 4) {
+                throw new BadRequestException("Corrupted or empty file content");
+            }
+            boolean isPdf = headerBytes[0] == 0x25 && headerBytes[1] == 0x50 && headerBytes[2] == 0x44 && headerBytes[3] == 0x46; // %PDF
+            boolean isPng = (headerBytes[0] & 0xFF) == 0x89 && headerBytes[1] == 0x50 && headerBytes[2] == 0x4E && headerBytes[3] == 0x47; // \x89PNG
+            boolean isJpg = (headerBytes[0] & 0xFF) == 0xFF && (headerBytes[1] & 0xFF) == 0xD8 && (headerBytes[2] & 0xFF) == 0xFF; // \xFF\xD8\xFF
+
+            if (!isPdf && !isPng && !isJpg) {
+                throw new BadRequestException("Invalid file content signature. Real PDF, PNG, or JPEG content required (executable/renamed files are rejected).");
+            }
+        } catch (IOException e) {
+            throw new BadRequestException("Failed to read file content header: " + e.getMessage());
+        }
+
         Complaint complaint = complaintService.findComplaint(complaintId);
         User user = userService.currentUser();
-        if (user.getRole() != Role.ADMIN && !complaint.getUser().getId().equals(user.getId())) {
+        boolean isOwner = complaint.getUserId() != null && complaint.getUserId().equals(user.getId());
+        boolean isAdmin = user.getRole() == Role.ADMIN;
+        if (!isAdmin && !isOwner) {
             throw new ForbiddenException("You cannot upload document for this complaint");
         }
 
         try {
             Path base = Path.of(uploadDir).toAbsolutePath().normalize();
             Files.createDirectories(base);
-            String safeName = UUID.randomUUID() + "_" + file.getOriginalFilename().replaceAll("[^a-zA-Z0-9._-]", "_");
+            
+            // Filename sanitization to prevent directory traversal and XSS
+            String rawName = file.getOriginalFilename() != null ? file.getOriginalFilename() : "document.pdf";
+            String sanitizedCleanName = rawName.replace("..", "").replace("/", "").replace("\\", "").replaceAll("<[^>]*>", "").replaceAll("[^a-zA-Z0-9._-]", "_");
+            if (sanitizedCleanName.isBlank()) sanitizedCleanName = "evidence_" + System.currentTimeMillis() + ".pdf";
+            
+            String safeName = UUID.randomUUID() + "_" + sanitizedCleanName;
             Path target = base.resolve(safeName);
             Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
 
             UploadedDocument document = new UploadedDocument();
             document.setComplaint(complaint);
-            document.setFileName(file.getOriginalFilename());
+            document.setFileName(sanitizedCleanName);
             document.setFileType(contentType);
             document.setFilePath(target.toString());
             document.setVerificationStatus(VerificationStatus.UPLOADED);
