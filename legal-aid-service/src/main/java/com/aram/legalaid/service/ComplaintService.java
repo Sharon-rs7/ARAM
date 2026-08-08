@@ -159,13 +159,43 @@ public class ComplaintService {
         if (user.getRole() != Role.ADMIN && user.getRole() != Role.HELPER) {
             throw new ForbiddenException("Only admin/helper can update complaint status");
         }
-        complaint.setStatus(request.status());
+        
+        ComplaintStatus currentStatus = complaint.getStatus() != null ? complaint.getStatus() : ComplaintStatus.SUBMITTED;
+        ComplaintStatus targetStatus = request.status();
+
+        if (user.getRole() == Role.HELPER) {
+            // Helpers can only update cases assigned to them
+            if (complaint.getAssignedHelperId() == null || !complaint.getAssignedHelperId().equals(user.getId())) {
+                throw new ForbiddenException("You can only update status for cases assigned to you");
+            }
+        }
+
+        if (!isValidStatusTransition(currentStatus, targetStatus)) {
+            throw new BadRequestException("Invalid status transition from " + currentStatus + " to " + targetStatus + ". Standard workflow requires: SUBMITTED -> UNDER_REVIEW / AI_ANALYZED -> ASSIGNED -> IN_PROGRESS -> RESOLVED.");
+        }
+
+        complaint.setStatus(targetStatus);
         if (request.note() != null) {
             complaint.setLegalOpinion(request.note());
         }
         Complaint saved = complaintRepository.save(complaint);
         notificationService.create(saved.getUser(), "Your complaint ID " + saved.getId() + " status changed to " + saved.getStatus(), NotificationType.IN_APP);
         return mapperService.toComplaintResponse(saved, aiResultRepository.findByComplaint(saved).orElse(null));
+    }
+
+    private boolean isValidStatusTransition(ComplaintStatus from, ComplaintStatus to) {
+        if (from == to) return true;
+        return switch (from) {
+            case SUBMITTED -> to == ComplaintStatus.AI_ANALYZED || to == ComplaintStatus.DOCUMENTS_PENDING || to == ComplaintStatus.REJECTED;
+            case AI_ANALYZED -> to == ComplaintStatus.HELPER_ASSIGNED || to == ComplaintStatus.AUTHORITY_RECOMMENDED || to == ComplaintStatus.IN_PROGRESS || to == ComplaintStatus.REJECTED;
+            case DOCUMENTS_PENDING -> to == ComplaintStatus.AI_ANALYZED || to == ComplaintStatus.HELPER_ASSIGNED || to == ComplaintStatus.REJECTED;
+            case AUTHORITY_RECOMMENDED, CITIZEN_ACTION_PENDING -> to == ComplaintStatus.HELPER_ASSIGNED || to == ComplaintStatus.IN_PROGRESS || to == ComplaintStatus.REJECTED;
+            case HELPER_ASSIGNED -> to == ComplaintStatus.IN_PROGRESS || to == ComplaintStatus.REJECTED;
+            case IN_PROGRESS -> to == ComplaintStatus.RESOLVED || to == ComplaintStatus.RESOLVED_BY_GUIDE || to == ComplaintStatus.CLOSED || to == ComplaintStatus.REJECTED;
+            case RESOLVED, RESOLVED_BY_GUIDE -> to == ComplaintStatus.CLOSED || to == ComplaintStatus.CLOSED_BY_USER || to == ComplaintStatus.REOPEN_REQUESTED;
+            case REOPEN_REQUESTED -> to == ComplaintStatus.IN_PROGRESS || to == ComplaintStatus.CLOSED;
+            default -> false;
+        };
     }
 
     public Complaint findComplaint(Long id) {
