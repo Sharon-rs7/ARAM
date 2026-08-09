@@ -64,11 +64,22 @@ public class LegalGuideLevelService {
 
     @Transactional
     public void addCredit(Long legalGuideId, Long complaintId, String transactionType, int points, String reason, Long awardedByUserId, String awardedByRole, String source) {
+        // Idempotency: Duplicate credit transaction prevention for same case & transaction type
+        if (complaintId != null && creditTransactionRepository.existsByLegalGuideIdAndComplaintIdAndTransactionType(legalGuideId, complaintId, transactionType)) {
+            System.out.println("Duplicate credit transaction skipped for Guide: " + legalGuideId + ", Complaint: " + complaintId + ", Type: " + transactionType);
+            return;
+        }
+
         // Save credit transaction
         LegalGuideCreditTransaction tx = new LegalGuideCreditTransaction(
             legalGuideId, complaintId, transactionType, points, reason, awardedByUserId, awardedByRole, source
         );
-        creditTransactionRepository.save(tx);
+        try {
+            creditTransactionRepository.saveAndFlush(tx);
+        } catch (Exception e) {
+            System.out.println("Duplicate credit transaction intercepted by database unique constraint for Guide: " + legalGuideId + ", Complaint: " + complaintId);
+            return;
+        }
 
         // Fetch performance profile
         LegalGuidePerformanceProfile perf = getOrCreatePerformanceProfile(legalGuideId);
@@ -77,7 +88,7 @@ public class LegalGuideLevelService {
         perf.setCreditScore(newScore);
 
         // Track metrics based on transaction type
-        if ("CASE_RESOLVED_BY_GUIDE".equals(transactionType)) {
+        if ("CASE_RESOLVED_BY_GUIDE".equals(transactionType) || "CASE_COMPLETED".equals(transactionType)) {
             perf.setCasesResolved(perf.getCasesResolved() + 1);
         } else if ("USER_CONFIRMED_RESOLVED".equals(transactionType)) {
             perf.setCasesConfirmedResolved(perf.getCasesConfirmedResolved() + 1);
@@ -100,7 +111,7 @@ public class LegalGuideLevelService {
         // Log audit trail
         String actionType = points >= 0 ? "CREDIT_AWARDED" : "CREDIT_DEDUCTED";
         auditLogService.log(actionType, awardedByRole != null ? awardedByRole : "SYSTEM", 
-            "Points: " + points + " for Guide: " + legalGuideId + " reason: " + reason);
+            "Points: " + points + " | Old XP: " + oldScore + " | New XP: " + newScore + " for Guide: " + legalGuideId + " reason: " + reason);
 
         // Evaluate level upgrade/downgrade rules
         evaluateLevel(legalGuideId, oldScore, newScore);
@@ -123,33 +134,49 @@ public class LegalGuideLevelService {
             int oldLevel = perf.getCurrentLevelNumber();
             int newLevel = targetRule.getLevelNumber();
             
-            // Upgrades happen automatically if eligible (reopen rate is acceptable, no pending violations)
             if (newLevel > oldLevel) {
-                boolean hasPrivacyViolations = perf.getPrivacyViolationCount() > 0;
-                double reopenRate = perf.getCasesAssigned() > 0 ? (double) perf.getCasesReopened() / perf.getCasesAssigned() : 0.0;
-                
-                if (reopenRate < 0.25 && !hasPrivacyViolations) {
-                    perf.setCurrentLevelNumber(newLevel);
-                    perf.setCurrentLevelName(targetRule.getLevelName());
-                    perf.setLastLevelUpdatedAt(LocalDateTime.now());
-                    performanceProfileRepository.save(perf);
-
-                    guideProfileRepository.findByUserId(legalGuideId).ifPresent(profile -> {
-                        User user = new User(profile.getUserId(), profile.getFullName(), profile.getEmail(), com.aram.legalaid.enums.Role.HELPER);
-                        notificationService.create(user, "Level Upgraded: Congratulations! You are now a " + finalTargetRule.getLevelName() + ".", com.aram.legalaid.enums.NotificationType.IN_APP);
-                    });
-                    
-                    auditLogService.log("LEVEL_UPGRADED", "SYSTEM", 
-                        "Guide ID " + legalGuideId + " upgraded from Level " + oldLevel + " to " + newLevel);
-                }
-            } else {
-                // Downgrades are flagged for Admin Review first
-                perf.setDowngradeReviewRequired(true);
+                // Automatic Upgrade
+                perf.setCurrentLevelNumber(newLevel);
+                perf.setCurrentLevelName(targetRule.getLevelName());
+                perf.setLastLevelUpdatedAt(LocalDateTime.now());
                 performanceProfileRepository.save(perf);
-                auditLogService.log("DOWNGRADE_REVIEW_FLAGGED", "SYSTEM", 
-                    "Guide ID " + legalGuideId + " level drop from " + oldLevel + " to " + newLevel + " requires Admin approval");
+
+                guideProfileRepository.findByUserId(legalGuideId).ifPresent(profile -> {
+                    User user = new User(profile.getUserId(), profile.getFullName(), profile.getEmail(), com.aram.legalaid.enums.Role.HELPER);
+                    notificationService.create(user, "Level Upgraded: Congratulations! You are now a " + finalTargetRule.getLevelName() + ".", com.aram.legalaid.enums.NotificationType.IN_APP);
+                });
+                
+                auditLogService.log("LEVEL_UPGRADED", "SYSTEM", 
+                    "Guide ID " + legalGuideId + " upgraded from Level " + oldLevel + " (" + perf.getCurrentLevelName() + ") to Level " + newLevel + " (" + targetRule.getLevelName() + ")");
+            } else {
+                // Automatic Downgrade based on verified negative transaction
+                perf.setCurrentLevelNumber(newLevel);
+                perf.setCurrentLevelName(targetRule.getLevelName());
+                perf.setLastLevelUpdatedAt(LocalDateTime.now());
+                performanceProfileRepository.save(perf);
+
+                guideProfileRepository.findByUserId(legalGuideId).ifPresent(profile -> {
+                    User user = new User(profile.getUserId(), profile.getFullName(), profile.getEmail(), com.aram.legalaid.enums.Role.HELPER);
+                    notificationService.create(user, "Level Adjusted: Your level is now " + finalTargetRule.getLevelName() + ".", com.aram.legalaid.enums.NotificationType.IN_APP);
+                });
+
+                auditLogService.log("LEVEL_DOWNGRADED", "SYSTEM", 
+                    "Guide ID " + legalGuideId + " downgraded from Level " + oldLevel + " to Level " + newLevel + " (" + targetRule.getLevelName() + ")");
             }
         }
+    }
+
+    @Transactional
+    public void reconcileCreditScore(Long legalGuideId) {
+        int ledgerSum = creditTransactionRepository.findAllByLegalGuideId(legalGuideId).stream()
+            .mapToInt(LegalGuideCreditTransaction::getPoints)
+            .sum();
+        LegalGuidePerformanceProfile perf = getOrCreatePerformanceProfile(legalGuideId);
+        int oldScore = perf.getCreditScore();
+        int newScore = Math.max(0, ledgerSum);
+        perf.setCreditScore(newScore);
+        performanceProfileRepository.save(perf);
+        evaluateLevel(legalGuideId, oldScore, newScore);
     }
 
     @Transactional

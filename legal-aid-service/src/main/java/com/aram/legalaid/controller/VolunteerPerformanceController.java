@@ -131,8 +131,9 @@ public class VolunteerPerformanceController {
             throw new com.aram.legalaid.exception.BadRequestException("A meaningful reason of at least 5 characters is required for manual credit adjustments");
         }
         String transactionType = (String) body.getOrDefault("transactionType", "ADMIN_MANUAL_AWARD");
+        Long complaintId = body.get("complaintId") != null ? ((Number) body.get("complaintId")).longValue() : null;
 
-        levelService.addCredit(id, null, transactionType, points, reason, admin.getId(), "ADMIN", "ADMIN");
+        levelService.addCredit(id, complaintId, transactionType, points, reason, admin.getId(), "ADMIN", "ADMIN");
 
         Map<String, String> resp = new HashMap<>();
         resp.put("status", "success");
@@ -154,9 +155,10 @@ public class VolunteerPerformanceController {
             throw new com.aram.legalaid.exception.BadRequestException("A meaningful reason of at least 5 characters is required for manual credit deductions");
         }
         String transactionType = (String) body.getOrDefault("transactionType", "ADMIN_MANUAL_DEDUCT");
+        Long complaintId = body.get("complaintId") != null ? ((Number) body.get("complaintId")).longValue() : null;
 
         // deduct points by negating points
-        levelService.addCredit(id, null, transactionType, -Math.abs(points), reason, admin.getId(), "ADMIN", "ADMIN");
+        levelService.addCredit(id, complaintId, transactionType, -Math.abs(points), reason, admin.getId(), "ADMIN", "ADMIN");
 
         Map<String, String> resp = new HashMap<>();
         resp.put("status", "success");
