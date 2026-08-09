@@ -26,10 +26,11 @@ public class ComplaintService {
     private final MapperService mapperService;
     private final BlockchainService blockchainService;
     private final AIClientService aiClientService;
+    private final LegalGuideLevelService levelService;
 
     public ComplaintService(ComplaintRepository complaintRepository, AIResultRepository aiResultRepository, UserService userService,
                             AIAnalysisService aiAnalysisService, NotificationService notificationService, MapperService mapperService,
-                            BlockchainService blockchainService, AIClientService aiClientService) {
+                            BlockchainService blockchainService, AIClientService aiClientService, LegalGuideLevelService levelService) {
         this.complaintRepository = complaintRepository;
         this.aiResultRepository = aiResultRepository;
         this.userService = userService;
@@ -38,6 +39,7 @@ public class ComplaintService {
         this.mapperService = mapperService;
         this.blockchainService = blockchainService;
         this.aiClientService = aiClientService;
+        this.levelService = levelService;
     }
 
     @Transactional
@@ -182,6 +184,25 @@ public class ComplaintService {
             complaint.setLegalOpinion(request.note());
         }
         Complaint saved = complaintRepository.save(complaint);
+        
+        // Award credit on successful case resolution
+        if (targetStatus == ComplaintStatus.RESOLVED || targetStatus == ComplaintStatus.RESOLVED_BY_GUIDE) {
+            if (saved.getAssignedHelperId() != null) {
+                int credit = levelService.calculateCompletionCredit(saved);
+                String reason = "Case CMP-2026-" + String.format("%06d", saved.getId()) + " successfully resolved (" + saved.getPriority() + " priority)";
+                levelService.addCredit(
+                    saved.getAssignedHelperId(),
+                    saved.getId(),
+                    "CASE_COMPLETED",
+                    credit,
+                    reason,
+                    user.getId(),
+                    user.getRole().name(),
+                    "SYSTEM"
+                );
+            }
+        }
+
         notificationService.create(saved.getUser(), "Your complaint ID " + saved.getId() + " status changed to " + saved.getStatus(), NotificationType.IN_APP);
         return mapperService.toComplaintResponse(saved, aiResultRepository.findByComplaint(saved).orElse(null));
     }
