@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -167,7 +168,7 @@ public class LegalGuideLevelService {
     }
 
     @Transactional
-    public void reconcileCreditScore(Long legalGuideId) {
+    public Map<String, Object> reconcileCreditScore(Long legalGuideId) {
         int ledgerSum = creditTransactionRepository.findAllByLegalGuideId(legalGuideId).stream()
             .mapToInt(LegalGuideCreditTransaction::getPoints)
             .sum();
@@ -177,6 +178,13 @@ public class LegalGuideLevelService {
         perf.setCreditScore(newScore);
         performanceProfileRepository.save(perf);
         evaluateLevel(legalGuideId, oldScore, newScore);
+
+        return Map.of(
+            "legalGuideId", legalGuideId,
+            "calculatedTotalCredit", newScore,
+            "profileCreditScore", perf.getCreditScore(),
+            "reconciled", true
+        );
     }
 
     @Transactional

@@ -315,6 +315,12 @@ public class VolunteerPerformanceController {
 
 
 
+    @PostMapping("/api/admin/volunteers/{id}/reconcile")
+    public ResponseEntity<Map<String, Object>> reconcileVolunteerCredits(@PathVariable Long id) {
+        requireAdmin();
+        return ResponseEntity.ok(levelService.reconcileCreditScore(id));
+    }
+
     // --- HELPERS ---
 
     private User requireHelper() {
