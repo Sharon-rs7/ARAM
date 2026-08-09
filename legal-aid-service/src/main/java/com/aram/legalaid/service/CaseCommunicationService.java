@@ -21,6 +21,7 @@ public class CaseCommunicationService {
     private final AuditLogService auditLogService;
     private final UserService userService;
     private final LegalGuideProfileRepository guideProfileRepository;
+    private final LegalGuideLevelService levelService;
 
     public CaseCommunicationService(
             ComplaintRepository complaintRepository,
@@ -30,7 +31,8 @@ public class CaseCommunicationService {
             NotificationService notificationService,
             AuditLogService auditLogService,
             UserService userService,
-            LegalGuideProfileRepository guideProfileRepository) {
+            LegalGuideProfileRepository guideProfileRepository,
+            LegalGuideLevelService levelService) {
         this.complaintRepository = complaintRepository;
         this.chatThreadRepository = chatThreadRepository;
         this.messageRepository = messageRepository;
@@ -39,12 +41,13 @@ public class CaseCommunicationService {
         this.auditLogService = auditLogService;
         this.userService = userService;
         this.guideProfileRepository = guideProfileRepository;
+        this.levelService = levelService;
     }
 
     public Map<String, Object> assignLegalGuide(Long complaintId, Long legalGuideId, String overrideReason, String adminNote) {
         User currentUser = userService.currentUser();
         if (currentUser.getRole() != Role.ADMIN) {
-            throw new ForbiddenException("Only admins can assign legal guides");
+            throw new ForbiddenException("Only admin can assign legal guides");
         }
 
         Complaint complaint = complaintRepository.findById(complaintId)
@@ -53,17 +56,27 @@ public class CaseCommunicationService {
         LegalGuideProfile guide = guideProfileRepository.findByUserId(legalGuideId)
                 .orElseThrow(() -> new ResourceNotFoundException("Legal Guide not found"));
 
+        // Workload capacity check
         if (guide.getCurrentWorkload() >= guide.getMaxCaseCapacity() && guide.getMaxCaseCapacity() > 0) {
-            throw new BadRequestException("Legal Guide " + guide.getFullName() + " has reached maximum active case workload (" + guide.getMaxCaseCapacity() + " cases). Please select an available Guide.");
+            if (overrideReason == null || overrideReason.trim().length() < 10) {
+                throw new BadRequestException("Legal Guide " + guide.getFullName() + " has reached maximum active case workload (" + guide.getMaxCaseCapacity() + " cases). An Admin override reason of at least 10 characters is required to assign.");
+            }
         }
 
-        boolean isHighRiskPriority = complaint.getPriority() == PriorityLevel.HIGH || complaint.getPriority() == PriorityLevel.CRITICAL;
-        boolean isJuniorLevel = guide.getExperienceYears() < 3;
+        // Level-based eligibility check
+        LegalGuidePerformanceProfile perf = levelService.getOrCreatePerformanceProfile(guide.getUserId());
+        int guideLevelNum = perf.getCurrentLevelNumber();
+        String guideLevelName = perf.getCurrentLevelName();
 
-        if (isHighRiskPriority && isJuniorLevel) {
+        boolean isHighOrCritical = complaint.getPriority() == PriorityLevel.HIGH || complaint.getPriority() == PriorityLevel.CRITICAL;
+        boolean isBelowSeniorLevel = guideLevelNum < 3; // 1 = JUNIOR, 2 = GUIDE, 3 = SENIOR, 4 = EXPERT
+
+        if (isHighOrCritical && isBelowSeniorLevel) {
             if (overrideReason == null || overrideReason.trim().length() < 10) {
-                throw new BadRequestException("An override reason of at least 10 meaningful characters is required to assign a Junior Guide to a HIGH priority case.");
+                throw new BadRequestException("Selected Guide " + guide.getFullName() + " is " + guideLevelName + " (Level " + guideLevelNum + "), which is below the recommended level (SENIOR/EXPERT) for " + complaint.getPriority() + " priority cases. An Admin override reason of at least 10 characters is required.");
             }
+            auditLogService.log("GUIDE_ASSIGNMENT_OVERRIDE", "ADMIN_" + currentUser.getId(),
+                "Admin override: Assigned " + guideLevelName + " (ID " + guide.getUserId() + ") to " + complaint.getPriority() + " Case " + complaintId + ". Reason: " + overrideReason);
         }
 
         User guideUserPOJO = new User(guide.getUserId(), guide.getFullName(), guide.getEmail(), Role.HELPER);
@@ -77,7 +90,7 @@ public class CaseCommunicationService {
         guide.setCurrentWorkload(guide.getCurrentWorkload() + 1);
         guideProfileRepository.save(guide);
 
-        String msg = "Guide " + guide.getFullName() + " has been assigned to complaint ID " + complaintId;
+        String msg = "Guide " + guide.getFullName() + " (" + guideLevelName + ") has been assigned to complaint ID " + complaintId;
         notificationService.notifyAdmins(msg);
 
         return Map.of("success", true, "message", "Legal Guide assigned successfully");
@@ -91,6 +104,7 @@ public class CaseCommunicationService {
 
         List<Map<String, Object>> volunteerPayloads = new ArrayList<>();
         for (LegalGuideProfile g : guides) {
+            LegalGuidePerformanceProfile perf = levelService.getOrCreatePerformanceProfile(g.getUserId());
             Map<String, Object> payload = new HashMap<>();
             payload.put("id", g.getUserId());
             payload.put("name", g.getFullName());
@@ -100,7 +114,10 @@ public class CaseCommunicationService {
             payload.put("district", g.getDistrict() != null ? g.getDistrict() : "Coimbatore");
             payload.put("currentActiveCases", g.getCurrentWorkload());
             payload.put("maxActiveCases", g.getMaxCaseCapacity());
-            payload.put("experienceLevel", g.getExperienceYears() >= 3 ? "SENIOR" : "JUNIOR");
+            payload.put("experienceLevel", perf.getCurrentLevelName());
+            payload.put("levelNumber", perf.getCurrentLevelNumber());
+            payload.put("levelName", perf.getCurrentLevelName());
+            payload.put("creditScore", perf.getCreditScore());
             payload.put("womenSupportTrained", g.isWomenSupportTrained());
             volunteerPayloads.add(payload);
         }
@@ -146,8 +163,17 @@ public class CaseCommunicationService {
                 score -= 30.0;
             }
 
-            String level = (String) v.get("experienceLevel");
-            if ("SENIOR".equalsIgnoreCase(level)) {
+            // Level & Priority match scoring
+            int lvlNum = (int) v.get("levelNumber");
+            if (complaint.getPriority() == PriorityLevel.CRITICAL) {
+                if (lvlNum >= 4) score += 20.0;
+                else if (lvlNum == 3) score += 10.0;
+                else score -= 30.0;
+            } else if (complaint.getPriority() == PriorityLevel.HIGH) {
+                if (lvlNum >= 3) score += 20.0;
+                else if (lvlNum == 2) score += 5.0;
+                else score -= 20.0;
+            } else {
                 score += 10.0;
             }
 

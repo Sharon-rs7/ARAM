@@ -175,6 +175,9 @@ public class ComplaintService {
         }
 
         complaint.setStatus(targetStatus);
+        if (request.priority() != null) {
+            complaint.setPriority(request.priority());
+        }
         if (request.note() != null) {
             complaint.setLegalOpinion(request.note());
         }
@@ -189,7 +192,7 @@ public class ComplaintService {
             case SUBMITTED -> to == ComplaintStatus.AI_ANALYZED || to == ComplaintStatus.DOCUMENTS_PENDING || to == ComplaintStatus.REJECTED;
             case AI_ANALYZED -> to == ComplaintStatus.HELPER_ASSIGNED || to == ComplaintStatus.AUTHORITY_RECOMMENDED || to == ComplaintStatus.IN_PROGRESS || to == ComplaintStatus.REJECTED;
             case DOCUMENTS_PENDING -> to == ComplaintStatus.AI_ANALYZED || to == ComplaintStatus.HELPER_ASSIGNED || to == ComplaintStatus.REJECTED;
-            case AUTHORITY_RECOMMENDED, CITIZEN_ACTION_PENDING -> to == ComplaintStatus.HELPER_ASSIGNED || to == ComplaintStatus.IN_PROGRESS || to == ComplaintStatus.REJECTED;
+            case AUTHORITY_RECOMMENDED, CITIZEN_ACTION_PENDING -> to == ComplaintStatus.AI_ANALYZED || to == ComplaintStatus.HELPER_ASSIGNED || to == ComplaintStatus.IN_PROGRESS || to == ComplaintStatus.REJECTED;
             case HELPER_ASSIGNED -> to == ComplaintStatus.IN_PROGRESS || to == ComplaintStatus.REJECTED;
             case IN_PROGRESS -> to == ComplaintStatus.RESOLVED || to == ComplaintStatus.RESOLVED_BY_GUIDE || to == ComplaintStatus.CLOSED || to == ComplaintStatus.REJECTED;
             case RESOLVED, RESOLVED_BY_GUIDE -> to == ComplaintStatus.CLOSED || to == ComplaintStatus.CLOSED_BY_USER || to == ComplaintStatus.REOPEN_REQUESTED;
