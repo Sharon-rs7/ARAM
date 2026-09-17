@@ -23,12 +23,14 @@ public class PasswordResetService {
     private final PasswordResetOtpRepository otpRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuditLogService auditLogService;
+    private final EmailService emailService;
 
-    public PasswordResetService(UserRepository userRepository, PasswordResetOtpRepository otpRepository, PasswordEncoder passwordEncoder, AuditLogService auditLogService) {
+    public PasswordResetService(UserRepository userRepository, PasswordResetOtpRepository otpRepository, PasswordEncoder passwordEncoder, AuditLogService auditLogService, EmailService emailService) {
         this.userRepository = userRepository;
         this.otpRepository = otpRepository;
         this.passwordEncoder = passwordEncoder;
         this.auditLogService = auditLogService;
+        this.emailService = emailService;
     }
 
     @Transactional
@@ -67,6 +69,10 @@ public class PasswordResetService {
 
         if (userExists) {
             auditLogService.log("PASSWORD_RESET_REQUESTED", email, "Forgot password OTP requested.");
+            Optional<User> userOpt = userRepository.findByEmail(email);
+            if (userOpt.isPresent()) {
+                emailService.sendPasswordResetOtpEmail(email, userOpt.get().getName(), otp);
+            }
         }
 
         return new AuthMessageResponse("If the email is registered, a password reset OTP has been sent.", true);
@@ -95,14 +101,14 @@ public class PasswordResetService {
         if (!resetOtp.getOtp().equals(otp)) {
             int attempts = resetOtp.getAttempts() + 1;
             resetOtp.setAttempts(attempts);
-            if (attempts >= 3) {
+            if (attempts >= 5) {
                 resetOtp.setBlockedUntil(LocalDateTime.now().plusMinutes(10));
                 otpRepository.save(resetOtp);
                 auditLogService.log("PASSWORD_RESET_BLOCKED", email, "Too many wrong attempts. Reset blocked for 10 minutes.");
                 throw new BadRequestException("Invalid OTP. Too many wrong attempts. Password reset blocked for 10 minutes.");
             }
             otpRepository.save(resetOtp);
-            throw new BadRequestException("Invalid OTP. Attempts remaining: " + (3 - attempts));
+            throw new BadRequestException("Invalid OTP. Attempts remaining: " + (5 - attempts));
         }
 
         return new AuthMessageResponse("OTP verified successfully.", true);
@@ -148,6 +154,9 @@ public class PasswordResetService {
         otpRepository.save(resetOtp);
 
         auditLogService.log("PASSWORD_RESET_SUCCESS", email, "Password reset successfully completed.");
+
+        // Send security alert email
+        emailService.sendPasswordChangedEmail(email, user.getName());
 
         return new AuthMessageResponse("Password has been reset successfully.", true);
     }

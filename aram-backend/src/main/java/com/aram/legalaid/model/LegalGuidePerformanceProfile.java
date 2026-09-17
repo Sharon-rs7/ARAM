@@ -30,6 +30,17 @@ public class LegalGuidePerformanceProfile {
     private boolean downgradeReviewRequired = false;
     private LocalDateTime lastLevelUpdatedAt;
 
+    @Column(name = "elo_rating", nullable = false)
+    private int eloRating = 1000;
+
+    private double reputationScore = 0.5;
+    private int completedCases = 0;
+    private int successfulCases = 0;
+    private double averageResolutionTime = 0.0;
+    private double deadlineSuccessRate = 1.0;
+    private int feedbackCount = 0;
+    private LocalDateTime lastEloUpdate;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -107,4 +118,28 @@ public class LegalGuidePerformanceProfile {
 
     public LocalDateTime getUpdatedAt() { return updatedAt; }
     public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+
+    public int getEloRating() { return eloRating; }
+    public void setEloRating(int eloRating) { this.eloRating = eloRating; }
+
+    public double getReputationScore() { return reputationScore; }
+    public void setReputationScore(double reputationScore) { this.reputationScore = reputationScore; }
+
+    public int getCompletedCases() { return completedCases; }
+    public void setCompletedCases(int completedCases) { this.completedCases = completedCases; }
+
+    public int getSuccessfulCases() { return successfulCases; }
+    public void setSuccessfulCases(int successfulCases) { this.successfulCases = successfulCases; }
+
+    public double getAverageResolutionTime() { return averageResolutionTime; }
+    public void setAverageResolutionTime(double averageResolutionTime) { this.averageResolutionTime = averageResolutionTime; }
+
+    public double getDeadlineSuccessRate() { return deadlineSuccessRate; }
+    public void setDeadlineSuccessRate(double deadlineSuccessRate) { this.deadlineSuccessRate = deadlineSuccessRate; }
+
+    public int getFeedbackCount() { return feedbackCount; }
+    public void setFeedbackCount(int feedbackCount) { this.feedbackCount = feedbackCount; }
+
+    public LocalDateTime getLastEloUpdate() { return lastEloUpdate; }
+    public void setLastEloUpdate(LocalDateTime lastEloUpdate) { this.lastEloUpdate = lastEloUpdate; }
 }

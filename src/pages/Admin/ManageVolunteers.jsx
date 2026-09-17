@@ -1,4 +1,4 @@
-import DashboardLayout from "@/components/layout/DashboardLayout";
+import DashboardLayout from "@/components/common/DashboardLayout";
 import {
   Search,
   Filter,
@@ -21,13 +21,17 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { adminService } from "../../services/adminService";
+import { adminService } from "@/services/adminService";
 import { toast } from "sonner";
 import SearchInput from "@/components/common/SearchInput";
+import { useAuth } from "@/context/AuthContext";
 
 
 const ManageVolunteers = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const adminDistrict = user?.district || "GLOBAL";
+
   const [volunteers, setVolunteers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -39,7 +43,7 @@ const ManageVolunteers = () => {
     email: "",
     mobile: "",
     gender: "FEMALE",
-    district: "Coimbatore",
+    district: adminDistrict && adminDistrict !== "GLOBAL" ? adminDistrict : "Coimbatore",
     languagesKnown: "English,Tamil",
     specializationCategories: "GENERAL_LEGAL_AID",
     maxActiveCases: 5,
@@ -54,7 +58,10 @@ const ManageVolunteers = () => {
     try {
       setLoading(true);
       const data = await adminService.getVolunteers();
-      setVolunteers(data || []);
+      const filtered = adminDistrict && adminDistrict !== "GLOBAL"
+        ? data.filter(v => v.district && v.district.toLowerCase() === adminDistrict.toLowerCase())
+        : data;
+      setVolunteers(filtered || []);
     } catch (e) {
       toast.error("Failed to load volunteers from server.");
     } finally {
@@ -64,7 +71,13 @@ const ManageVolunteers = () => {
 
   useEffect(() => {
     fetchVolunteers();
-  }, []);
+  }, [adminDistrict]);
+
+  useEffect(() => {
+    if (adminDistrict && adminDistrict !== "GLOBAL") {
+      setForm(f => ({ ...f, district: adminDistrict }));
+    }
+  }, [adminDistrict]);
 
   const handleCreate = async (e) => {
     e.preventDefault();

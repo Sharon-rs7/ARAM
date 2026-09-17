@@ -1,5 +1,8 @@
 import pytest
-from app.nlp.complaint_summarizer import generate_plain_summary
+from app.nlp.complaint_summarizer import generate_plain_summary as original_fn
+
+def generate_plain_summary(description, category, lang):
+    return original_fn(title="", description=description, language_code=lang, category=category, district="")
 
 def test_extractive_summary_specific_details():
     text = "My company supervisor has not paid my monthly salary of Rs 25,000 for 3 months in Chennai district."

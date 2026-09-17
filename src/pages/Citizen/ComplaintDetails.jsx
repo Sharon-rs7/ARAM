@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import DashboardLayout from "@/components/layout/DashboardLayout";
+import DashboardLayout from "@/components/common/DashboardLayout";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   CalendarDays,
@@ -16,11 +16,328 @@ import {
   BadgeAlert,
   Printer
 } from "lucide-react";
-import { complaintService } from "../../services/complaintService";
+import { complaintService } from "@/services/complaintService";
 import { toast } from "sonner";
-import ReadAloudButton from "@/components/voice/ReadAloudButton";
-import CaseChatPanel from "@/components/CaseChatPanel";
-import AuthorityLocationCard from "@/components/authority/AuthorityLocationCard";
+import ReadAloudButton from "@/components/common/voice/ReadAloudButton";
+import CaseChatPanel from "@/components/guide/CaseChatPanel";
+import AuthorityLocationCard from "@/components/citizen/AuthorityLocationCard";
+
+const TRANSLATIONS = {
+  "ta-IN": {
+    title: "உங்கள் வழக்கு — எளிய விளக்கம்",
+    subtext: "ARAM உங்கள் புகாரை புரிந்து கொண்டு, அடுத்து என்ன செய்யலாம் என்பதை எளிமையாக விளக்கியுள்ளது.",
+    complaintId: "வழக்கு எண்",
+    status: "தற்போதைய நிலை",
+    location: "சம்பவம் நடந்த இடம்",
+    language: "மொழி",
+    toldTitle: "நீங்கள் எங்களிடம் கூறியது",
+    understoodTitle: "ARAM புரிந்து கொண்டது",
+    problemType: "பிரச்சனை வகை",
+    partiesTitle: "தொடர்புடையவர்கள்",
+    timelineTitle: "வழக்கு காலவரிசை",
+    noTimeline: "காலவரிசை தகவல்கள் எதுவும் கிடைக்கவில்லை.",
+    caseProgressJourney: "வழக்கு முன்னேற்ற காலவரிசை",
+    triageCategory: "சட்ட வகைப்பாடு",
+    urgencyLevel: "தீர்வு கால அவகாசம் (SLA)",
+    legalGuide: "ஒதுக்கப்பட்ட சட்ட வழிகாட்டி",
+    dateSubmitted: "சமர்ப்பிக்கப்பட்ட தேதி",
+    whatHappensNext: "அடுத்து என்ன நடக்கும்?",
+    originalDescription: "நீங்கள் சமர்ப்பித்த புகார் விவரம்",
+    awaitingAssignment: "வழிகாட்டி ஒதுக்கீடு பரிசீலனையில் உள்ளது",
+    citizenPerspective: "புகார்தாரர் கருத்து & எதிர்பார்ப்பு",
+    requiredEvidence: "தேவையான ஆவணங்கள் / ஆதாரங்கள்",
+    suggestedGuidance: "ARAM AI சட்ட வழிகாட்டுதல் & அடுத்த படிகள்",
+    legalGuideActionPlan: "சட்ட வழிகாட்டியின் செயல் திட்டம்",
+    grievanceSummary: "புகார் சுருக்கம்",
+    estimatedExpenses: "மதிப்பிடப்பட்ட செலவு",
+    problemExplanation: "பிரச்சனை விளக்கம்",
+    propertyExplanation: "இது வாடகை / வீட்டு உரிமையாளர் தொடர்பான பிரச்சனையாக தெரிகிறது.",
+    generalExplanation: "நீங்கள் வழங்கிய தகவல்களின் அடிப்படையில் இந்த பிரச்சனை சட்ட உதவிக்கு தகுதியானதாக இருக்கலாம்.",
+    keyFacts: "முக்கிய உண்மைகள்",
+    evidenceTitle: "உங்கள் வழக்கிற்கு உதவக்கூடிய ஆவணங்கள்",
+    evidenceDesc: "இந்த ஆவணங்கள் உங்கள் வழக்கை மேலும் பலப்படுத்த உதவும்.",
+    uploadButton: "ஆவணம் சேர்க்க",
+    actionPlanTitle: "இப்போது நீங்கள் என்ன செய்யலாம்?",
+    stepTitle: "படி",
+    templateTitle: "மாதிரி செய்தி / கடிதம்",
+    templateDesc: "இந்த செய்தியை நகலெடுத்து மற்ற தரப்பினருக்கு அனுப்பலாம்.",
+    copyButton: "நகலெடு",
+    copied: "நகலெடுக்கப்பட்டது!",
+    authorityTitle: "அதிகாரபூர்வ உதவி மையம்",
+    authorityDesc: "மேலும் உதவி தேவைப்பட்டால், இந்த அதிகாரப்பூர்வ அமைப்பை நீங்கள் அணுகலாம்.",
+    mapsButton: "Google Maps-ல் பார்க்க",
+    locationNotProvided: "சம்பவம் நடந்த இடம் வழங்கப்படவில்லை.",
+    selfHelpTitle: "சுய உதவி வழிமுறைகள்",
+    selfHelpDesc: "இந்த எளிய வழிமுறைகளைப் பின்பற்றி உங்கள் பிரச்சனையை நீங்களே தீர்க்க முயற்சி செய்யலாம்.",
+    selfHelpItems: [
+      "தேவையான அனைத்து ஆவணங்களையும் தயார் நிலையில் வைத்திருங்கள்.",
+      "மற்ற தரப்பினருடன் எழுத்துப்பூர்வமாக தொடர்பு கொள்ளுங்கள்.",
+      "அதிகாரப்பூர்வ அமைப்புகளின் விவரங்களை சேகரியுங்கள்.",
+      "வழக்கு எண் மற்றும் ஆதாரங்களை பாதுகாப்பாக வையுங்கள்."
+    ],
+    guideRequestTitle: "உங்களுக்கு ARAM Legal Guide உதவி தேவையா?",
+    guideRequestDesc: "இந்த வழிமுறைகள் உங்களுக்கு புரியவில்லை என்றால், ஆவணங்களைத் தயாரிப்பு செய்ய உதவி தேவைப்பட்டால் அல்லது உங்கள் வழக்கை தொடர்ந்து வழிகாட்ட ஒருவர் தேவைப்பட்டால் ARAM Legal Guide-ஐ கேட்கலாம்.",
+    noGuideBtn: "இல்லை, நானே தொடர்கிறேன்",
+    yesGuideBtn: "ஆம், ARAM Legal Guide வேண்டும்",
+    guideRequestedStatus: "Legal Guide உதவி கோரப்பட்டுள்ளது. மாவட்ட நிர்வாகி விரைவில் ஒருவரை உங்களுக்கு நியமிப்பார்.",
+    guideAssignedStatus: "Legal Guide நியமிக்கப்பட்டுள்ளார். உங்கள் வழக்கு விவாத பேனலில் தொடர்புகொள்ளலாம்.",
+    termsTitle: "விதிமுறைகள் & நிபந்தனைகள்",
+    termsCheck: "ARAM சட்ட தகவல்களையும் உதவிகளையும் மட்டுமே வழங்குகிறது, குறிப்பிட்ட சட்ட முடிவுகளுக்கு உத்தரவாதம் அளிக்காது என்பதை நான் ஒப்புக்கொள்கிறேன். மேலும் இந்த AI-வழிகாட்டுதல் தகவல் மட்டுமே என்பதை புரிந்து கொள்கிறேன்.",
+    readAll: "முழு வழக்கையும் கேட்க",
+    readAloud: "கேட்க",
+    play: "விளையாடு",
+    pause: "நிறுத்து",
+    stop: "முடி",
+    backBtn: "பின்செல்",
+    printBtn: "அச்சிடுக",
+    activeStatus: "செயலில் உள்ளது",
+    resolvedStatus: "தீர்க்கப்பட்டது",
+    pendingStatus: "மதிப்பாய்வில் உள்ளது",
+    unassignedStatus: "ஒதுக்கப்படவில்லை",
+    statusText: {
+      SUBMITTED: "உங்கள் வழக்கு சமர்ப்பிக்கப்பட்டுள்ளது. ARAM AI மற்றும் மாவட்ட நிர்வாகி இதனை ஆய்வு செய்கின்றனர்.",
+      AWAITING_ADMIN_REVIEW: "புகார் சமர்ப்பிக்கப்பட்டது. நிர்வாகி மதிப்பாய்விற்காக காத்திருக்கிறது.",
+      UNDER_REVIEW: "உங்கள் வழக்கு தற்போது நிர்வாகியால் பரிசீலிக்கப்பட்டு வருகிறது.",
+      GUIDE_ASSIGNED: "வழிகாட்டி நியமிக்கப்பட்டுள்ளார். நீங்கள் அவருடன் அரட்டையடிக்கலாம்.",
+      RESOLVED: "வழக்கு வெற்றிகரமாக தீர்க்கப்பட்டது.",
+      CLOSED: "வழக்கு மூடப்பட்டது."
+    },
+    journeySteps: [
+      { title: "வழக்கு சமர்ப்பிக்கப்பட்டது", desc: "உங்கள் புகார் வெற்றிகரமாக பதிவு செய்யப்பட்டுள்ளது." },
+      { title: "AI ஆய்வு", desc: "ARAM AI உங்கள் வழக்கை வகைப்படுத்தி பகுப்பாய்வு செய்துள்ளது." },
+      { title: "நிர்வாகி மதிப்பாய்வு", desc: "மாவட்ட நிர்வாகி உங்கள் வழக்கை ஆய்வு செய்கிறார்." },
+      { title: "வழிகாட்டி நியமனம்", desc: "சட்ட வழிகாட்டி நியமிக்கப்பட்டு உங்களுக்கு உதவத் தயாராக உள்ளார்." },
+      { title: "ஆவணங்கள் சரிபார்ப்பு", desc: "தேவையான ஆதாரங்கள் சேகரிக்கப்பட்டு சரிபார்க்கப்படுகின்றன." },
+      { title: "தீர்வு நிலை", desc: "வழக்கு வெற்றிகரமாக தீர்க்கப்பட்டு மூடப்பட்டது." }
+    ],
+    sla: {
+      critical: "24 மணிநேரம் (முக்கியமானது)",
+      high: "3 நாட்கள் (அவசரம்)",
+      medium: "7 நாட்கள் (சாதாரணமானது)",
+      low: "14 நாட்கள் (குறைந்த முன்னுரிமை)"
+    }
+  },
+  "hi-IN": {
+    title: "आपका मामला — सरल स्पष्टीकरण",
+    subtext: "ARAM ने आपकी शिकायत को समझ लिया है और आगे क्या करना है, इसे सरलता से समझाया है।",
+    complaintId: "मामला आईडी",
+    status: "वर्तमान स्थिति",
+    location: "घटना का स्थान",
+    language: "भाषा",
+    toldTitle: "आपने हमसे क्या कहा",
+    understoodTitle: "ARAM ने क्या समझा",
+    problemType: "समस्या का प्रकार",
+    partiesTitle: "संबंधित पक्ष",
+    timelineTitle: "मामले की समयरेखा",
+    noTimeline: "समयरेखा की कोई जानकारी उपलब्ध नहीं है।",
+    caseProgressJourney: "मामला प्रगति यात्रा",
+    triageCategory: "कानूनी श्रेणी",
+    urgencyLevel: "समाधान समय सीमा (SLA)",
+    legalGuide: "नियुक्त कानूनी गाइड",
+    dateSubmitted: "दर्ज करने की तिथि",
+    whatHappensNext: "आगे क्या होगा?",
+    originalDescription: "शिकायत का मूल विवरण",
+    awaitingAssignment: "गाइड आवंटन की प्रतीक्षा है",
+    citizenPerspective: "नागरिक का दृष्टिकोण",
+    requiredEvidence: "आवश्यक दस्तावेज / साक्ष्य",
+    suggestedGuidance: "ARAM AI कानूनी मार्गदर्शन",
+    legalGuideActionPlan: "कानूनी गाइड कार्य योजना",
+    grievanceSummary: "शिकायत सारांश",
+    estimatedExpenses: "अनुमानित खर्च",
+    problemExplanation: "समस्या का स्पष्टीकरण",
+    propertyExplanation: "यह किराएदार / मकान मालिक से संबंधित समस्या प्रतीत होती है।",
+    generalExplanation: "आपके द्वारा दी गई जानकारी के आधार पर, यह मामला कानूनी सहायता के योग्य हो सकता है।",
+    keyFacts: "महत्वपूर्ण तथ्य",
+    evidenceTitle: "दस्तावेज जो आपके मामले में मदद कर सकते हैं",
+    evidenceDesc: "ये दस्तावेज आपके मामले को मजबूत करने में मदद कर सकते हैं।",
+    uploadButton: "दस्तावेज जोड़ें",
+    actionPlanTitle: "अब आप क्या कर सकते हैं?",
+    stepTitle: "चरण",
+    templateTitle: "संदेश / पत्र का प्रारूप",
+    templateDesc: "आप इस संदेश को कॉपी करके दूसरे पक्ष को भेज सकते हैं।",
+    copyButton: "कॉपी करें",
+    copied: "कॉपी किया गया!",
+    authorityTitle: "आधिकारिक सहायता केंद्र",
+    authorityDesc: "यदि आपको अतिरिक्त सहायता की आवश्यकता है, तो आप इस आधिकारिक निकाय से संपर्क कर सकते हैं।",
+    mapsButton: "Google Maps पर देखें",
+    locationNotProvided: "घटना का स्थान प्रदान नहीं किया गया है।",
+    selfHelpTitle: "स्व-सहायता निर्देश",
+    selfHelpDesc: "इन सरल चरणों का पालन करके आप अपनी समस्या को स्वयं हल करने का प्रयास कर सकते हैं।",
+    selfHelpItems: [
+      "सभी आवश्यक दस्तावेजों को तैयार रखें।",
+      "दूसरे पक्ष के साथ लिखित में संवाद करें।",
+      "आधिकारिक निकायों के विवरण एकत्र करें।",
+      "मामला संदर्भ आईडी और सबूतों को सुरक्षित रखें।"
+    ],
+    guideRequestTitle: "क्या आपको ARAM Legal Guide की सहायता चाहिए?",
+    guideRequestDesc: "यदि आप इन निर्देशों को नहीं समझते हैं, दस्तावेजों को तैयार करने में मदद चाहिए, या अपने मामले में निरंतर मार्गदर्शन की आवश्यकता है, तो आप ARAM Legal Guide से मदद ले सकते हैं।",
+    noGuideBtn: "नहीं, मैं स्वयं प्रयास करूँगा",
+    yesGuideBtn: "हाँ, मुझे ARAM Legal Guide चाहिए",
+    guideRequestedStatus: "Legal Guide की सहायता का अनुरोध किया गया है। जिला प्रशासक जल्द ही एक गाइड नियुक्त करेंगे।",
+    guideAssignedStatus: "Legal Guide नियुक्त किया गया है। आप चर्चा पैनल में उनसे संपर्क कर सकते हैं।",
+    termsTitle: "नियम और शर्तें",
+    termsCheck: "मैं स्वीकार करता हूँ कि ARAM केवल कानूनी जानकारी और सहायता प्रदान करता है और किसी विशेष कानूनी परिणाम की गारंटी नहीं देता है। मैं यह भी समझता हूँ कि AI-जनित मार्गदर्शन केवल सूचनात्मक है।",
+    readAll: "पूरा मामला सुनें",
+    readAloud: "सुनें",
+    play: "चलाएं",
+    pause: "रोकें",
+    stop: "बंद करें",
+    backBtn: "वापस जाएं",
+    printBtn: "प्रिंट करें",
+    activeStatus: "सक्रिय",
+    resolvedStatus: "सुलझाया गया",
+    pendingStatus: "समीक्षा के अधीन",
+    unassignedStatus: "अनिर्धारित",
+    statusText: {
+      SUBMITTED: "आपकी शिकायत दर्ज कर ली गई है। ARAM AI और जिला प्रशासक इसकी समीक्षा कर रहे हैं।",
+      AWAITING_ADMIN_REVIEW: "शिकायत दर्ज। व्यवस्थापक समीक्षा की प्रतीक्षा है।",
+      UNDER_REVIEW: "आपकी शिकायत वर्तमान में व्यवस्थापक द्वारा समीक्षा के अधीन है।",
+      GUIDE_ASSIGNED: "कानूनी गाइड नियुक्त किया गया है। आप चर्चा पैनल में बातचीत कर सकते हैं।",
+      RESOLVED: "मामला सफलतापूर्वक सुलझा लिया गया है।",
+      CLOSED: "मामला बंद कर दिया गया है।"
+    },
+    journeySteps: [
+      { title: "मामला दर्ज", desc: "आपकी शिकायत सफलतापूर्वक दर्ज कर ली गई है।" },
+      { title: "AI समीक्षा", desc: "ARAM AI ने आपके मामले का वर्गीकरण और विश्लेषण किया है।" },
+      { title: "व्यवस्थापक समीक्षा", desc: "जिला प्रशासक आपके मामले की समीक्षा कर रहे हैं।" },
+      { title: "गाइड आवंटन", desc: "कानूनी गाइड नियुक्त किया गया है और वह आपकी सहायता के लिए तैयार है।" },
+      { title: "दस्तावेज़ सत्यापन", desc: "आवश्यक साक्ष्य एकत्र और सत्यापित किए जा रहे हैं।" },
+      { title: "समाधान स्थिति", desc: "मामला सफलतापूर्वक सुलझा लिया गया है और बंद कर दिया गया है।" }
+    ],
+    sla: {
+      critical: "24 घंटे (गंभीर)",
+      high: "3 दिन (उच्च)",
+      medium: "7 दिन (सामान्य)",
+      low: "14 दिन (कम प्राथमिकता)"
+    }
+  },
+  "en-IN": {
+    title: "Your Case — Explained Simply",
+    subtext: "ARAM has understood your grievance and simplified what you can do next.",
+    complaintId: "Complaint ID",
+    status: "Current Status",
+    location: "Location of Incident",
+    language: "Language",
+    toldTitle: "What you told us",
+    understoodTitle: "What ARAM Understood",
+    problemType: "Issue Category",
+    partiesTitle: "Parties Involved",
+    timelineTitle: "Case Timeline",
+    noTimeline: "No timeline details are currently registered.",
+    caseProgressJourney: "Complaint Progress Journey",
+    triageCategory: "Legal Category",
+    urgencyLevel: "Resolution SLA",
+    legalGuide: "Assigned Legal Guide",
+    dateSubmitted: "Date Submitted",
+    whatHappensNext: "What happens next?",
+    originalDescription: "Original Grievance Description",
+    awaitingAssignment: "Awaiting Volunteer Assignment",
+    citizenPerspective: "Citizen Perspective & Desired Relief",
+    requiredEvidence: "Required Supporting Documents",
+    suggestedGuidance: "ARAM AI Legal Guidance & Next Steps",
+    legalGuideActionPlan: "Legal Guide Action Plan",
+    grievanceSummary: "Grievance Summary",
+    estimatedExpenses: "Estimated Expenses",
+    problemExplanation: "Problem Explanation",
+    propertyExplanation: "Based on your description, this appears to be a dispute related to rental/tenancy agreements.",
+    generalExplanation: "Based on the information provided, this issue could fall within standard legal aid assistance.",
+    keyFacts: "Key Extracted Facts",
+    evidenceTitle: "Documents that can help your case",
+    evidenceDesc: "These supporting files help build credibility for your claim.",
+    uploadButton: "Upload Document",
+    actionPlanTitle: "What can you do now?",
+    stepTitle: "Step",
+    templateTitle: "Draft Message / Communication Template",
+    templateDesc: "You can copy and send this draft text to communicate with the opposing party.",
+    copyButton: "Copy Draft",
+    copied: "Copied!",
+    authorityTitle: "Recommended Authority / Action Center",
+    authorityDesc: "If the issue remains unresolved, you can file a formal complaint at this authority office.",
+    mapsButton: "View on Google Maps",
+    locationNotProvided: "Location was not provided.",
+    selfHelpTitle: "Self-Help Guidelines",
+    selfHelpDesc: "Follow these general recommendations to resolve the issue independently before legal escalation.",
+    selfHelpItems: [
+      "Keep all agreement letters, messages, and receipts organized.",
+      "Communicate with the opposing party in writing.",
+      "Collect information about verified authority centers.",
+      "Securely note your case reference ID."
+    ],
+    guideRequestTitle: "Do you need an ARAM Legal Guide?",
+    guideRequestDesc: "If you feel overwhelmed, need help preparing documents, or want direct professional representation, you can request an ARAM Legal Guide.",
+    noGuideBtn: "No, I will handle it myself",
+    yesGuideBtn: "Yes, Request Legal Guide assistance",
+    guideRequestedStatus: "Legal Guide requested. A Regional Admin will assign a local representative shortly.",
+    guideAssignedStatus: "Legal Guide assigned. You can connect directly in the case discussion panel.",
+    termsTitle: "Terms & Conditions",
+    termsCheck: "I understand that ARAM provides legal information and assistance and does not guarantee a particular legal outcome. I agree that AI-generated guidance is informational.",
+    readAll: "Listen to entire case",
+    readAloud: "Listen",
+    play: "Play",
+    pause: "Pause",
+    stop: "Stop",
+    backBtn: "Back",
+    printBtn: "Print",
+    activeStatus: "Active",
+    resolvedStatus: "Resolved",
+    pendingStatus: "Under Review",
+    unassignedStatus: "Unassigned",
+    statusText: {
+      SUBMITTED: "Your complaint has been submitted. ARAM AI and the district administrator are reviewing it.",
+      AWAITING_ADMIN_REVIEW: "Complaint submitted. Waiting for admin review.",
+      UNDER_REVIEW: "Your complaint is currently under review by the administrator.",
+      GUIDE_ASSIGNED: "A Legal Guide has been assigned. You can chat with them directly.",
+      RESOLVED: "The case has been resolved successfully.",
+      CLOSED: "The case has been closed."
+    },
+    journeySteps: [
+      { title: "Complaint Submitted", desc: "Your complaint has been registered successfully." },
+      { title: "AI Analysis", desc: "ARAM AI has classified and analyzed your case." },
+      { title: "Admin Review", desc: "District Administrator is reviewing your case details." },
+      { title: "Guide Assigned", desc: "Legal Guide assigned and ready to assist you." },
+      { title: "Evidence Verification", desc: "Required evidence files are collected and verified." },
+      { title: "Case Resolution", desc: "The case has been successfully resolved and closed." }
+    ],
+    sla: {
+      critical: "24 hours (Critical)",
+      high: "3 days (High)",
+      medium: "7 days (Medium)",
+      low: "14 days (Low Priority)"
+    }
+  }
+};
+
+const getLocalizedCategory = (cat, lang) => {
+  if (!cat) return "";
+  const cleanCat = cat.replace(/_/g, " ").toUpperCase();
+  const map = {
+    "ta-IN": {
+      "PROPERTY CIVIL DISPUTE": "சொத்து / சிவில் தகராறு",
+      "LABOUR DISPUTE": "தொழிலாளர் / வேலைவாய்ப்பு தகராறு",
+      "CYBER CRIME": "சைபர் குற்றம்",
+      "CONSUMER COMPLAINT": "நுகர்வோர் குறைபாடு",
+      "WOMEN SAFETY DOMESTIC VIOLENCE": "பெண்கள் பாதுகாப்பு / குடும்ப वன்முறை",
+      "CRIMINAL COMPLAINT": "குற்றவியல் புகார்"
+    },
+    "hi-IN": {
+      "PROPERTY CIVIL DISPUTE": "संपत्ति / नागरिक विवाद",
+      "LABOUR DISPUTE": "श्रम / रोजगार विवाद",
+      "CYBER CRIME": "साइबर अपराध",
+      "CONSUMER COMPLAINT": "उपभोगता शिकायत",
+      "WOMEN SAFETY DOMESTIC VIOLENCE": "महिला सुरक्षा / घरेलू हिंसा",
+      "CRIMINAL COMPLAINT": "आपराधिक शिकायत"
+    },
+    "en-IN": {
+      "PROPERTY CIVIL DISPUTE": "Property / Civil Dispute",
+      "LABOUR DISPUTE": "Labour / Employment Dispute",
+      "CYBER CRIME": "Cyber Crime",
+      "CONSUMER COMPLAINT": "Consumer Complaint",
+      "WOMEN SAFETY DOMESTIC VIOLENCE": "Women Safety / Domestic Violence",
+      "CRIMINAL COMPLAINT": "Criminal Complaint"
+    }
+  };
+  return map[lang]?.[cleanCat] || map["en-IN"]?.[cleanCat] || cleanCat;
+};
 
 // Update 1: Legal glossary tooltip component
 const GLOSSARY = {
@@ -70,43 +387,45 @@ const ComplaintDetails = () => {
       try {
         const data = await complaintService.getComplaintById(Number(id) || id);
         setComplaint(data);
+      } catch (err) {
+        console.error("Failed to load complaint details:", err);
+        toast.error("Failed to load complaint details.");
+        setLoading(false);
+        return;
+      }
 
-        // Fetch custom next action plan
+      // Fetch auxiliary data with silent graceful fallbacks
+      try {
         const planData = await complaintService.getActionPlan(id);
         setActionPlan(planData);
+      } catch (e) {}
 
-        // Fetch matched offices
+      try {
         const officesData = await complaintService.getAuthorityLocations(id);
-        setOffices(officesData);
+        setOffices(officesData || []);
+      } catch (e) {}
 
-        // Fetch cost estimate
-        try {
-          const costData = await complaintService.getCostEstimate(id);
-          setCostEstimate(costData);
-        } catch (err) {
-          console.error("Failed to load cost estimate:", err);
-        }
+      try {
+        const costData = await complaintService.getCostEstimate(id);
+        setCostEstimate(costData);
+      } catch (e) {}
 
-        // Fetch requested documents list
+      try {
         const docReqsData = await complaintService.getDocumentRequests(id);
-        setDocRequests(docReqsData);
+        setDocRequests(docReqsData || []);
+      } catch (e) {}
 
-        // Fetch appointments list
+      try {
         const appsData = await complaintService.getAppointments(id);
-        setAppointments(appsData);
+        setAppointments(appsData || []);
+      } catch (e) {}
 
-        // Fetch case notes list
-        try {
-          const notesData = await complaintService.getCaseNotes(id);
-          setCaseNotes(notesData || []);
-        } catch (notesErr) {
-          console.warn("Failed to load case notes:", notesErr);
-        }
-      } catch (err) {
-        toast.error("Failed to load complaint details.");
-      } finally {
-        setLoading(false);
-      }
+      try {
+        const notesData = await complaintService.getCaseNotes(id);
+        setCaseNotes(notesData || []);
+      } catch (e) {}
+
+      setLoading(false);
     };
     fetchDetails();
   }, [id]);
@@ -218,12 +537,11 @@ const ComplaintDetails = () => {
       }
     );
   };
-
   if (loading) {
     return (
       <DashboardLayout>
         <div className="flex h-[60vh] items-center justify-center text-slate-400">
-          Loading complaint details...
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#163D32]"></div>
         </div>
       </DashboardLayout>
     );
@@ -232,9 +550,9 @@ const ComplaintDetails = () => {
   if (!complaint) {
     return (
       <DashboardLayout>
-        <div className="flex h-[60vh] flex-col items-center justify-center text-slate-400 space-y-4">
+        <div className="flex h-[60vh] flex-col items-center justify-center text-[#65736D] space-y-4">
           <p>Complaint not found.</p>
-          <button onClick={() => navigate("/citizen/history")} className="px-4 py-2 bg-blue-600 text-white rounded-xl text-xs font-semibold">
+          <button onClick={() => navigate("/citizen/history")} className="btn-aram-primary">
             Go Back
           </button>
         </div>
@@ -242,7 +560,17 @@ const ComplaintDetails = () => {
     );
   }
 
-  const category = complaint.categoryLabel || complaint.category || "GENERAL_LEGAL_AID";
+  // Resolve case language first
+  const caseLang = complaint?.language || "en-IN";
+  const normalizedLang = caseLang.toLowerCase().includes("tamil") || caseLang.startsWith("ta")
+    ? "ta-IN"
+    : caseLang.toLowerCase().includes("hindi") || caseLang.startsWith("hi")
+    ? "hi-IN"
+    : "en-IN";
+  const t = TRANSLATIONS[normalizedLang] || TRANSLATIONS["en-IN"];
+
+  const categoryRaw = complaint.categoryLabel || complaint.category || "GENERAL_LEGAL_AID";
+  const category = getLocalizedCategory(categoryRaw, normalizedLang);
   const priority = complaint.priority || "MEDIUM";
   const status = complaint.status || "SUBMITTED";
   const desc = complaint.description || "";
@@ -266,61 +594,64 @@ const ComplaintDetails = () => {
   const activeStep = getActiveStepIndex();
 
   const getWhatHappensNextExplanation = () => {
-    switch (status) {
-      case "RESOLVED":
-      case "CLOSED":
-        return {
-          title: "Grievance Completed & Closed",
-          desc: "This case has been resolved. You can verify the actions or click the 'Reopen Case' button at the bottom of the page if you require further assistance."
-        };
-      case "DOCUMENTS_PENDING":
-        return {
-          title: "Evidence Proof Slips Required",
-          desc: "Your Legal Guide has requested additional documents. Please check the requested document tracker below and upload them to continue review."
-        };
-      case "IN_PROGRESS":
-      case "HELPER_ASSIGNED":
-        return {
-          title: "Legal Guide Formulating Action Plan",
-          desc: "Your matched helper is currently reviewing your grievance and evidence details. They will post a custom next action plan containing mediation steps and nearby office directions."
-        };
-      case "UNDER_REVIEW":
-        return {
-          title: "Admin Matching Volunteer",
-          desc: "ARAM regional administrators are actively verifying your complaint details and routing it to match a helper fluent in your language."
-        };
-      case "SUBMITTED":
-      default:
-        return {
-          title: "Awaiting Triage Verification",
-          desc: "Your complaint was successfully logged on ARAM. AI triage checked your details and routed this case to the regional queue for admin reviewer matching."
-        };
-    }
+    const s = (status || "SUBMITTED").toUpperCase();
+    const map = {
+      SUBMITTED: {
+        title: "Initial AI Triage & District Review",
+        desc: t.statusText?.SUBMITTED || "Your complaint has been submitted. ARAM AI and the district administrator are reviewing it."
+      },
+      UNDER_REVIEW: {
+        title: "District Administrator Jurisdiction Review",
+        desc: t.statusText?.UNDER_REVIEW || "Your complaint is currently under review by the district administrator."
+      },
+      HELPER_ASSIGNED: {
+        title: "Legal Guide Assigned & Active",
+        desc: t.statusText?.GUIDE_ASSIGNED || "A Legal Guide has been assigned. You can chat with them directly."
+      },
+      GUIDE_ASSIGNED: {
+        title: "Legal Guide Assigned & Active",
+        desc: t.statusText?.GUIDE_ASSIGNED || "A Legal Guide has been assigned. You can chat with them directly."
+      },
+      IN_PROGRESS: {
+        title: "Action Plan In Progress",
+        desc: "Your assigned Legal Guide is working on your case roadmap and evidence verification."
+      },
+      RESOLVED: {
+        title: "Case Successfully Resolved",
+        desc: t.statusText?.RESOLVED || "The case has been resolved successfully."
+      },
+      RESOLVED_BY_GUIDE: {
+        title: "Case Resolved by Guide",
+        desc: "Legal Guide has submitted resolution. Please verify and confirm to close the case."
+      },
+      CLOSED: {
+        title: "Case Closed",
+        desc: t.statusText?.CLOSED || "The case has been closed."
+      },
+      CLOSED_BY_USER: {
+        title: "Closed by Citizen",
+        desc: "You have verified and confirmed resolution of this complaint."
+      }
+    };
+    return map[s] || map["SUBMITTED"];
   };
 
   const nextHelp = getWhatHappensNextExplanation();
   
-  const journeySteps = [
-    { label: "Submitted", desc: "Grievance received" },
-    { label: "AI Checked", desc: "Triage complete" },
-    { label: "Admin Review", desc: "Route verified" },
-    { label: "Guide Assigned", desc: "Volunteer matched" },
-    { label: "Action Plan", desc: "Strategy ready" },
-    { label: "Documents", desc: "Evidence review" },
-    { label: "Resolved", desc: "Case closed" }
-  ];
+  const journeySteps = t.journeySteps;
 
   const getSlaDeadline = (priorityVal) => {
+    const sla = t.sla;
     switch (priorityVal?.toUpperCase()) {
       case "CRITICAL":
-        return "Immediate Review";
+        return sla.critical;
       case "HIGH":
-        return "24 Hours SLA";
+        return sla.high;
       case "MEDIUM":
-        return "72 Hours SLA";
+        return sla.medium;
       case "LOW":
       default:
-        return "7 Days SLA";
+        return sla.low;
     }
   };
 
@@ -418,29 +749,38 @@ const ComplaintDetails = () => {
         )}
 
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#E6E1D8] pb-4">
           <div>
-            <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Complaint Information</h1>
-            <p className="text-xs text-slate-400 mt-0.5">ID: {formattedRefId} • Status: <span className="font-semibold text-blue-600">{status}</span></p>
+            <div className="flex items-center gap-2 text-xs text-[#65736D] font-bold uppercase tracking-wider mb-1">
+              <button
+                type="button"
+                onClick={() => navigate("/citizen/history")}
+                className="hover:text-[#163D32] flex items-center gap-1 transition cursor-pointer"
+              >
+                <ArrowLeft size={14} /> My Complaints
+              </button>
+              <span>/</span>
+              <span className="text-[#163D32]">{complaint.complaintCustomId || formattedRefId}</span>
+            </div>
+            <h1 className="text-2xl font-black text-[#163D32] tracking-tight">
+              {complaint.title || `${category} — Case #${complaint.id}`}
+            </h1>
+            <p className="text-xs text-[#65736D] mt-0.5 font-medium">
+              ID: <strong className="text-[#163D32]">{complaint.complaintCustomId || formattedRefId}</strong> • Jurisdiction: <strong className="text-[#163D32]">{complaint.district || "Coimbatore"}</strong> • Status: <span className="font-bold text-[#1F5948] bg-[#DCEBDD] px-2 py-0.5 rounded-full">{status}</span>
+            </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
             <button
               onClick={() => window.print()}
-              className="flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700 transition bg-blue-50 px-3 py-1.5 rounded-lg border border-blue-100"
+              className="flex items-center gap-1.5 text-xs font-bold text-[#163D32] hover:text-[#1F5948] transition bg-[#F7F1E6] hover:bg-[#E6E1D8] px-3.5 py-2 rounded-xl border border-[#E6E1D8] cursor-pointer"
             >
               Print Packet 🖨️
             </button>
             <button
               onClick={handleWhatsAppShare}
-              className="flex items-center gap-1.5 text-xs font-semibold text-emerald-600 hover:text-emerald-700 transition bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100"
+              className="flex items-center gap-1.5 text-xs font-bold text-emerald-800 transition bg-emerald-50 hover:bg-emerald-100 px-3.5 py-2 rounded-xl border border-emerald-200 cursor-pointer"
             >
               Share via WhatsApp
-            </button>
-            <button
-              onClick={() => navigate("/citizen/history")}
-              className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-800 transition"
-            >
-              <ArrowLeft size={16} /> Back
             </button>
           </div>
         </div>
@@ -469,14 +809,14 @@ const ComplaintDetails = () => {
         </div>
 
         {/* One-page complaint journey step tracker */}
-        <div className="rounded-3xl bg-white p-6 shadow-sm border border-slate-150 space-y-4">
-          <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">Case Progress Journey</h3>
+        <div className="rounded-3xl bg-[#FFFDF8] p-6 shadow-sm border border-[#E6E1D8] space-y-4">
+          <h3 className="text-xs font-extrabold text-[#163D32] uppercase tracking-wider mb-2">{t.caseProgressJourney}</h3>
           
           <div className="relative flex flex-col md:flex-row justify-between items-start md:items-center gap-6 md:gap-2">
             {/* Connection line for desktop */}
-            <div className="hidden md:block absolute left-6 right-6 top-5 h-[2.5px] bg-slate-150 -z-0">
+            <div className="hidden md:block absolute left-6 right-6 top-5 h-[2.5px] bg-[#E6E1D8] -z-0">
               <div 
-                className="h-full bg-emerald-500 transition-all duration-500" 
+                className="h-full bg-[#163D32] transition-all duration-500" 
                 style={{ width: `${(activeStep / (journeySteps.length - 1)) * 100}%` }}
               ></div>
             </div>
@@ -489,16 +829,16 @@ const ComplaintDetails = () => {
                   {/* Circle element */}
                   <div className={`h-10 w-10 rounded-full flex items-center justify-center font-black text-xs border-2 transition-all duration-300 ${
                     isCompleted 
-                      ? "bg-emerald-500 border-emerald-500 text-white shadow-md shadow-emerald-100" 
-                      : "bg-white border-slate-200 text-slate-400"
-                  } ${isCurrent ? "ring-4 ring-emerald-50" : ""}`}>
+                      ? "bg-[#163D32] border-[#163D32] text-white shadow-sm" 
+                      : "bg-[#FFFDF8] border-[#E6E1D8] text-[#8B9690]"
+                  } ${isCurrent ? "ring-4 ring-[#DCEBDD]" : ""}`}>
                     {isCompleted && idx < activeStep ? "✓" : idx + 1}
                   </div>
                   
                   {/* Label */}
                   <div className="text-left md:text-center">
-                    <span className={`block text-xs font-bold ${isCompleted ? "text-slate-800" : "text-slate-400"}`}>{step.label}</span>
-                    <span className="block text-[10px] text-slate-400 font-bold uppercase tracking-tight mt-0.5">{step.desc}</span>
+                    <span className={`block text-xs font-bold ${isCompleted ? "text-[#18332B]" : "text-[#8B9690]"}`}>{step.title}</span>
+                    <span className="block text-[10px] text-[#65736D] font-medium mt-0.5 max-w-[130px] leading-tight">{step.desc}</span>
                   </div>
                 </div>
               );
@@ -508,63 +848,63 @@ const ComplaintDetails = () => {
 
         {/* Info Grid */}
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Triage Category</p>
-            <h3 className="text-sm font-bold text-slate-805 mt-1">{category.replace("_", " ")}</h3>
+          <div className="rounded-2xl border border-[#E6E1D8] bg-[#FFFDF8] p-5 shadow-sm">
+            <p className="text-[10px] text-[#65736D] font-bold uppercase tracking-wider">{t.triageCategory}</p>
+            <h3 className="text-sm font-black text-[#163D32] mt-1">{category}</h3>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Priority / SLA Target</p>
-            <h3 className="text-sm font-bold text-red-600 mt-1">{getSlaDeadline(priority)}</h3>
+          <div className="rounded-2xl border border-[#E6E1D8] bg-[#FFFDF8] p-5 shadow-sm">
+            <p className="text-[10px] text-[#65736D] font-bold uppercase tracking-wider">{t.urgencyLevel}</p>
+            <h3 className="text-sm font-black text-[#B96845] mt-1">{getSlaDeadline(priority)}</h3>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Assigned Helper</p>
-            <h3 className="text-sm font-bold text-slate-805 mt-1">{complaint.assignedHelperName || "Awaiting Assignment"}</h3>
+          <div className="rounded-2xl border border-[#E6E1D8] bg-[#FFFDF8] p-5 shadow-sm">
+            <p className="text-[10px] text-[#65736D] font-bold uppercase tracking-wider">{t.legalGuide}</p>
+            <h3 className="text-sm font-black text-[#1F5948] mt-1">{complaint.assignedHelperName || t.awaitingAssignment}</h3>
           </div>
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">Date Submitted</p>
-            <h3 className="text-xs font-bold text-slate-600 mt-1">{new Date(complaint.createdAt).toLocaleDateString()}</h3>
+          <div className="rounded-2xl border border-[#E6E1D8] bg-[#FFFDF8] p-5 shadow-sm">
+            <p className="text-[10px] text-[#65736D] font-bold uppercase tracking-wider">{t.dateSubmitted}</p>
+            <h3 className="text-sm font-black text-[#18332B] mt-1">{new Date(complaint.createdAt).toLocaleDateString()}</h3>
           </div>
         </div>
 
         {/* What happens next card */}
-        <div className="rounded-2xl border border-blue-105 bg-blue-50/45 p-5 text-xs text-slate-800 space-y-2.5">
+        <div className="rounded-2xl border border-[#DCEBDD] bg-[#DCEBDD]/30 p-5 text-xs text-[#18332B] space-y-2.5">
           <div className="flex items-center gap-2">
             <span className="text-base">📋</span>
-            <span className="font-bold uppercase tracking-wider text-blue-900">What Happens Next?</span>
+            <span className="font-bold uppercase tracking-wider text-[#163D32]">{t.whatHappensNext}</span>
           </div>
           <div className="pl-6 space-y-1">
-            <strong className="text-slate-800 font-bold block">{nextHelp.title}</strong>
-            <p className="leading-relaxed text-slate-550 font-medium">{nextHelp.desc}</p>
+            <strong className="text-[#18332B] font-bold block">{nextHelp.title}</strong>
+            <p className="leading-relaxed text-[#65736D] font-medium">{nextHelp.desc}</p>
           </div>
         </div>
 
         {/* Description Panel */}
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-3">
+        <div className="rounded-2xl border border-[#E6E1D8] bg-[#FFFDF8] p-6 shadow-sm space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Original Grievance Description</h3>
-            <ReadAloudButton text={desc} language={complaint.language || "en-IN"} />
+            <h3 className="text-sm font-bold text-[#18332B] uppercase tracking-wider">{t.originalDescription}</h3>
+            <ReadAloudButton text={desc} language={normalizedLang} />
           </div>
-          <div className="rounded-xl bg-slate-50 p-4 text-xs leading-relaxed text-slate-600 border border-slate-100 whitespace-pre-line">
+          <div className="rounded-xl bg-[#F7F1E6]/50 p-4 text-xs leading-relaxed text-[#18332B] border border-[#E6E1D8] whitespace-pre-line">
             {desc}
           </div>
         </div>
 
         {/* Citizen Opinion / Additional Details Panel */}
         {(complaint.citizenOpinion || complaint.additionalDetails) && (
-          <div className="rounded-2xl border border-indigo-100 bg-indigo-50/40 dark:bg-slate-900 dark:border-slate-800 p-6 shadow-sm space-y-3">
-            <h3 className="text-sm font-bold text-indigo-950 dark:text-indigo-200 uppercase tracking-wider">Citizen Perspective & Details</h3>
+          <div className="rounded-2xl border border-[#DCEBDD] bg-[#DCEBDD]/20 p-6 shadow-sm space-y-3">
+            <h3 className="text-sm font-bold text-[#163D32] uppercase tracking-wider">{t.citizenPerspective}</h3>
             {complaint.citizenOpinion && (
               <div className="space-y-1">
-                <span className="text-[10px] font-bold text-slate-500 uppercase">Citizen Opinion / Desired Relief:</span>
-                <p className="rounded-xl bg-white dark:bg-slate-950 p-3.5 text-xs leading-relaxed text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-800">
+                <span className="text-[10px] font-bold text-[#65736D] uppercase">Citizen Opinion / Desired Relief:</span>
+                <p className="rounded-xl bg-[#FFFDF8] p-3.5 text-xs leading-relaxed text-[#18332B] border border-[#E6E1D8]">
                   {complaint.citizenOpinion}
                 </p>
               </div>
             )}
             {complaint.additionalDetails && (
               <div className="space-y-1 pt-1">
-                <span className="text-[10px] font-bold text-slate-500 uppercase">Additional Context:</span>
-                <p className="rounded-xl bg-white dark:bg-slate-950 p-3.5 text-xs leading-relaxed text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-800">
+                <span className="text-[10px] font-bold text-[#65736D] uppercase">Additional Context:</span>
+                <p className="rounded-xl bg-[#FFFDF8] p-3.5 text-xs leading-relaxed text-[#18332B] border border-[#E6E1D8]">
                   {complaint.additionalDetails}
                 </p>
               </div>
@@ -572,18 +912,18 @@ const ComplaintDetails = () => {
           </div>
         )}
 
-        {/* AI Action Checklist */}
+        {/* AI Analysis Grid */}
         <div className="grid gap-6 md:grid-cols-2">
-          {/* Document Rules */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+          {/* Required Evidence */}
+          <div className="rounded-2xl border border-[#E6E1D8] bg-[#FFFDF8] p-6 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Required Evidence Checklist</h3>
-              <ReadAloudButton text={`Required documents: ${docs.join(", ")}`} language={complaint.language || "en-IN"} />
+              <h3 className="text-sm font-bold text-[#18332B] uppercase tracking-wider">{t.requiredEvidence}</h3>
+              <ReadAloudButton text={`${t.requiredEvidence}: ${docs.join(", ")}`} language={normalizedLang} />
             </div>
             <div className="space-y-2">
               {docs.map((doc, idx) => (
-                <div key={idx} className="flex items-center gap-2.5 p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs font-semibold text-slate-700">
-                  <FileText size={16} className="text-blue-600 shrink-0" />
+                <div key={idx} className="flex items-center gap-2.5 p-3 rounded-xl bg-[#F7F1E6]/50 border border-[#E6E1D8] text-xs font-semibold text-[#18332B]">
+                  <FileText size={16} className="text-[#1F5948] shrink-0" />
                   <span>{doc}</span>
                 </div>
               ))}
@@ -591,15 +931,15 @@ const ComplaintDetails = () => {
           </div>
 
           {/* AI Next Steps */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+          <div className="rounded-2xl border border-[#E6E1D8] bg-[#FFFDF8] p-6 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Suggested Guidance Rules</h3>
-              <ReadAloudButton text={steps.join(". ")} language={complaint.language || "en-IN"} />
+              <h3 className="text-sm font-bold text-[#18332B] uppercase tracking-wider">{t.suggestedGuidance}</h3>
+              <ReadAloudButton text={steps.join(". ")} language={normalizedLang} />
             </div>
             <div className="space-y-2">
               {steps.map((step, idx) => (
-                <div key={idx} className="flex items-start gap-2.5 p-3 rounded-xl bg-slate-50 border border-slate-100 text-xs text-slate-600">
-                  <span className="h-5 w-5 shrink-0 bg-blue-100 text-blue-700 rounded-full flex items-center justify-center font-bold text-[10px]">{idx + 1}</span>
+                <div key={idx} className="flex items-start gap-2.5 p-3 rounded-xl bg-[#F7F1E6]/50 border border-[#E6E1D8] text-xs text-[#18332B]">
+                  <span className="h-5 w-5 shrink-0 bg-[#DCEBDD] text-[#163D32] rounded-full flex items-center justify-center font-bold text-[10px]">{idx + 1}</span>
                   <span>{step}</span>
                 </div>
               ))}
@@ -610,8 +950,8 @@ const ComplaintDetails = () => {
         {/* Next Action Plan Section */}
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-6 mt-6">
           <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
-            <h3 className="text-sm font-bold text-slate-800 tracking-tight flex items-center gap-2 uppercase">
-              <span>📋</span> Your Next Action Plan
+            <h3 className="text-sm font-bold text-slate-805 tracking-tight flex items-center gap-2 uppercase">
+              <span>📋</span> {t.legalGuideActionPlan}
             </h3>
             {actionPlan && (
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase bg-green-50 text-green-700">
@@ -1132,12 +1472,12 @@ const ComplaintDetails = () => {
 
         <div className="space-y-4">
           <div>
-            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Grievance Summary</h3>
+            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">{t.grievanceSummary}</h3>
             <p className="mt-1.5 text-xs leading-relaxed text-slate-600 bg-slate-50 p-3 rounded-lg border">{desc}</p>
           </div>
 
           <div>
-            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Required Evidence Checklist</h3>
+            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">{t.requiredEvidence}</h3>
             <ul className="mt-1.5 text-xs text-slate-600 space-y-1 bg-slate-50 p-3 rounded-lg border list-disc list-inside">
               {docs.map((doc, idx) => (
                 <li key={idx} className="font-semibold">{doc}</li>
@@ -1147,7 +1487,7 @@ const ComplaintDetails = () => {
 
           {actionPlan && (
             <div>
-              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Legal Guide Action Plan</h3>
+              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">{t.legalGuideActionPlan}</h3>
               <div className="mt-1.5 text-xs text-slate-650 space-y-1.5 bg-slate-50 p-3 rounded-lg border">
                 <p><strong>Immediate Steps:</strong></p>
                 <p className="whitespace-pre-line bg-white p-2 rounded border border-slate-105 mt-1">{actionPlan.immediateSteps}</p>
@@ -1160,7 +1500,7 @@ const ComplaintDetails = () => {
 
           {costEstimate && (
             <div>
-              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Estimated Legal Expenses</h3>
+              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">{t.estimatedExpenses}</h3>
               <div className="mt-1.5 text-xs text-slate-650 bg-slate-50 p-3 rounded-lg border">
                 <span>Minimum Cost: ₹{costEstimate.minEstimate} • Maximum Cost: ₹{costEstimate.maxEstimate}</span>
                 <p className="text-[10px] text-slate-400 mt-1 font-medium leading-tight">Note: These estimates are based on regional legal service standards. Community guides charge zero consultation fees.</p>

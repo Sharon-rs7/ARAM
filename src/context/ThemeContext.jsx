@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { getCurrentUser, userApi } from '../services/api.js';
+import { getCurrentUser, userApi } from '@/services/api.js';
 
 const ThemeContext = createContext(null);
 const MODES = ['LIGHT', 'DARK', 'SYSTEM'];
@@ -9,12 +9,19 @@ function getSystemTheme() {
 }
 
 function normalizeMode(mode) {
-  return MODES.includes(mode) ? mode : 'SYSTEM';
+  return (mode && MODES.includes(mode)) ? mode : 'LIGHT';
 }
 
 export function ThemeProvider({ children }) {
   const currentUser = getCurrentUser();
-  const [mode, setModeState] = useState(() => normalizeMode(currentUser?.themePreference || localStorage.getItem('themePreference')));
+  const [mode, setModeState] = useState(() => {
+    const saved = localStorage.getItem('themePreference');
+    if (saved && MODES.includes(saved)) return saved;
+    if (currentUser?.themePreference && MODES.includes(currentUser.themePreference)) {
+      return currentUser.themePreference;
+    }
+    return 'LIGHT';
+  });
   const [systemTheme, setSystemTheme] = useState(getSystemTheme);
 
   useEffect(() => {
@@ -57,6 +64,8 @@ export function ThemeProvider({ children }) {
 
 export function useTheme() {
   const value = useContext(ThemeContext);
-  if (!value) throw new Error('useTheme must be used inside ThemeProvider');
+  if (!value) {
+    return { mode: "light", resolvedTheme: "light", setMode: () => {} };
+  }
   return value;
 }

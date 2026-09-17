@@ -1,16 +1,19 @@
 import axios from "axios";
-import { userService } from "./userService.js";
-import { authService } from "./authService.js";
-import { complaintService } from "./complaintService.js";
-import { documentService } from "./documentService.js";
-import { notificationService } from "./notificationService.js";
-import { adminService } from "./adminService.js";
+import { userService } from "@/services/userService.js";
+import { authService } from "@/services/authService.js";
+import { complaintService } from "@/services/complaintService.js";
+import { documentService } from "@/services/documentService.js";
+import { notificationService } from "@/services/notificationService.js";
+import { adminService } from "@/services/adminService.js";
+import { normalizeRole } from "@/utils/roleLabels";
 
-export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
+export const API_BUSINESS_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8082/api";
+export const API_AUTH_URL = import.meta.env.VITE_AUTH_SERVICE_BASE_URL || "http://localhost:8082/api";
+export const API_BASE_URL = API_BUSINESS_URL;
 export const USE_MOCKS = import.meta.env.VITE_USE_MOCKS === "true";
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: API_BUSINESS_URL,
   timeout: 30000,
   headers: {
     "Content-Type": "application/json",
@@ -21,12 +24,13 @@ api.interceptors.request.use(
   (config) => {
     // Dynamic routing: Auth endpoints -> Port 8081, Business endpoints -> Port 8082
     if (config.url.startsWith("/auth") || config.url.startsWith("/users/me")) {
-      config.baseURL = "http://localhost:8081/api";
+      config.baseURL = API_AUTH_URL;
     } else {
-      config.baseURL = "http://localhost:8082/api";
+      config.baseURL = API_BUSINESS_URL;
     }
-    const token = localStorage.getItem("accessToken");
-    if (token) {
+    const token = localStorage.getItem("accessToken") || sessionStorage.getItem("accessToken");
+    const isPublic = config.url.includes("/auth/") || config.url.includes("/support/contact");
+    if (token && !isPublic) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
@@ -36,46 +40,113 @@ api.interceptors.request.use(
   }
 );
 
+let isRefreshing = false;
+let failedQueue = [];
+
+const processQueue = (error, token = null) => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(token);
+    }
+  });
+  failedQueue = [];
+};
+
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response && error.response.status === 401) {
-      localStorage.removeItem("accessToken");
-      localStorage.removeItem("refreshToken");
-      localStorage.removeItem("user");
-      localStorage.removeItem("role");
-      window.location.href = "/login";
+  async (error) => {
+    const originalRequest = error.config;
+    if (error.response && error.response.status === 401 && !originalRequest._retry) {
+      if (isRefreshing) {
+        return new Promise((resolve, reject) => {
+          failedQueue.push({ resolve, reject });
+        })
+          .then((token) => {
+            originalRequest.headers.Authorization = `Bearer ${token}`;
+            return api(originalRequest);
+          })
+          .catch((err) => {
+            return Promise.reject(err);
+          });
+      }
+
+      originalRequest._retry = true;
+      isRefreshing = true;
+
+      const refreshToken = localStorage.getItem("refreshToken") || sessionStorage.getItem("refreshToken");
+      if (!refreshToken) {
+        logout();
+        window.location.href = "/login";
+        return Promise.reject(error);
+      }
+
+      try {
+        const refreshRes = await axios.post(`${API_AUTH_URL}/auth/refresh`, { refreshToken });
+        const { accessToken: newAccessToken, refreshToken: newRefreshToken } = refreshRes.data;
+        
+        const isSession = !!sessionStorage.getItem("accessToken");
+        const storage = isSession ? sessionStorage : localStorage;
+
+        storage.setItem("accessToken", newAccessToken);
+        if (newRefreshToken) {
+          storage.setItem("refreshToken", newRefreshToken);
+        }
+
+        api.defaults.headers.common["Authorization"] = `Bearer ${newAccessToken}`;
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+
+        processQueue(null, newAccessToken);
+        isRefreshing = false;
+
+        return api(originalRequest);
+      } catch (refreshError) {
+        processQueue(refreshError, null);
+        isRefreshing = false;
+        logout();
+        window.location.href = "/login";
+        return Promise.reject(refreshError);
+      }
     }
     return Promise.reject(error);
   }
 );
 
 export function getAccessToken() {
-  return localStorage.getItem('accessToken');
+  return localStorage.getItem('accessToken') || sessionStorage.getItem('accessToken');
 }
 
 export function getCurrentUser() {
   try {
-    const user = JSON.parse(localStorage.getItem('user') || 'null');
-    return user || (localStorage.getItem('role') ? { role: localStorage.getItem('role') } : null);
+    const userVal = localStorage.getItem('user') || sessionStorage.getItem('user');
+    const roleVal = localStorage.getItem('role') || sessionStorage.getItem('role');
+    const user = JSON.parse(userVal || 'null');
+    return user || (roleVal ? { role: roleVal } : null);
   } catch {
-    return localStorage.getItem('role') ? { role: localStorage.getItem('role') } : null;
+    const roleVal = localStorage.getItem('role') || sessionStorage.getItem('role');
+    return roleVal ? { role: roleVal } : null;
   }
 }
 
-export function saveAuth(auth) {
+export function saveAuth(auth, rememberMe = true) {
   const accessToken = auth?.accessToken || auth?.token;
-  let role = auth?.user?.role || auth?.role;
-  if (role) {
-    role = String(role).toUpperCase().replace(/^ROLE_/, "");
-    if (role === "HELPER") role = "VOLUNTEER";
-  }
-  const user = auth?.user ? { ...auth.user, role } : (role ? { role } : null);
+  let role = normalizeRole(auth?.user?.role || auth?.role);
+  const user = auth?.user ? { ...auth.user, role, backendRole: (auth.user.backendRole || auth.user.role || auth.role) } : (role ? { role } : null);
   
-  if (accessToken) localStorage.setItem('accessToken', accessToken);
-  if (auth?.refreshToken) localStorage.setItem('refreshToken', auth.refreshToken);
-  if (user) localStorage.setItem('user', JSON.stringify(user));
-  if (role) localStorage.setItem('role', role);
+  const storage = rememberMe ? localStorage : sessionStorage;
+  const oldStorage = rememberMe ? sessionStorage : localStorage;
+
+  // Clear opposite storage
+  oldStorage.removeItem('accessToken');
+  oldStorage.removeItem('refreshToken');
+  oldStorage.removeItem('user');
+  oldStorage.removeItem('role');
+
+  if (accessToken) storage.setItem('accessToken', accessToken);
+  if (auth?.refreshToken) storage.setItem('refreshToken', auth.refreshToken);
+  if (user) storage.setItem('user', JSON.stringify(user));
+  if (role) storage.setItem('role', role);
 }
 
 export function logout() {
@@ -83,6 +154,11 @@ export function logout() {
   localStorage.removeItem('refreshToken');
   localStorage.removeItem('user');
   localStorage.removeItem('role');
+
+  sessionStorage.removeItem('accessToken');
+  sessionStorage.removeItem('refreshToken');
+  sessionStorage.removeItem('user');
+  sessionStorage.removeItem('role');
 }
 
 export const userApi = {

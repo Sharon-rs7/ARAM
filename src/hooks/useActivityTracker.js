@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
-import volunteerActivityService from "../services/volunteerActivityService";
+import { useAuth } from "@/context/AuthContext";
+import volunteerActivityService from "@/services/volunteerActivityService";
 
 export default function useActivityTracker() {
   const { user, role } = useAuth();

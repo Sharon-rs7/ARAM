@@ -33,32 +33,28 @@ class MLLanguageDetector:
                 "fallbackUsed": True
             }
 
-        # Clean text of URLs, digits, punctuation for character analysis
-        char_text = re.sub(r"https?://\S+|www\.\S+", "", text)
-        char_text = re.sub(r"\d+", "", char_text)
-        
+        # Count character blocks
         tamil_chars = 0
         devanagari_chars = 0
         latin_chars = 0
         total_letters = 0
 
-        for char in char_text:
+        for char in text:
             val = ord(char)
-            # Tamil block U+0B80–U+0BFF
             if 0x0B80 <= val <= 0x0BFF:
                 tamil_chars += 1
                 total_letters += 1
-            # Devanagari block U+0900–U+097F
             elif 0x0900 <= val <= 0x097F:
                 devanagari_chars += 1
                 total_letters += 1
-            elif ('a' <= char.lower() <= 'z'):
-                latin_chars += 1
-                total_letters += 1
+            elif char.isalpha():
+                if (0x0041 <= val <= 0x005A) or (0x0061 <= val <= 0x007A):
+                    latin_chars += 1
+                    total_letters += 1
 
-        # Layer 1: Unicode script detection
+        # Layer 1: Native script checks take absolute priority
         if tamil_chars > 0 or devanagari_chars > 0:
-            if tamil_chars >= devanagari_chars:
+            if tamil_chars > 0:
                 lang = "ta"
                 script = "Tamil"
                 native_count = tamil_chars
@@ -66,12 +62,11 @@ class MLLanguageDetector:
                 lang = "hi"
                 script = "Devanagari"
                 native_count = devanagari_chars
-            
+
             ratio = native_count / max(1, total_letters)
-            mixed = latin_chars > 2  # If we have some Latin words mixed in
-            
-            confidence = max(0.95, ratio)
-            
+            mixed = (tamil_chars > 0 and devanagari_chars > 0) or (native_count > 0 and latin_chars > 2)
+            confidence = max(0.98, ratio) if not mixed else max(0.85, ratio)
+
             return {
                 "language": lang,
                 "confidence": round(confidence, 3),
@@ -91,21 +86,29 @@ class MLLanguageDetector:
         tanglish_keywords = {
             "sambalam", "enaku", "ennoda", "tharala", "tarala", "kudukala", "maasam", "masam",
             "velai", "velay", "rendu", "moonu", "illai", "illa", "latcham", "prachanai", "prachana",
-            "enaku", "romba", "nalla", "iruku", "panam", "nilam", "vivasayam", "yenna", "enna"
+            "enaku", "romba", "nalla", "iruku", "panam", "nilam", "vivasayam", "yenna", "enna",
+            "nadanthuchu", "thanga", "macha", "panni"
         }
         hinglish_keywords = {
             "mujhe", "mujhae", "nahi", "nahii", "nahee", "mili", "milee", "mahine", "maheene",
             "paisa", "kam", "ghar", "zamin", "jameen", "baki", "dikhkat", "shikayat", "thana",
-            "malk", "maalk", "paise", "nhi", "nhii"
+            "malk", "maalk", "paise", "nhi", "nhii", "macha", "yaar"
+        }
+        english_keywords = {
+            "is", "the", "from", "to", "in", "on", "at", "for", "with", "by", "of", "and", "a", "an", 
+            "this", "that", "it", "my", "your", "account", "lost", "fraud", "safety", "cyber", "police",
+            "complaint", "help", "problem", "court", "legal", "advocate", "assistance", "support",
+            "unpaid", "salary", "wage", "employer", "worker", "job", "defective", "refund", "seller"
         }
 
         tanglish_hits = len(words.intersection(tanglish_keywords))
         hinglish_hits = len(words.intersection(hinglish_keywords))
+        english_hits = len(words.intersection(english_keywords))
 
-        if tanglish_hits >= 2 and tanglish_hits > hinglish_hits:
+        if tanglish_hits >= 1 and tanglish_hits >= hinglish_hits:
             return {
                 "language": "ta",
-                "confidence": round(0.70 + (0.05 * min(5, tanglish_hits)), 3),
+                "confidence": round(0.75 + (0.05 * min(4, tanglish_hits)), 3),
                 "mixed": True,
                 "script": "Latin",
                 "method": "lexical_latin",
@@ -114,14 +117,26 @@ class MLLanguageDetector:
                 "manualReviewRequired": False,
                 "fallbackUsed": False
             }
-        elif hinglish_hits >= 2 and hinglish_hits > tanglish_hits:
+        elif hinglish_hits >= 1 and hinglish_hits > tanglish_hits:
             return {
                 "language": "hi",
-                "confidence": round(0.70 + (0.05 * min(5, hinglish_hits)), 3),
+                "confidence": round(0.75 + (0.05 * min(4, hinglish_hits)), 3),
                 "mixed": True,
                 "script": "Latin",
                 "method": "lexical_latin",
                 "topLanguages": [{"language": "hi", "confidence": 0.85}],
+                "modelVersion": "lang-detector-onnx-v1",
+                "manualReviewRequired": False,
+                "fallbackUsed": False
+            }
+        elif english_hits >= 2 and tanglish_hits == 0 and hinglish_hits == 0:
+            return {
+                "language": "en",
+                "confidence": round(0.80 + (0.02 * min(10, english_hits)), 3),
+                "mixed": False,
+                "script": "Latin",
+                "method": "lexical_latin",
+                "topLanguages": [{"language": "en", "confidence": 0.90}],
                 "modelVersion": "lang-detector-onnx-v1",
                 "manualReviewRequired": False,
                 "fallbackUsed": False

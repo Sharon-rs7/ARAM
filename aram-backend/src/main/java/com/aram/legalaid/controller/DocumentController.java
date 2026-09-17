@@ -15,14 +15,19 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import com.aram.legalaid.util.FileUploadValidator;
+import com.aram.legalaid.util.UploadCategory;
+
 @RestController
 public class DocumentController {
     private final DocumentService documentService;
     private final AIClientService aiClientService;
+    private final FileUploadValidator fileUploadValidator;
 
-    public DocumentController(DocumentService documentService, AIClientService aiClientService) {
+    public DocumentController(DocumentService documentService, AIClientService aiClientService, FileUploadValidator fileUploadValidator) {
         this.documentService = documentService;
         this.aiClientService = aiClientService;
+        this.fileUploadValidator = fileUploadValidator;
     }
 
     // --- Core Legacy mappings ---
@@ -32,6 +37,15 @@ public class DocumentController {
             @RequestParam("expectedDocumentType") String expectedType,
             @RequestParam("complaintCategory") String category
     ) {
+        String orig = file.getOriginalFilename();
+        UploadCategory cat = UploadCategory.DOCUMENT;
+        if (orig != null) {
+            String lower = orig.toLowerCase();
+            if (lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.endsWith(".webp")) {
+                cat = UploadCategory.IMAGE;
+            }
+        }
+        fileUploadValidator.validateAndGenerateSafeName(file, cat);
         return ResponseEntity.ok(aiClientService.verifyDocument(file, expectedType, category));
     }
 
@@ -40,7 +54,7 @@ public class DocumentController {
         return ResponseEntity.ok(documentService.upload(complaintId, file));
     }
 
-    @GetMapping("/api/documents/complaint/{complaintId}")
+    @GetMapping({"/api/documents/complaint/{complaintId}", "/api/complaints/{complaintId}/evidence", "/api/complaints/{complaintId}/documents", "/api/cases/{complaintId}/documents"})
     public ResponseEntity<List<DocumentResponse>> byComplaint(@PathVariable Long complaintId) {
         return ResponseEntity.ok(documentService.byComplaint(complaintId));
     }
@@ -69,7 +83,7 @@ public class DocumentController {
     }
 
     // --- New Public Citizen mappings ---
-    @PostMapping(value = "/api/citizen/complaints/{complaintId}/documents", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = {"/api/citizen/complaints/{complaintId}/documents", "/api/complaints/{complaintId}/evidence", "/api/complaints/{complaintId}/documents", "/api/volunteer/cases/{complaintId}/documents", "/api/cases/{complaintId}/documents"}, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<DocumentResponse> citizenUpload(@PathVariable Long complaintId, @RequestParam("file") MultipartFile file) {
         return ResponseEntity.ok(documentService.upload(complaintId, file));
     }

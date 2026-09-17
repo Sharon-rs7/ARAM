@@ -1,17 +1,20 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import DashboardLayout from "@/components/layout/DashboardLayout";
-import { Search, ChevronRight, Calendar, User, Clock, ArrowLeft } from "lucide-react";
-import { complaintService } from "../../services/complaintService";
-import { toast } from "sonner";
+import DashboardLayout from "@/components/common/DashboardLayout";
+import { 
+  FileText, Search, Filter, Eye, Clock, 
+  CheckCircle2, AlertCircle, PlusCircle, ChevronRight
+} from "lucide-react";
+import { complaintService } from "@/services/complaintService";
+import SearchInput from "@/components/common/SearchInput";
+import Button from "@/components/common/Button";
 
 const ComplaintHistory = () => {
   const navigate = useNavigate();
-  
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("all"); // 'all', 'active', 'resolved'
-  const [searchQuery, setSearchQuery] = useState("");
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
 
   useEffect(() => {
     const fetchComplaints = async () => {
@@ -20,7 +23,7 @@ const ComplaintHistory = () => {
         const data = await complaintService.getMyComplaints();
         setComplaints(data || []);
       } catch (err) {
-        toast.error("Failed to load your complaints list.");
+        console.error("Failed to load complaint history:", err);
       } finally {
         setLoading(false);
       }
@@ -28,138 +31,115 @@ const ComplaintHistory = () => {
     fetchComplaints();
   }, []);
 
-  // Filtering logic
-  const filtered = complaints.filter((item) => {
-    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          (item.id && item.id.toString().includes(searchQuery));
+  const filtered = complaints.filter((c) => {
+    const matchesSearch = 
+      (c.title || "").toLowerCase().includes(search.toLowerCase()) ||
+      (c.description || "").toLowerCase().includes(search.toLowerCase()) ||
+      String(c.id).includes(search);
     
-    if (activeTab === "active") {
-      return matchesSearch && item.status !== "RESOLVED" && item.status !== "RESOLVED_BY_GUIDE" && item.status !== "CLOSED_BY_USER";
-    }
-    if (activeTab === "resolved") {
-      return matchesSearch && (item.status === "RESOLVED" || item.status === "RESOLVED_BY_GUIDE" || item.status === "CLOSED_BY_USER");
-    }
-    return matchesSearch;
+    if (statusFilter === "ALL") return matchesSearch;
+    return matchesSearch && c.status === statusFilter;
   });
 
   return (
-    <DashboardLayout>
-      <div className="max-w-3xl mx-auto space-y-6 pb-6">
+    <DashboardLayout role="citizen">
+      <div className="max-w-6xl mx-auto space-y-6 pb-12">
         
         {/* Header */}
-        <div className="flex items-center gap-3">
-          <button 
-            onClick={() => navigate("/citizen/dashboard")}
-            className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-900 transition text-slate-500"
-          >
-            <ArrowLeft size={18} />
-          </button>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              My Complaints
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#18332B] tracking-tight">
+              My Grievance History
             </h1>
-            <p className="text-xs text-slate-500 font-semibold mt-0.5">
-              Track status and message assigned Legal Guides.
+            <p className="text-xs text-[#65736D] mt-1">
+              Track status, evidence verification, and legal guide notes for all submitted cases.
             </p>
           </div>
+          <Button
+            variant="primary"
+            onClick={() => navigate("/citizen/submit-complaint")}
+            icon={PlusCircle}
+          >
+            File New Grievance
+          </Button>
         </div>
 
-        {/* Tab Selector & Search Row */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
-          <div className="flex gap-1.5 p-1 bg-slate-100 dark:bg-slate-950 rounded-xl border border-slate-200/50 dark:border-slate-850/40">
-            {["all", "active", "resolved"].map((tab) => (
+        {/* Filter & Search Bar */}
+        <div className="p-4 rounded-2xl bg-[#FFFDF8] border border-[#E6E1D8] shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
+          <SearchInput
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onClear={() => setSearch("")}
+            placeholder="Search by case ID, keyword, or title..."
+            className="w-full sm:w-80"
+          />
+
+          <div className="flex gap-1.5 overflow-x-auto w-full sm:w-auto">
+            {["ALL", "PENDING", "IN_PROGRESS", "RESOLVED"].map((st) => (
               <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 text-xs font-bold rounded-lg capitalize transition cursor-pointer ${
-                  activeTab === tab
-                    ? "bg-white dark:bg-slate-900 text-indigo-650 dark:text-indigo-400 shadow-sm"
-                    : "text-slate-500 hover:text-slate-700"
+                key={st}
+                onClick={() => setStatusFilter(st)}
+                className={`px-3 py-1.5 rounded-full text-xs font-bold transition ${
+                  statusFilter === st
+                    ? "bg-[#163D32] text-white"
+                    : "bg-[#F7F1E6] text-[#65736D] hover:text-[#18332B]"
                 }`}
               >
-                {tab}
+                {st.replace("_", " ")}
               </button>
             ))}
           </div>
-
-          <div className="relative w-full sm:w-64">
-            <input
-              type="text"
-              placeholder="Search..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-10 pl-9 pr-4 rounded-xl border border-slate-200 dark:border-slate-800 outline-none text-xs font-medium"
-            />
-            <Search className="absolute left-3 text-slate-400" size={14} />
-          </div>
         </div>
 
-        {/* List Section */}
-        <div className="glass-panel p-6">
-          {loading ? (
-            <div className="py-16 text-center text-xs text-slate-450">Loading complaints list...</div>
-          ) : filtered.length === 0 ? (
-            <div className="py-16 text-center text-xs text-slate-450 font-medium">
-              No complaints match the filters.
-            </div>
-          ) : (
-            <div className="divide-y divide-slate-100 dark:divide-slate-800/40">
-              {filtered.map((item) => (
-                <div
-                  key={item.id}
-                  onClick={() => navigate(`/citizen/complaints/${item.id}`)}
-                  className="py-5 first:pt-0 last:pb-0 flex items-center justify-between hover:bg-slate-50/20 dark:hover:bg-slate-900/10 transition cursor-pointer"
-                >
-                  <div className="min-w-0 pr-4 space-y-1">
-                    <span className="font-mono text-[10px] font-bold text-indigo-600 dark:text-indigo-400 block">
-                      {item.formattedComplaintId || `CMP-2026-${String(item.id).padStart(6, '0')}`}
+        {/* Case Cards / Table */}
+        {loading ? (
+          <div className="py-16 text-center text-xs text-[#8B9690] rounded-3xl bg-[#FFFDF8] border border-[#E6E1D8]">
+            Loading grievance records...
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="py-16 text-center space-y-3 rounded-3xl bg-[#FFFDF8] border border-[#E6E1D8]">
+            <FileText className="mx-auto text-[#65736D]" size={36} />
+            <p className="text-xs font-bold text-[#18332B]">No matching grievances found.</p>
+            <p className="text-[11px] text-[#65736D]">Try clearing your search filters or file a new grievance.</p>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {filtered.map((item) => (
+              <div
+                key={item.id}
+                onClick={() => navigate(`/citizen/complaint/${item.id}`)}
+                className="p-5 rounded-2xl bg-[#FFFDF8] border border-[#E6E1D8] hover:border-[#163D32] shadow-sm hover:shadow-md transition cursor-pointer flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+              >
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-xs font-bold text-[#65736D]">
+                      ARAM-2026-{String(item.id).replace("cmp-", "").padStart(6, "0")}
                     </span>
-                    <h4 className="font-bold text-sm text-slate-800 dark:text-slate-200 truncate">
-                      {item.title}
-                    </h4>
-                    
-                    {/* Status marker */}
-                    <div className="flex items-center gap-1.5 mt-1.5">
-                      <span className={`h-2 w-2 rounded-full ${
-                        (item.status === "RESOLVED" || item.status === "RESOLVED_BY_GUIDE" || item.status === "CLOSED_BY_USER")
-                          ? "bg-emerald-500"
-                          : (item.status === "PENDING" || item.status === "SUBMITTED")
-                          ? "bg-amber-500"
-                          : "bg-indigo-500"
-                      }`} />
-                      <span className="text-[10px] font-bold text-slate-600 dark:text-slate-400">
-                        {(item.status === "PENDING" || item.status === "SUBMITTED") 
-                          ? "Awaiting Admin Review" 
-                          : (item.status === "RESOLVED" || item.status === "RESOLVED_BY_GUIDE" || item.status === "CLOSED_BY_USER")
-                          ? "Resolved"
-                          : "In Progress"}
-                      </span>
-                    </div>
-
-                    {/* Guide Info (only if in progress / guide assigned) */}
-                    {item.status === "IN_PROGRESS" && item.assignedHelperName && (
-                      <div className="mt-2 text-[10px] text-slate-450 flex items-center gap-1.5 bg-slate-50 dark:bg-slate-900/40 p-2 rounded-lg border border-slate-100/50 dark:border-slate-850/40 w-fit">
-                        <User size={10} className="text-indigo-500" />
-                        <span>Guide: <strong>{item.assignedHelperName}</strong> • {item.assignedHelperLevel || "Senior"}</span>
-                      </div>
-                    )}
-
-                    <div className="flex items-center gap-1 text-[9px] text-slate-400 mt-2">
-                      <Calendar size={10} />
-                      <span>
-                        {item.status === "RESOLVED" 
-                          ? `Completed ${new Date(item.updatedAt).toLocaleDateString()}` 
-                          : `Submitted ${new Date(item.createdAt).toLocaleDateString()}`}
-                      </span>
-                    </div>
+                    <span className="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold bg-[#DCEBDD] text-[#163D32]">
+                      {String(item.status || "SUBMITTED").replace(/_/g, " ")}
+                    </span>
+                    <span className="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase bg-[#F7F1E6] text-[#65736D] border border-[#E6E1D8]">
+                      {item.categoryDisplayName || item.category || "General Aid"}
+                    </span>
                   </div>
 
-                  <ChevronRight size={16} className="text-slate-400 shrink-0" />
+                  <h3 className="text-sm font-bold text-[#18332B]">{item.title || "Legal Aid Grievance"}</h3>
+                  <p className="text-xs text-[#65736D] line-clamp-2 max-w-2xl">{item.description}</p>
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
+
+                <div className="flex items-center gap-4 shrink-0 self-end sm:self-center">
+                  <div className="text-right">
+                    <span className="block text-[10px] text-[#8B9690]">Date Filed</span>
+                    <span className="text-xs font-bold text-[#18332B]">
+                      {new Date(item.createdAt || Date.now()).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <ChevronRight size={18} className="text-[#8B9690]" />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
       </div>
     </DashboardLayout>

@@ -6,6 +6,8 @@ import com.aram.legalaid.enums.UserStatus;
 import com.aram.legalaid.exception.BadRequestException;
 import com.aram.legalaid.model.User;
 import com.aram.legalaid.repository.UserRepository;
+import com.aram.legalaid.repository.GuideInvitationRepository;
+import com.aram.legalaid.model.GuideInvitation;
 import com.aram.legalaid.security.JwtUtil;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class AuthService {
@@ -20,12 +23,18 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final MapperService mapperService;
+    private final GuideInvitationRepository guideInvitationRepository;
+    private final EmailService emailService;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, MapperService mapperService) {
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, 
+                       MapperService mapperService, GuideInvitationRepository guideInvitationRepository,
+                       EmailService emailService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
         this.mapperService = mapperService;
+        this.guideInvitationRepository = guideInvitationRepository;
+        this.emailService = emailService;
     }
 
     @Transactional
@@ -81,6 +90,50 @@ public class AuthService {
             throw new BadRequestException("Expired refresh token");
         }
         return issueTokens(user);
+    }
+
+    @Transactional
+    public AuthMessageResponse acceptInvitation(AcceptInvitationRequest request) {
+        GuideInvitation invitation = guideInvitationRepository.findByToken(request.token())
+                .orElseThrow(() -> new BadRequestException("Invalid or expired invitation token"));
+        
+        if (invitation.isUsed()) {
+            throw new BadRequestException("This invitation token has already been used");
+        }
+        
+        if (LocalDateTime.now().isAfter(invitation.getExpiryTime())) {
+            throw new BadRequestException("This invitation link has expired");
+        }
+        
+        User user = userRepository.findByEmail(invitation.getEmail().toLowerCase())
+                .orElseThrow(() -> new BadRequestException("User profile not found for invitation"));
+        
+        String roleName = "Legal Guide";
+        if (user.getRole() == Role.ADMIN) {
+            roleName = "Regional Administrator";
+            // Check if there is already another active admin for this district
+            List<User> activeAdmins = userRepository.findByRoleAndDistrict(Role.ADMIN, user.getDistrict());
+            boolean hasActiveAdmin = activeAdmins.stream()
+                    .anyMatch(u -> u.getStatus() == UserStatus.ACTIVE && !u.getId().equals(user.getId()));
+            if (hasActiveAdmin) {
+                throw new BadRequestException("This district already has an active Regional Admin.");
+            }
+        }
+
+        user.setPasswordHash(passwordEncoder.encode(request.password()));
+        user.setStatus(UserStatus.ACTIVE);
+        userRepository.save(user);
+        
+        invitation.setUsed(true);
+        guideInvitationRepository.save(invitation);
+
+        try {
+            emailService.sendAccountActivatedEmail(user.getEmail(), user.getName(), roleName);
+        } catch (Exception e) {
+            System.err.println("Failed to send activation email: " + e.getMessage());
+        }
+        
+        return new AuthMessageResponse("Invitation accepted. Account activated successfully.", true);
     }
 
     private AuthResponse issueTokens(User user) {

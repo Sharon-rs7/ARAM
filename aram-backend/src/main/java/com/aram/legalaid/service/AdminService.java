@@ -26,20 +26,46 @@ public class AdminService {
     }
 
     public AdminDashboardResponse dashboard() {
+        return dashboard(null);
+    }
+
+    public AdminDashboardResponse dashboard(String districtFilter) {
+        boolean hasFilter = districtFilter != null && !districtFilter.trim().isEmpty() && !"GLOBAL".equalsIgnoreCase(districtFilter);
+        
         Map<String, Long> categoryCounts = new java.util.LinkedHashMap<>();
         for (ComplaintCategory category : ComplaintCategory.values()) {
-            categoryCounts.put(category.getDisplayName(), complaintRepository.countByCategory(category));
+            long count = hasFilter 
+                ? complaintRepository.countByDistrictAndCategory(districtFilter, category)
+                : complaintRepository.countByCategory(category);
+            categoryCounts.put(category.getDisplayName(), count);
         }
-        long highPriority = complaintRepository.findAll().stream()
-                .filter(c -> c.getPriority() == PriorityLevel.HIGH || c.getPriority() == PriorityLevel.CRITICAL)
-                .count();
+
+        long totalUsers = hasFilter ? userRepository.findByDistrict(districtFilter).size() : userRepository.count();
+        long totalHelpers = hasFilter ? userRepository.findByRoleAndDistrict(Role.HELPER, districtFilter).size() : userRepository.findByRole(Role.HELPER).size();
+        
+        long totalComplaints = hasFilter ? complaintRepository.countByDistrict(districtFilter) : complaintRepository.count();
+        long submitted = hasFilter ? complaintRepository.countByDistrictAndStatus(districtFilter, ComplaintStatus.SUBMITTED) : complaintRepository.countByStatus(ComplaintStatus.SUBMITTED);
+        long inProgress = hasFilter ? complaintRepository.countByDistrictAndStatus(districtFilter, ComplaintStatus.IN_PROGRESS) : complaintRepository.countByStatus(ComplaintStatus.IN_PROGRESS);
+        long resolved = hasFilter ? complaintRepository.countByDistrictAndStatus(districtFilter, ComplaintStatus.RESOLVED) : complaintRepository.countByStatus(ComplaintStatus.RESOLVED);
+        
+        long highPriority;
+        if (hasFilter) {
+            highPriority = complaintRepository.findByDistrictOrderByCreatedAtDesc(districtFilter).stream()
+                    .filter(c -> c.getPriority() == PriorityLevel.HIGH || c.getPriority() == PriorityLevel.CRITICAL)
+                    .count();
+        } else {
+            highPriority = complaintRepository.findAll().stream()
+                    .filter(c -> c.getPriority() == PriorityLevel.HIGH || c.getPriority() == PriorityLevel.CRITICAL)
+                    .count();
+        }
+
         return new AdminDashboardResponse(
-                userRepository.count(),
-                userRepository.findByRole(Role.HELPER).size(),
-                complaintRepository.count(),
-                complaintRepository.countByStatus(ComplaintStatus.SUBMITTED),
-                complaintRepository.countByStatus(ComplaintStatus.IN_PROGRESS),
-                complaintRepository.countByStatus(ComplaintStatus.RESOLVED),
+                totalUsers,
+                (int) totalHelpers,
+                totalComplaints,
+                submitted,
+                inProgress,
+                resolved,
                 highPriority,
                 categoryCounts
         );

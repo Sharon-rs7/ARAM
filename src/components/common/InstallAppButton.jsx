@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Download } from "lucide-react";
-import Button from "./Button";
+import Button from "@/components/common/Button";
 import { toast } from "sonner";
 
 export default function InstallAppButton() {

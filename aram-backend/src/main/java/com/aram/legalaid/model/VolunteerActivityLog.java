@@ -34,7 +34,6 @@ public class VolunteerActivityLog {
     @Column(name = "duration_seconds")
     private Long durationSeconds;
 
-    @Lob
     @Column(name = "metadata_json", columnDefinition = "TEXT")
     private String metadataJson;
 

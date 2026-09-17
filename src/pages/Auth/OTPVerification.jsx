@@ -1,5 +1,5 @@
-import AuthLayout from "@/components/auth/AuthLayout";
-import OTPForm from "@/components/auth/OTPForm";
+import AuthLayout from "@/components/common/auth/AuthLayout";
+import OTPForm from "@/components/common/auth/OTPForm";
 
 const OTPVerification = () => {
   return (

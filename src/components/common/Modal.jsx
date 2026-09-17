@@ -2,58 +2,50 @@ import React, { useEffect } from "react";
 import { X } from "lucide-react";
 
 const Modal = ({
-  isOpen = false,
+  isOpen,
   onClose,
-  title = "",
+  title,
   children,
-  className = "",
-  ...props
+  maxWidth = "max-w-xl",
+  showClose = true
 }) => {
-  // Prevent background scroll when modal is open
   useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape" && isOpen) onClose();
+    };
     if (isOpen) {
       document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "unset";
+      window.addEventListener("keydown", handleKeyDown);
     }
     return () => {
       document.body.style.overflow = "unset";
+      window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [isOpen]);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
   return (
-    <div
-      className="fixed inset-0 z-[99999] flex items-center justify-center p-4"
-      {...props}
-    >
-      {/* Backdrop */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
-        className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-[#163D32]/40 backdrop-blur-sm transition-opacity"
         onClick={onClose}
       />
-
-      {/* Content Container */}
       <div
-        className={`relative w-full max-w-lg rounded-2xl bg-white p-6 shadow-xl border border-slate-100 transition-all scale-100 max-h-[90vh] overflow-y-auto ${className}`}
+        className={`relative w-full ${maxWidth} rounded-3xl bg-[#FFFDF8] border border-[#E6E1D8] p-6 shadow-2xl transition-all z-10 max-h-[90vh] overflow-y-auto`}
       >
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
-          <h3 className="text-lg font-bold text-slate-900">{title}</h3>
-          <button
-            onClick={onClose}
-            className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition cursor-pointer"
-            aria-label="Close dialog"
-          >
-            <X size={18} />
-          </button>
+        <div className="flex items-center justify-between border-b border-[#E6E1D8] pb-4 mb-4">
+          <h3 className="text-base font-extrabold text-[#18332B]">{title}</h3>
+          {showClose && (
+            <button
+              onClick={onClose}
+              className="rounded-full p-1.5 text-[#8B9690] hover:bg-[#DCEBDD]/40 hover:text-[#18332B] transition"
+            >
+              <X size={18} />
+            </button>
+          )}
         </div>
-
-        {/* Body */}
-        <div className="text-sm text-slate-600 leading-relaxed">
-          {children}
-        </div>
+        {children}
       </div>
     </div>
   );

@@ -21,8 +21,11 @@ class ModelLoader:
 
         # ONNX sessions
         self.models["complaint_classifier"] = load_onnx("complaint_classifier.onnx")
-        self.models["priority_model"] = load_onnx("priority_model.onnx")
-        self.models["authority_model"] = load_onnx("authority_model.onnx")
+        
+        from app.ml.model_loader import ml_model_loader
+        self.models["priority_model"] = ml_model_loader.get_model("priority_model") or load_onnx("priority_model.onnx")
+        self.models["authority_model"] = ml_model_loader.get_model("authority_model") or load_onnx("authority_model.onnx")
+        
         self.models["document_recommender"] = load_onnx("document_model.onnx")
 
     def is_model_missing(self, name) -> bool:

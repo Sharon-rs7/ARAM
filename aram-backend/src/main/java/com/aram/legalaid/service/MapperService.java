@@ -30,6 +30,17 @@ public class MapperService {
 
     public AIResultResponse toAIResultResponse(AIResult result) {
         if (result == null) return null;
+        java.util.Map<String, Object> caseSummaryMap = null;
+        if (result.getCaseSummary() != null && !result.getCaseSummary().trim().isEmpty()) {
+            try {
+                caseSummaryMap = new com.fasterxml.jackson.databind.ObjectMapper().readValue(
+                    result.getCaseSummary(),
+                    new com.fasterxml.jackson.core.type.TypeReference<java.util.Map<String, Object>>() {}
+                );
+            } catch (Exception e) {
+                System.err.println("Failed to deserialize case summary map: " + e.getMessage());
+            }
+        }
         return new AIResultResponse(
                 result.getId(), result.getCategory(), result.getCategory().getDisplayName(), result.getPriority(),
                 result.getPriorityScore(), result.getConfidence(), result.getRecommendedAuthority(), result.getReason(),
@@ -38,7 +49,8 @@ public class MapperService {
                 result.getDetectedLanguage(), result.getTranslatedSummary(),
                 result.getSpokenSummaryText(), result.isReadAloudAvailable(),
                 result.getComplexity() != null ? result.getComplexity() : "MEDIUM",
-                result.getDetectedIssues() != null ? DelimitedStringUtil.split(result.getDetectedIssues()) : java.util.List.of()
+                result.getDetectedIssues() != null ? DelimitedStringUtil.split(result.getDetectedIssues()) : java.util.List.of(),
+                caseSummaryMap
         );
     }
 
@@ -47,7 +59,7 @@ public class MapperService {
         String helperName = complaint.getAssignedHelper() != null ? complaint.getAssignedHelper().getName() : null;
         BlockchainInfoResponse blockchainInfo = blockchainService.getBlockchainInfo(complaint);
         return new ComplaintResponse(
-                complaint.getId(), complaint.getUser().getId(), complaint.getUser().getName(), complaint.getTitle(),
+                complaint.getId(), complaint.getComplaintCustomId(), complaint.getComplaintCustomId(), complaint.getUser().getId(), complaint.getUser().getName(), complaint.getTitle(),
                 complaint.getDescription(), complaint.getLanguage(), complaint.getDistrict(), complaint.getInputMode(),
                 complaint.getCategory(), complaint.getCategory() == null ? null : complaint.getCategory().getDisplayName(),
                 complaint.getPriority(), complaint.getPriorityScore(), complaint.getAuthority(), complaint.getStatus(),
@@ -59,7 +71,8 @@ public class MapperService {
                 helperId, helperName, blockchainInfo,
                 complaint.isHighRisk(), complaint.isDisclaimerAccepted(), complaint.getDisclaimerAcceptedAt(),
                 complaint.getResolutionSummary(), complaint.getReopenReason(),
-                complaint.getSafeContactMethod(), complaint.getSafeContactTime()
+                complaint.getSafeContactMethod(), complaint.getSafeContactTime(),
+                complaint.isGuideRequested()
         );
     }
 

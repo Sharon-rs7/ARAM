@@ -10,12 +10,10 @@ class PriorityPredictor:
         self.load_model()
 
     def load_model(self):
-        if os.path.exists(self.onnx_path):
-            try:
-                self.session = ort.InferenceSession(self.onnx_path, providers=['CPUExecutionProvider'])
-                print("[ONNX LOADED] PriorityPredictor session active.")
-            except Exception as e:
-                print(f"Error loading ONNX PriorityPredictor: {e}")
+        from app.ml.model_loader import ml_model_loader
+        self.session = ml_model_loader.get_model("priority_model")
+        if self.session:
+            print("[ONNX REUSED] PriorityPredictor session reused from ml_model_loader.")
 
     def predict(self, text: str, category: str, is_sensitive: bool = False) -> dict:
         score = 30

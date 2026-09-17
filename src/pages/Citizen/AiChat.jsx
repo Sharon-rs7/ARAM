@@ -1,17 +1,18 @@
 import { useState, useRef, useEffect } from 'react';
-import ChatMessageBubble from '../../components/ChatMessageBubble.jsx';
-import { aiService } from '../../services/aiService.js';
+import ChatMessageBubble from '@/components/citizen/ChatMessageBubble.jsx';
+import { aiService } from '@/services/aiService.js';
 import { Send, Sparkles } from 'lucide-react';
 
 export default function AiChat() {
   const [messages, setMessages] = useState([
     {
       sender: 'bot',
-      text: "Hello! I am your ARAM Legal Aid assistant. How can I guide you today?\n\nYou can ask me questions about labour disputes, consumer rights, domestic issues, cyber scams, or property claims.",
+      text: "Vanakkam! I am your ARAM AI Legal Assistant. 👋\n\nYou can describe your legal or civic problem in Tamil, Tanglish, English, or Hindi. I'll help you understand the issue and identify practical next steps.",
       disclaimer: "This is preliminary legal aid guidance only, not a final legal opinion.",
-      suggestedActions: ["Labour dispute guidance", "Reporting cyber crime", "DLSA services list"]
+      suggestedActions: []
     }
   ]);
+
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');

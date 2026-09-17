@@ -1,21 +1,34 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import DashboardLayout from "@/components/layout/DashboardLayout";
-import { Bell, User, Clock, ArrowRight, AlertCircle, ShieldAlert } from "lucide-react";
-import { adminService } from "../../services/adminService";
+import DashboardLayout from "@/components/common/DashboardLayout";
+import { useAuth } from "@/context/AuthContext";
+import { 
+  Bell, User, Clock, ArrowRight, AlertCircle, ShieldAlert,
+  MapPin, Scale, Users, FileText
+} from "lucide-react";
+import { adminService } from "@/services/adminService";
 import { toast } from "sonner";
+import { 
+  ResponsiveContainer, PieChart, Pie, Cell, Legend, 
+  BarChart, Bar, XAxis, YAxis, Tooltip as ChartTooltip 
+} from "recharts";
+
+const COLORS = ["#4f46e5", "#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#ec4899"];
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const adminDistrict = user?.district || "GLOBAL";
   
+  const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
-    awaitingReview: 12,
-    highPriority: 5,
-    needGuide: 7
+    awaitingReview: 0,
+    highPriority: 0,
+    needGuide: 0
   });
 
   const [reviewQueue, setReviewQueue] = useState([]);
+  const [districtComplaints, setDistrictComplaints] = useState([]);
   
   const [activeIssues, setActiveIssues] = useState([
     { id: "ARAM-00108", message: "Guide requested escalation", status: "escalated" },
@@ -26,18 +39,25 @@ const Dashboard = () => {
     const loadDashboardData = async () => {
       try {
         setLoading(true);
-        // Load real complaints from admin service
+        // Load all complaints
         const list = await adminService.getComplaints();
         
+        // Filter by admin's assigned district (except if they are global)
+        const filteredList = adminDistrict && adminDistrict !== "GLOBAL" 
+          ? list.filter(c => c.district && c.district.toLowerCase() === adminDistrict.toLowerCase())
+          : list;
+
+        setDistrictComplaints(filteredList);
+        
         // Filter pending complaints (awaiting review/triage)
-        const pending = list.filter(c => c.status === "PENDING" || c.status === "UNDER_REVIEW");
-        const high = list.filter(c => c.priority === "HIGH" || c.priority === "CRITICAL");
+        const pending = filteredList.filter(c => c.status === "PENDING" || c.status === "UNDER_REVIEW" || c.status === "SUBMITTED");
+        const high = filteredList.filter(c => c.priority === "HIGH" || c.priority === "CRITICAL");
         const needG = pending.filter(c => !c.assignedHelperId);
         
         setStats({
-          awaitingReview: pending.length || 12,
-          highPriority: high.length || 5,
-          needGuide: needG.length || 7
+          awaitingReview: pending.length,
+          highPriority: high.length,
+          needGuide: needG.length
         });
 
         // Format first 3 complaints for Review Queue
@@ -54,65 +74,156 @@ const Dashboard = () => {
         setReviewQueue(formatted);
       } catch (err) {
         console.error("Failed to load admin stats:", err);
+        toast.error("Error loading regional dashboard.");
       } finally {
         setLoading(false);
       }
     };
     loadDashboardData();
-  }, []);
+  }, [adminDistrict]);
+
+  // Compute chart statistics
+  const statusData = [
+    { name: "Pending", value: districtComplaints.filter(c => c.status === "PENDING" || c.status === "SUBMITTED").length },
+    { name: "Active Review", value: districtComplaints.filter(c => c.status === "UNDER_REVIEW").length },
+    { name: "Resolved", value: districtComplaints.filter(c => c.status === "RESOLVED").length }
+  ].filter(d => d.value > 0);
+
+  const categoryCounts = districtComplaints.reduce((acc, c) => {
+    const cat = c.category ? c.category.replace(/_/g, " ") : "General";
+    acc[cat] = (acc[cat] || 0) + 1;
+    return acc;
+  }, {});
+
+  const categoryData = Object.entries(categoryCounts).map(([key, val]) => ({
+    name: key.slice(0, 15),
+    Count: val
+  }));
 
   return (
     <DashboardLayout>
-      <div className="max-w-4xl mx-auto space-y-8 pb-6">
+      <div className="max-w-4xl mx-auto space-y-8 pb-12">
         
         {/* Header */}
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              Good morning, Admin
+            <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+              Welcome back, {user?.name || "Admin"}
             </h1>
-            <p className="text-xs text-slate-500 font-semibold mt-1">
-              Here's what needs your attention today.
+            <p className="text-xs text-slate-500 font-semibold mt-1 flex items-center gap-1">
+              <MapPin size={12} className="text-indigo-600" />
+              ARAM {adminDistrict !== "GLOBAL" ? `${adminDistrict} Region` : "Statewide"} Management Portal
             </p>
           </div>
           
           <div className="flex items-center gap-3">
-            <button className="p-2.5 rounded-full border border-slate-200/50 hover:bg-slate-100 transition text-slate-600 cursor-pointer">
+            <button className="p-2.5 rounded-full border border-slate-200/50 hover:bg-slate-100 transition text-slate-650 cursor-pointer">
               <Bell size={18} />
             </button>
-            <button className="p-2.5 rounded-full border border-slate-200/50 hover:bg-slate-100 transition text-slate-600 cursor-pointer">
+            <button className="p-2.5 rounded-full border border-slate-200/50 hover:bg-slate-100 transition text-slate-650 cursor-pointer">
               <User size={18} />
             </button>
           </div>
         </div>
 
+        {/* Region Indicator Card */}
+        {adminDistrict !== "GLOBAL" && (
+          <div className="p-4 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <MapPin className="text-indigo-700" size={18} />
+              <span className="text-xs font-bold text-indigo-900"> Chennai Admin Control Active: Grid & queue filtered to {adminDistrict} district.</span>
+            </div>
+            <span className="text-[10px] font-extrabold uppercase bg-indigo-200 text-indigo-700 px-2 py-0.5 rounded">Regional Scope</span>
+          </div>
+        )}
+
         {/* 3 Stats Cards row */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
           <div className="glass-panel p-6 border-l-4 border-amber-500">
             <span className="text-[10px] font-extrabold text-slate-450 uppercase tracking-widest block">
-              Awaiting Review
+              Awaiting Review ({adminDistrict})
             </span>
-            <span className="text-3xl font-black text-slate-900 dark:text-white mt-2 block tracking-tight">
+            <span className="text-3xl font-black text-slate-900 mt-2 block tracking-tight">
               {stats.awaitingReview}
             </span>
           </div>
 
           <div className="glass-panel p-6 border-l-4 border-red-500">
             <span className="text-[10px] font-extrabold text-slate-450 uppercase tracking-widest block">
-              High Priority
+              High Priority ({adminDistrict})
             </span>
-            <span className="text-3xl font-black text-slate-900 dark:text-white mt-2 block tracking-tight">
+            <span className="text-3xl font-black text-slate-900 mt-2 block tracking-tight">
               {stats.highPriority}
             </span>
           </div>
 
           <div className="glass-panel p-6 border-l-4 border-indigo-500">
             <span className="text-[10px] font-extrabold text-slate-450 uppercase tracking-widest block">
-              Need Guide
+              Need Guide ({adminDistrict})
             </span>
-            <span className="text-3xl font-black text-slate-900 dark:text-white mt-2 block tracking-tight">
+            <span className="text-3xl font-black text-slate-900 mt-2 block tracking-tight">
               {stats.needGuide}
             </span>
+          </div>
+        </div>
+
+        {/* Charts & Graphics Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Status Breakdown */}
+          <div className="glass-panel p-5 flex flex-col items-center">
+            <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest self-start mb-4">
+              Grievance Status Breakdown
+            </h3>
+            {statusData.length > 0 ? (
+              <div className="w-full h-[220px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={statusData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={60}
+                      outerRadius={80}
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      <Cell fill="#f59e0b" />
+                      <Cell fill="#4f46e5" />
+                      <Cell fill="#10b981" />
+                    </Pie>
+                    <Legend verticalAlign="bottom" height={36} />
+                    <ChartTooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="h-[220px] flex items-center justify-center text-slate-400 text-xs font-semibold">No case statistics.</div>
+            )}
+          </div>
+
+          {/* Category Distribution */}
+          <div className="glass-panel p-5 flex flex-col">
+            <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-widest mb-4">
+              Regional Category Distribution
+            </h3>
+            {categoryData.length > 0 ? (
+              <div className="w-full h-[220px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={categoryData}>
+                    <XAxis dataKey="name" tick={{ fontSize: 9 }} />
+                    <YAxis tick={{ fontSize: 9 }} />
+                    <ChartTooltip />
+                    <Bar dataKey="Count" fill="#4f46e5" radius={[4, 4, 0, 0]}>
+                      {categoryData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
+            ) : (
+              <div className="h-[220px] flex items-center justify-center text-slate-400 text-xs font-semibold self-center">No case statistics.</div>
+            )}
           </div>
         </div>
 
@@ -120,7 +231,7 @@ const Dashboard = () => {
         <div className="glass-panel p-6">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-sm font-bold text-slate-450 uppercase tracking-widest">
-              Review Queue
+              Review Queue ({adminDistrict})
             </h3>
             <button
               onClick={() => navigate("/admin/complaints")}
@@ -137,7 +248,7 @@ const Dashboard = () => {
               No complaints awaiting review. Nice job!
             </div>
           ) : (
-            <div className="divide-y divide-slate-100 dark:divide-slate-800/40">
+            <div className="divide-y divide-slate-100">
               {reviewQueue.map((item) => (
                 <div
                   key={item.id}
@@ -145,10 +256,10 @@ const Dashboard = () => {
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-bold text-slate-400 shrink-0">
+                      <span className="font-mono text-xs font-bold text-slate-450 shrink-0">
                         {item.id}
                       </span>
-                      <h4 className="font-bold text-sm text-slate-800 dark:text-slate-200">
+                      <h4 className="font-bold text-sm text-slate-800">
                         {item.title}
                       </h4>
                     </div>
@@ -164,7 +275,7 @@ const Dashboard = () => {
                   </div>
 
                   <button
-                    onClick={() => navigate(`/volunteer/case-review?id=${item.rawId}`)}
+                    onClick={() => navigate(`/guide/case-review?id=${item.rawId}`)}
                     className="self-start sm:self-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition shadow-sm cursor-pointer shrink-0"
                   >
                     Review →
@@ -185,11 +296,11 @@ const Dashboard = () => {
             {activeIssues.map((issue) => (
               <div
                 key={issue.id}
-                className="flex justify-between items-center p-4 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/10"
+                className="flex justify-between items-center p-4 rounded-xl border border-slate-100 bg-slate-50/50"
               >
                 <div className="flex items-center gap-3">
                   <ShieldAlert size={16} className={issue.status === "escalated" ? "text-red-500" : "text-amber-500"} />
-                  <span className="text-xs font-bold text-slate-700 dark:text-slate-350">
+                  <span className="text-xs font-bold text-slate-700">
                     {issue.id} <span className="font-medium text-slate-500">— {issue.message}</span>
                   </span>
                 </div>

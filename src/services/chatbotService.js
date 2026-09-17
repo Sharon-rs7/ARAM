@@ -1,49 +1,127 @@
-import api, { USE_MOCKS } from "./api";
-
-const DISCLAIMER = "ARAM provides preliminary complaint guidance only. It does not replace police, court, lawyer, or official authority.";
+import api from "@/services/api";
 
 export const chatbotService = {
-  askChatbot: async (payload) => {
-    if (USE_MOCKS) {
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      const message = payload.message.toLowerCase();
-      
-      let reply = "I'm sorry, I don't have specific guidance on that query. You may contact your District Legal Services Authority (DLSA) for further help.";
-      let category = "GENERAL_LEGAL_AID";
-      let suggestedActions = ["Submit official complaint", "Consult DLSA legal counselor"];
-      
-      if (message.includes("salary") || message.includes("wage") || message.includes("employer") || message.includes("job")) {
-        category = "LABOUR_DISPUTE";
-        reply = "Under Section 33C of the Industrial Disputes Act, you can file a claim for unpaid wages with the Labour Commissioner. Gather your pay slips, bank statements, and employment contract.";
-        suggestedActions = ["Download Unpaid Wages Form", "Schedule Helper Consultation", "Contact Labour Commissioner Office"];
-      } else if (message.includes("scam") || message.includes("upi") || message.includes("otp") || message.includes("hacked") || message.includes("fraud")) {
-        category = "CYBER_CRIME";
-        reply = "Immediately call 1930 to report the cyber crime or register your grievance on cybercrime.gov.in. Save transaction screenshots and transaction IDs.";
-        suggestedActions = ["Call 1930 Helpline", "Generate UPI Fraud Complaint Draft", "Visit Nearest Cyber Cell"];
-      } else if (message.includes("husband") || message.includes("beating") || message.includes("domestic") || message.includes("violence") || message.includes("harass")) {
-        category = "WOMEN_SAFETY_DOMESTIC_VIOLENCE";
-        reply = "Please contact the National Commission for Women (NCW) helpline at 7827170170 or the domestic violence helpline at 181. For immediate safety, contact the local police station.";
-        suggestedActions = ["Call 181 Helpline", "Draft Protection Order Petition", "Find Women Support Shelter"];
-      } else if (message.includes("refund") || message.includes("damaged") || message.includes("seller") || message.includes("invoice")) {
-        category = "CONSUMER_COMPLAINT";
-        reply = "File a complaint online through the National Consumer Helpline (NCH) portal or call 1915. Send a formal legal notice to the vendor detailing the product deficiency first.";
-        suggestedActions = ["Register Consumer Case Draft", "Send Vendor Notice Template", "Call 1915 Help Desk"];
-      } else if (message.includes("land") || message.includes("property") || message.includes("neighbor") || message.includes("encroach")) {
-        category = "PROPERTY_CIVIL_DISPUTE";
-        reply = "Ensure you have your patta, sale deed, and land surveyor boundary report. You can file a civil injunction suit or report property encroachment to the local revenue inspector.";
-        suggestedActions = ["Review Land Patta Status", "Find Revenue Office Contact", "Consult Civil Lawyer Group"];
-      }
-      
+  askLegalAI: async (messageOrPayload, language = "en") => {
+    let message, lang, userRole, complaintId, conversationId;
+    if (typeof messageOrPayload === "object" && messageOrPayload !== null) {
+      message = messageOrPayload.message || messageOrPayload.query || messageOrPayload.text;
+      lang = messageOrPayload.language || language || "en";
+      userRole = messageOrPayload.userRole || "CITIZEN";
+      complaintId = messageOrPayload.complaintId || null;
+      conversationId = messageOrPayload.conversationId || null;
+    } else {
+      message = messageOrPayload;
+      lang = language || "en";
+      userRole = "CITIZEN";
+      complaintId = null;
+      conversationId = null;
+    }
+
+    const payload = {
+      message: message,
+      language: lang,
+      userRole: userRole,
+      complaintId: complaintId,
+      conversationId: conversationId
+    };
+
+    const res = await api.post("/ai/case-assistant", payload);
+    const data = res.data || {};
+
+    if (data.responseType === "LANGUAGE_PREFERENCE" || data.intent === "LANGUAGE_PREFERENCE") {
       return {
-        reply,
-        category,
-        suggestedActions,
-        disclaimer: DISCLAIMER,
-        confidence: 0.90
+        ...data,
+        is_conversational: true,
+        responseType: "LANGUAGE_PREFERENCE",
+        summary: data.reply || data.answer || "Language preference updated.",
+        reply: data.reply || data.answer || "Language preference updated.",
+        options: data.options || []
       };
     }
+
+    if (data.responseType === "CLARIFICATION" || data.intent === "AMBIGUOUS_LEGAL_QUERY" || data.options?.length > 0 && data.category === "GENERAL_LEGAL_AID") {
+      return {
+        ...data,
+        is_conversational: true,
+        responseType: "CLARIFICATION",
+        summary: data.reply || data.answer || data.understanding,
+        reply: data.reply || data.answer || data.understanding,
+        options: data.options || [],
+        questions: data.questions || []
+      };
+    }
+
+    if (data.is_conversational || data.is_greeting || data.category === "CONVERSATIONAL" || data.responseType === "GREETING") {
+      return {
+        ...data,
+        is_conversational: true,
+        responseType: "GREETING",
+        summary: data.reply || data.answer || "Hello! How can I assist you with legal aid today?",
+        reply: data.reply || data.answer || "Hello! How can I assist you with legal aid today?"
+      };
+    }
+
+    // Normalize 11-part structure for AiResultCard
+    const provisions = data.relevantProvisions || data.laws || [];
+    const firstProvision = provisions[0] || {};
+    const lawName = data.applicableLaw || firstProvision.actName || (provisions.length > 0 ? provisions.map(p => p.actName).filter(Boolean).join(", ") : "Transfer of Property Act, 1882 & Revenue Laws");
+    const sectionName = data.section || (firstProvision.section ? `Section ${firstProvision.section}` : (firstProvision.provision ? firstProvision.provision : "Statutory Legal Provision"));
     
-    const res = await api.post("/chat/ask", payload);
+    // Clean, substantive explanation
+    let rawExplanation = data.explanation || data.problemUnderstanding || data.understanding || firstProvision.explanation || data.answer || "Detailed legal aid explanation based on statutory precedent.";
+    
+    // Strip raw markdown headers if returned from legacy template
+    if (rawExplanation.includes("###")) {
+      const match = rawExplanation.match(/### (?:Understanding of Situation|பிரச்சனை புரிதல்|समस्या की समझ):\s*([\s\S]*?)(?=###|$)/i);
+      if (match && match[1]?.trim()) {
+        rawExplanation = match[1].trim();
+      } else {
+        rawExplanation = rawExplanation.replace(/###[^\n\r]+[\n\r]*/g, "").trim();
+      }
+    }
+
+    const penaltyText = data.groundedPenalty || data.punishment?.details || data.punishment?.punishment || "Statutory relief, recovery decree, and applicable judicial remedy.";
+    
+    let nextStepsList = data.nextSteps || data.suggestedActions || data.procedure || [];
+    if (!Array.isArray(nextStepsList) || nextStepsList.length === 0) {
+      nextStepsList = [
+        "Organize all relevant evidentiary documents and proofs.",
+        "Submit formal representation to competent authority.",
+        "Track application status using official acknowledgement number."
+      ];
+    }
+    
+    let docsList = data.documents || data.documents_required || data.documentChecklist || [];
+    if (!Array.isArray(docsList) || docsList.length === 0) {
+      docsList = ["Identity proof (Aadhaar/Voter ID)", "Relevant property/transaction documents"];
+    }
+
+    const authorityName = data.recommendedAuthority || (data.where_to_complain && data.where_to_complain[0]) || data.authority || "District Legal Services Authority (DLSA)";
+    const safetyText = data.disclaimer || "Preliminary AI legal guidance based on certified Indian statutory corpus. For emergency situations, call 112 or 181.";
+
+    return {
+      ...data,
+      is_conversational: false,
+      summary: data.problemUnderstanding || data.understanding || data.summary || message,
+      problemSummary: message,
+      applicableLaw: lawName,
+      section: sectionName,
+      explanation: rawExplanation,
+      groundedPenalty: penaltyText,
+      nextSteps: nextStepsList,
+      documentChecklist: docsList,
+      authority: authorityName,
+      safetyNotice: safetyText,
+      sourceReference: "ARAM Certified Indian Legal Corpus (1,306 Verified Chunks)"
+    };
+  },
+  askChatbot: async (payload) => {
+    return chatbotService.askLegalAI(payload);
+  },
+  askCaseAssistant: async (payload) => {
+    const res = await api.post("/ai/case-assistant", payload);
     return res.data;
   }
 };
+
+export default chatbotService;

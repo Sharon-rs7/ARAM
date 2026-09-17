@@ -1,0 +1,184 @@
+﻿version: '3.8'
+
+services:
+  # 1. MySQL 8.0 Relational System-of-Record
+  mysql:
+    image: mysql:8.0
+    container_name: aram-prod-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-Root@Aram2026}
+      MYSQL_DATABASE: ${DB_NAME:-aram_db}
+      MYSQL_USER: ${DB_USERNAME:-aram_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-AramSecurePassword2026!}
+    ports:
+      - "3306:3306"
+    volumes:
+      - aram_mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-Root@Aram2026}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - aram-internal-network
+
+  # 2. Redis Cache & Token Blacklist
+  redis:
+    image: redis:7-alpine
+    container_name: aram-prod-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-RedisSecurePassword2026!}
+    ports:
+      - "6379:6379"
+    volumes:
+      - aram_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-RedisSecurePassword2026!}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - aram-internal-network
+
+  # 3. MongoDB AI Logs & Telemetry
+  mongodb:
+    image: mongo:6.0
+    container_name: aram-prod-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGO_DB:-aram_logs}
+    ports:
+      - "27017:27017"
+    volumes:
+      - aram_mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - aram-internal-network
+
+  # 4. Auth Service (Port 8081)
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    container_name: aram-prod-auth
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8081:8081"
+    environment:
+      SERVER_PORT: 8081
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${DB_NAME:-aram_db}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME:-aram_user}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-AramSecurePassword2026!}
+      JWT_SECRET: ${JWT_SECRET:-ARAMLegalAidJwtSecretKeyForProductionDeployment2026!}
+      JWT_EXPIRATION_MS: 3600000
+      JWT_REFRESH_EXPIRATION_MS: 604800000
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-RedisSecurePassword2026!}
+    networks:
+      - aram-internal-network
+
+  # 5. Core Legal Aid Backend Service (Port 8082)
+  core-backend:
+    build:
+      context: ./aram-backend
+      dockerfile: Dockerfile
+    container_name: aram-prod-backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+      ai-service:
+        condition: service_healthy
+    ports:
+      - "8082:8082"
+    environment:
+      SERVER_PORT: 8082
+      SPRING_PROFILES_ACTIVE: mysql
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${DB_NAME:-aram_db}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME:-aram_user}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-AramSecurePassword2026!}
+      SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/${MONGO_DB:-aram_logs}
+      JWT_SECRET: ${JWT_SECRET:-ARAMLegalAidJwtSecretKeyForProductionDeployment2026!}
+      AI_SERVICE_URL: http://ai-service:8000
+      AI_INTERNAL_TOKEN: ${AI_INTERNAL_TOKEN:-aram-secret-token-2026}
+      SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME:-ouraramsupport@gmail.com}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+    networks:
+      - aram-internal-network
+
+  # 6. AI & RAG Microservice (Port 8000)
+  ai-service:
+    build:
+      context: ./ai-service
+      dockerfile: Dockerfile
+    container_name: aram-prod-ai
+    restart: unless-stopped
+    depends_on:
+      mongodb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    environment:
+      PORT: 8000
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.6-flash}
+      AI_INTERNAL_TOKEN: ${AI_INTERNAL_TOKEN:-aram-secret-token-2026}
+      MONGO_URI: mongodb://mongodb:27017
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-RedisSecurePassword2026!}
+      RAG_INDEX_PATH: data/vector_index
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - aram-internal-network
+
+  # 7. Frontend Application (Port 80 / 5173)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: aram-prod-frontend
+    restart: unless-stopped
+    depends_on:
+      - auth-service
+      - core-backend
+      - ai-service
+    ports:
+      - "80:80"
+    environment:
+      VITE_API_BASE_URL: http://localhost:8082/api
+      VITE_AUTH_SERVICE_BASE_URL: http://localhost:8081/api
+      VITE_AI_SERVICE_BASE_URL: http://localhost:8000
+      VITE_USE_MOCKS: "false"
+    networks:
+      - aram-internal-network
+
+networks:
+  aram-internal-network:
+    driver: bridge
+
+volumes:
+  aram_mysql_data:
+  aram_redis_data:
+  aram_mongo_data:

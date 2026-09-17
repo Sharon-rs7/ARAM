@@ -2,13 +2,34 @@ import numpy as np
 import onnxruntime as ort
 from app.ml.model_loader import ml_model_loader
 from app.ml.text_preprocessor import clean_text
+from app.complaint_classifier import keyword_category
 
 def predict_category(text: str) -> dict:
     cleaned = clean_text(text)
     
+    # 1. Try Fallback Keyword Check first for other 23 categories
+    matched_cat, highest_matches = keyword_category(text)
+    if highest_matches > 0 and matched_cat not in ["CONSUMER_COMPLAINT", "BANKING_DISPUTE"]:
+        return {
+            "category": matched_cat,
+            "confidence": 0.70,
+            "topCategories": [{"category": matched_cat, "probability": 0.70}],
+            "manualReviewRequired": False,
+            "modelBased": False,
+            "prediction_source": "FALLBACK / NON-ML"
+        }
+        
     # Check if category_model is available
     if not ml_model_loader.is_available("category_model"):
-        raise Exception("ML Category Classifier model category_model.onnx is missing or not loaded.")
+        # Fallback to general if ONNX is missing
+        return {
+            "category": matched_cat if highest_matches > 0 else "GENERAL_LEGAL_AID",
+            "confidence": 0.50,
+            "topCategories": [{"category": matched_cat if highest_matches > 0 else "GENERAL_LEGAL_AID", "probability": 0.50}],
+            "manualReviewRequired": True,
+            "modelBased": False,
+            "prediction_source": "FALLBACK / NON-ML"
+        }
 
     clf = ml_model_loader.get_model("category_model")
     
@@ -43,15 +64,35 @@ def predict_category(text: str) -> dict:
         best_cat = top_cats[0]["category"]
         confidence = top_cats[0]["probability"]
         
-        manual_review = confidence < 0.65
-        
+        # Override with keyword matched category if ML prediction is weak or different,
+        # and keyword matching shows strong evidence (>= 2 matches)
+        if (confidence < 0.75 or best_cat != matched_cat) and highest_matches >= 2:
+            best_cat = matched_cat
+            confidence = 0.75
+            manual_review = False
+            model_based = False
+            pred_source = "FALLBACK / NON-ML"
+        else:
+            manual_review = confidence < 0.65
+            model_based = True
+            pred_source = "REAL_ML_MODEL"
+            
         return {
             "category": best_cat,
             "confidence": confidence,
-            "topCategories": top_cats,
+            "topCategories": top_cats if model_based else [{"category": best_cat, "probability": confidence}],
             "manualReviewRequired": manual_review,
-            "modelBased": True
+            "modelBased": model_based,
+            "prediction_source": pred_source
         }
     except Exception as e:
-        print(f"Error predicting category: {e}")
-        raise e
+        print(f"Error predicting category via ONNX: {e}")
+        # Final fallback
+        return {
+            "category": matched_cat if highest_matches > 0 else "GENERAL_LEGAL_AID",
+            "confidence": 0.50,
+            "topCategories": [{"category": matched_cat if highest_matches > 0 else "GENERAL_LEGAL_AID", "probability": 0.50}],
+            "manualReviewRequired": True,
+            "modelBased": False,
+            "prediction_source": "FALLBACK / NON-ML"
+        }

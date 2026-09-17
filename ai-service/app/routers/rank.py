@@ -1,12 +1,14 @@
 import os
 import numpy as np
 import onnxruntime as ort
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from app.auth import verify_internal_token
 from pydantic import BaseModel
 from typing import List, Optional
 from app.config import settings
+from app.ml.model_loader import ml_model_loader
 
-router = APIRouter(prefix="/ai/legal-guides", tags=["Legal Guide AI Ranking"])
+router = APIRouter(prefix="/ai/legal-guides", tags=["Legal Guide AI Ranking"], dependencies=[Depends(verify_internal_token)])
 
 class CandidateSchema(BaseModel):
     legalGuideId: int
@@ -24,6 +26,8 @@ class CandidateSchema(BaseModel):
     adminQualityScore: int
     womenSupportTrained: bool
     available: bool
+    eloRating: Optional[int] = 1000
+    feedbackCount: Optional[int] = 0
 
 class RankRequest(BaseModel):
     complaintId: Optional[str] = ""
@@ -46,127 +50,69 @@ class RankResponse(BaseModel):
     recommendedGuides: List[GuideMatchScore]
     modelVersion: str
     fallbackUsed: bool
+    recommendationMode: str = "COLD_START_RECOMMENDATION"
 
 # Global ONNX InferenceSession
 _onnx_session = None
 
 def get_ranking_model():
-    global _onnx_session
-    if _onnx_session is not None:
-        return _onnx_session
-    
-    model_path = os.path.join(settings.MODEL_DIR, "volunteer_ranking_model.onnx")
-    if os.path.exists(model_path):
-        try:
-            _onnx_session = ort.InferenceSession(model_path, providers=['CPUExecutionProvider'])
-            print("[ONNX LOADED] Volunteer Ranking Session initialized.")
-            return _onnx_session
-        except Exception as e:
-            print(f"Error loading ONNX ranking model: {e}")
-            return None
-    return None
+    from app.ml.model_loader import ml_model_loader
+    return ml_model_loader.get_model("volunteer_ranking_model")
 
 @router.post("/rank", response_model=RankResponse)
 def rank_legal_guides(request: RankRequest):
-    session = get_ranking_model()
-    fallback = (session is None)
-    
-    scored_candidates = []
-    
+    volunteers_list = []
     for c in request.candidates:
-        lang_match = 0
-        req_lang = request.detectedLanguage.lower()
-        if req_lang in [lk.lower() for lk in c.languagesKnown]:
-            lang_match = 1
-        elif req_lang in ["ta-en", "tanglish"] and c.supportsTanglish:
-            lang_match = 1
-        elif req_lang in ["hi-en", "hinglish"] and c.supportsHinglish:
-            lang_match = 1
-        
-        cat_match = 1 if request.category.upper() in [ec.upper() for ec in c.expertiseCategories] else 0
-        dist_match = 1 if request.district.lower() == c.district.lower() else 0
-        gender_match = 1 if (not request.preferWomanGuide or c.womenSupportTrained) else 0
-        
-        workload = c.currentWorkload
-        capacity = max(1, c.maxCaseCapacity)
-        
-        reasons = []
-        if lang_match == 1: reasons.append("Language match")
-        if cat_match == 1: reasons.append("Category expertise")
-        if workload / capacity < 0.5: reasons.append("Low workload")
-        if c.levelNumber >= 3: reasons.append("Trusted level")
-        if c.womenSupportTrained and request.sensitive: reasons.append("Women support trained")
-        if dist_match == 1: reasons.append("Local guide")
-            
-        if not c.available:
-            score = 0.0
-        elif workload >= capacity:
-            score = 10.0
-        else:
-            if not fallback and session is not None:
-                try:
-                    features = np.array([[
-                        float(cat_match),
-                        float(lang_match),
-                        float(dist_match),
-                        float(workload),
-                        float(capacity),
-                        float(c.experienceYears),
-                        24.0,
-                        float(c.adminQualityScore / 100.0 if c.adminQualityScore > 0 else 0.8),
-                        float(1 if c.womenSupportTrained else 0),
-                        float(gender_match),
-                        float(1 if request.sensitive else 0),
-                        float(workload * 3 + 10),
-                        float(1 if c.available else 0)
-                    ]], dtype=np.float32)
-                    
-                    input_name = session.get_inputs()[0].name
-                    output_names = [o.name for o in session.get_outputs()]
-                    res = session.run(output_names, {input_name: features})
-                    raw_score = float(res[0].flat[0])
-                    score = max(0.0, min(100.0, raw_score)) / 100.0
-                except Exception as e:
-                    print(f"ONNX ranking inference error: {e}")
-                    fallback = True
-            
-            if fallback:
-                base_score = 30.0
-                if cat_match == 1: base_score += 25.0
-                if lang_match == 1: base_score += 15.0
-                if dist_match == 1: base_score += 10.0
-                if gender_match == 1: base_score += 10.0
-                if c.womenSupportTrained and request.sensitive: base_score += 5.0
-                ratio = workload / capacity
-                base_score -= ratio * 10.0
-                base_score += min(5.0, c.experienceYears * 0.4)
-                base_score += (c.averageRating / 5.0) * 5.0
-                base_score += c.levelNumber * 2.0
-                score = max(0.0, min(100.0, base_score)) / 100.0
-
-        manual_review = (c.creditScore == 0 or c.experienceYears == 0)
-        
-        scored_candidates.append({
+        volunteers_list.append({
+            "id": c.legalGuideId,
             "legalGuideId": c.legalGuideId,
-            "predictedMatchScore": round(float(score), 3),
-            "reasons": reasons,
-            "manualReviewRequired": manual_review
+            "languagesKnown": c.languagesKnown,
+            "supportsTanglish": c.supportsTanglish,
+            "supportsHinglish": c.supportsHinglish,
+            "specializationCategories": c.expertiseCategories,
+            "district": c.district,
+            "currentActiveCases": c.currentWorkload,
+            "maxActiveCases": c.maxCaseCapacity,
+            "availabilityStatus": "AVAILABLE" if c.available else "UNAVAILABLE",
+            "gender": "FEMALE" if (c.womenSupportTrained or getattr(c, 'gender', 'ANY') == 'FEMALE') else "ANY",
+            "canHandleSensitiveCases": True,
+            "eloRating": c.eloRating if c.eloRating is not None else 1000,
+            "averageRating": c.averageRating,
+            "feedbackCount": c.feedbackCount if c.feedbackCount is not None else 0
         })
-        
-    scored_candidates.sort(key=lambda x: x["predictedMatchScore"], reverse=True)
-    
+
+    from app.ml.elo_matcher import rank_volunteers_with_elo
+    from app.mongo_context import get_ai_context
+
+    complaint_text = ""
+    if request.complaintId:
+        context = get_ai_context(str(request.complaintId))
+        if context:
+            complaint_text = context.get("originalText", "")
+
+    matching_result = rank_volunteers_with_elo(
+        complaint_text=complaint_text,
+        category=request.category,
+        language=request.detectedLanguage,
+        prefer_woman=request.preferWomanGuide,
+        district=request.district,
+        volunteers=volunteers_list,
+        sensitive=request.sensitive
+    )
+
     recommended = []
-    for rank_idx, cand in enumerate(scored_candidates):
+    for rank_idx, cand in enumerate(matching_result["recommendedGuides"]):
         recommended.append(GuideMatchScore(
-            legalGuideId=cand["legalGuideId"],
-            predictedMatchScore=cand["predictedMatchScore"],
+            legalGuideId=int(cand["guideId"]),
+            predictedMatchScore=cand["finalScore"],
             rank=rank_idx + 1,
-            reasonFactors=cand["reasons"],
-            manualReviewRequired=cand["manualReviewRequired"]
+            reasonFactors=cand["matchingReasons"],
+            manualReviewRequired=False
         ))
-        
+
     return RankResponse(
         recommendedGuides=recommended,
-        modelVersion="1.0-ONNX-Volunteer",
-        fallbackUsed=fallback
+        modelVersion="2.0-ELO-Matching",
+        fallbackUsed=(matching_result["recommendationMode"] == "COLD_START_RECOMMENDATION"),
+        recommendationMode=matching_result["recommendationMode"]
     )

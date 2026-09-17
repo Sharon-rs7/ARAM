@@ -1,13 +1,14 @@
 import shutil
 import tempfile
 import os
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
+from app.auth import verify_internal_token
 from pydantic import BaseModel
 from typing import Optional
 from app.services.language_detector import language_detector
 from app.speech_to_text import transcribe_audio
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(verify_internal_token)])
 
 class LanguageDetectRequest(BaseModel):
     text: str

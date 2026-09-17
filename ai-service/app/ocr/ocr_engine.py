@@ -93,31 +93,11 @@ def extract_ocr_text(file_path: str) -> dict:
         except Exception as ex:
             print(f"Tesseract extraction error: {ex}")
 
-    # Fallback to structured mocks based on file name if no text extracted
+    # If no text could be extracted, do not fabricate synthetic text
     if not raw_text:
-        engine_name = "mock_ocr"
-        filename = os.path.basename(file_path).lower()
-        if "salary" in filename:
-            raw_text = "Aram Solutions Private Limited. Pay Slip for June 2026. Employee ID: EMP9821. Gross Salary: Rs. 45,000. Net Pay: 41,500. Account No: 109283726152."
-            confidence = 0.95
-        elif "invoice" in filename or "bill" in filename:
-            raw_text = "Retail Invoice. GSTIN: 33AAAAA1111A1Z1. Invoice No: INV-2026-981. Seller: Electro Plaza Coimbatore. Total Amount Paid: Rs. 15,499. Payment Mode: UPI scanner."
-            confidence = 0.95
-        elif "rent" in filename:
-            raw_text = "Rent Agreement. Landlord: Kumar, Resident of Chennai. Tenant: Vignesh, Resident of Coimbatore. Monthly Rent: Rs. 12,000. Address: 12, Anna Nagar, Coimbatore."
-            confidence = 0.92
-        elif "medical" in filename:
-            raw_text = "KG Hospital. Patient Name: Ramesh Babu. Date: 12-05-2026. Diagnosis: Fracture in left arm. Treatment: Plaster cast for 4 weeks."
-            confidence = 0.94
-        elif "fir" in filename or "police" in filename:
-            raw_text = "First Information Report. Police Station: E-3 Kovilpalayam. FIR Number: 2026-1045. Date of Incident: 10-06-2026. Theft of vehicle TN-37-BY-9821."
-            confidence = 0.93
-        elif "aadhaar" in filename or "id" in filename:
-            raw_text = "GOVERNMENT OF INDIA. Aadhaar Card. Name: Rajesh Kumar. Aadhaar Number: 9012 8372 1092. Gender: Male. District: Coimbatore."
-            confidence = 0.98
-        else:
-            raw_text = "ARAM Grievance Support Document copy. Aadhaar Card Number: 9012 8372 1092. Land registration Deed: 9812/2026. Account: 30982716254."
-            confidence = 0.88
+        engine_name = "none"
+        raw_text = ""
+        confidence = 0.0
 
     # Simple language detection logic based on character sets
     if any(ord(c) >= 0x0B80 and ord(c) <= 0x0BFF for c in raw_text):

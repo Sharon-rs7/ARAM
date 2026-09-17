@@ -5,6 +5,7 @@ import com.aram.legalaid.enums.ThemePreference;
 import com.aram.legalaid.enums.UserStatus;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "users", indexes = {
@@ -107,6 +108,24 @@ public class User {
 
     @Column(nullable = false)
     private boolean voiceAssistanceEnabled = false;
+
+    @Column(nullable = false)
+    private boolean profileCompleted = false;
+
+    @Column(name = "date_of_birth")
+    private LocalDate dateOfBirth;
+
+    @Column(length = 100)
+    private String state;
+
+    @Column(length = 20)
+    private String pincode;
+
+    @Column(name = "email_verified", nullable = false)
+    private boolean emailVerified = false;
+
+    @Column(name = "profile_completion_percentage", nullable = false)
+    private int profileCompletionPercentage = 0;
 
     @Column(nullable = false)
     private boolean simpleModeEnabled = false;
@@ -224,4 +243,22 @@ public class User {
 
     public boolean isTwoFactorEnabled() { return twoFactorEnabled; }
     public void setTwoFactorEnabled(boolean twoFactorEnabled) { this.twoFactorEnabled = twoFactorEnabled; }
+
+    public boolean isProfileCompleted() { return profileCompleted; }
+    public void setProfileCompleted(boolean profileCompleted) { this.profileCompleted = profileCompleted; }
+
+    public LocalDate getDateOfBirth() { return dateOfBirth; }
+    public void setDateOfBirth(LocalDate dateOfBirth) { this.dateOfBirth = dateOfBirth; }
+
+    public String getState() { return state; }
+    public void setState(String state) { this.state = state; }
+
+    public String getPincode() { return pincode; }
+    public void setPincode(String pincode) { this.pincode = pincode; }
+
+    public boolean isEmailVerified() { return emailVerified; }
+    public void setEmailVerified(boolean emailVerified) { this.emailVerified = emailVerified; }
+
+    public int getProfileCompletionPercentage() { return profileCompletionPercentage; }
+    public void setProfileCompletionPercentage(int profileCompletionPercentage) { this.profileCompletionPercentage = profileCompletionPercentage; }
 }

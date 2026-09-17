@@ -1,0 +1,110 @@
+[
+  {
+    "id": 1,
+    "name": "English Greeting ('hi')",
+    "status": "PASSED [OK]",
+    "duration": "2.046s",
+    "responseType": "GREETING",
+    "category": "CONVERSATIONAL",
+    "reply_sample": "Vanakkam! 👋 I am your ARAM AI Legal Assistant. You can describe any legal problem, dispute, notice, or question in Tamil..."
+  },
+  {
+    "id": 2,
+    "name": "Tanglish Language Inquiry ('thannglish la pesa mudium ha')",
+    "status": "PASSED [OK]",
+    "duration": "2.044s",
+    "responseType": "LANGUAGE_SELECTION",
+    "category": "CONVERSATIONAL",
+    "reply_sample": "Kandippa pesa mudiyum! 👍 Ungalukku enna legal problem or doubt irukku nu Tanglish-laye sollunga (e.g. rent deposit refun..."
+  },
+  {
+    "id": 3,
+    "name": "Tamil Language Inquiry ('tamil la pesalama?')",
+    "status": "PASSED [OK]",
+    "duration": "2.035s",
+    "responseType": "LANGUAGE_SELECTION",
+    "category": "CONVERSATIONAL",
+    "reply_sample": "வணக்கம்! நான் தமிழில் பேசுகிறேன் 👍  உங்கள் சட்டப் பிரச்சனை அல்லது கேள்வியை (நிலத் தகராறு, வாடகை, நுகர்வோர் குறைபாடு, பணி..."
+  },
+  {
+    "id": 4,
+    "name": "Bot Capabilities ('what can you do')",
+    "status": "PASSED [OK]",
+    "duration": "2.056s",
+    "responseType": "GENERAL_CONVERSATION",
+    "category": "CONVERSATIONAL",
+    "reply_sample": "ARAM AI is your conversational legal aid assistant. I help citizens understand applicable Indian statutes, required docu..."
+  },
+  {
+    "id": 5,
+    "name": "Vague / Clarification Needed ('i have a problem')",
+    "status": "PASSED [OK]",
+    "duration": "2.052s",
+    "responseType": "CLARIFICATION",
+    "category": "CONSUMER_COMPLAINT",
+    "reply_sample": "Hello! Please describe what happened, or select the legal category that best matches your situation so I can guide you a..."
+  },
+  {
+    "id": 6,
+    "name": "Native Tamil Land Dispute ('எங்கள் நிலத்தின் எல்லையை பக்கத்து வீட்டுக்காரர் ஆக்கிரமிப்பு செய்துள்ளார்')",
+    "status": "PASSED [OK]",
+    "duration": "5.261s",
+    "responseType": "FULL_ASSESSMENT",
+    "category": "PROPERTY_DISPUTE",
+    "reply_sample": "### பிரச்சனை புரிதல்: நில எல்லை ஆக்கிரமிப்பு, பட்டா பெயர் மாற்றம் மற்றும் பாகப்பிரிவினை தொடர்பான பிரச்சனைகள் தமிழ்நாடு ப..."
+  },
+  {
+    "id": 7,
+    "name": "Tanglish / English Unpaid Salary ('my owner not paid my salary for years')",
+    "status": "PASSED [OK]",
+    "duration": "3.943s",
+    "responseType": "FULL_ASSESSMENT",
+    "category": "LABOUR_DISPUTE",
+    "reply_sample": "### Understanding of Situation: It is difficult and stressful when an owner or employer fails to pay your salary for yea..."
+  },
+  {
+    "id": 8,
+    "name": "Security Deposit Recovery ('Landlord not returning my 50000 rent advance deposit')",
+    "status": "PASSED [OK]",
+    "duration": "4.262s",
+    "responseType": "FULL_ASSESSMENT",
+    "category": "TENANCY_DISPUTE",
+    "reply_sample": "### Understanding of Situation: You are facing a tenancy dispute because your landlord has not returned your 50,000 rent..."
+  },
+  {
+    "id": 9,
+    "name": "Defective Product ('Amazon delivery defective laptop seller refused refund')",
+    "status": "PASSED [OK]",
+    "duration": "5.323s",
+    "responseType": "FULL_ASSESSMENT",
+    "category": "CONSUMER_COMPLAINT",
+    "reply_sample": "### Understanding of Situation: You are facing an issue where a seller refused a refund for a defective laptop purchased..."
+  },
+  {
+    "id": 10,
+    "name": "Cyber Phishing Fraud ('Lost 25000 in UPI phishing scam')",
+    "status": "PASSED [OK]",
+    "duration": "4.203s",
+    "responseType": "FULL_ASSESSMENT",
+    "category": "CYBER_CRIME",
+    "reply_sample": "### Understanding of Situation: You have experienced a financial loss due to a UPI phishing scam.  ### Relevant Statutor..."
+  },
+  {
+    "id": 11,
+    "name": "Multi-Case Decomposition ('My employer not paid salary for 6 months and also landlord threatening to evict me and shopkeeper sold fake phone')",
+    "status": "PASSED [OK]",
+    "duration": "2.057s",
+    "responseType": "MULTI_CASE_ASSESSMENT",
+    "category": "MULTI_CASE",
+    "reply_sample": "I have identified multiple distinct legal issues in your query:  📌 **1. Labour & Wage Dispute:** • **Statute:** Payment ..."
+  },
+  {
+    "id": 12,
+    "name": "Direct In-Chat Complaint Trigger ('submit complaint')",
+    "status": "PASSED [OK]",
+    "duration": "2.058s",
+    "responseType": "SUBMIT_COMPLAINT_READY",
+    "category": "GENERAL_LEGAL_AID",
+    "reply_sample": "📝 Your grievance details are ready! Submitting directly to the official ARAM Legal Registry......"
+  }
+]

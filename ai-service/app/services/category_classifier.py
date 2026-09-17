@@ -11,12 +11,10 @@ class CategoryClassifier:
         self.load_model()
 
     def load_model(self):
-        if os.path.exists(self.onnx_path):
-            try:
-                self.session = ort.InferenceSession(self.onnx_path, providers=['CPUExecutionProvider'])
-                print("[ONNX LOADED] CategoryClassifier session active.")
-            except Exception as e:
-                print(f"Error loading ONNX CategoryClassifier: {e}")
+        from app.ml.model_loader import ml_model_loader
+        self.session = ml_model_loader.get_model("category_model")
+        if self.session:
+            print("[ONNX REUSED] CategoryClassifier session reused from ml_model_loader.")
 
     def classify(self, text: str) -> dict:
         if not text or not text.strip():

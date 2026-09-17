@@ -9,7 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.*;
+
 
 @Service
 public class AdditionalFlowsService {
@@ -20,6 +21,10 @@ public class AdditionalFlowsService {
     private final AuditLogService auditLogService;
     private final NotificationService notificationService;
     private final LegalGuideLevelService levelService;
+    private final LegalGuideEloHistoryRepository eloHistoryRepository;
+    private final LegalGuidePerformanceProfileRepository performanceProfileRepository;
+    private final AIResultRepository aiResultRepository;
+    private final AIClientService aiClientService;
 
     public AdditionalFlowsService(
             CaseDocumentRequestRepository caseDocumentRequestRepository,
@@ -28,7 +33,11 @@ public class AdditionalFlowsService {
             ComplaintRepository complaintRepository,
             AuditLogService auditLogService,
             NotificationService notificationService,
-            LegalGuideLevelService levelService
+            LegalGuideLevelService levelService,
+            LegalGuideEloHistoryRepository eloHistoryRepository,
+            LegalGuidePerformanceProfileRepository performanceProfileRepository,
+            AIResultRepository aiResultRepository,
+            AIClientService aiClientService
     ) {
         this.caseDocumentRequestRepository = caseDocumentRequestRepository;
         this.caseAppointmentRepository = caseAppointmentRepository;
@@ -37,6 +46,10 @@ public class AdditionalFlowsService {
         this.auditLogService = auditLogService;
         this.notificationService = notificationService;
         this.levelService = levelService;
+        this.eloHistoryRepository = eloHistoryRepository;
+        this.performanceProfileRepository = performanceProfileRepository;
+        this.aiResultRepository = aiResultRepository;
+        this.aiClientService = aiClientService;
     }
 
     // Document Requests
@@ -265,8 +278,13 @@ public class AdditionalFlowsService {
         }
 
         auditLogService.log("CASE_FEEDBACK_SUBMITTED", currentUser.getEmail(), "User submitted feedback: " + rating + " stars");
+        updateReputationAndElo(complaintId, rating, comment);
 
         return saved;
+    }
+
+    public Optional<CaseFeedback> getFeedback(Long complaintId) {
+        return caseFeedbackRepository.findByComplaintId(complaintId);
     }
 
     // Status Transitions
@@ -283,6 +301,7 @@ public class AdditionalFlowsService {
                 }
                 complaint.setStatus(ComplaintStatus.RESOLVED_BY_GUIDE);
                 complaint.setResolutionSummary(details);
+                complaint.setResolvedAt(LocalDateTime.now());
                 
                 if (complaint.getAssignedHelper() != null) {
                     levelService.addCredit(complaint.getAssignedHelper().getId(), complaintId, "CASE_RESOLVED_BY_GUIDE", 20, "Guide resolved case", currentUser.getId(), "HELPER", "SYSTEM");
@@ -308,6 +327,7 @@ public class AdditionalFlowsService {
                 }
                 
                 auditLogService.log("USER_CONFIRMED_RESOLVED", currentUser.getEmail(), "Citizen marked complaint " + complaintId + " as closed");
+                updateReputationAndElo(complaintId, null, "Citizen marked case as closed without feedback");
                 break;
 
             case "REOPEN_REQUESTED":
@@ -372,5 +392,121 @@ public class AdditionalFlowsService {
         }
 
         return complaint;
+    }
+
+    @Transactional
+    public void updateReputationAndElo(Long complaintId, Integer rating, String comment) {
+        if (eloHistoryRepository.findByComplaintId(complaintId).isPresent()) {
+            return;
+        }
+
+        Complaint complaint = complaintRepository.findById(complaintId)
+                .orElseThrow(() -> new ResourceNotFoundException("Complaint not found"));
+        if (complaint.getAssignedHelper() == null) return;
+        Long guideId = complaint.getAssignedHelper().getId();
+
+        LegalGuidePerformanceProfile perf = levelService.getOrCreatePerformanceProfile(guideId);
+
+        double resolutionTimeHours = 24.0;
+        if (complaint.getAssignedAt() != null && complaint.getResolvedAt() != null) {
+            long diffMillis = java.time.Duration.between(complaint.getAssignedAt(), complaint.getResolvedAt()).toMillis();
+            resolutionTimeHours = (double) diffMillis / (1000.0 * 60.0 * 60.0);
+        }
+
+        int prevCompleted = perf.getCompletedCases();
+        int newCompleted = prevCompleted + 1;
+        perf.setCompletedCases(newCompleted);
+
+        double totalTime = (perf.getAverageResolutionTime() * prevCompleted) + resolutionTimeHours;
+        perf.setAverageResolutionTime(totalTime / newCompleted);
+
+        double timelinessScore = Math.max(0.0, 1.0 - (resolutionTimeHours / 48.0));
+        double deadlineScore = (resolutionTimeHours <= 48.0) ? 1.0 : 0.0;
+
+        double totalDeadlines = (perf.getDeadlineSuccessRate() * prevCompleted) + deadlineScore;
+        perf.setDeadlineSuccessRate(totalDeadlines / newCompleted);
+
+        double feedbackScore = 0.5;
+        if (rating != null) {
+            int prevFbCount = perf.getFeedbackCount();
+            int newFbCount = prevFbCount + 1;
+            perf.setFeedbackCount(newFbCount);
+            double totalRating = (perf.getAverageRating() * prevFbCount) + rating;
+            perf.setAverageRating(totalRating / newFbCount);
+            feedbackScore = (double) rating / 5.0;
+        }
+
+        double qualityScore = 0.5;
+        if (rating != null) {
+            if (rating == 5) qualityScore = 1.0;
+            else if (rating == 4) qualityScore = 0.8;
+            else if (rating == 3) qualityScore = 0.6;
+            else if (rating == 2) qualityScore = 0.3;
+            else if (rating == 1) qualityScore = 0.0;
+        }
+
+        double reopenScore = 1.0;
+        if (perf.getCasesAssigned() > 0) {
+            reopenScore = 1.0 - ((double) perf.getCasesReopened() / perf.getCasesAssigned());
+        }
+        reopenScore = Math.max(0.0, Math.min(1.0, reopenScore));
+
+        double outcomeScore = 1.0;
+        if (complaint.getStatus() == ComplaintStatus.CLOSED_BY_USER) {
+            outcomeScore = 1.0;
+            perf.setSuccessfulCases(perf.getSuccessfulCases() + 1);
+        } else if (complaint.getStatus() == ComplaintStatus.REOPEN_REQUESTED) {
+            outcomeScore = 0.0;
+        }
+
+        double performanceScore = (0.30 * qualityScore) +
+                                   (0.20 * timelinessScore) +
+                                   (0.15 * deadlineScore) +
+                                   (0.20 * feedbackScore) +
+                                   (0.10 * reopenScore) +
+                                   (0.05 * outcomeScore);
+
+        String complexity = aiResultRepository.findByComplaint(complaint).map(AIResult::getComplexity).orElse("MEDIUM");
+        double complexityWeight = 1.5;
+        if ("EASY".equalsIgnoreCase(complexity)) complexityWeight = 1.0;
+        else if ("MEDIUM".equalsIgnoreCase(complexity)) complexityWeight = 1.5;
+        else if ("COMPLEX".equalsIgnoreCase(complexity)) complexityWeight = 2.5;
+        else if ("CRITICAL".equalsIgnoreCase(complexity)) complexityWeight = 4.0;
+
+        int oldElo = perf.getEloRating();
+        double expected = 1.0 / (1.0 + Math.pow(10.0, (1400.0 - oldElo) / 400.0));
+        int delta = (int) Math.round(32.0 * complexityWeight * (performanceScore - expected));
+        delta = Math.max(-50, Math.min(50, delta));
+        int newElo = oldElo + delta;
+
+        perf.setEloRating(newElo);
+        perf.setLastEloUpdate(LocalDateTime.now());
+
+        double normalizedElo = 1.0 / (1.0 + Math.pow(10.0, (1400.0 - newElo) / 400.0));
+        double reputationScore = (0.7 * normalizedElo) + (0.3 * performanceScore);
+        perf.setReputationScore(Math.max(0.0, Math.min(1.0, reputationScore)));
+
+        performanceProfileRepository.save(perf);
+
+        LegalGuideEloHistory history = new LegalGuideEloHistory(
+            guideId, complaintId, oldElo, newElo, delta, performanceScore, "Feedback rating: " + rating + " - " + comment
+        );
+        eloHistoryRepository.save(history);
+
+        // Sync to MongoDB
+        try {
+            aiClientService.syncResolvedComplaint(
+                complaint.getComplaintCustomId(),
+                complaint.getStatus().name(),
+                guideId.toString(),
+                complaint.getAssignedHelper().getName(),
+                complexity,
+                resolutionTimeHours,
+                (double) (rating != null ? rating : 5),
+                "SUCCESS"
+            );
+        } catch (Exception e) {
+            System.err.println("FastAPI resolved embedding sync failed: " + e.getMessage());
+        }
     }
 }

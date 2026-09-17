@@ -30,6 +30,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import com.aram.legalaid.util.FileUploadValidator;
+import com.aram.legalaid.util.UploadCategory;
+
 @Service
 public class DocumentService {
     private static final Set<String> ALLOWED_TYPES = Set.of("application/pdf", "image/jpeg", "image/png", "image/jpg");
@@ -43,6 +46,7 @@ public class DocumentService {
     private final MongoLogService mongoLogService;
     private final AIClientService aiClientService;
     private final ObjectMapper objectMapper;
+    private final FileUploadValidator fileUploadValidator;
 
     @Value("${app.upload.dir:uploads}")
     private String uploadDir;
@@ -51,6 +55,7 @@ public class DocumentService {
     private long maxSizeMb;
 
     private final LegalGuideLevelService levelService;
+    private final JobService jobService;
 
     public DocumentService(
             UploadedDocumentRepository documentRepository,
@@ -61,7 +66,9 @@ public class DocumentService {
             NotificationService notificationService,
             MongoLogService mongoLogService,
             AIClientService aiClientService,
-            LegalGuideLevelService levelService
+            LegalGuideLevelService levelService,
+            JobService jobService,
+            FileUploadValidator fileUploadValidator
     ) {
         this.documentRepository = documentRepository;
         this.documentVerificationResultRepository = documentVerificationResultRepository;
@@ -72,17 +79,15 @@ public class DocumentService {
         this.mongoLogService = mongoLogService;
         this.aiClientService = aiClientService;
         this.levelService = levelService;
+        this.jobService = jobService;
+        this.fileUploadValidator = fileUploadValidator;
         this.objectMapper = new ObjectMapper();
     }
 
     @Transactional
     public DocumentResponse upload(Long complaintId, MultipartFile file) {
-        if (file == null || file.isEmpty()) throw new BadRequestException("Document file is required");
-        if (file.getSize() > maxSizeMb * 1024 * 1024) throw new BadRequestException("File size must be below " + maxSizeMb + "MB");
+        String safeName = fileUploadValidator.validateAndGenerateSafeName(file, UploadCategory.DOCUMENT);
         String contentType = file.getContentType();
-        if (contentType == null || !ALLOWED_TYPES.contains(contentType)) {
-            throw new BadRequestException("Allowed file types: PDF, JPG, PNG");
-        }
         Complaint complaint = complaintService.findComplaint(complaintId);
         User user = userService.currentUser();
         if (user.getRole() != Role.ADMIN && !complaint.getUser().getId().equals(user.getId())) {
@@ -90,10 +95,8 @@ public class DocumentService {
         }
 
         try {
-            Path base = Path.of(uploadDir).toAbsolutePath().normalize();
-            Files.createDirectories(base);
-            String safeName = UUID.randomUUID() + "_" + file.getOriginalFilename().replaceAll("[^a-zA-Z0-9._-]", "_");
-            Path target = base.resolve(safeName);
+            Path target = fileUploadValidator.getSafeUploadPath(safeName, null);
+            Files.createDirectories(target.getParent());
             Files.copy(file.getInputStream(), target, StandardCopyOption.REPLACE_EXISTING);
 
             UploadedDocument document = new UploadedDocument();
@@ -117,59 +120,116 @@ public class DocumentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Document not found"));
         
         document.setVerificationStatus(VerificationStatus.OCR_PROCESSING);
-        documentRepository.save(document);
+        UploadedDocument savedDoc = documentRepository.save(document);
 
-        String expectedType = determineExpectedType(document);
-        String categoryStr = document.getComplaint().getCategory() != null ? document.getComplaint().getCategory().name() : "GENERAL_LEGAL_AID";
+        String expectedType = determineExpectedType(savedDoc);
+        String categoryStr = savedDoc.getComplaint().getCategory() != null ? savedDoc.getComplaint().getCategory().name() : "GENERAL_LEGAL_AID";
         
+        User user = userService.currentUser();
+        Long userId = user != null ? user.getId() : null;
+
+        // Serialize requestMetadata JSON
+        Map<String, Object> metadata = Map.of(
+            "documentId", documentId,
+            "expectedDocumentType", expectedType,
+            "complaintCategory", categoryStr
+        );
+        String metadataJson = "";
         try {
-            byte[] content = Files.readAllBytes(Path.of(document.getFilePath()));
-            DiskMultipartFile multipartFile = new DiskMultipartFile(
-                content, "file", document.getFileName(), document.getFileType()
+            metadataJson = objectMapper.writeValueAsString(metadata);
+        } catch (Exception ignored) {}
+
+        // Create job asynchronously
+        jobService.createJob(savedDoc.getComplaint().getId(), userId, "OCR", savedDoc.getFilePath(), metadataJson);
+
+        notificationService.create(savedDoc.getComplaint().getUser(), "Document OCR verification enqueued.", NotificationType.IN_APP);
+        return mapperService.toDocumentResponse(savedDoc);
+    }
+
+    @Transactional
+    public void completeOcrJob(Long documentId, Map<String, Object> verifyRes) {
+        UploadedDocument document = documentRepository.findById(documentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Document not found"));
+
+        String predType = (String) verifyRes.getOrDefault("documentType", "General Supporting Document");
+        Double score = 0.0;
+        if (verifyRes.containsKey("verificationScore")) {
+            score = ((Number) verifyRes.get("verificationScore")).doubleValue();
+        }
+        String statusStr = (String) verifyRes.get("status");
+        VerificationStatus status = mapStatus(statusStr);
+
+        document.setPredictedDocumentType(predType);
+        document.setVerificationScore(score);
+        document.setVerificationStatus(status);
+        UploadedDocument saved = documentRepository.save(document);
+
+        DocumentVerificationResult result = documentVerificationResultRepository.findByDocumentId(document.getId())
+                .orElse(new DocumentVerificationResult());
+
+        result.setDocumentId(document.getId());
+        result.setComplaintId(document.getComplaint().getId());
+        String ocrMasked = (String) verifyRes.getOrDefault("ocrTextMasked", "");
+        result.setOcrText(ocrMasked);
+        result.setMaskedOcrText(ocrMasked);
+        
+        double ocrConf = 0.0;
+        if (verifyRes.containsKey("ocrConfidence")) {
+            ocrConf = ((Number) verifyRes.get("ocrConfidence")).doubleValue();
+        }
+        result.setOcrConfidence(ocrConf);
+        
+        double quality = 0.0;
+        if (verifyRes.containsKey("imageQualityScore")) {
+            quality = ((Number) verifyRes.get("imageQualityScore")).doubleValue();
+        }
+        result.setImageQualityScore(quality);
+        result.setDocumentType(predType);
+        result.setDocumentTypeConfidence(ocrConf);
+
+        try {
+            result.setExtractedFieldsJson(objectMapper.writeValueAsString(verifyRes.get("extractedFields")));
+            result.setReasonsJson(objectMapper.writeValueAsString(verifyRes.get("reasons")));
+            result.setErrorsJson(objectMapper.writeValueAsString(verifyRes.get("errors")));
+        } catch (Exception ignored) {}
+
+        result.setVerificationScore(score);
+        result.setStatus(statusStr);
+        result.setEngine((String) verifyRes.getOrDefault("engine", "easyocr"));
+        result.setModelVersion((String) verifyRes.getOrDefault("modelVersion", "1.0"));
+
+        documentVerificationResultRepository.save(result);
+
+        // Award credit if status is VERIFIED
+        if (VerificationStatus.VERIFIED == status && saved.getComplaint().getAssignedHelper() != null) {
+            levelService.addCredit(
+                saved.getComplaint().getAssignedHelper().getId(),
+                saved.getComplaint().getId(),
+                "DOCUMENT_VERIFIED",
+                5,
+                "Verified citizen document",
+                1L, // System / Admin ID
+                "SYSTEM",
+                "SYSTEM"
             );
-            
-            AiDocumentVerifyResponse verifyRes = aiClientService.verifyDocument(multipartFile, expectedType, categoryStr);
-            
-            // Update document
-            document.setPredictedDocumentType(verifyRes.documentType());
-            document.setVerificationScore(verifyRes.verificationScore());
-            
-            // Map verification status
-            VerificationStatus status = mapStatus(verifyRes.status());
-            document.setVerificationStatus(status);
-            documentRepository.save(document);
-            
-            // Create/save DocumentVerificationResult
-            DocumentVerificationResult result = documentVerificationResultRepository.findByDocumentId(document.getId())
-                    .orElse(new DocumentVerificationResult());
-                    
-            result.setDocumentId(document.getId());
-            result.setComplaintId(document.getComplaint().getId());
-            result.setOcrText(verifyRes.ocrTextMasked()); 
-            result.setMaskedOcrText(verifyRes.ocrTextMasked());
-            result.setOcrConfidence(verifyRes.ocrConfidence());
-            result.setImageQualityScore(verifyRes.imageQualityScore());
-            result.setDocumentType(verifyRes.documentType());
-            result.setDocumentTypeConfidence(verifyRes.ocrConfidence()); 
-            
-            String fieldsJson = objectMapper.writeValueAsString(verifyRes.extractedFields());
-            result.setExtractedFieldsJson(fieldsJson); 
-            
-            result.setVerificationScore(verifyRes.verificationScore());
-            result.setStatus(verifyRes.status());
-            result.setReasonsJson(objectMapper.writeValueAsString(verifyRes.reasons()));
-            result.setErrorsJson(objectMapper.writeValueAsString(verifyRes.errors()));
-            result.setEngine(verifyRes.engine());
-            result.setModelVersion(verifyRes.modelVersion());
-            
-            documentVerificationResultRepository.save(result);
-            
-            notificationService.create(document.getComplaint().getUser(), "Document OCR verification finished with status: " + status, NotificationType.IN_APP);
-            return mapperService.toDocumentResponse(document);
-        } catch (Exception e) {
+        }
+
+        notificationService.create(saved.getComplaint().getUser(), "Document OCR verification finished with status: " + status, NotificationType.IN_APP);
+        mongoLogService.log("document_verification_logs", java.util.Map.of(
+                "documentId", saved.getId(),
+                "complaintId", saved.getComplaint().getId(),
+                "status", saved.getVerificationStatus().name(),
+                "predictedType", String.valueOf(saved.getPredictedDocumentType()),
+                "score", String.valueOf(saved.getVerificationScore())
+        ));
+    }
+
+    @Transactional
+    public void failOcrJob(Long documentId) {
+        UploadedDocument document = documentRepository.findById(documentId).orElse(null);
+        if (document != null) {
             document.setVerificationStatus(VerificationStatus.REUPLOAD_REQUIRED);
             documentRepository.save(document);
-            throw new BadRequestException("Failed to read file from disk for OCR: " + e.getMessage());
         }
     }
 

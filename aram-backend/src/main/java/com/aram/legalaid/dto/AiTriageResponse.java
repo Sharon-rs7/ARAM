@@ -2,6 +2,7 @@ package com.aram.legalaid.dto;
 
 import java.util.List;
 
+@com.fasterxml.jackson.annotation.JsonIgnoreProperties(ignoreUnknown = true)
 public record AiTriageResponse(
     String category,
     double categoryConfidence,
@@ -21,7 +22,10 @@ public record AiTriageResponse(
     List<String> detectedIssues,
     List<String> urgencyFlags,
     String complexity,
-    String recommendedRouting
+    String recommendedRouting,
+    String detectedLanguage,
+    String responseLanguage,
+    java.util.Map<String, Object> caseSummary
 ) {
     public record CategoryProbability(String category, double probability) {}
 }

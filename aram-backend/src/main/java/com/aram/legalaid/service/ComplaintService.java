@@ -25,10 +25,15 @@ public class ComplaintService {
     private final MapperService mapperService;
     private final BlockchainService blockchainService;
     private final AIClientService aiClientService;
+    private final ProfileCompletionService profileCompletionService;
+    private final EmailService emailService;
+    private final JobService jobService;
+    private final RedisNotificationPublisher redisNotificationPublisher;
 
     public ComplaintService(ComplaintRepository complaintRepository, AIResultRepository aiResultRepository, UserService userService,
                             AIAnalysisService aiAnalysisService, NotificationService notificationService, MapperService mapperService,
-                            BlockchainService blockchainService, AIClientService aiClientService) {
+                            BlockchainService blockchainService, AIClientService aiClientService, ProfileCompletionService profileCompletionService,
+                            EmailService emailService, JobService jobService, RedisNotificationPublisher redisNotificationPublisher) {
         this.complaintRepository = complaintRepository;
         this.aiResultRepository = aiResultRepository;
         this.userService = userService;
@@ -37,15 +42,43 @@ public class ComplaintService {
         this.mapperService = mapperService;
         this.blockchainService = blockchainService;
         this.aiClientService = aiClientService;
+        this.profileCompletionService = profileCompletionService;
+        this.emailService = emailService;
+        this.jobService = jobService;
+        this.redisNotificationPublisher = redisNotificationPublisher;
     }
 
     @Transactional
     public ComplaintResponse submit(ComplaintRequest request) {
         User user = userService.currentUser();
+        
+        // Enforce profile completion gate
+        ProfileCompletionService.CompletionState state = profileCompletionService.recalculateAndSave(user);
+        if (user.getRole() != Role.CITIZEN) {
+            throw new com.aram.legalaid.exception.ForbiddenException("Only Citizens can submit complaints.");
+        }
+        if (!state.isProfileCompleted()) {
+            throw new com.aram.legalaid.exception.ProfileIncompleteException(
+                "Please complete and verify your profile before submitting a complaint.",
+                state.getCompletionPercentage()
+            );
+        }
+
         validateLanguage(request.language());
 
         Complaint complaint = new Complaint();
         complaint.setUser(user);
+        
+        // Generate unique complaint ID: ARAM-{YY}-{STATE}-{DISTRICT}-{SEQUENCE}
+        int year = java.time.LocalDateTime.now().getYear();
+        String stateCode = getStateCode(user.getState());
+        String districtCode = getDistrictCode(request.district());
+        Long seqVal = complaintRepository.getNextComplaintSequenceValue();
+        long val = seqVal != null ? seqVal : 1L;
+        String sequenceStr = String.format("%06d", val);
+        String customId = String.format("ARAM-%02d-%s-%s-%s", year % 100, stateCode, districtCode, sequenceStr);
+        complaint.setComplaintCustomId(customId);
+
         complaint.setTitle(request.title().trim());
         complaint.setDescription(request.description().trim());
         complaint.setLanguage(request.language().trim().toUpperCase());
@@ -79,19 +112,62 @@ public class ComplaintService {
         complaint.setStatus(ComplaintStatus.SUBMITTED);
 
         Complaint savedComplaint = complaintRepository.save(complaint);
-        blockchainService.mineBlock(savedComplaint);
+        java.util.concurrent.CompletableFuture.runAsync(() -> {
+            try {
+                blockchainService.mineBlock(savedComplaint);
+            } catch (Exception bex) {
+                System.err.println("Async blockchain mine failed: " + bex.getMessage());
+            }
+        });
         
-        notificationService.create(user, "Your complaint has been submitted successfully. Complaint ID: " + savedComplaint.getId(), NotificationType.IN_APP);
+        notificationService.create(user, "Your complaint has been submitted successfully. Complaint Custom ID: " + savedComplaint.getComplaintCustomId(), NotificationType.IN_APP);
 
+        // Redis WebSocket publish for new complaint submission
+        redisNotificationPublisher.publishNotification(
+                "NEW_COMPLAINT",
+                savedComplaint.getId(),
+                user.getId(),
+                "New complaint submitted: ARAM-" + savedComplaint.getId()
+        );
 
-        AIResult aiResult = aiAnalysisService.analyzeAndSave(savedComplaint);
-        notificationService.create(user, "AI analysis completed. Category: " + aiResult.getCategory().getDisplayName() + ", Priority: " + aiResult.getPriority(), NotificationType.IN_APP);
-
-        if (aiResult.getPriority() == PriorityLevel.HIGH || aiResult.getPriority() == PriorityLevel.CRITICAL || savedComplaint.isSensitive()) {
-            notificationService.notifyAdmins("Attention required: Complaint ID " + savedComplaint.getId() + " is " + aiResult.getPriority() + " priority" + (savedComplaint.isSensitive() ? " and marked sensitive." : "."));
+        try {
+            emailService.sendComplaintSubmittedEmail(user.getEmail(), user.getName(), savedComplaint.getComplaintCustomId(), savedComplaint.getDistrict(), user.getState());
+        } catch (Exception e) {
+            System.err.println("Failed to send complaint submission email: " + e.getMessage());
         }
 
-        return mapperService.toComplaintResponse(savedComplaint, aiResult);
+        // Asynchronously queue AI Analysis using the existing Redis queue
+        java.util.Map<String, Object> metadata = new java.util.HashMap<>();
+        metadata.put("complaintId", savedComplaint.getComplaintCustomId());
+        metadata.put("title", savedComplaint.getTitle());
+        metadata.put("description", savedComplaint.getDescription());
+        metadata.put("languageHint", savedComplaint.getLanguage());
+        metadata.put("district", savedComplaint.getDistrict());
+        metadata.put("isSensitive", savedComplaint.isSensitive());
+        metadata.put("preferredHelperGender", savedComplaint.getPreferredHelperGender() != null ? savedComplaint.getPreferredHelperGender().name() : "ANY");
+        metadata.put("userId", user.getId());
+
+        List<Complaint> previous = complaintRepository.findByUserOrderByCreatedAtDesc(user);
+        List<java.util.Map<String, Object>> existingPayloads = new java.util.ArrayList<>();
+        for (Complaint p : previous) {
+            if (!p.getId().equals(savedComplaint.getId())) {
+                existingPayloads.add(java.util.Map.of(
+                    "id", p.getId(),
+                    "title", p.getTitle() != null ? p.getTitle() : "",
+                    "description", p.getDescription() != null ? p.getDescription() : ""
+                ));
+            }
+        }
+        metadata.put("existingComplaints", existingPayloads);
+
+        String metadataJson = "";
+        try {
+            metadataJson = new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(metadata);
+        } catch (Exception ignored) {}
+
+        jobService.createJob(savedComplaint.getId(), user.getId(), "COMPLAINT_ANALYSIS", "complaint_" + savedComplaint.getId(), metadataJson);
+
+        return mapperService.toComplaintResponse(savedComplaint, null);
     }
 
     public List<ComplaintResponse> myComplaints() {
@@ -104,10 +180,39 @@ public class ComplaintService {
     public ComplaintResponse getById(Long id) {
         Complaint complaint = findComplaint(id);
         User user = userService.currentUser();
-        if (user.getRole() != Role.ADMIN 
-                && !complaint.getUser().getId().equals(user.getId())
-                && (user.getRole() != Role.HELPER || complaint.getAssignedHelper() == null || !complaint.getAssignedHelper().getId().equals(user.getId()))) {
-            throw new ForbiddenException("You cannot view this complaint");
+        
+        // Scope permissions
+        if (user.getRole() != Role.SUPER_ADMIN && user.getRole() != Role.ADMIN) {
+            if (!complaint.getUser().getId().equals(user.getId())
+                    && (user.getRole() != Role.HELPER || complaint.getAssignedHelper() == null || !complaint.getAssignedHelper().getId().equals(user.getId()))) {
+                throw new ForbiddenException("You cannot view this complaint");
+            }
+        } else if (user.getRole() == Role.ADMIN && user.getDistrict() != null && !user.getDistrict().equalsIgnoreCase("GLOBAL")) {
+            // Scope Admin queries by district
+            if (complaint.getDistrict() == null || !complaint.getDistrict().equalsIgnoreCase(user.getDistrict())) {
+                throw new ForbiddenException("Access denied: Case does not belong to your district (" + user.getDistrict() + ")");
+            }
+        }
+        return mapperService.toComplaintResponse(complaint, aiResultRepository.findByComplaint(complaint).orElse(null));
+    }
+
+    public ComplaintResponse getByCustomId(String customId) {
+        Complaint complaint = complaintRepository.findByComplaintCustomId(customId)
+                .orElseThrow(() -> new ResourceNotFoundException("Complaint not found with ID: " + customId));
+        
+        User user = userService.currentUser();
+        
+        // Scope permissions
+        if (user.getRole() != Role.SUPER_ADMIN && user.getRole() != Role.ADMIN) {
+            if (!complaint.getUser().getId().equals(user.getId())
+                    && (user.getRole() != Role.HELPER || complaint.getAssignedHelper() == null || !complaint.getAssignedHelper().getId().equals(user.getId()))) {
+                throw new ForbiddenException("You cannot view this complaint");
+            }
+        } else if (user.getRole() == Role.ADMIN && user.getDistrict() != null && !user.getDistrict().equalsIgnoreCase("GLOBAL")) {
+            // Scope Admin queries by district
+            if (complaint.getDistrict() == null || !complaint.getDistrict().equalsIgnoreCase(user.getDistrict())) {
+                throw new ForbiddenException("Access denied: Case does not belong to your district (" + user.getDistrict() + ")");
+            }
         }
         return mapperService.toComplaintResponse(complaint, aiResultRepository.findByComplaint(complaint).orElse(null));
     }
@@ -116,27 +221,109 @@ public class ComplaintService {
     public AIResultResponse reAnalyze(Long id) {
         Complaint complaint = findComplaint(id);
         User user = userService.currentUser();
-        if (user.getRole() != Role.ADMIN && !complaint.getUser().getId().equals(user.getId())) {
+        
+        if (user.getRole() == Role.ADMIN && user.getDistrict() != null && !user.getDistrict().equalsIgnoreCase("GLOBAL")) {
+            if (complaint.getDistrict() == null || !complaint.getDistrict().equalsIgnoreCase(user.getDistrict())) {
+                throw new ForbiddenException("Access denied: Case does not belong to your district (" + user.getDistrict() + ")");
+            }
+        } else if (user.getRole() != Role.SUPER_ADMIN && user.getRole() != Role.ADMIN && !complaint.getUser().getId().equals(user.getId())) {
             throw new ForbiddenException("You cannot analyze this complaint");
         }
-        AIResult result = aiAnalysisService.analyzeAndSave(complaint);
-        return aiAnalysisService.response(result);
+        
+        // Clean up old AIResult
+        aiResultRepository.findByComplaint(complaint).ifPresent(aiResultRepository::delete);
+        
+        // Re-queue analysis job
+        java.util.Map<String, Object> metadata = new java.util.HashMap<>();
+        metadata.put("complaintId", complaint.getComplaintCustomId());
+        metadata.put("title", complaint.getTitle());
+        metadata.put("description", complaint.getDescription());
+        metadata.put("languageHint", complaint.getLanguage());
+        metadata.put("district", complaint.getDistrict());
+        metadata.put("isSensitive", complaint.isSensitive());
+        metadata.put("preferredHelperGender", complaint.getPreferredHelperGender() != null ? complaint.getPreferredHelperGender().name() : "ANY");
+        metadata.put("userId", complaint.getUser().getId());
+
+        List<Complaint> previous = complaintRepository.findByUserOrderByCreatedAtDesc(complaint.getUser());
+        List<java.util.Map<String, Object>> existingPayloads = new java.util.ArrayList<>();
+        for (Complaint p : previous) {
+            if (!p.getId().equals(complaint.getId())) {
+                existingPayloads.add(java.util.Map.of(
+                    "id", p.getId(),
+                    "title", p.getTitle() != null ? p.getTitle() : "",
+                    "description", p.getDescription() != null ? p.getDescription() : ""
+                ));
+            }
+        }
+        metadata.put("existingComplaints", existingPayloads);
+
+        String metadataJson = "";
+        try {
+            metadataJson = new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(metadata);
+        } catch (Exception ignored) {}
+
+        complaint.setStatus(ComplaintStatus.SUBMITTED);
+        complaintRepository.save(complaint);
+
+        jobService.createJob(complaint.getId(), complaint.getUser().getId(), "COMPLAINT_ANALYSIS", "complaint_" + complaint.getId(), metadataJson);
+        
+        return null;
     }
 
     @Transactional
     public ComplaintResponse updateStatus(Long id, StatusUpdateRequest request) {
         Complaint complaint = findComplaint(id);
         User user = userService.currentUser();
-        if (user.getRole() != Role.ADMIN && user.getRole() != Role.HELPER) {
-            throw new ForbiddenException("Only admin/helper can update complaint status");
+        
+        // Admin scoping
+        if (user.getRole() == Role.ADMIN && user.getDistrict() != null && !user.getDistrict().equalsIgnoreCase("GLOBAL")) {
+            if (complaint.getDistrict() == null || !complaint.getDistrict().equalsIgnoreCase(user.getDistrict())) {
+                throw new ForbiddenException("Access denied: Case does not belong to your district (" + user.getDistrict() + ")");
+            }
         }
+        
+        // Guide scoping
+        if (user.getRole() == Role.HELPER) {
+            if (complaint.getAssignedHelper() == null || !complaint.getAssignedHelper().getId().equals(user.getId())) {
+                throw new ForbiddenException("Only the assigned Guide can update this complaint status");
+            }
+        }
+        
+        // Enforce state transitions
+        validateTransition(complaint.getStatus(), request.status());
+
         complaint.setStatus(request.status());
         if (request.note() != null) {
             complaint.setLegalOpinion(request.note());
         }
         Complaint saved = complaintRepository.save(complaint);
-        notificationService.create(saved.getUser(), "Your complaint ID " + saved.getId() + " status changed to " + saved.getStatus(), NotificationType.IN_APP);
+        
+        try {
+            aiClientService.syncComplaint(
+                saved.getComplaintCustomId(),
+                saved.getStatus().name(),
+                saved.getAssignedHelper() != null ? saved.getAssignedHelper().getId().toString() : null,
+                saved.getAssignedHelper() != null ? saved.getAssignedHelper().getName() : null,
+                request.note()
+            );
+        } catch (Exception e) {
+            System.err.println("FastAPI sync failed: " + e.getMessage());
+        }
+
+        notificationService.create(saved.getUser(), "Your complaint status changed to " + saved.getStatus(), NotificationType.IN_APP);
         return mapperService.toComplaintResponse(saved, aiResultRepository.findByComplaint(saved).orElse(null));
+    }
+
+    private void validateTransition(ComplaintStatus current, ComplaintStatus next) {
+        if (current == next) return;
+        
+        if (current == ComplaintStatus.CLOSED && next != ComplaintStatus.REOPEN_REQUESTED) {
+            throw new com.aram.legalaid.exception.BadRequestException("A closed case cannot be directly updated. Please request to reopen first.");
+        }
+        
+        if (current == ComplaintStatus.DELETED || current == ComplaintStatus.REJECTED) {
+            throw new com.aram.legalaid.exception.BadRequestException("Terminated cases (deleted/rejected) cannot be updated.");
+        }
     }
 
     public Complaint findComplaint(Long id) {
@@ -145,7 +332,14 @@ public class ComplaintService {
     }
 
     public List<ComplaintResponse> allComplaints() {
-        return complaintRepository.findAll().stream()
+        User currentUser = userService.currentUser();
+        List<Complaint> list;
+        if (currentUser.getRole() == Role.SUPER_ADMIN || currentUser.getDistrict() == null || currentUser.getDistrict().equalsIgnoreCase("GLOBAL")) {
+            list = complaintRepository.findAll();
+        } else {
+            list = complaintRepository.findByDistrictOrderByCreatedAtDesc(currentUser.getDistrict());
+        }
+        return list.stream()
                 .map(c -> mapperService.toComplaintResponse(c, aiResultRepository.findByComplaint(c).orElse(null)))
                 .toList();
     }
@@ -174,7 +368,7 @@ public class ComplaintService {
         }
         
         AiTriageResponse triageRes = aiClientService.analyzeComplaint(
-            title, description, "en", "Coimbatore", false, "ANY", existingPayloads
+            "", null, "Coimbatore", title, description, "en", "Coimbatore", false, "ANY", existingPayloads
         );
         
         Long similarId = null;
@@ -195,5 +389,57 @@ public class ComplaintService {
             "similarComplaintId", similarId != null ? similarId : 0L,
             "similarityScore", triageRes.similarComplaintFound() ? 0.85 : 0.0
         );
+    }
+
+    private static String getStateCode(String stateName) {
+        if (stateName == null || stateName.trim().isEmpty()) {
+            return "TN";
+        }
+        String normalized = stateName.trim().toUpperCase();
+        if (normalized.equals("TAMIL NADU") || normalized.equals("TAMILNADU")) {
+            return "TN";
+        }
+        if (normalized.equals("PUDUCHERRY") || normalized.equals("PONDICHERRY")) {
+            return "PY";
+        }
+        if (normalized.equals("KERALA")) {
+            return "KL";
+        }
+        if (normalized.equals("KARNATAKA")) {
+            return "KA";
+        }
+        if (normalized.equals("ANDHRA PRADESH")) {
+            return "AP";
+        }
+        if (normalized.length() >= 2) {
+            return normalized.substring(0, 2);
+        }
+        return "TN";
+    }
+
+    private static String getDistrictCode(String districtName) {
+        if (districtName == null || districtName.trim().isEmpty()) {
+            return "CBE";
+        }
+        String normalized = districtName.trim().toLowerCase();
+        switch (normalized) {
+            case "chennai": return "CHE";
+            case "coimbatore": return "CBE";
+            case "madurai": return "MDU";
+            case "tiruchirappalli":
+            case "trichy": return "TRZ";
+            case "salem": return "SLM";
+            case "tirunelveli": return "TNV";
+            case "erode": return "ERD";
+            case "vellore": return "VLR";
+            case "thoothukudi":
+            case "tuticorin": return "TUT";
+            case "nagercoil": return "NGL";
+            default:
+                if (normalized.length() >= 3) {
+                    return normalized.substring(0, 3).toUpperCase();
+                }
+                return "CBE";
+        }
     }
 }

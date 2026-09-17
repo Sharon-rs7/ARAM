@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import DashboardLayout from "@/components/layout/DashboardLayout";
+import DashboardLayout from "@/components/common/DashboardLayout";
 import Card from "@/components/common/Card";
 import Button from "@/components/common/Button";
 import Loader from "@/components/common/Loader";
 import EmptyState from "@/components/common/EmptyState";
-import { formatDuration, exportTableToCSV } from "../../utils/exportUtils";
-import volunteerActivityService from "../../services/volunteerActivityService";
+import { formatDuration, exportTableToCSV } from "@/utils/exportUtils";
+import volunteerActivityService from "@/services/volunteerActivityService";
 import {
   Users,
   Activity,

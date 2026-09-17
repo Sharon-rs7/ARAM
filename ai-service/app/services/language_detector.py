@@ -11,12 +11,10 @@ class LanguageDetector:
         self.load_model()
 
     def load_model(self):
-        if os.path.exists(self.onnx_path):
-            try:
-                self.session = ort.InferenceSession(self.onnx_path, providers=['CPUExecutionProvider'])
-                print("[ONNX LOADED] LanguageDetector session active.")
-            except Exception as e:
-                print(f"Error loading ONNX Language Detector: {e}")
+        from app.nlp.ml_language_detector import ml_language_detector
+        self.session = ml_language_detector.session
+        if self.session:
+            print("[ONNX REUSED] LanguageDetector session reused from ml_language_detector.")
 
     def detect_language(self, text: str) -> str:
         if not text or not text.strip():

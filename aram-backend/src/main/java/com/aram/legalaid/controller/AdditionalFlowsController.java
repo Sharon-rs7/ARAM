@@ -93,19 +93,31 @@ public class AdditionalFlowsController {
     // Feedback
     public record FeedbackPayload(Long complaintId, Integer rating, String comment, boolean helpful) {}
 
-    @PostMapping("/api/feedback")
+    @PostMapping({"/api/feedback", "/api/citizen/feedback"})
     public ResponseEntity<CaseFeedback> submitFeedback(@RequestBody FeedbackPayload payload) {
         User user = userService.currentUser();
         return ResponseEntity.ok(additionalFlowsService.submitFeedback(
                 payload.complaintId(), payload.rating(), payload.comment(), payload.helpful(), user));
     }
 
+    @GetMapping({"/api/feedback/{complaintId}", "/api/complaints/{complaintId}/feedback"})
+    public ResponseEntity<CaseFeedback> getFeedback(@PathVariable Long complaintId) {
+        return additionalFlowsService.getFeedback(complaintId)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.noContent().build());
+    }
+
     // Status Workflow Transitions
     public record StatusUpdatePayload(String status, String details) {}
 
     @PutMapping("/api/complaints/{id}/status-update")
-    public ResponseEntity<Complaint> updateStatus(@PathVariable Long id, @RequestBody StatusUpdatePayload payload) {
+    public ResponseEntity<java.util.Map<String, Object>> updateStatus(@PathVariable Long id, @RequestBody StatusUpdatePayload payload) {
         User user = userService.currentUser();
-        return ResponseEntity.ok(additionalFlowsService.updateComplaintWorkflowStatus(id, payload.status(), payload.details(), user));
+        Complaint c = additionalFlowsService.updateComplaintWorkflowStatus(id, payload.status(), payload.details(), user);
+        java.util.Map<String, Object> res = new java.util.HashMap<>();
+        res.put("id", c.getId());
+        res.put("status", c.getStatus().name());
+        res.put("complaintCustomId", c.getComplaintCustomId());
+        return ResponseEntity.ok(res);
     }
 }

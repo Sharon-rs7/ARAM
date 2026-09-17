@@ -69,6 +69,9 @@ public class AIAnalysisService {
 
         // 2. Invoke external FastAPI via AIClientService
         AiTriageResponse triageRes = aiClientService.analyzeComplaint(
+            complaint.getComplaintCustomId(),
+            complaint.getUser().getId(),
+            complaint.getDistrict(),
             complaint.getTitle(),
             complaint.getDescription(),
             complaint.getLanguage(),
@@ -83,7 +86,23 @@ public class AIAnalysisService {
             throw new RuntimeException("AI analysis service failed to classify complaint using ML models.");
         }
 
-        // 3. Map fields from external model outputs
+        return processAndSaveTriageResult(complaint, triageRes);
+    }
+
+    @Transactional
+    public AIResult processAndSaveTriageResult(Complaint complaint, AiTriageResponse triageRes) {
+        // Map fields from external model outputs
+        if (triageRes.detectedLanguage() != null) {
+            String dl = triageRes.detectedLanguage().toLowerCase();
+            if (dl.startsWith("ta")) {
+                complaint.setLanguage("Tamil");
+            } else if (dl.startsWith("hi")) {
+                complaint.setLanguage("Hindi");
+            } else {
+                complaint.setLanguage("English");
+            }
+        }
+        
         ComplaintCategory category = complaint.getCategory() != null ? complaint.getCategory() : mapCategory(triageRes.category());
         PriorityLevel priorityLevel = complaint.getPriority() != null ? complaint.getPriority() : mapPriority(triageRes.priority());
         
@@ -121,6 +140,13 @@ public class AIAnalysisService {
         }
         if (triageRes.complexity() != null) {
             result.setComplexity(triageRes.complexity());
+        }
+        if (triageRes.caseSummary() != null) {
+            try {
+                result.setCaseSummary(new com.fasterxml.jackson.databind.ObjectMapper().writeValueAsString(triageRes.caseSummary()));
+            } catch (Exception e) {
+                System.err.println("Failed to serialize case summary: " + e.getMessage());
+            }
         }
         
         AIResult saved = aiResultRepository.save(result);

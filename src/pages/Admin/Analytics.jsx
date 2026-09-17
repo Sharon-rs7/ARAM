@@ -1,4 +1,4 @@
-import DashboardLayout from "@/components/layout/DashboardLayout";
+import DashboardLayout from "@/components/common/DashboardLayout";
 import {
   TrendingUp,
   Users,
@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { adminService } from "../../services/adminService";
+import { adminService } from "@/services/adminService";
 import { toast } from "sonner";
 
 const Analytics = () => {

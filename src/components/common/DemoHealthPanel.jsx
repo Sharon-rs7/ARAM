@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Server, Database, Brain, Cpu, Volume2, ShieldCheck, RefreshCw, Layers } from "lucide-react";
-import { API_BASE_URL, USE_MOCKS } from "../../services/api";
+import { API_BASE_URL, USE_MOCKS } from "@/services/api";
 
 const DemoHealthPanel = () => {
   const [loading, setLoading] = useState(false);

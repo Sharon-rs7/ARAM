@@ -27,14 +27,14 @@ const Checkbox = ({
           checked={checked}
           onChange={onChange}
           disabled={disabled}
-          className="h-4.5 w-4.5 shrink-0 rounded-md border-slate-300 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition"
+          className="h-4.5 w-4.5 shrink-0 rounded-md border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-indigo-600 focus:ring-indigo-500 focus:ring-offset-0 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed transition"
           {...props}
         />
       </div>
       {(label || description) && (
-        <label htmlFor={checkboxId} className="text-xs leading-relaxed text-slate-600 font-medium cursor-pointer">
-          {label && <span className="block text-slate-800 font-semibold">{label}</span>}
-          {description && <span className="block text-slate-500 mt-0.5">{description}</span>}
+        <label htmlFor={checkboxId} className="text-xs leading-relaxed text-slate-650 dark:text-slate-350 font-medium cursor-pointer">
+          {label && <span className="block text-slate-800 dark:text-slate-200 font-semibold">{label}</span>}
+          {description && <span className="block text-slate-500 dark:text-slate-400 mt-0.5">{description}</span>}
         </label>
       )}
     </div>

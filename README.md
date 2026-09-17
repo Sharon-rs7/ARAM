@@ -1,96 +1,105 @@
-# ARAM – AI Powered Legal Aid Triage and Complaint Management System
-This is a student academic project designed to provide multilingual legal aid triage, administrative routing, and grievance tracking for citizens, volunteers, and admin coordinators.
+﻿# ARAM AI — Accessible Rights & Assistance Management
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://img.shields.io/badge/Build-Passing-brightgreen.svg)]()
+[![RAG Grounding](https://img.shields.io/badge/RAG-Verified_Statutory_Corpus-blue.svg)]()
+[![Gemini](https://img.shields.io/badge/Gemini_3.6_Flash-Active-purple.svg)]()
+
+**ARAM AI** is a production-grade, multilingual legal-aid triage and assistance management platform designed for citizens navigating the Indian legal and administrative justice system.
 
 ---
 
-## 🛠️ 1. Project Setup & Run Instructions
+## 1. What ARAM Does
 
-### A. Quick Start Desktop Runners (.bat)
-Double-click these batch scripts in the project root to start the servers instantly:
-* **`START_FRONTEND_LOCAL.bat`:** Launches the Vite frontend at `http://localhost:5173`.
-* **`START_BACKEND_LOCAL.bat`:** Starts the Spring Boot backend server on port `8080`.
-* **`START_FRONTEND_MOBILE_HOST.bat`:** Launches the frontend on LAN (`0.0.0.0`) for mobile testing.
-
-### B. Manual Startup Commands
-* **Vite React Frontend:**
-  ```bash
-  npm install
-  npm run dev
-  ```
-  Runs at: `http://localhost:5173`
-
-* **Spring Boot Java Backend:**
-  ```bash
-  cd aram-backend
-  mvn spring-boot:run
-  ```
-  Runs at: `http://localhost:8080` (API endpoint: `/api`)  
-  Swagger Docs: `http://localhost:8080/swagger-ui/index.html`  
-  H2 Database Console: `http://localhost:8080/h2-console` (JDBC URL: `jdbc:h2:mem:aramdb`, User: `sa`, Password: leave blank)
-
-* **FastAPI Python AI Service:**
-  ```bash
-  cd ai-service
-  venv\Scripts\activate
-  uvicorn app.main:app --host 127.0.0.1 --port 8000
-  ```
-  Runs at: `http://localhost:8000`
+ARAM bridges the critical civic gap for citizens who do not know:
+- What their grievance is legally classified as.
+- Which specific government authority or tribunal they should approach.
+- What evidence and documentation they need to collect.
+- What their next actionable step should be.
+- How to seek human assistance from trained Legal Guides (Volunteers).
 
 ---
 
-## 🔑 2. Demo User Credentials
-You can log in to the system using these pre-seeded development accounts:
+## 2. Architecture & Microservices
 
-| Role | Email Address | Password | Portal Dashboard |
-| :--- | :--- | :--- | :--- |
-| **Admin** | `admin@aram.ai` | `Admin@123` | `/admin/dashboard` |
-| **Citizen** | `citizen@aram.ai` | `Citizen@123` | `/citizen/dashboard` |
-| **Volunteer / Helper** | `volunteer@aram.ai` | `Helper@123` | `/volunteer/dashboard` |
-
----
-
-## 📂 3. Project Directory Structure
-```text
-aram/
-├── src/                      # React Frontend source code
-│   ├── components/           # UI elements & layout wrappers
-│   ├── pages/                # Pages (Admin, Citizen, Volunteer, Legal, Auth)
-│   ├── routes/               # Route guards (ProtectedRoute, PublicRoute)
-│   └── services/             # Axios REST clients
-├── aram-backend/             # Spring Boot REST microservice
-│   ├── src/main/java         # Controllers, services, and models
-│   └── src/main/resources    # Configuration settings and seeded data templates
-├── ai-service/               # FastAPI Python AI microservice
-│   ├── app/                  # Classifiers and OCR engines
-│   └── training/             # Training scripts and datasets
-├── public/                   # Static assets & Service Worker offline page
-├── postman/                  # Postman API test collection files
-├── package.json              # NPM dependencies
-└── vite.config.js            # Vite configurations
+```
+                    ┌────────────────────────┐
+                    │    React 18 + Vite     │
+                    │   (Frontend Portal)    │
+                    └───────────┬────────────┘
+                                │
+          ┌─────────────────────┼─────────────────────┐
+          │ :8081               │ :8082               │ :8000
+          ▼                     ▼                     ▼
+┌───────────────────┐ ┌───────────────────┐ ┌───────────────────┐
+│   AUTH SERVICE    │ │   CORE BACKEND    │ │    AI SERVICE     │
+│  - Spring Boot 3  │ │  - Spring Boot 3  │ │  - FastAPI        │
+│  - JWT & RBAC     │ │  - Complaints DB  │ │  - Faster-Whisper │
+│  - BCrypt Hash    │ │  - District Scope │ │  - SentenceTrans. │
+│  - Refresh Tokens │ │  - WebSockets     │ │  - RAG + Gemini   │
+└─────────┬─────────┘ └─────────┬─────────┘ └─────────┬─────────┘
+          │                     │                     │
+          ▼                     ▼                     ▼
+┌───────────────────────────────────────────────────────────────┐
+│     MySQL 8.0 (System-of-Record) | Redis 7 | MongoDB 6.0      │
+└───────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 📱 4. Progressive Web App (PWA) Offline Support
-* ARAM is configured as an installable PWA.
-* When offline, the browser service worker automatically routes the user to a custom `offline.html` page.
-* To reset local worker state during development, open Chrome DevTools (F12) → **Application** → **Service Workers** → click **Unregister**, then clear site data.
+## 3. Key Capabilities
+
+1. **Multilingual Voice Intake**: Real-time Faster-Whisper audio transcription supporting **Tamil (`ta-IN`)**, **Hindi (`hi-IN`)**, and **English (`en-IN`)**.
+2. **Grounded Legal RAG**: 384-dimensional vector retrieval over 1,306 statutory provisions (`indian_legal_documents.parquet`) combined with Google Gemini 3.6 Flash.
+3. **Deterministic Safety Guard**: Automatic fallback ensuring strict statutory grounding with zero hallucinated penalties or invented acts.
+4. **Explainable Guide Matching**: Multi-factor ranking (District, Language, Specialization, Workload, and Female-Guide Safety Policy for sensitive domestic violence cases).
+5. **District-Scoped Access**: Strict server-side isolation ensuring Regional Admins only manage cases within their jurisdiction.
 
 ---
 
-## 👥 5. Project Developers & Credits
-This project was co-created by:
-* **Mr. Noyal Ashwin J** (noyalashwin0704@gmail.com | +91 6381276381)
-* **Mr. Sharon R** (+91 8220355021)
+## 4. Quickstart Guide
+
+### Prerequisites
+- Docker Engine 24+ & Docker Compose
+- Java 17+ & Python 3.10+
+- MySQL 8.0, Redis 7, MongoDB 6.0
+
+### Run via Docker Compose
+```bash
+# 1. Copy environment template
+cp .env.example .env
+
+# 2. Start all production containers
+docker-compose -f docker-compose.prod.yml up --build -d
+
+# 3. Access Web Application
+open http://localhost:80
+```
+
+### Verified Test Credentials
+- **Super Administrator**: `admin@gmail.com` / `Admin@123`
+- **Regional Administrator (Chennai)**: `chennai.admin@gmail.com` / `Admin@123`
+- **Legal Guide / Volunteer**: `volunteer@gmail.com` / `Helper@123`
+- **Citizen / Public User**: `citizen@gmail.com` / `Citizen@123`
 
 ---
 
-## 👥 6. User-Facing Role Labels
-User-facing role labels in the UI have been updated for a professional and accessible experience:
-- **Public User** (internally `CITIZEN` / `Citizen`)
-- **Legal Guide** (internally `HELPER` / `VOLUNTEER` / `Volunteer`)
-- **Admin** (internally `ADMIN` / `Admin`)
+## 5. Documentation Directory
 
-> [!NOTE]
-> Internal backend enums, database role values, JWT keys, and API/routing paths remain unchanged (`/citizen`, `/volunteer`, `/admin`) for stability.
+- [Final System Audit](docs/FINAL_SYSTEM_AUDIT.md)
+- [System Architecture](docs/FINAL_SYSTEM_ARCHITECTURE.md)
+- [User Journey & Flow](docs/FINAL_USER_FLOW.md)
+- [AI Pipeline Flow](docs/FINAL_AI_FLOW.md)
+- [RAG Retrieval Flow](docs/FINAL_RAG_FLOW.md)
+- [Legal Guide Matching Engine](docs/FINAL_GUIDE_MATCHING.md)
+- [Database Architecture](docs/FINAL_DATABASE_ARCHITECTURE.md)
+- [Production Deployment Guide](docs/FINAL_DEPLOYMENT.md)
+- [Security & Privacy Audit](docs/FINAL_SECURITY.md)
+- [Test & Evaluation Report](docs/FINAL_TEST_REPORT.md)
+- [Known Limitations & Future Scope](docs/FINAL_KNOWN_LIMITATIONS.md)
 
+---
+
+## 6. Statutory Disclaimer
+
+*ARAM AI provides preliminary legal-aid triage and informational guidance. It is not a court of law, police authority, or substitute for formal legal representation by a licensed advocate.*

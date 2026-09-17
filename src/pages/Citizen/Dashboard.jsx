@@ -1,43 +1,34 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import DashboardLayout from "@/components/layout/DashboardLayout";
-import Card from "@/components/common/Card";
-import Button from "@/components/common/Button";
-import Badge from "@/components/common/Badge";
-import {
-  Mic,
-  Send,
-  PlusCircle,
-  Sparkles,
-  ClipboardList,
-  MessageSquare,
-  Bell,
-  User,
-  ArrowRight
+import React, { useState, useEffect, useRef } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import DashboardLayout from "@/components/common/DashboardLayout";
+import { 
+  MessageSquare, PlusCircle, Clock, ShieldCheck, 
+  Mic, ArrowRight, FileText, CheckCircle2, ChevronRight,
+  HelpCircle, AlertCircle, Sparkles, Building2, User
 } from "lucide-react";
-import { complaintService } from "../../services/complaintService";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
+import { complaintService } from "@/services/complaintService";
+import { speechService } from "@/services/speechService";
 import { toast } from "sonner";
+import Button from "@/components/common/Button";
 
 const Dashboard = () => {
-  const navigate = useNavigate();
   const { user } = useAuth();
-  
-  const [complaintList, setComplaintList] = useState([]);
+  const navigate = useNavigate();
+
+  const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [queryText, setQueryText] = useState("");
-  const [recording, setRecording] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState(null);
 
   useEffect(() => {
     const fetchComplaints = async () => {
       try {
         setLoading(true);
         const data = await complaintService.getMyComplaints();
-        // Sort newest first and limit to 3 items for clean space design
-        const sorted = (data || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)).slice(0, 3);
-        setComplaintList(sorted);
+        setComplaints(data || []);
       } catch (err) {
-        console.error("Failed to load dashboard complaints:", err);
+        console.error("Failed to load user grievances:", err);
       } finally {
         setLoading(false);
       }
@@ -45,166 +36,218 @@ const Dashboard = () => {
     fetchComplaints();
   }, []);
 
-  const handleVoiceRecord = () => {
-    if (recording) return;
-    setRecording(true);
-    toast.info("Listening... Speak now");
-    
-    setTimeout(() => {
-      setRecording(false);
-      setQueryText("My neighbour is encroaching my property and threatening me");
-      toast.success("Voice transcribed!");
-    }, 2500);
-  };
-
-  const handleGetAiHelp = () => {
-    if (!queryText.trim()) {
-      navigate("/citizen/chatbot");
+  const handleStartVoiceTriage = async () => {
+    if (isRecording) {
+      if (mediaRecorder) mediaRecorder.stop();
+      setIsRecording(false);
       return;
     }
-    // Navigate to chatbot page passing the query parameter
-    navigate(`/citizen/chatbot?query=${encodeURIComponent(queryText)}`);
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      const audioChunks = [];
+
+      recorder.ondataavailable = (e) => {
+        if (e.data.size > 0) audioChunks.push(e.data);
+      };
+
+      recorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+        toast.info("Transcribing legal problem with Faster-Whisper...");
+        try {
+          const res = await speechService.transcribeAudio(audioBlob, "ta-IN");
+          if (res?.text) {
+            navigate(`/citizen/chatbot?q=${encodeURIComponent(res.text)}`);
+          }
+        } catch (err) {
+          toast.error("Voice transcription failed. Please type your query.");
+        }
+      };
+
+      recorder.start();
+      setMediaRecorder(recorder);
+      setIsRecording(true);
+      toast.info("Listening... Speak your legal problem clearly.");
+    } catch (err) {
+      toast.error("Microphone access denied or unavailable.");
+    }
   };
 
+  const categories = [
+    { title: "Women & Family Law", desc: "Maintenance, 498A, DV Act, Custody", color: "bg-[#F6D8C8]/50 border-[#F6D8C8]", query: "Women and family legal protection rights" },
+    { title: "Land & Property", desc: "Patta, Encroachment, Boundary disputes", color: "bg-[#E8C978]/40 border-[#E8C978]", query: "Land title deed patta transfer dispute" },
+    { title: "Consumer & RTI", desc: "Product defect, RTI filing, Fair trade", color: "bg-[#E7E1F2]/50 border-[#E7E1F2]", query: "RTI filing procedure and consumer court claim" },
+    { title: "Labour & Wage Rights", desc: "Unpaid dues, Gratuity, PF settlement", color: "bg-[#DCEBDD] border-[#B8D7BC]", query: "Labour wage non-payment and gratuity settlement" },
+    { title: "Emergency & Cyber Aid", desc: "Online fraud, 1930 Helpline, Harassment", color: "bg-[#F4DDE2]/50 border-[#F4DDE2]", query: "Cyber crime financial fraud and emergency helpline" },
+  ];
+
   return (
-    <DashboardLayout>
-      <div className="space-y-6 max-w-4xl mx-auto pb-6">
+    <DashboardLayout role="citizen">
+      <div className="max-w-6xl mx-auto space-y-8 pb-12">
         
-        {/* Section 1: Custom Welcome & Ask Box Card */}
-        <div className="glass-panel p-6 md:p-8 relative overflow-hidden">
-          <div className="flex justify-between items-start mb-6">
-            <div>
-              <h2 className="text-xl md:text-2xl font-extrabold text-slate-900 dark:text-white">
-                Good morning, {user?.name || "Sharon"}
-              </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-semibold mt-1">
-                How can ARAM help you today?
-              </p>
+        {/* Hero Section */}
+        <div className="relative overflow-hidden rounded-3xl bg-[#163D32] p-8 sm:p-10 text-white shadow-md">
+          <div className="relative z-10 max-w-2xl space-y-4">
+            <div className="inline-flex items-center gap-2 rounded-full bg-[#DCEBDD]/20 px-3 py-1 text-xs font-bold text-[#DCEBDD]">
+              <Sparkles size={14} /> AI-Powered Legal Aid Platform
             </div>
-            
-            <div className="flex items-center gap-3">
-              <button 
-                onClick={() => navigate("/citizen/notifications")}
-                className="p-2.5 rounded-full border border-slate-200/50 dark:border-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800 transition text-slate-650 dark:text-slate-350 cursor-pointer"
-              >
-                <Bell size={18} />
-              </button>
-              <button 
-                onClick={() => navigate("/citizen/profile")}
-                className="p-2.5 rounded-full border border-slate-200/50 dark:border-slate-800/40 hover:bg-slate-100 dark:hover:bg-slate-800 transition text-slate-650 dark:text-slate-350 cursor-pointer"
-              >
-                <User size={18} />
-              </button>
-            </div>
-          </div>
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">
+              Hello, {user?.name || "Citizen"}. How can ARAM assist you today?
+            </h1>
+            <p className="text-xs sm:text-sm text-[#DCEBDD]/90 leading-relaxed">
+              Describe any legal situation or dispute in Tamil, English, or Hindi to receive immediate grounded legal sections, document checklists, and authorized guide assistance.
+            </p>
 
-          <div className="space-y-4">
-            <label className="block text-[11px] font-bold text-slate-400 uppercase tracking-widest px-1">
-              Tell us what happened
-            </label>
-            <div className="relative flex items-center">
-              <input
-                type="text"
-                value={queryText}
-                onChange={(e) => setQueryText(e.target.value)}
-                placeholder="Describe your problem in simple words..."
-                className="w-full h-14 pr-14 pl-5 rounded-2xl border border-slate-200 dark:border-slate-800 focus:border-indigo-500 outline-none text-sm font-medium bg-white dark:bg-slate-950/40"
-              />
+            {/* Hero Actions */}
+            <div className="flex flex-wrap gap-3 pt-2">
+              <Button
+                variant="cream"
+                onClick={() => navigate("/citizen/chatbot")}
+                icon={MessageSquare}
+              >
+                Ask ARAM AI Legal Assistant
+              </Button>
               <button
-                type="button"
-                onClick={handleVoiceRecord}
-                className={`absolute right-4 p-2.5 rounded-xl transition cursor-pointer ${
-                  recording ? "bg-red-500 text-white animate-pulse" : "hover:bg-slate-100 dark:hover:bg-slate-900 text-slate-400 hover:text-slate-600"
+                onClick={handleStartVoiceTriage}
+                className={`inline-flex items-center gap-2 px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold transition shadow-sm cursor-pointer ${
+                  isRecording 
+                    ? "bg-red-600 text-white animate-pulse" 
+                    : "bg-[#B96845] hover:bg-[#9E5333] text-white"
                 }`}
-                title="Use voice transcription"
               >
-                <Mic size={18} />
-              </button>
-            </div>
-
-            <div className="flex justify-between items-center pt-2 px-1">
-              <span className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 tracking-wider">
-                தமிழ் / English / हिंदी
-              </span>
-              <button
-                onClick={handleGetAiHelp}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition cursor-pointer"
-              >
-                Get AI Help <ArrowRight size={14} />
+                <Mic size={16} />
+                <span>{isRecording ? "Stop & Transcribe" : "Speak Problem (Faster-Whisper)"}</span>
               </button>
             </div>
           </div>
+
+          <div className="absolute -right-16 -bottom-16 w-80 h-80 rounded-full bg-[#1F5948]/60 blur-2xl pointer-events-none" />
         </div>
 
-        {/* Section 2: Two primary action buttons */}
-        <div className="grid grid-cols-2 gap-4">
-          <button
-            onClick={() => navigate("/citizen/submit-complaint")}
-            className="h-16 rounded-2xl bg-indigo-600 dark:bg-indigo-500 text-white text-sm font-bold flex items-center justify-center gap-2 hover:bg-indigo-700 dark:hover:bg-indigo-650 transition-all shadow-md shadow-indigo-500/10 hover:shadow-indigo-500/20 active:scale-98 cursor-pointer"
+        {/* 4 Quick Action Pillars */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Link
+            to="/citizen/submit-complaint"
+            className="group p-5 rounded-2xl bg-[#FFFDF8] border border-[#E6E1D8] shadow-sm hover:border-[#163D32] transition space-y-2"
           >
-            <PlusCircle size={18} />
-            Submit Complaint
-          </button>
-          
-          <button
-            onClick={() => navigate("/citizen/chatbot")}
-            className="h-16 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 text-slate-800 dark:text-slate-100 text-sm font-bold flex items-center justify-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-850 transition-all shadow-sm active:scale-98 cursor-pointer"
+            <div className="w-10 h-10 rounded-xl bg-[#DCEBDD] text-[#163D32] flex items-center justify-center font-bold group-hover:scale-105 transition">
+              <PlusCircle size={20} />
+            </div>
+            <h3 className="text-sm font-bold text-[#18332B] group-hover:text-[#163D32]">Submit Grievance</h3>
+            <p className="text-xs text-[#65736D]">File a structured complaint with AI document analysis.</p>
+          </Link>
+
+          <Link
+            to="/citizen/documents"
+            className="group p-5 rounded-2xl bg-[#FFFDF8] border border-[#E6E1D8] shadow-sm hover:border-[#163D32] transition space-y-2"
           >
-            <Sparkles size={18} className="text-indigo-500 dark:text-indigo-400" />
-            Ask ARAM AI
-          </button>
+            <div className="w-10 h-10 rounded-xl bg-[#F6D8C8]/60 text-[#8C3B1E] flex items-center justify-center font-bold group-hover:scale-105 transition">
+              <FileText size={20} />
+            </div>
+            <h3 className="text-sm font-bold text-[#18332B] group-hover:text-[#163D32]">Upload Evidence</h3>
+            <p className="text-xs text-[#65736D]">Verify deeds, agreements & FIRs via OCR readiness.</p>
+          </Link>
+
+          <Link
+            to="/track-complaint"
+            className="group p-5 rounded-2xl bg-[#FFFDF8] border border-[#E6E1D8] shadow-sm hover:border-[#163D32] transition space-y-2"
+          >
+            <div className="w-10 h-10 rounded-xl bg-[#E8C978]/40 text-[#7A5A0A] flex items-center justify-center font-bold group-hover:scale-105 transition">
+              <Clock size={20} />
+            </div>
+            <h3 className="text-sm font-bold text-[#18332B] group-hover:text-[#163D32]">Track Status</h3>
+            <p className="text-xs text-[#65736D]">Milestone progress timeline & guide action plans.</p>
+          </Link>
+
+          <Link
+            to="/citizen/help"
+            className="group p-5 rounded-2xl bg-[#FFFDF8] border border-[#E6E1D8] shadow-sm hover:border-[#163D32] transition space-y-2"
+          >
+            <div className="w-10 h-10 rounded-xl bg-[#E7E1F2]/60 text-[#4F3F73] flex items-center justify-center font-bold group-hover:scale-105 transition">
+              <HelpCircle size={20} />
+            </div>
+            <h3 className="text-sm font-bold text-[#18332B] group-hover:text-[#163D32]">Legal Rights Guide</h3>
+            <p className="text-xs text-[#65736D]">DLSA contacts, government schemes & helplines.</p>
+          </Link>
         </div>
 
-        {/* Section 3: Your Active Complaints List */}
-        <div className="glass-panel p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-sm font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
-              Your Active Complaints
-            </h3>
-            <button
-              onClick={() => navigate("/citizen/my-complaints")}
-              className="text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
-            >
-              View All →
-            </button>
+        {/* Legal Aid Topic Cards */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-extrabold text-[#18332B] tracking-tight">
+              Explore Legal Rights by Domain
+            </h2>
+            <Link to="/citizen/chatbot" className="text-xs font-bold text-[#1F5948] hover:underline flex items-center gap-1">
+              Ask any topic <ChevronRight size={14} />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+            {categories.map((cat, idx) => (
+              <div
+                key={idx}
+                onClick={() => navigate(`/citizen/chatbot?q=${encodeURIComponent(cat.query)}`)}
+                className={`p-4 rounded-2xl border ${cat.color} cursor-pointer hover:shadow-md transition space-y-1.5`}
+              >
+                <h4 className="text-xs font-bold text-[#18332B]">{cat.title}</h4>
+                <p className="text-[11px] text-[#65736D] leading-snug">{cat.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Recent Grievances List */}
+        <div className="rounded-3xl bg-[#FFFDF8] border border-[#E6E1D8] p-6 shadow-sm space-y-4">
+          <div className="flex items-center justify-between border-b border-[#E6E1D8] pb-4">
+            <div>
+              <h3 className="text-base font-extrabold text-[#18332B]">My Active Grievances</h3>
+              <p className="text-xs text-[#65736D] mt-0.5">Track your submitted complaints and legal guide notes.</p>
+            </div>
+            <Link to="/citizen/history" className="text-xs font-bold text-[#1F5948] hover:underline">
+              View All Grievances →
+            </Link>
           </div>
 
           {loading ? (
-            <div className="py-10 text-center text-xs text-slate-400">Loading complaints list...</div>
-          ) : complaintList.length === 0 ? (
-            <div className="py-10 text-center text-xs text-slate-400 font-medium">
-              You haven't submitted any complaints yet.
+            <div className="py-12 text-center text-xs text-[#8B9690]">Loading your grievances...</div>
+          ) : complaints.length === 0 ? (
+            <div className="py-12 text-center space-y-3">
+              <ShieldCheck className="mx-auto text-[#163D32]" size={36} />
+              <p className="text-xs font-bold text-[#18332B]">No active grievances found.</p>
+              <p className="text-[11px] text-[#65736D] max-w-sm mx-auto">
+                Whenever you submit a grievance or request legal guide representation, your case details will appear here.
+              </p>
+              <Button variant="primary" onClick={() => navigate("/citizen/submit-complaint")}>
+                Submit First Grievance
+              </Button>
             </div>
           ) : (
-            <div className="divide-y divide-slate-100 dark:divide-slate-800/40">
-              {complaintList.map((item) => (
+            <div className="space-y-3">
+              {complaints.slice(0, 3).map((item) => (
                 <div
                   key={item.id}
-                  onClick={() => navigate(`/citizen/complaints/${item.id}`)}
-                  className="py-4 first:pt-0 last:pb-0 flex justify-between items-center hover:bg-slate-50/30 dark:hover:bg-slate-900/10 transition cursor-pointer px-1 rounded-xl"
+                  onClick={() => navigate(`/citizen/complaint/${item.id}`)}
+                  className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl border border-[#E6E1D8] hover:bg-[#F7F1E6]/50 transition cursor-pointer"
                 >
-                  <div className="min-w-0 pr-4">
+                  <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-bold text-slate-400 dark:text-slate-500 shrink-0">
-                        {item.id}
+                      <span className="font-mono text-xs font-bold text-[#65736D]">
+                        ARAM-2026-{String(item.id).replace("cmp-", "").padStart(6, "0")}
                       </span>
-                      <h4 className="font-bold text-sm text-slate-800 dark:text-slate-200 truncate">
-                        {item.title}
-                      </h4>
+                      <span className="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-[#DCEBDD] text-[#163D32]">
+                        {String(item.status || "SUBMITTED").replace(/_/g, " ")}
+                      </span>
                     </div>
-                    <p className="text-[10px] text-slate-450 mt-1">
-                      {item.assignedHelperName ? `Guide: ${item.assignedHelperName}` : "Awaiting Admin Review"}
-                    </p>
+                    <h4 className="font-bold text-xs text-[#18332B]">{item.title || "Legal Aid Complaint"}</h4>
+                    <p className="text-[11px] text-[#65736D] line-clamp-1">{item.description}</p>
                   </div>
-                  
-                  <div className="flex flex-col items-end gap-2 shrink-0">
-                    <Badge
-                      status={item.status === "PENDING" ? "pending" : item.status === "IN_PROGRESS" ? "info" : "success"}
-                      label={item.status.replace("_", " ")}
-                    />
-                    <span className="text-[9px] text-slate-400 dark:text-slate-500 font-semibold uppercase">
-                      {new Date(item.createdAt).toLocaleDateString()}
+
+                  <div className="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                    <span className="text-[11px] text-[#8B9690] font-medium">
+                      {new Date(item.createdAt || Date.now()).toLocaleDateString()}
                     </span>
+                    <ChevronRight size={16} className="text-[#8B9690]" />
                   </div>
                 </div>
               ))}

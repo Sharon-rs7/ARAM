@@ -14,18 +14,18 @@ const Button = ({
   ariaLabel,
   ...props
 }) => {
-  // Base classes for accessible height, centering, border, transitions, active state
-  const baseClasses = "inline-flex items-center justify-center gap-2 rounded-xl text-sm font-semibold transition-all duration-200 active:scale-[0.98] focus:outline-none focus:ring-4 disabled:cursor-not-allowed disabled:opacity-50 min-h-[44px] px-5 py-2.5";
+  const baseClasses = "inline-flex items-center justify-center gap-2 rounded-full text-xs sm:text-sm font-bold transition-all duration-200 active:scale-[0.98] focus:outline-none focus:ring-4 disabled:cursor-not-allowed disabled:opacity-50 min-h-[44px] px-6 py-2.5 cursor-pointer";
 
-  // Specific classes matching design tokens
   const variants = {
-    primary: "bg-[#173B66] text-white shadow-sm hover:bg-[#0F2747] hover:shadow-md focus:ring-blue-200",
-    secondary: "bg-slate-100 text-slate-700 hover:bg-slate-200 focus:ring-slate-200",
-    outline: "border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 hover:border-slate-400 focus:ring-slate-200",
-    ghost: "text-slate-600 hover:bg-slate-100 hover:text-slate-900 focus:ring-slate-200 px-3",
-    success: "bg-green-700 text-white shadow-sm hover:bg-green-800 focus:ring-green-200",
-    danger: "bg-red-600 text-white shadow-sm hover:bg-red-700 focus:ring-red-250",
-    ai: "bg-teal-600 text-white shadow-sm hover:bg-teal-700 hover:shadow-md focus:ring-teal-200"
+    primary: "bg-[#163D32] text-white shadow-sm hover:bg-[#1F5948] hover:shadow-md focus:ring-[#DCEBDD]",
+    secondary: "bg-[#1F5948] text-white shadow-sm hover:bg-[#163D32] focus:ring-[#DCEBDD]",
+    outline: "border-1.5 border-[#163D32] bg-[#FFFDF8] text-[#163D32] hover:bg-[#DCEBDD] focus:ring-[#DCEBDD]",
+    ghost: "text-[#163D32] hover:bg-[#DCEBDD]/50 hover:text-[#163D32] focus:ring-[#DCEBDD] px-3",
+    success: "bg-[#2E7D5B] text-white shadow-sm hover:bg-[#163D32] focus:ring-[#DCEBDD]",
+    danger: "bg-[#C94B4B] text-white shadow-sm hover:bg-[#A83838] focus:ring-red-200",
+    ai: "bg-[#1F5948] text-white shadow-sm hover:bg-[#163D32] hover:shadow-md focus:ring-[#DCEBDD]",
+    voice: "bg-[#B96845] text-white shadow-sm hover:bg-[#9E5333] hover:shadow-md focus:ring-[#F6D8C8]",
+    cream: "bg-[#F7F1E6] text-[#163D32] border border-[#E6E1D8] hover:bg-[#DCEBDD] focus:ring-[#DCEBDD]"
   };
 
   const selectedVariant = variants[variant] || variants.primary;
@@ -46,9 +46,9 @@ const Button = ({
         </>
       ) : (
         <>
-          {Icon && iconPosition === "left" && <Icon className="h-4.5 w-4.5 shrink-0" />}
+          {Icon && iconPosition === "left" && <Icon className="h-4 w-4 shrink-0" />}
           {children}
-          {Icon && iconPosition === "right" && <Icon className="h-4.5 w-4.5 shrink-0" />}
+          {Icon && iconPosition === "right" && <Icon className="h-4 w-4 shrink-0" />}
         </>
       )}
     </button>

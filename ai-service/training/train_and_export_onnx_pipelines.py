@@ -1,155 +1,218 @@
 import os
 import sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
+import json
+import datetime
 import joblib
 import pandas as pd
 import numpy as np
+
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from sklearn.pipeline import Pipeline
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, precision_recall_fscore_support, confusion_matrix
 from skl2onnx import convert_sklearn
 from skl2onnx.common.data_types import StringTensorType, FloatTensorType
 from app.ml.text_preprocessor import clean_text
 
 MODELS_DIR = os.path.join(os.path.dirname(__file__), "..", "models")
-DATASETS_DIR = os.path.join(os.path.dirname(__file__), "..", "datasets")
+os.makedirs(MODELS_DIR, exist_ok=True)
 
-def train_and_export_category_onnx():
-    path = os.path.join(DATASETS_DIR, "legal_complaints_multilingual.csv")
-    if not os.path.exists(path): return False
-    df = pd.read_csv(path)
-    df["cleaned"] = df["complaint_text"].fillna("").apply(clean_text)
+def map_product_to_category(product):
+    p = str(product).lower()
+    # Direct, supported mappings
+    banking_keywords = ["bank", "checking", "savings", "credit card", "prepaid card", "money transfer", "virtual currency"]
+    for k in banking_keywords:
+        if k in p:
+            return "BANKING_DISPUTE"
+            
+    consumer_keywords = ["mortgage", "loan", "lease", "debt collection", "credit reporting", "credit repair", "payday"]
+    for k in consumer_keywords:
+        if k in p:
+            return "CONSUMER_COMPLAINT"
+            
+    return None
+
+def train_category_classifier():
+    print("=== Training Category Classifier on Real CFPB Data ===")
+    from datasets import load_dataset
+    import time
     
-    vec = TfidfVectorizer(max_features=5000, ngram_range=(1, 2))
+    # 1. Load real dataset with retries
+    print("Loading claritystorm/cfpb-consumer-complaints from HF...")
+    ds = None
+    for attempt in range(5):
+        try:
+            ds = load_dataset("claritystorm/cfpb-consumer-complaints", split="train", streaming=True)
+            break
+        except Exception as e:
+            print(f"HF load attempt {attempt+1} failed: {e}. Retrying in 3s...")
+            time.sleep(3)
+            
+    if ds is None:
+        print("[FATAL] Could not load dataset from HF due to persistent connection failures.")
+        sys.exit(1)
+    
+    records = []
+    for row in ds:
+        narrative = row.get("consumer_narrative")
+        product = row.get("product")
+        cid = row.get("complaint_id")
+        
+        if narrative and str(narrative).strip() and str(narrative).lower() != "none" and product:
+            category = map_product_to_category(product)
+            if category:
+                records.append({
+                    "text": clean_text(narrative),
+                    "category": category,
+                    "source_dataset": "claritystorm/cfpb-consumer-complaints",
+                    "source_record_id": str(cid)
+                })
+            # Collect 1000 records to train quickly in local CPU dev/test environment
+            if len(records) >= 1000:
+                break
+                
+    df = pd.DataFrame(records)
+    print(f"Loaded {len(df)} mapped records.")
+    
+    # Deduplicate to prevent train/test leakage
+    df = df.drop_duplicates(subset=["text"])
+    print(f"Deduplicated count: {len(df)}")
+    
+    # 2. Stratified Train/Val/Test Split (70/15/15)
+    X = df["text"].astype(str).tolist()
+    y = df["category"].astype(str).tolist()
+    
+    X_train, X_temp, y_train, y_temp = train_test_split(
+        X, y, test_size=0.30, random_state=42, stratify=y
+    )
+    X_val, X_test, y_val, y_test = train_test_split(
+        X_temp, y_temp, test_size=0.50, random_state=42, stratify=y_temp
+    )
+    
+    print(f"Split sizes - Train: {len(X_train)} | Val: {len(X_val)} | Test: {len(X_test)}")
+    
+    # 3. Train Pipeline
+    vec = TfidfVectorizer(max_features=3000, ngram_range=(1, 2))
     clf = LogisticRegression(max_iter=1000, C=1.0)
     
     pipe = Pipeline([
         ('vectorizer', vec),
         ('classifier', clf)
     ])
-    pipe.fit(df["cleaned"], df["category"].fillna("OTHER"))
+    pipe.fit(X_train, y_train)
     
-    # Save .pkl files for backward compatibility
-    joblib.dump(clf, os.path.join(MODELS_DIR, "category_model.pkl"))
-    joblib.dump(vec, os.path.join(MODELS_DIR, "vectorizer.pkl"))
-    joblib.dump(pipe, os.path.join(MODELS_DIR, "category_pipeline.pkl"))
+    # 4. Evaluate on Test Set
+    y_pred = pipe.predict(X_test)
     
+    acc = accuracy_score(y_test, y_pred)
+    precision, recall, f1, _ = precision_recall_fscore_support(y_test, y_pred, average='macro')
+    _, _, micro_f1, _ = precision_recall_fscore_support(y_test, y_pred, average='micro')
+    
+    cm = confusion_matrix(y_test, y_pred)
+    classes = list(pipe.classes_)
+    
+    print("\n--- Model Evaluation ---")
+    print(f"Accuracy: {acc:.4f}")
+    print(f"Macro F1: {f1:.4f}")
+    print(f"Micro F1: {micro_f1:.4f}")
+    
+    # 5. Export to ONNX
     onnx_model = convert_sklearn(pipe, initial_types=[('string_input', StringTensorType([None, 1]))])
-    with open(os.path.join(MODELS_DIR, "category_model.onnx"), "wb") as f:
+    onnx_path = os.path.join(MODELS_DIR, "category_model.onnx")
+    with open(onnx_path, "wb") as f:
         f.write(onnx_model.SerializeToString())
-    print("[SUCCESS] Trained & Exported category_model.onnx and category_model.pkl")
-
-def train_and_export_priority_onnx():
-    path = os.path.join(DATASETS_DIR, "priority_training.csv")
-    if not os.path.exists(path): return False
-    df = pd.read_csv(path)
-    text_col = "complaint_text" if "complaint_text" in df.columns else "text"
-    df["cleaned"] = df[text_col].fillna("").apply(clean_text)
+    print(f"Saved category classifier ONNX to {onnx_path}")
     
-    vec = TfidfVectorizer(max_features=5000, ngram_range=(1, 2))
-    clf = LogisticRegression(max_iter=1000, C=1.0)
-    
-    pipe = Pipeline([
-        ('vectorizer', vec),
-        ('classifier', clf)
-    ])
-    pipe.fit(df["cleaned"], df["priority_label"].fillna("MEDIUM"))
-    
-    joblib.dump(clf, os.path.join(MODELS_DIR, "priority_model.pkl"))
-    joblib.dump(vec, os.path.join(MODELS_DIR, "priority_vectorizer.pkl"))
-    
-    onnx_model = convert_sklearn(pipe, initial_types=[('string_input', StringTensorType([None, 1]))])
-    with open(os.path.join(MODELS_DIR, "priority_model.onnx"), "wb") as f:
-        f.write(onnx_model.SerializeToString())
-    print("[SUCCESS] Trained & Exported priority_model.onnx and priority_model.pkl")
-
-def train_and_export_language_onnx():
-    path = os.path.join(DATASETS_DIR, "language_detection_training.csv")
-    if not os.path.exists(path): return False
-    df = pd.read_csv(path)
-    df["cleaned"] = df["text"].fillna("").apply(clean_text)
-    
-    vec = TfidfVectorizer(max_features=5000, analyzer='char', ngram_range=(2, 4))
-    clf = LogisticRegression(max_iter=1000, C=1.0)
-    
-    pipe = Pipeline([
-        ('vectorizer', vec),
-        ('classifier', clf)
-    ])
-    lang_col = "language_code" if "language_code" in df.columns else "language"
-    pipe.fit(df["cleaned"], df[lang_col].fillna("en"))
-    
-    joblib.dump(clf, os.path.join(MODELS_DIR, "language_detector.pkl"))
-    joblib.dump(vec, os.path.join(MODELS_DIR, "language_vectorizer.pkl"))
-    
-    onnx_model = convert_sklearn(pipe, initial_types=[('string_input', StringTensorType([None, 1]))])
-    with open(os.path.join(MODELS_DIR, "language_detector.onnx"), "wb") as f:
-        f.write(onnx_model.SerializeToString())
-    print("[SUCCESS] Trained & Exported language_detector.onnx and language_detector.pkl")
-
-def train_and_export_doc_text_onnx():
-    doc_data = [
-        ("Salary payslip wage statement month of July total salary 45000 rupees employer earnings", "Salary Slip"),
-        ("Monthly payslip wage breakdown basic pay hra bonus deduction Net pay", "Salary Slip"),
-        ("Bank account statement transaction debit credit balance passbook branch IFSC", "Bank Statement"),
-        ("State Bank of India account balance transaction statement withdrawal transfer", "Bank Statement"),
-        ("Rent agreement lease tenant landlord monthly rent deposit clause premises vacate", "Rent Agreement"),
-        ("Medical report patient doctor hospital diagnosis treatment prescription injury", "Medical Report"),
-        ("Police Station FIR complaint report stolen theft assault crime officer investigation", "Police Complaint / FIR Copy"),
-        ("Aadhaar card identity proof government of india uidai pan card voter id", "Aadhaar / ID Proof"),
-        ("Screenshot whatsapp chat message conversation screen capture photo evidence", "Screenshot Evidence"),
-        ("Tax Invoice bill total amount GSTIN seller buyer receipt payment", "Consumer Bill / Invoice"),
-        ("Property sale deed patta land survey boundaries plot ownership registrar", "Property Document")
+    # 6. Save model metadata
+    all_categories = [
+        "LABOUR_DISPUTE", "CONSUMER_COMPLAINT", "CYBER_CRIME", "PROPERTY_DISPUTE",
+        "WOMEN_SAFETY", "DOMESTIC_VIOLENCE", "CRIMINAL_COMPLAINT", "FAMILY_DISPUTE",
+        "GOVERNMENT_SCHEME", "GENERAL_LEGAL_AID", "MOTOR_ACCIDENT_CLAIM", "INSURANCE_CLAIM",
+        "BANKING_DISPUTE", "RENT_TENANT_DISPUTE", "MEDICAL_NEGLIGENCE", "EDUCATION_DISPUTE",
+        "WORKPLACE_HARASSMENT", "SENIOR_CITIZEN_ABUSE", "CHILD_WELFARE", "DISABILITY_RIGHTS",
+        "CASTE_DISCRIMINATION", "POLICE_MISCONDUCT", "CORRUPTION_BRIBERY", "CIVIC_INFRASTRUCTURE",
+        "RTI_APPLICATION"
     ]
-    texts, labels = zip(*doc_data)
-    cleaned_texts = [clean_text(t) for t in texts]
+    trained_cats = ["CONSUMER_COMPLAINT", "BANKING_DISPUTE"]
+    data_req_cats = [c for c in all_categories if c not in trained_cats]
+    
+    metadata = {
+        "dataset_sources": {
+            "SHULAMITSHARABANI/consumer-complaints-pro": "UNSUITABLE_FOR_SUPERVISED_COMPLAINT_TRAINING (Tokenization error)",
+            "opennyaiorg/InJudgements_dataset": "UNSUITABLE_FOR_SUPERVISED_COMPLAINT_TRAINING (Gated dataset, authentication required)",
+            "claritystorm/cfpb-consumer-complaints": "Public domain (US Consumer Complaint Narrative data)"
+        },
+        "licenses": {
+            "claritystorm/cfpb-consumer-complaints": "CC0: Public Domain"
+        },
+        "actual_training_row_count": len(X_train),
+        "categories_genuinely_trained": trained_cats,
+        "categories_marked_DATA_REQUIRED": data_req_cats,
+        "split_counts": {
+            "train": len(X_train),
+            "validation": len(X_val),
+            "test": len(X_test)
+        },
+        "metrics": {
+            "accuracy": round(acc, 4),
+            "macro_precision": round(precision, 4),
+            "macro_recall": round(recall, 4),
+            "macro_f1": round(f1, 4),
+            "micro_f1": round(micro_f1, 4),
+            "confusion_matrix": cm.tolist(),
+            "classes": classes
+        },
+        "model_version": "ARAM_RAG_ML_V2.0.0",
+        "training_timestamp": datetime.datetime.now().isoformat(),
+        "priority_status": "DATA_REQUIRED",
+        "complexity_status": "DATA_REQUIRED",
+        "authority_status": "DATA_REQUIRED"
+    }
+    
+    meta_path = os.path.join(MODELS_DIR, "model_metadata.json")
+    with open(meta_path, "w", encoding="utf-8") as f:
+        json.dump(metadata, f, indent=4)
+    print(f"Saved training metadata configuration to {meta_path}")
 
-    pipe = Pipeline([
-        ('vectorizer', TfidfVectorizer(max_features=3000, ngram_range=(1, 2))),
-        ('classifier', LogisticRegression(max_iter=1000, C=1.0))
-    ])
-    pipe.fit(cleaned_texts, labels)
-
-    onnx_model = convert_sklearn(pipe, initial_types=[('string_input', StringTensorType([None, 1]))])
-    with open(os.path.join(MODELS_DIR, "document_text_classifier.onnx"), "wb") as f:
-        f.write(onnx_model.SerializeToString())
-    print("[SUCCESS] Trained & Exported document_text_classifier.onnx on document types")
-
-def train_and_export_ranking_onnx():
-    np.random.seed(42)
-    n_samples = 500
-    cat_match = np.random.choice([0, 1], n_samples)
-    lang_match = np.random.choice([0, 1], n_samples)
-    dist_match = np.random.choice([0, 1], n_samples)
-    workload = np.random.randint(0, 10, n_samples)
-    capacity = np.random.randint(5, 20, n_samples)
-    exp_years = np.random.randint(0, 15, n_samples)
-    avg_resp = np.random.uniform(1, 48, n_samples)
-    success = np.random.uniform(0.5, 1.0, n_samples)
-    trained = np.random.choice([0, 1], n_samples)
-    gender_match = np.random.choice([0, 1], n_samples)
-    sensitive = np.random.choice([0, 1], n_samples)
-    past_cases = workload * 3 + np.random.randint(0, 20, n_samples)
-    available = np.random.choice([0, 1], n_samples)
-
-    X = np.column_stack([cat_match, lang_match, dist_match, workload, capacity, exp_years, avg_resp, success, trained, gender_match, sensitive, past_cases, available]).astype(np.float32)
-    y = (cat_match * 35 + lang_match * 25 + dist_match * 15 + success * 15 + trained * 10 - (workload / capacity) * 10).astype(np.float32)
-
-    rf = RandomForestRegressor(n_estimators=50, max_depth=10, random_state=42)
-    rf.fit(X, y)
-
-    joblib.dump(rf, os.path.join(MODELS_DIR, "volunteer_ranking_model.pkl"))
-
-    onnx_model = convert_sklearn(rf, initial_types=[('float_input', FloatTensorType([None, 13]))])
+def export_placeholders_for_loaders():
+    print("=== Creating Placeholder ONNX Files for Application Loader Compatibility ===")
+    
+    # 1. Priority model placeholder
+    vec_p = TfidfVectorizer()
+    clf_p = LogisticRegression()
+    pipe_p = Pipeline([('vectorizer', vec_p), ('classifier', clf_p)])
+    pipe_p.fit(["dummy priority text 1", "dummy priority text 2"], ["LOW", "HIGH"])
+    
+    onnx_p = convert_sklearn(pipe_p, initial_types=[('string_input', StringTensorType([None, 1]))])
+    with open(os.path.join(MODELS_DIR, "priority_model.onnx"), "wb") as f:
+        f.write(onnx_p.SerializeToString())
+        
+    # 2. Authority model placeholder
+    vec_a = TfidfVectorizer()
+    clf_a = LogisticRegression()
+    pipe_a = Pipeline([('vectorizer', vec_a), ('classifier', clf_a)])
+    pipe_a.fit(["dummy authority text 1", "dummy authority text 2"], ["DLSA", "POLICE"])
+    
+    onnx_a = convert_sklearn(pipe_a, initial_types=[('string_input', StringTensorType([None, 1]))])
+    with open(os.path.join(MODELS_DIR, "authority_model.onnx"), "wb") as f:
+        f.write(onnx_a.SerializeToString())
+        
+    # 3. Volunteer ranking placeholder (takes float input)
+    X_rank = np.zeros((1, 13), dtype=np.float32)
+    y_rank = np.array([50.0], dtype=np.float32)
+    
+    from sklearn.ensemble import RandomForestRegressor
+    rf = RandomForestRegressor(n_estimators=1, max_depth=1)
+    rf.fit(X_rank, y_rank)
+    
+    onnx_rank = convert_sklearn(rf, initial_types=[('float_input', FloatTensorType([None, 13]))])
     with open(os.path.join(MODELS_DIR, "volunteer_ranking_model.onnx"), "wb") as f:
-        f.write(onnx_model.SerializeToString())
-    print("[SUCCESS] Trained & Exported volunteer_ranking_model.onnx and volunteer_ranking_model.pkl")
+        f.write(onnx_rank.SerializeToString())
+        
+    print("Placeholder ONNX models exported successfully.")
 
 if __name__ == "__main__":
-    train_and_export_category_onnx()
-    train_and_export_priority_onnx()
-    train_and_export_language_onnx()
-    train_and_export_doc_text_onnx()
-    train_and_export_ranking_onnx()
+    train_category_classifier()
+    export_placeholders_for_loaders()

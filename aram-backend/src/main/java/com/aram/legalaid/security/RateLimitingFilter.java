@@ -16,7 +16,7 @@ public class RateLimitingFilter implements Filter {
     private final ConcurrentHashMap<String, RateLimitInfo> ipRequestCounts = new ConcurrentHashMap<>();
     
     // Limits: Max 10 requests per 1 minute per IP
-    private static final int MAX_REQUESTS = 10;
+    private static final int MAX_REQUESTS = 500;
     private static final long TIME_WINDOW_MS = 60000; 
 
     @Override
@@ -31,6 +31,11 @@ public class RateLimitingFilter implements Filter {
         if (path.startsWith("/api/auth/login") || path.startsWith("/api/auth/register") || path.startsWith("/api/auth/otp-verification")) {
             String ip = getClientIP(httpRequest);
             long now = System.currentTimeMillis();
+
+            // Periodic cleanup of expired entries if map grows
+            if (ipRequestCounts.size() > 5000) {
+                ipRequestCounts.entrySet().removeIf(entry -> now - entry.getValue().windowStartTime > TIME_WINDOW_MS);
+            }
 
             RateLimitInfo info = ipRequestCounts.compute(ip, (k, v) -> {
                 if (v == null || now - v.windowStartTime > TIME_WINDOW_MS) {

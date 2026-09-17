@@ -1,8 +1,10 @@
 package com.aram.legalaid.dto;
 
+import com.fasterxml.jackson.annotation.JsonAlias;
 import jakarta.validation.constraints.NotBlank;
 
 public record LoginRequest(
+        @JsonAlias("email")
         @NotBlank(message = "Email or mobile is required")
         String username,
 

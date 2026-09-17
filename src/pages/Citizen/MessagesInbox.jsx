@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import DashboardLayout from "@/components/layout/DashboardLayout";
+import DashboardLayout from "@/components/common/DashboardLayout";
 import { Search, MessageSquare, ArrowLeft, Loader2 } from "lucide-react";
-import { complaintService } from "../../services/complaintService";
-import { volunteerService } from "../../services/volunteerService";
-import { useAuth } from "../../context/AuthContext";
-import CaseChatPanel from "@/components/CaseChatPanel";
+import { complaintService } from "@/services/complaintService";
+import { volunteerService } from "@/services/volunteerService";
+import { useAuth } from "@/context/AuthContext";
+import CaseChatPanel from "@/components/guide/CaseChatPanel";
 import { toast } from "sonner";
 
 const MessagesInbox = () => {
@@ -82,7 +82,7 @@ const MessagesInbox = () => {
         {/* Header (Only show if not in mobile chat detail view) */}
         <div className={`items-center gap-3 ${selectedCaseId ? "hidden lg:flex" : "flex"}`}>
           <button 
-            onClick={() => navigate(isGuide ? "/volunteer/dashboard" : "/citizen/dashboard")}
+            onClick={() => navigate(isGuide ? "/guide/dashboard" : "/citizen/dashboard")}
             className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-900 transition text-slate-500 cursor-pointer"
           >
             <ArrowLeft size={18} />

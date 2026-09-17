@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import DashboardLayout from "@/components/layout/DashboardLayout";
+import DashboardLayout from "@/components/common/DashboardLayout";
 import {
   User,
   MapPin,
@@ -18,10 +18,10 @@ import {
   History,
   Lock
 } from "lucide-react";
-import { complaintService } from "../../services/complaintService";
-import { adminService } from "../../services/adminService";
+import { complaintService } from "@/services/complaintService";
+import { adminService } from "@/services/adminService";
 import { toast } from "sonner";
-import CaseChatPanel from "@/components/CaseChatPanel";
+import CaseChatPanel from "@/components/guide/CaseChatPanel";
 
 const ComplaintDetails = () => {
   const { id } = useParams();

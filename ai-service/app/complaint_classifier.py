@@ -3,31 +3,36 @@ from app.model_loader import model_loader
 
 # Define a fallback catalog of keywords for safety verification
 FALLBACK_KEYWORDS = {
-    "LABOUR_DISPUTE": ["salary", "wage", "employer", "employee", "job", "termination", "overtime", "sambalam", "velai"],
-    "CONSUMER_COMPLAINT": ["refund", "product", "damaged", "seller", "order", "invoice", "warranty", "bill"],
-    "CYBER_CRIME": ["upi", "fraud", "scam", "otp", "bank", "account", "hacked", "online", "cyber"],
-    "PROPERTY_DISPUTE": ["land", "property", "house", "patta", "deed", "boundary", "landlord", "rent"],
-    "WOMEN_SAFETY": ["stalking", "harassment", "abuse", "follow", "women", "girl"],
-    "DOMESTIC_VIOLENCE": ["husband", "beats", "beating", "abusing", "dowry", "starved", "domestic", "violence"],
-    "CRIMINAL_COMPLAINT": ["theft", "stole", "robbed", "attack", "weapons", "assault"],
-    "FAMILY_DISPUTE": ["divorce", "custody", "marriage", "inheritance", "ancestral", "ancestry", "division"],
-    "GOVERNMENT_SCHEME": ["scheme", "pension", "bribe", "latcham", "ration", "benefits"],
-    "MOTOR_ACCIDENT_CLAIM": ["accident", "collision", "compensation", "vehicle", "car", "bike", "truck", "mact", "ibabathu"],
-    "INSURANCE_CLAIM": ["insurance", "rejection", "policy", "premium", "payout", "claim", "kaapeedu"],
-    "BANKING_DISPUTE": ["banking", "credit card", "frozen", "loan", "emi", "unauthorized", "charge", "interest", "banku"],
-    "RENT_TENANT_DISPUTE": ["tenant", "landlord", "rent", "agreement", "lease", "eviction", "vacate", "owner", "vaadagai"],
-    "MEDICAL_NEGLIGENCE": ["negligence", "doctor", "surgical", "gauze", "wrong medication", "hospital", "injection", "treatment", "alatchiyam"],
-    "EDUCATION_DISPUTE": ["college", "school", "certificate", "capitation fee", "rte", "admission", "scholarship", "fees"],
-    "WORKPLACE_HARASSMENT": ["harassment", "toxic", "supervisor", "manager", "hostile", "workplace", "abusive", "sexual"],
-    "SENIOR_CITIZEN_ABUSE": ["senior citizen", "elderly", "abandoned", "father", "mother", "pension", "maintenance", "muthiyor"],
-    "CHILD_WELFARE": ["child", "labor", "minor", "marriage", "school dropout", "work", "abuse", "kuzhandhai"],
-    "DISABILITY_RIGHTS": ["disability", "disabled", "accessibility", "ramp", "reservation", "quota", "differently abled"],
-    "CASTE_DISCRIMINATION": ["caste", "discrimination", "boycott", "sc", "slurs", "glass", "temple", "jaathi"],
-    "POLICE_MISCONDUCT": ["police", "fir", "detention", "lockup", "custodial", "violence", "misconduct", "beating"],
-    "CORRUPTION_BRIBERY": ["bribe", "corruption", "latcham", "kickback", "officer", "money", "demanding"],
-    "CIVIC_INFRASTRUCTURE": ["sewage", "drinking water", "potholes", "street light", "garbage", "civic", "municipal", "road", "kuppai"],
-    "RTI_APPLICATION": ["rti", "information", "pio", "appeal", "application", "reply", "details"]
+    # 1. Specific disputes take priority
+    "RENT_TENANT_DISPUTE": ["tenant", "landlord", "rent", "agreement", "lease", "eviction", "vacate", "owner", "vaadagai", "வாடகை", "குடியிருப்பு"],
+    "CORRUPTION_BRIBERY": ["bribe", "corruption", "latcham", "kickback", "officer", "money", "demanding", "லஞ்சம்", "ஊழல்"],
+    "WOMEN_SAFETY_DOMESTIC_VIOLENCE": ["husband", "beats", "beating", "abusing", "dowry", "starved", "domestic", "violence", "harass", "stalking", "girl", "woman", "கணவர்", "தாக்குகிறார்", "மிரட்டுகிறார்", "கொடுமை", "வன்முறை", "அடிக்கிறார்", "துன்புறுத்தல்", "பெண்கள்", "पति", "मारपीट", "दहेज", "घरेलू हिंसा", "उत्पीड़न"],
+    "DOMESTIC_VIOLENCE": ["husband", "beats", "beating", "abusing", "dowry", "starved", "domestic", "violence", "கணவர்", "தாக்குகிறார்", "மிரட்டுகிறார்", "கொடுமை", "வன்முறை", "அடிக்கிறார்", "पति", "मारपीट", "दहेज", "घरेलू हिंसा"],
+    "WORKPLACE_HARASSMENT": ["toxic", "supervisor", "manager", "hostile", "workplace", "abusive", "sexual"],
+    "SENIOR_CITIZEN_ABUSE": ["senior citizen", "elderly", "abandoned", "father", "mother", "pension", "maintenance", "muthiyor", "முதியோர்"],
+    "CHILD_WELFARE": ["child", "labor", "minor", "marriage", "school dropout", "work", "abuse", "kuzhandhai", "குழந்தை"],
+    "DISABILITY_RIGHTS": ["disability", "disabled", "accessibility", "ramp", "reservation", "quota", "differently abled", "மாற்றுத்திறனாளி"],
+    "CASTE_DISCRIMINATION": ["caste", "discrimination", "boycott", "sc", "slurs", "glass", "temple", "jaathi", "சாதி"],
+    "POLICE_MISCONDUCT": ["police", "fir", "detention", "lockup", "custodial", "violence", "misconduct", "beating", "காவல்துறை"],
+    "CYBER_CRIME": ["upi", "fraud", "scam", "otp", "hacked", "online", "cyber", "மோசடி", "பணம் பறிப்பு", "ஹேக்", "धोखाधड़ी", "ऑनलाइन फ्रॉड"],
+    "MOTOR_ACCIDENT_CLAIM": ["accident", "collision", "compensation", "vehicle", "car", "bike", "truck", "mact", "ibabathu", "விபத்து"],
+    "INSURANCE_CLAIM": ["insurance", "rejection", "policy", "premium", "payout", "claim", "kaapeedu", "காப்பீடு"],
+    "MEDICAL_NEGLIGENCE": ["negligence", "doctor", "surgical", "gauze", "wrong medication", "hospital", "injection", "treatment", "alatchiyam", "மருத்துவ அலட்சியம்"],
+    "EDUCATION_DISPUTE": ["college", "school", "certificate", "capitation fee", "rte", "admission", "scholarship", "fees", "கல்லூரி", "பள்ளி"],
+    "RTI_APPLICATION": ["rti", "information", "pio", "appeal", "application", "reply", "details", "தகவல் அறியும் உரிமை"],
+    "GOVERNMENT_SCHEME": ["scheme", "pension", "ration", "benefits", "அரசு திட்டம்"],
+
+    # 2. General/broader categories later
+    "WOMEN_SAFETY": ["stalking", "harassment", "abuse", "follow", "women", "girl", "பெண்கள் பாதுகாப்பு"],
+    "BANKING_DISPUTE": ["banking", "credit card", "frozen", "loan", "emi", "unauthorized", "charge", "interest", "banku", "bank", "account", "வங்கி"],
+    "PROPERTY_DISPUTE": ["land", "property", "house", "patta", "deed", "boundary", "நிலம்", "சொத்து", "பட்டா", "பத்திரம்", "பாகப்பிரிவினை", "जमीन", "संपत्ति"],
+    "LABOUR_DISPUTE": ["salary", "wage", "employer", "employee", "job", "termination", "overtime", "sambalam", "velai", "சம்பளம்", "வேலை", "முதலாளி", "ஊதியம்", "வேலைநீக்கம்", "தொழிலாளர்", "वेतन", "मजदूरी", "मालिक"],
+    "FAMILY_DISPUTE": ["divorce", "custody", "marriage", "inheritance", "ancestral", "ancestry", "division", "விவாகரத்து", "திருமணம்"],
+    "CIVIC_INFRASTRUCTURE": ["sewage", "drinking water", "potholes", "street light", "garbage", "civic", "municipal", "road", "kuppai", "குப்பை", "சாலை", "சாக்கடை"],
+    "CRIMINAL_COMPLAINT": ["theft", "stole", "robbed", "attack", "weapons", "assault", "திருட்டு", "தாக்குதல்", "தாக்கினார்"],
+    "CONSUMER_COMPLAINT": ["refund", "product", "damaged", "seller", "order", "invoice", "warranty", "bill", "பழுது", "விற்பனையாளர்", "ரசீது", "பொருட்கள்", "பணம் திரும்ப", "वारंटी", "रिफंड", "दुकानदार"]
 }
+import re
 
 def keyword_category(text: str):
     normalized = text.lower()
@@ -35,7 +40,17 @@ def keyword_category(text: str):
     highest_matches = 0
 
     for cat, keywords in FALLBACK_KEYWORDS.items():
-        matches = sum(1 for kw in keywords if kw in normalized)
+        matches = 0
+        for kw in keywords:
+            kw_clean = kw.lower()
+            # If keyword is non-ASCII (Tamil, Hindi, etc.), check direct substring
+            if any(ord(c) > 127 for c in kw_clean):
+                if kw_clean in normalized:
+                    matches += 1
+            else:
+                pattern = rf"(?:\b|[^a-zA-Z]){re.escape(kw_clean)}(?:\b|[^a-zA-Z])"
+                if re.search(pattern, normalized):
+                    matches += 1
         if matches > highest_matches:
             highest_matches = matches
             matched_cat = cat
@@ -43,45 +58,18 @@ def keyword_category(text: str):
     return matched_cat, highest_matches
 
 def predict_category(text: str):
-    # Safe validation and fallbacks if model is missing
-    if model_loader.is_model_missing("complaint"):
-        matched_cat, _ = keyword_category(text)
-        return {
-            "category": matched_cat,
-            "confidence": 0.50,
-            "manualReviewRequired": True,
-            "modelBased": False
-        }
+    try:
+        from app.ml.category_model import predict_category as ml_predict
+        res = ml_predict(text)
+        if res and "category" in res:
+            return res
+    except Exception:
+        pass
 
-    clf = model_loader.models["complaint_classifier"]
-    le = model_loader.models["complaint_label_encoder"]
-    vec = model_loader.models["complaint_vectorizer"]
-
-    # Transform input
-    if vec:
-        # TF-IDF mode
-        features = vec.transform([text])
-    else:
-        # Embeddings mode (uses TF-IDF vectorizer as default if import fails, but handled here)
-        features = np.zeros((1, 384)) # fallback shape
-
-    # Predict
-    prob = clf.predict_proba(features)[0]
-    pred_idx = np.argmax(prob)
-    category = le.inverse_transform([pred_idx])[0]
-    confidence = float(prob[pred_idx])
-    fallback_category, keyword_matches = keyword_category(text)
-
-    if fallback_category != "GENERAL_LEGAL_AID" and fallback_category != category:
-        strong_keyword_signal = keyword_matches >= 2
-        weak_model_signal = confidence < 0.60 and keyword_matches >= 1
-        if strong_keyword_signal or weak_model_signal:
-            category = fallback_category
-            confidence = max(confidence, 0.61 if strong_keyword_signal else 0.55)
-
+    matched_cat, matches = keyword_category(text)
     return {
-        "category": category,
-        "confidence": confidence,
-        "manualReviewRequired": confidence < 0.60,
-        "modelBased": True
+        "category": matched_cat,
+        "confidence": 0.70 if matches > 0 else 0.50,
+        "manualReviewRequired": matches == 0,
+        "modelBased": False
     }

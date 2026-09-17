@@ -1,9 +1,9 @@
-import DashboardLayout from "@/components/layout/DashboardLayout";
+import DashboardLayout from "@/components/common/DashboardLayout";
 import { User, Mail, Phone, MapPin, BadgeCheck, Camera, Edit, Save, X, Info } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
-import { userService } from "../../services/userService";
+import { useAuth } from "@/context/AuthContext";
+import { userService } from "@/services/userService";
 import { toast } from "sonner";
 
 const Profile = () => {

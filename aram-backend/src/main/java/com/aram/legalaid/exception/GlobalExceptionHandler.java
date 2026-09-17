@@ -42,6 +42,15 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.UNAUTHORIZED, "Invalid username or password", request, null);
     }
 
+    @ExceptionHandler(ProfileIncompleteException.class)
+    public ResponseEntity<Map<String, Object>> handleProfileIncomplete(ProfileIncompleteException ex, HttpServletRequest request) {
+        Map<String, Object> body = new java.util.LinkedHashMap<>();
+        body.put("code", "PROFILE_INCOMPLETE");
+        body.put("message", ex.getMessage());
+        body.put("completionPercentage", ex.getCompletionPercentage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneric(Exception ex, HttpServletRequest request) {
         return build(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected server error: " + ex.getMessage(), request, null);

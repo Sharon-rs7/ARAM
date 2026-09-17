@@ -1,5 +1,7 @@
 import pytest
-from app.nlp.tanglish_normalizer import normalize_text
+from app.nlp.multilingual_normalizer import normalize_text as norm_fn
+def normalize_text(text):
+    return norm_fn(text)["normalizedText"]
 
 def test_normalize_tanglish_tokens():
     raw_input = "manager sambalam tharala past 3 months"

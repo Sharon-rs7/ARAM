@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Lock, ArrowLeft } from "lucide-react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Unauthorized() {
   const { isAuthenticated, role } = useAuth();
@@ -8,8 +8,9 @@ export default function Unauthorized() {
   const getDashboardPath = () => {
     if (!isAuthenticated || !role) return "/login";
     const userRole = role.toUpperCase();
+    if (userRole === "SUPER_ADMIN") return "/superadmin/dashboard";
     if (userRole === "ADMIN") return "/admin/dashboard";
-    if (userRole === "VOLUNTEER") return "/volunteer/dashboard";
+    if (userRole === "GUIDE" || userRole === "VOLUNTEER") return "/guide/dashboard";
     return "/citizen/dashboard";
   };
 

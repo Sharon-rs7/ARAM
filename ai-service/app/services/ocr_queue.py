@@ -17,7 +17,7 @@ REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
 
 def get_redis_client():
     try:
-        r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, socket_timeout=1)
+        r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, socket_timeout=1, protocol=2)
         if r.ping():
             return r
     except Exception:

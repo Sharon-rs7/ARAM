@@ -1,9 +1,9 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import Button from '../components/common/Button';
-import Input from '../components/common/Input';
-import Checkbox from '../components/common/Checkbox';
+import Button from '@/components/common/Button';
+import Input from '@/components/common/Input';
+import Checkbox from '@/components/common/Checkbox';
 
 describe('Shared UI Components Unit Suite', () => {
   describe('Button Component', () => {

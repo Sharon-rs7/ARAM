@@ -1,4 +1,4 @@
-import DashboardLayout from "@/components/layout/DashboardLayout";
+import DashboardLayout from "@/components/common/DashboardLayout";
 import {
   FileBarChart,
   Download,
@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 
 import { useState, useEffect } from "react";
-import { adminService } from "../../services/adminService";
+import { adminService } from "@/services/adminService";
 
 const Reports = () => {
   const [totalCount, setTotalCount] = useState(0);

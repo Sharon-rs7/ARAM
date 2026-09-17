@@ -1,9 +1,39 @@
-import api from './api.js';
+import api from '@/services/api.js';
 
 export const aiService = {
   analyzeComplaint: (complaintText, language = 'en', district = 'Coimbatore', isSensitive = false, title = '', preferredHelperGender = 'ANY', existingComplaints = []) => {
-    return api.post('/ai/analyze-complaint', { complaintText, language, district, isSensitive, title, preferredHelperGender, existingComplaints })
-      .then((res) => res.data);
+    return api.post('/ai/analyze-complaint', { 
+      description: complaintText, 
+      complaintText, 
+      language, 
+      district, 
+      isSensitive, 
+      title, 
+      preferredHelperGender, 
+      existingComplaints 
+    }).then((res) => res.data);
+  },
+
+  triageComplaint: (data) => {
+    const text = data.description || data.complaintText || '';
+    const lang = data.language || 'en';
+    const loc = data.location || data.district || 'Coimbatore';
+    return api.post('/ai/analyze-complaint', {
+      title: data.title || '',
+      description: text,
+      complaintText: text,
+      language: lang,
+      district: loc,
+      isSensitive: Boolean(data.isSensitive),
+      preferredHelperGender: data.preferredHelperGender || 'ANY',
+      existingComplaints: data.existingComplaints || []
+    }).then((res) => res.data);
+  },
+
+  recommendVolunteers: (data) => {
+    return api.post('/volunteers/recommend', data)
+      .then((res) => res.data)
+      .catch(() => []);
   },
 
   askChat: (message, language = 'en', userRole = 'CITIZEN', complaintId = null) => {

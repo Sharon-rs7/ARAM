@@ -1,6 +1,6 @@
 import React from "react";
 import { AlertCircle, RotateCcw, Home } from "lucide-react";
-import Button from "./Button";
+import Button from "@/components/common/Button";
 import { useNavigate } from "react-router-dom";
 
 const ErrorState = ({

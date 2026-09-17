@@ -32,8 +32,9 @@ public class HelperController {
     private final UserRepository userRepository;
 
     private final com.aram.legalaid.service.LegalGuideLevelService legalGuideLevelService;
+    private final com.aram.legalaid.service.CaseCommunicationService caseCommunicationService;
 
-    public HelperController(UserService userService, MapperService mapperService, ComplaintRepository complaintRepository, AIResultRepository aiResultRepository, ComplaintService complaintService, UserRepository userRepository, com.aram.legalaid.service.LegalGuideLevelService legalGuideLevelService) {
+    public HelperController(UserService userService, MapperService mapperService, ComplaintRepository complaintRepository, AIResultRepository aiResultRepository, ComplaintService complaintService, UserRepository userRepository, com.aram.legalaid.service.LegalGuideLevelService legalGuideLevelService, com.aram.legalaid.service.CaseCommunicationService caseCommunicationService) {
         this.userService = userService;
         this.mapperService = mapperService;
         this.complaintRepository = complaintRepository;
@@ -41,6 +42,7 @@ public class HelperController {
         this.complaintService = complaintService;
         this.userRepository = userRepository;
         this.legalGuideLevelService = legalGuideLevelService;
+        this.caseCommunicationService = caseCommunicationService;
     }
 
     @GetMapping("/profile")
@@ -84,6 +86,14 @@ public class HelperController {
         requireHelper();
         caseDetails(id);
         return ResponseEntity.ok(complaintService.updateStatus(id, request));
+    }
+
+    @PostMapping("/cases/{id}/acknowledge")
+    public ResponseEntity<ComplaintResponse> acknowledgeCase(@PathVariable Long id) {
+        User helper = requireHelper();
+        caseCommunicationService.acknowledgeComplaint(id, helper);
+        Complaint complaint = complaintRepository.findById(id).orElseThrow(() -> new com.aram.legalaid.exception.ResourceNotFoundException("Complaint not found"));
+        return ResponseEntity.ok(toResponse(complaint));
     }
 
     @PostMapping("/cases/{id}/notes")

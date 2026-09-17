@@ -3,11 +3,12 @@ import shutil
 import tempfile
 import subprocess
 import uuid
-from fastapi import APIRouter, UploadFile, File, Form, HTTPException
+from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
+from app.auth import verify_internal_token
 from typing import Optional
 from app.services.whisper_service import whisper_service
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(verify_internal_token)])
 
 def is_ffmpeg_installed() -> bool:
     try:
@@ -20,7 +21,7 @@ def convert_to_wav_16k(input_path: str, output_path: str) -> bool:
     try:
         # Convert to 16kHz mono WAV format (standard PCM 16-bit)
         cmd = ["ffmpeg", "-y", "-i", input_path, "-ar", "16000", "-ac", "1", "-c:a", "pcm_s16le", output_path]
-        subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
+        subprocess.run(cmd, stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
         return True
     except Exception as e:
         print(f"FFmpeg conversion failed from {input_path} to {output_path}: {e}")
@@ -31,6 +32,7 @@ def convert_to_wav_16k(input_path: str, output_path: str) -> bool:
 async def transcribe_speech(
     file: UploadFile = File(...),
     selectedLanguage: Optional[str] = Form(None),
+    language: Optional[str] = Form(None),
     preferredOutputLanguage: Optional[str] = Form(None)
 ):
     temp_dir = tempfile.gettempdir()
@@ -55,8 +57,10 @@ async def transcribe_speech(
         else:
             print("FFmpeg not found in path environment. Proceeding with raw file format.")
             
+        # Resolve selected language from both potential parameter keys
+        lang_to_use = selectedLanguage if selectedLanguage else language
         # Transcribe audio using Whisper model
-        result = whisper_service.transcribe(final_audio_path, selectedLanguage)
+        result = whisper_service.transcribe(final_audio_path, lang_to_use)
         
         detected_language = result.get("detectedLanguage", "English")
         if detected_language == "ta":
@@ -86,7 +90,7 @@ async def transcribe_speech(
             "success": True,
             "transcript": transcript,
             "detectedLanguage": detected_language if not is_empty_speech else "Unknown",
-            "selectedLanguage": selectedLanguage if selectedLanguage else "Auto",
+            "selectedLanguage": lang_to_use if lang_to_use else "Auto",
             "durationSeconds": result.get("duration", 0.0),
             "confidence": confidence,
             "normalizedText": normalized,
@@ -115,9 +119,14 @@ async def transcribe_speech(
 @router.get("/speech/status")
 async def get_speech_status():
     from app.config import settings
+    from app.services.deepgram_service import deepgram_service
     return {
+        "engine": settings.STT_ENGINE,
+        "deepgramAvailable": deepgram_service.is_available(),
+        "deepgramModel": settings.DEEPGRAM_MODEL,
         "modelLoaded": whisper_service.is_model_loaded(),
         "modelSize": settings.WHISPER_MODEL_SIZE,
         "device": settings.WHISPER_DEVICE,
         "ffmpegInstalled": is_ffmpeg_installed()
     }
+

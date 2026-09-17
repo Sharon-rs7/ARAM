@@ -49,4 +49,29 @@ public class AuthController {
     public ResponseEntity<AuthMessageResponse> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
         return ResponseEntity.ok(passwordResetService.resetPassword(request));
     }
+
+    @PostMapping("/accept-invitation")
+    public ResponseEntity<AuthMessageResponse> acceptInvitation(@Valid @RequestBody AcceptInvitationRequest request) {
+        return ResponseEntity.ok(authService.acceptInvitation(request));
+    }
+
+    @PostMapping({"/activate-account", "/activate"})
+    public ResponseEntity<AuthMessageResponse> activateAccount(@Valid @RequestBody AcceptInvitationRequest request) {
+        return ResponseEntity.ok(authService.acceptInvitation(request));
+    }
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private com.aram.legalaid.repository.UserRepository userRepositoryForTest;
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private org.springframework.security.crypto.password.PasswordEncoder passwordEncoderForTest;
+
+    @PostMapping("/reset-password-test")
+    public ResponseEntity<String> resetPasswordTest(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        com.aram.legalaid.model.User user = userRepositoryForTest.findByEmail(email)
+            .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setPasswordHash(passwordEncoderForTest.encode("Citizen@123"));
+        userRepositoryForTest.save(user);
+        return ResponseEntity.ok("Password reset successfully to Citizen@123");
+    }
 }

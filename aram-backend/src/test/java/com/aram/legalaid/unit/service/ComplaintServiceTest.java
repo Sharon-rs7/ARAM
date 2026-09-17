@@ -61,9 +61,9 @@ public class ComplaintServiceTest {
     @Test
     @DisplayName("Find Complaints By User - Returns List")
     void testFindByUser() {
-        when(complaintRepository.findByUserOrderByCreatedAtDesc(sampleCitizen)).thenReturn(Arrays.asList(sampleComplaint));
+        when(complaintRepository.findByUserIdOrderByCreatedAtDesc(sampleCitizen.getId())).thenReturn(Arrays.asList(sampleComplaint));
 
-        List<Complaint> list = complaintRepository.findByUserOrderByCreatedAtDesc(sampleCitizen);
+        List<Complaint> list = complaintRepository.findByUserIdOrderByCreatedAtDesc(sampleCitizen.getId());
 
         assertNotNull(list);
         assertEquals(1, list.size());

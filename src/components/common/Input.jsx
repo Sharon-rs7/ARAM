@@ -1,68 +1,35 @@
 import React from "react";
-import { Info } from "lucide-react";
 
 const Input = ({
-  label = "",
-  type = "text",
-  name = "",
-  value = "",
-  onChange,
-  placeholder = "",
-  required = false,
-  error = "",
+  label,
+  error,
+  icon: Icon,
   className = "",
-  icon: Icon = null,
-  rightElement = null,
+  id,
   ...props
 }) => {
   return (
-    <div className={`w-full ${className}`}>
+    <div className="w-full space-y-1.5 text-left">
       {label && (
-        <label className="mb-1.5 block font-semibold text-slate-700 text-xs uppercase tracking-wider">
-          {label} {required && <span className="text-red-500">*</span>}
+        <label htmlFor={id} className="block text-xs font-bold text-[#18332B] tracking-wide">
+          {label}
         </label>
       )}
-      
-      <div className="relative flex items-center">
+      <div className="relative">
         {Icon && (
-          <div className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center justify-center">
+          <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#8B9690]">
             <Icon size={16} />
           </div>
         )}
         <input
-          type={type}
-          name={name}
-          value={value}
-          onChange={onChange}
-          placeholder={placeholder}
-          required={required}
-          className={`h-11 w-full rounded-xl border outline-none text-xs transition text-slate-800 focus:ring-4 focus:ring-blue-50/50 ${
-            Icon ? "pl-10" : "pl-3.5"
-          } ${
-            rightElement ? "pr-10" : "pr-3.5"
-          } ${
-            error 
-              ? "border-red-400 focus:border-red-500 focus:ring-red-50/50" 
-              : "border-slate-200 focus:border-blue-500"
-          }`}
+          id={id}
+          className={`w-full rounded-xl border border-[#E6E1D8] bg-[#FFFDF8] px-3.5 py-2.5 text-xs sm:text-sm text-[#18332B] placeholder-[#8B9690] focus:border-[#163D32] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#DCEBDD] transition ${Icon ? "pl-10" : ""} ${error ? "border-red-400 focus:border-red-500 focus:ring-red-100" : ""} ${className}`}
           {...props}
         />
-        {rightElement && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center justify-center">
-            {rightElement}
-          </div>
-        )}
       </div>
-
-      {error && (
-        <div className="mt-1.5 flex items-start gap-1 text-[11px] text-red-600 leading-relaxed">
-          <Info size={12} className="mt-0.5 shrink-0" />
-          <span>{error}</span>
-        </div>
-      )}
+      {error && <p className="text-[11px] text-red-600 font-semibold">{error}</p>}
     </div>
   );
 };
 
 export default Input;
-

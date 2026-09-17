@@ -1,6 +1,6 @@
 import React from "react";
-import DashboardLayout from "@/components/layout/DashboardLayout";
-import SettingsCenter from "@/components/SettingsCenter";
+import DashboardLayout from "@/components/common/DashboardLayout";
+import SettingsCenter from "@/components/common/SettingsCenter";
 
 const Settings = () => {
   return (

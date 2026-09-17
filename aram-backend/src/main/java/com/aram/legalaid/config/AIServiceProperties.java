@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class AIServiceProperties {
 
-    @Value("${AI_SERVICE_URL:http://localhost:8000}")
+    @Value("${ai.service.url:${AI_SERVICE_URL:http://127.0.0.1:8000}}")
     private String url;
 
     public String getUrl() {

@@ -10,4 +10,5 @@ import java.util.Optional;
 public interface BlockchainBlockRepository extends JpaRepository<BlockchainBlock, Long> {
     Optional<BlockchainBlock> findFirstByOrderByBlockIndexDesc();
     Optional<BlockchainBlock> findByComplaintId(Long complaintId);
+    java.util.List<BlockchainBlock> findAllByOrderByBlockIndexAsc();
 }

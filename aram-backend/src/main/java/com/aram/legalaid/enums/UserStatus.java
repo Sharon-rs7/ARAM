@@ -5,5 +5,8 @@ public enum UserStatus {
     INACTIVE,
     SUSPENDED,
     DELETED,
-    BANNED
+    BANNED,
+    INVITED,
+    EMAIL_VERIFIED,
+    DEACTIVATED
 }

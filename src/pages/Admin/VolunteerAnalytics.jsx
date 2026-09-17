@@ -1,7 +1,7 @@
-import DashboardLayout from "@/components/layout/DashboardLayout";
+import DashboardLayout from "@/components/common/DashboardLayout";
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { volunteerService } from "../../services/volunteerService";
+import { volunteerService } from "@/services/volunteerService";
 import {
   Award,
   ShieldCheck,

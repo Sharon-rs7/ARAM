@@ -15,6 +15,9 @@ public class Complaint {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "complaint_custom_id", unique = true, length = 50)
+    private String complaintCustomId;
+
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -132,6 +135,9 @@ public class Complaint {
     @Column(nullable = false)
     private boolean highRisk = false;
 
+    @Column(name = "guide_requested", nullable = false)
+    private boolean guideRequested = false;
+
     @Column(nullable = false)
     private boolean disclaimerAccepted = false;
 
@@ -146,6 +152,23 @@ public class Complaint {
 
     @Column(columnDefinition = "TEXT")
     private String assignmentOverrideReason;
+
+    private LocalDateTime assignedAt;
+    private LocalDateTime acknowledgedAt;
+    private LocalDateTime resolvedAt;
+    private LocalDateTime reviewedAt;
+
+    @Column(name = "emergency_flag", nullable = false)
+    private boolean emergencyFlag = false;
+
+    @Column(name = "human_review_required", nullable = false)
+    private boolean humanReviewRequired = false;
+
+    @Column(name = "resolution_type", length = 50)
+    private String resolutionType;
+
+    @Column(name = "evidence_status", length = 50)
+    private String evidenceStatus = "PENDING";
 
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
@@ -255,4 +278,33 @@ public class Complaint {
     public void setResolutionSummary(String resolutionSummary) { this.resolutionSummary = resolutionSummary; }
     public String getReopenReason() { return reopenReason; }
     public void setReopenReason(String reopenReason) { this.reopenReason = reopenReason; }
+
+    public String getComplaintCustomId() { return complaintCustomId; }
+    public void setComplaintCustomId(String complaintCustomId) { this.complaintCustomId = complaintCustomId; }
+
+    public LocalDateTime getAssignedAt() { return assignedAt; }
+    public void setAssignedAt(LocalDateTime assignedAt) { this.assignedAt = assignedAt; }
+    public LocalDateTime getResolvedAt() { return resolvedAt; }
+    public void setResolvedAt(LocalDateTime resolvedAt) { this.resolvedAt = resolvedAt; }
+
+    public boolean isGuideRequested() { return guideRequested; }
+    public void setGuideRequested(boolean guideRequested) { this.guideRequested = guideRequested; }
+
+    public LocalDateTime getAcknowledgedAt() { return acknowledgedAt; }
+    public void setAcknowledgedAt(LocalDateTime acknowledgedAt) { this.acknowledgedAt = acknowledgedAt; }
+
+    public LocalDateTime getReviewedAt() { return reviewedAt; }
+    public void setReviewedAt(LocalDateTime reviewedAt) { this.reviewedAt = reviewedAt; }
+
+    public boolean isEmergencyFlag() { return emergencyFlag; }
+    public void setEmergencyFlag(boolean emergencyFlag) { this.emergencyFlag = emergencyFlag; }
+
+    public boolean isHumanReviewRequired() { return humanReviewRequired; }
+    public void setHumanReviewRequired(boolean humanReviewRequired) { this.humanReviewRequired = humanReviewRequired; }
+
+    public String getResolutionType() { return resolutionType; }
+    public void setResolutionType(String resolutionType) { this.resolutionType = resolutionType; }
+
+    public String getEvidenceStatus() { return evidenceStatus; }
+    public void setEvidenceStatus(String evidenceStatus) { this.evidenceStatus = evidenceStatus; }
 }

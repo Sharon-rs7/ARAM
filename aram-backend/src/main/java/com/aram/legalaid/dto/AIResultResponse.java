@@ -23,5 +23,6 @@ public record AIResultResponse(
         String spokenSummaryText,
         boolean readAloudAvailable,
         String complexity,
-        List<String> detectedIssues
+        List<String> detectedIssues,
+        java.util.Map<String, Object> caseSummary
 ) {}

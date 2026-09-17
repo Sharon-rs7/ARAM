@@ -43,7 +43,7 @@ public class LocationCostController {
     }
 
     private User getCurrentUser(Principal principal) {
-        String email = principal != null ? principal.getName() : "citizen@aram.ai";
+        String email = principal != null ? principal.getName() : "citizen@gmail.com";
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found: " + email));
     }

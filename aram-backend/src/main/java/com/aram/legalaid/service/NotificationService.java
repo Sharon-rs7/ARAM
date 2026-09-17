@@ -63,4 +63,21 @@ public class NotificationService {
         notification.setReadFlag(true);
         return mapperService.toNotificationResponse(notificationRepository.save(notification));
     }
+
+    @Transactional
+    public void markAllAsRead() {
+        User user = userService.currentUser();
+        List<Notification> unread = notificationRepository.findByUserAndReadFlagFalse(user);
+        for (Notification n : unread) {
+            n.setReadFlag(true);
+        }
+        notificationRepository.saveAll(unread);
+    }
+
+    @Transactional
+    public void clearAll() {
+        User user = userService.currentUser();
+        List<Notification> all = notificationRepository.findByUser(user);
+        notificationRepository.deleteAll(all);
+    }
 }

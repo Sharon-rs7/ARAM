@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import DashboardLayout from "@/components/layout/DashboardLayout";
+import DashboardLayout from "@/components/common/DashboardLayout";
 import Card from "@/components/common/Card";
 import Button from "@/components/common/Button";
 import Loader from "@/components/common/Loader";
 import EmptyState from "@/components/common/EmptyState";
-import { formatDuration, formatDateTime, exportTableToCSV } from "../../utils/exportUtils";
-import volunteerActivityService from "../../services/volunteerActivityService";
+import { formatDuration, formatDateTime, exportTableToCSV } from "@/utils/exportUtils";
+import volunteerActivityService from "@/services/volunteerActivityService";
 import {
   User,
   Clock,
@@ -96,8 +96,8 @@ export default function VolunteerActivityDetails() {
 
       setTimeline(actLogs.length ? actLogs : [
         { id: 1, createdAt: "2026-07-17T10:15:30Z", actionLabel: "Viewed /citizen/dashboard", routePath: "/citizen/dashboard" },
-        { id: 2, createdAt: "2026-07-17T10:17:12Z", actionLabel: "Reviewed Complaint #CMP1024", routePath: "/volunteer/cases/1024" },
-        { id: 3, createdAt: "2026-07-17T10:20:45Z", actionLabel: "Added Note to Complaint #CMP1024", routePath: "/volunteer/cases/1024" }
+        { id: 2, createdAt: "2026-07-17T10:17:12Z", actionLabel: "Reviewed Complaint #CMP1024", routePath: "/guide/cases/1024" },
+        { id: 3, createdAt: "2026-07-17T10:20:45Z", actionLabel: "Added Note to Complaint #CMP1024", routePath: "/guide/cases/1024" }
       ]);
 
       setSessions(sessLogs.length ? sessLogs : [

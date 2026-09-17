@@ -2,8 +2,10 @@ package com.aram.legalaid.service;
 
 import com.aram.legalaid.dto.BlockchainInfoResponse;
 import com.aram.legalaid.model.BlockchainBlock;
+import com.aram.legalaid.model.BlockchainLock;
 import com.aram.legalaid.model.Complaint;
 import com.aram.legalaid.repository.BlockchainBlockRepository;
+import com.aram.legalaid.repository.BlockchainLockRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,9 +17,11 @@ import java.util.Optional;
 @Service
 public class BlockchainService {
     private final BlockchainBlockRepository blockchainBlockRepository;
+    private final BlockchainLockRepository blockchainLockRepository;
 
-    public BlockchainService(BlockchainBlockRepository blockchainBlockRepository) {
+    public BlockchainService(BlockchainBlockRepository blockchainBlockRepository, BlockchainLockRepository blockchainLockRepository) {
         this.blockchainBlockRepository = blockchainBlockRepository;
+        this.blockchainLockRepository = blockchainLockRepository;
     }
 
     private String sha256(String input) {
@@ -53,6 +57,19 @@ public class BlockchainService {
         if (complaint == null || complaint.getId() == null) {
             return null;
         }
+
+        // Acquire pessimistic write lock on the blockchain lock row to serialize block mining
+        blockchainLockRepository.findAndLockById(1L)
+                .orElseGet(() -> {
+                    BlockchainLock newLock = new BlockchainLock(1L, "BLOCKCHAIN_MINE_LOCK");
+                    try {
+                        blockchainLockRepository.saveAndFlush(newLock);
+                    } catch (Exception e) {
+                        // Ignore duplicate key if another thread seeded concurrently
+                    }
+                    return blockchainLockRepository.findAndLockById(1L)
+                            .orElseThrow(() -> new IllegalStateException("Blockchain lock record not initialized"));
+                });
 
         Optional<BlockchainBlock> existing = blockchainBlockRepository.findByComplaintId(complaint.getId());
         if (existing.isPresent()) {
@@ -123,11 +140,30 @@ public class BlockchainService {
     }
 
     public boolean verifyFullChain() {
-        java.util.List<BlockchainBlock> blocks = blockchainBlockRepository.findAll();
+        java.util.List<BlockchainBlock> blocks = blockchainBlockRepository.findAllByOrderByBlockIndexAsc();
+        if (blocks.isEmpty()) {
+            return true;
+        }
         java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        
+        // Validate genesis block (index 0)
+        BlockchainBlock genesis = blocks.get(0);
+        if (genesis.getBlockIndex() != 0) {
+            return false;
+        }
+        String genesisTimestampStr = genesis.getTimestamp().format(formatter);
+        String genesisBaseData = genesis.getBlockIndex() + "|" + genesisTimestampStr + "|" + genesis.getPreviousHash() + "|" + genesis.getComplaintId() + "|" + genesis.getComplaintHash() + "|";
+        if (!sha256(genesisBaseData + genesis.getNonce()).equals(genesis.getBlockHash())) {
+            return false;
+        }
+        
+        // Validate subsequent blocks
         for (int i = 1; i < blocks.size(); i++) {
             BlockchainBlock current = blocks.get(i);
             BlockchainBlock previous = blocks.get(i - 1);
+            if (current.getBlockIndex() != previous.getBlockIndex() + 1) {
+                return false;
+            }
             if (!current.getPreviousHash().equals(previous.getBlockHash())) {
                 return false;
             }

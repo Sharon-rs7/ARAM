@@ -81,12 +81,21 @@ public class AIResult {
     @Column(nullable = false)
     private boolean fallbackUsed = false;
 
+    @Column(name = "case_summary", columnDefinition = "TEXT")
+    private String caseSummary;
+
     private LocalDateTime createdAt;
 
     @PrePersist
     void onCreate() {
-        createdAt = LocalDateTime.now();
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+        if (authorityLanguageMatch == null) {
+            authorityLanguageMatch = Boolean.TRUE;
+        }
     }
+
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -145,4 +154,7 @@ public class AIResult {
 
     public String getComplexity() { return complexity; }
     public void setComplexity(String complexity) { this.complexity = complexity; }
+
+    public String getCaseSummary() { return caseSummary; }
+    public void setCaseSummary(String caseSummary) { this.caseSummary = caseSummary; }
 }

@@ -14,10 +14,9 @@ class EmbeddingService:
             try:
                 from sentence_transformers import SentenceTransformer
                 try:
-                    self.model = SentenceTransformer(self.model_name)
-                except Exception as net_err:
-                    print(f"[EMBEDDINGS] Online check failed ({net_err}). Loading from local disk cache...")
                     self.model = SentenceTransformer(self.model_name, local_files_only=True)
+                except Exception:
+                    self.model = SentenceTransformer(self.model_name)
                 # Warm-up PyTorch JIT execution kernels
                 _ = self.model.encode(["warmup query"], normalize_embeddings=True)
                 print(f"[EMBEDDINGS] SentenceTransformer singleton '{self.model_name}' pre-warmed successfully.")

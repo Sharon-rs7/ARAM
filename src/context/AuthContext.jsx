@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
+import { normalizeRole } from "@/utils/roleLabels";
 
 const AuthContext = createContext(null);
 
@@ -8,17 +9,10 @@ export const AuthProvider = ({ children }) => {
   const [accessToken, setAccessToken] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  const normalizeRole = (rawRole) => {
-    if (!rawRole) return null;
-    let r = String(rawRole).toUpperCase().replace(/^ROLE_/, "");
-    if (r === "HELPER") r = "VOLUNTEER";
-    return r;
-  };
-
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    const storedRole = localStorage.getItem("role");
-    const storedUser = localStorage.getItem("user");
+    const token = localStorage.getItem("accessToken") || sessionStorage.getItem("accessToken");
+    const storedRole = localStorage.getItem("role") || sessionStorage.getItem("role");
+    const storedUser = localStorage.getItem("user") || sessionStorage.getItem("user");
 
     if (token) {
       setAccessToken(token);
@@ -32,14 +26,21 @@ export const AuthProvider = ({ children }) => {
         }
       }
 
-      const effectiveRole = normalizeRole(parsedUser?.role || storedRole);
-      setRole(effectiveRole);
-      setUser(parsedUser || (effectiveRole ? { role: effectiveRole } : null));
+      const rawRole = parsedUser?.backendRole || parsedUser?.role || storedRole;
+      const cleanRole = normalizeRole(rawRole);
+
+      if (parsedUser) {
+        parsedUser.role = cleanRole;
+        parsedUser.backendRole = rawRole;
+      }
+
+      setRole(cleanRole);
+      setUser(parsedUser || (cleanRole ? { role: cleanRole, backendRole: rawRole } : null));
     }
     setLoading(false);
   }, []);
 
-  const saveAuth = (authData) => {
+  const saveAuth = (authData, rememberMe = true) => {
     if (!authData) return;
     const token = authData.accessToken || authData.token;
     const rawRole = authData.role || authData.user?.role;
@@ -47,13 +48,22 @@ export const AuthProvider = ({ children }) => {
 
     let authUser = authData.user || (cleanRole ? { role: cleanRole } : null);
     if (authUser && cleanRole) {
-      authUser = { ...authUser, role: cleanRole };
+      authUser = { ...authUser, role: cleanRole, backendRole: rawRole };
     }
 
-    if (token) localStorage.setItem("accessToken", token);
-    if (authData.refreshToken) localStorage.setItem("refreshToken", authData.refreshToken);
-    if (authUser) localStorage.setItem("user", JSON.stringify(authUser));
-    if (cleanRole) localStorage.setItem("role", cleanRole);
+    const storage = rememberMe ? localStorage : sessionStorage;
+    const oldStorage = rememberMe ? sessionStorage : localStorage;
+
+    // Clear opposite storage
+    oldStorage.removeItem("accessToken");
+    oldStorage.removeItem("refreshToken");
+    oldStorage.removeItem("user");
+    oldStorage.removeItem("role");
+
+    if (token) storage.setItem("accessToken", token);
+    if (authData.refreshToken) storage.setItem("refreshToken", authData.refreshToken);
+    if (authUser) storage.setItem("user", JSON.stringify(authUser));
+    if (cleanRole) storage.setItem("role", cleanRole);
 
     setAccessToken(token);
     setRole(cleanRole);
@@ -66,13 +76,18 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("user");
     localStorage.removeItem("role");
 
+    sessionStorage.removeItem("accessToken");
+    sessionStorage.removeItem("refreshToken");
+    sessionStorage.removeItem("user");
+    sessionStorage.removeItem("role");
+
     setAccessToken(null);
     setRole(null);
     setUser(null);
   };
 
-  const login = (authData) => {
-    saveAuth(authData);
+  const login = (authData, rememberMe = true) => {
+    saveAuth(authData, rememberMe);
   };
 
   const logout = () => {

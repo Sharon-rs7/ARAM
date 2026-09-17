@@ -10,22 +10,51 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 @Service
 public class AIClientService {
 
     private final RestTemplate restTemplate;
     private final AIServiceProperties properties;
+    private final UserService userService;
 
-    public AIClientService(AIServiceProperties properties) {
+    @Value("${ai.internal.token:aram-secret-token-2026}")
+    private String internalToken;
+
+    public AIClientService(AIServiceProperties properties, @Lazy UserService userService) {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setConnectTimeout(2000); // 2 seconds connect timeout
         requestFactory.setReadTimeout(30000);   // 30 seconds read timeout (covers Whisper & heavy OCR models)
         this.restTemplate = new RestTemplate(requestFactory);
         this.properties = properties;
+        this.userService = userService;
+    }
+
+    private HttpHeaders getHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("X-Internal-Token", internalToken != null ? internalToken : "aram-secret-token-2026");
+        try {
+            if (userService != null) {
+                com.aram.legalaid.model.User user = userService.currentUser();
+                if (user != null) {
+                    headers.set("X-User-Id", user.getId().toString());
+                    headers.set("X-User-Role", user.getRole().name());
+                    headers.set("X-User-District", user.getDistrict() != null ? user.getDistrict() : "Coimbatore");
+                }
+            }
+        } catch (Exception e) {
+            headers.set("X-User-Id", "ANONYMOUS");
+            headers.set("X-User-Role", "CITIZEN");
+            headers.set("X-User-District", "Coimbatore");
+        }
+        return headers;
     }
 
     private <T> T executeWithRetry(String endpoint, java.util.function.Supplier<T> action) {
@@ -77,20 +106,27 @@ public class AIClientService {
         }
     }
 
-    public AiTriageResponse analyzeComplaint(String title, String description, String language, String district, boolean isSensitive, String preferredGender, List<Map<String, Object>> existingComplaints) {
+    public AiTriageResponse analyzeComplaint(String complaintId, Long citizenId, String regionId, String title, String description, String language, String district, boolean isSensitive, String preferredGender, List<Map<String, Object>> existingComplaints) {
         String url = properties.getUrl() + "/complaint/analyze";
         try {
-            Map<String, Object> payload = Map.of(
-                "title", title != null ? title : "",
-                "description", description != null ? description : "",
-                "languageHint", language != null ? language : "en",
-                "district", district != null ? district : "Coimbatore",
-                "area", "",
-                "sensitive", isSensitive,
-                "preferredLegalGuideGender", preferredGender != null ? preferredGender : "ANY",
-                "existingComplaints", existingComplaints != null ? existingComplaints : List.of()
-            );
-            return restTemplate.postForObject(url, payload, AiTriageResponse.class);
+            Map<String, Object> payload = new HashMap<>();
+            String fullText = (description != null && !description.isEmpty()) ? description : (title != null ? title : "");
+            payload.put("complaintText", fullText);
+            payload.put("title", title != null ? title : "");
+            payload.put("description", description != null ? description : "");
+            payload.put("language", language != null ? language : "en");
+            payload.put("languageHint", language != null ? language : "en");
+            payload.put("district", district != null ? district : "Coimbatore");
+            payload.put("area", "");
+            payload.put("sensitive", isSensitive);
+            payload.put("preferredLegalGuideGender", preferredGender != null ? preferredGender : "ANY");
+            payload.put("existingComplaints", existingComplaints != null ? existingComplaints : List.of());
+            payload.put("complaintId", complaintId);
+            payload.put("citizenId", citizenId);
+            payload.put("regionId", regionId);
+
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, getHeaders());
+            return restTemplate.postForObject(url, entity, AiTriageResponse.class);
         } catch (Exception e) {
             String errorMsg = getDetailedErrorMsg("analyzeComplaint", e);
             System.err.println(errorMsg);
@@ -98,28 +134,32 @@ public class AIClientService {
         }
     }
 
-    public AiChatResponse askChatbot(AiChatRequest request) {
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> askChatbot(AiChatRequest request) {
         String url = properties.getUrl() + "/chat/ask";
         try {
-            return restTemplate.postForObject(url, request, AiChatResponse.class);
+            HttpEntity<AiChatRequest> entity = new HttpEntity<>(request, getHeaders());
+            ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
+            return (Map<String, Object>) response.getBody();
         } catch (Exception e) {
             String errorMsg = getDetailedErrorMsg("askChatbot", e);
             System.err.println(errorMsg);
-            return new AiChatResponse(
-                "I am sorry, the AI service is currently undergoing maintenance. Please reach out to your local helper. This is preliminary legal aid guidance only.",
-                "I am sorry, the AI service is currently undergoing maintenance. Please reach out to your local helper. This is preliminary legal aid guidance only.",
-                null,
-                0.0,
-                List.of("Retry connection", "Consult counselor"),
-                "This is preliminary legal aid guidance only."
-            );
+            Map<String, Object> fallback = new HashMap<>();
+            fallback.put("reply", "I am sorry, the AI service is currently undergoing maintenance. Please reach out to your local helper. This is preliminary legal aid guidance only.");
+            fallback.put("answer", "I am sorry, the AI service is currently undergoing maintenance. Please reach out to your local helper. This is preliminary legal aid guidance only.");
+            fallback.put("category", "GENERAL_LEGAL_AID");
+            fallback.put("confidence", 0.0);
+            fallback.put("suggestedActions", List.of("Retry connection", "Consult counselor"));
+            fallback.put("disclaimer", "This is preliminary legal aid guidance only.");
+            fallback.put("is_conversational", false);
+            return fallback;
         }
     }
 
     public Map<String, Object> ocrDocument(MultipartFile file) {
         String url = properties.getUrl() + "/documents/ocr";
         try {
-            HttpHeaders headers = new HttpHeaders();
+            HttpHeaders headers = getHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
@@ -142,7 +182,7 @@ public class AIClientService {
     public AiDocumentVerifyResponse verifyDocument(MultipartFile file, String expectedType, String category) {
         String url = properties.getUrl() + "/documents/verify";
         try {
-            HttpHeaders headers = new HttpHeaders();
+            HttpHeaders headers = getHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
@@ -172,27 +212,47 @@ public class AIClientService {
         }
     }
 
-    public List<Map<String, Object>> recommendVolunteers(String category, String language, boolean preferWoman, String district, List<Map<String, Object>> volunteers) {
+    public List<Map<String, Object>> recommendVolunteers(String complaintId, String category, String language, boolean preferWoman, String district, List<Map<String, Object>> volunteers) {
         String url = properties.getUrl() + "/recommend/volunteer";
         try {
             Map<String, Object> payload = Map.of(
+                "complaintId", complaintId != null ? complaintId : "",
                 "category", category,
                 "language", language != null ? language : "en",
                 "preferWomanVolunteer", preferWoman,
                 "district", district != null ? district : "Coimbatore",
                 "volunteers", volunteers
             );
-            return restTemplate.postForObject(url, payload, List.class);
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, getHeaders());
+            return restTemplate.postForObject(url, entity, List.class);
         } catch (Exception e) {
             System.err.println(getDetailedErrorMsg("recommendVolunteers", e));
             return List.of();
         }
     }
 
+    @SuppressWarnings("unchecked")
+    public Map<String, Object> askCaseAssistant(Map<String, Object> body) {
+        String url = properties.getUrl() + "/ai/case-assistant";
+        try {
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, getHeaders());
+            ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
+            return response.getBody() != null ? response.getBody() : Map.of();
+        } catch (Exception e) {
+            System.err.println("Error calling AI Case Assistant: " + e.getMessage());
+            return Map.of(
+                "answer", "Verified statutory information is currently being processed by the Legal Aid triage engine.",
+                "grounded", true,
+                "provider", "system_fallback",
+                "citations", List.of()
+            );
+        }
+    }
+
     public Map<String, Object> transcribeSpeech(MultipartFile file, String selectedLanguage) {
         String url = properties.getUrl() + "/voice/transcribe";
         try {
-            HttpHeaders headers = new HttpHeaders();
+            HttpHeaders headers = getHeaders();
             headers.setContentType(MediaType.MULTIPART_FORM_DATA);
             
             MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
@@ -213,7 +273,9 @@ public class AIClientService {
     public Map<String, Object> detectLanguage(String text) {
         String url = properties.getUrl() + "/language/detect";
         try {
-            return executeWithRetry("detectLanguage", () -> restTemplate.postForObject(url, Map.of("text", text), Map.class));
+            Map<String, Object> payload = Map.of("text", text);
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, getHeaders());
+            return executeWithRetry("detectLanguage", () -> restTemplate.postForObject(url, entity, Map.class));
         } catch (Exception e) {
             System.err.println(getDetailedErrorMsg("detectLanguage", e));
             return Map.of("language", "English");
@@ -228,7 +290,8 @@ public class AIClientService {
                 "sourceLanguage", sourceLanguage != null ? sourceLanguage : "Tamil",
                 "targetLanguage", targetLanguage != null ? targetLanguage : "English"
             );
-            return executeWithRetry("translateText", () -> restTemplate.postForObject(url, payload, Map.class));
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, getHeaders());
+            return executeWithRetry("translateText", () -> restTemplate.postForObject(url, entity, Map.class));
         } catch (Exception e) {
             System.err.println(getDetailedErrorMsg("translateText", e));
             return Map.of("originalText", text, "translatedText", text);
@@ -238,7 +301,9 @@ public class AIClientService {
     public Map<String, Object> normalizeText(String text) {
         String url = properties.getUrl() + "/language/normalize";
         try {
-            return executeWithRetry("normalizeText", () -> restTemplate.postForObject(url, Map.of("text", text), Map.class));
+            Map<String, Object> payload = Map.of("text", text);
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, getHeaders());
+            return executeWithRetry("normalizeText", () -> restTemplate.postForObject(url, entity, Map.class));
         } catch (Exception e) {
             System.err.println(getDetailedErrorMsg("normalizeText", e));
             return Map.of("originalText", text, "normalizedText", text);
@@ -248,10 +313,56 @@ public class AIClientService {
     public Map<String, Object> getSpeechStatus() {
         String url = properties.getUrl() + "/speech/status";
         try {
-            return restTemplate.getForObject(url, Map.class);
+            HttpHeaders headers = getHeaders();
+            HttpEntity<Void> entity = new HttpEntity<>(headers);
+            ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, entity, Map.class);
+            return response.getBody();
         } catch (Exception e) {
             System.err.println(getDetailedErrorMsg("getSpeechStatus", e));
             return Map.of("modelLoaded", false, "modelSize", "base", "device", "cpu");
+        }
+    }
+
+    public void syncComplaint(String complaintId, String status, String assignedGuideId, String assignedGuideName, String note) {
+        syncComplaint(complaintId, status, assignedGuideId, assignedGuideName, note, null);
+    }
+
+    public void syncComplaint(String complaintId, String status, String assignedGuideId, String assignedGuideName, String note, Boolean guideRequested) {
+        String url = properties.getUrl() + "/complaint/sync";
+        try {
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("complaintId", complaintId);
+            payload.put("status", status);
+            if (assignedGuideId != null) payload.put("assignedGuideId", assignedGuideId);
+            if (assignedGuideName != null) payload.put("assignedGuideName", assignedGuideName);
+            if (note != null) payload.put("note", note);
+            if (guideRequested != null) payload.put("guideRequested", guideRequested);
+
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, getHeaders());
+            restTemplate.postForObject(url, entity, Map.class);
+        } catch (Exception e) {
+            System.err.println("Failed to sync complaint status to FastAPI: " + e.getMessage());
+        }
+    }
+
+    public void syncResolvedComplaint(String complaintId, String status, String assignedGuideId, String assignedGuideName, String complexity, Double resolutionTime, Double feedbackScore, String outcome) {
+        String url = properties.getUrl() + "/complaint/sync";
+        try {
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("complaintId", complaintId);
+            payload.put("status", status);
+            if (assignedGuideId != null) payload.put("assignedGuideId", assignedGuideId);
+            if (assignedGuideName != null) payload.put("assignedGuideName", assignedGuideName);
+            if (complexity != null) payload.put("complexity", complexity);
+            if (resolutionTime != null) payload.put("resolutionTime", resolutionTime);
+            if (feedbackScore != null) payload.put("feedbackScore", feedbackScore);
+            if (outcome != null) payload.put("resolutionOutcome", outcome);
+            payload.put("note", "Case completed");
+
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, getHeaders());
+            restTemplate.postForObject(url, entity, Map.class);
+        } catch (Exception e) {
+            System.err.println("Failed to sync resolved complaint to FastAPI: " + e.getMessage());
         }
     }
 

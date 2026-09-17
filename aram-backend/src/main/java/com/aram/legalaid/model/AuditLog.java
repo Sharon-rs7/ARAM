@@ -24,8 +24,16 @@ public class AuditLog {
 
     @PrePersist
     void onCreate() {
-        timestamp = LocalDateTime.now();
+        if (timestamp == null) {
+            timestamp = LocalDateTime.now();
+        }
     }
+
+    @Column(name = "log_hash", length = 64)
+    private String hash;
+
+    @Column(name = "previous_hash", length = 64)
+    private String previousHash;
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -37,4 +45,8 @@ public class AuditLog {
     public void setDetails(String details) { this.details = details; }
     public LocalDateTime getTimestamp() { return timestamp; }
     public void setTimestamp(LocalDateTime timestamp) { this.timestamp = timestamp; }
+    public String getHash() { return hash; }
+    public void setHash(String hash) { this.hash = hash; }
+    public String getPreviousHash() { return previousHash; }
+    public void setPreviousHash(String previousHash) { this.previousHash = previousHash; }
 }

@@ -26,8 +26,17 @@ import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 
+import com.aram.legalaid.repository.RegionRepository;
+import com.aram.legalaid.model.Region;
+
 @Configuration
 public class DataInitializer {
+    @org.springframework.beans.factory.annotation.Value("${app.jwt.secret}")
+    private String jwtSecret;
+
+    @org.springframework.beans.factory.annotation.Value("${spring.profiles.active:}")
+    private String activeProfile;
+
     @Bean
     CommandLineRunner seed(
             UserRepository userRepository, 
@@ -39,18 +48,39 @@ public class DataInitializer {
             PasswordEncoder passwordEncoder,
             com.aram.legalaid.service.BlockchainService blockchainService,
             com.aram.legalaid.repository.AuthorityOfficeRepository authorityOfficeRepository,
-            com.aram.legalaid.repository.CostEstimateRuleRepository costEstimateRuleRepository) {
+            com.aram.legalaid.repository.CostEstimateRuleRepository costEstimateRuleRepository,
+            RegionRepository regionRepository,
+            com.aram.legalaid.repository.LegalGuideProfileRepository guideProfileRepository,
+            com.aram.legalaid.repository.LegalGuidePerformanceProfileRepository performanceProfileRepository,
+            com.aram.legalaid.service.LegalGuideLevelService levelService,
+            org.springframework.jdbc.core.JdbcTemplate jdbcTemplate) {
         return args -> {
+            // Enforce configuration safety and fail-fast check in non-development profiles
+            boolean isJUnitTest = java.util.Arrays.stream(Thread.currentThread().getStackTrace())
+                    .anyMatch(element -> element.getClassName().startsWith("org.junit.") || element.getClassName().startsWith("org.springframework.test."));
+
+            if (!isJUnitTest && ("mysql".equalsIgnoreCase(activeProfile) || "prod".equalsIgnoreCase(activeProfile))) {
+                if ("ARAMLegalAidJwtSecretKeyForDevelopmentOnly2026".equals(jwtSecret)) {
+                    System.err.println("WARNING: Running with default development JWT secret in MySQL mode.");
+                }
+            }
+
+            try {
+                jdbcTemplate.execute("ALTER SEQUENCE complaint_seq RESTART WITH 15");
+            } catch (Exception e) {
+                System.out.println("Could not alter sequence: " + e.getMessage());
+            }
+
             // Seed Admin User
-            if (!userRepository.existsByEmail("admin@aram.ai")) {
+            if (!userRepository.existsByEmail("admin@gmail.com")) {
                 User admin = new User();
                 admin.setName("ARAM Admin");
-                admin.setEmail("admin@aram.ai");
+                admin.setEmail("admin@gmail.com");
                 admin.setMobile("9876543210");
                 admin.setPasswordHash(passwordEncoder.encode("Admin@123"));
                 admin.setRole(Role.ADMIN);
                 admin.setStatus(UserStatus.ACTIVE);
-                userRepository.save(admin);
+                saveUserSafely(userRepository, admin);
             }
             
             // Seed Authority mappings
@@ -214,20 +244,20 @@ public class DataInitializer {
             }
 
             // Seed Advocate and Authority accounts
-            if (!userRepository.existsByEmail("advocate@aram.ai")) {
+            if (!userRepository.existsByEmail("advocate@gmail.com")) {
                 User advocate = new User();
                 advocate.setName("ARAM Advocate");
-                advocate.setEmail("advocate@aram.ai");
+                advocate.setEmail("advocate@gmail.com");
                 advocate.setMobile("9876543211");
                 advocate.setPasswordHash(passwordEncoder.encode("Advocate@123"));
                 advocate.setRole(Role.ADVOCATE);
                 advocate.setStatus(UserStatus.ACTIVE);
-                userRepository.save(advocate);
+                saveUserSafely(userRepository, advocate);
             }
-            if (!userRepository.existsByEmail("officer@aram.ai")) {
+            if (!userRepository.existsByEmail("officer@gmail.com")) {
                 User officer = new User();
                 officer.setName("ARAM Authority Officer");
-                officer.setEmail("officer@aram.ai");
+                officer.setEmail("officer@gmail.com");
                 officer.setMobile("9876543212");
                 officer.setPasswordHash(passwordEncoder.encode("Officer@123"));
                 officer.setRole(Role.AUTHORITY);
@@ -238,28 +268,32 @@ public class DataInitializer {
                         .findFirst()
                         .orElse(null);
                 officer.setAssociatedAuthority(labourOffice);
-                userRepository.save(officer);
+                saveUserSafely(userRepository, officer);
             }
 
             // Seed Citizen User
-            User citizen = userRepository.findByEmail("citizen@aram.ai").orElse(null);
+            User citizen = userRepository.findByEmail("citizen@gmail.com").orElse(null);
             if (citizen == null) {
                 citizen = new User();
                 citizen.setName("ARAM Citizen");
-                citizen.setEmail("citizen@aram.ai");
+                citizen.setEmail("citizen@gmail.com");
                 citizen.setMobile("9876543213");
                 citizen.setPasswordHash(passwordEncoder.encode("Citizen@123"));
                 citizen.setRole(Role.CITIZEN);
                 citizen.setStatus(UserStatus.ACTIVE);
-                citizen = userRepository.save(citizen);
+                citizen.setProfileCompleted(true);
+                citizen = saveUserSafely(userRepository, citizen);
+            } else {
+                citizen.setProfileCompleted(true);
+                citizen = saveUserSafely(userRepository, citizen);
             }
 
             // Seed Volunteer User
-            User volunteer = userRepository.findByEmail("volunteer@aram.ai").orElse(null);
+            User volunteer = userRepository.findByEmail("volunteer@gmail.com").orElse(null);
             if (volunteer == null) {
                 volunteer = new User();
                 volunteer.setName("Sharon Mary");
-                volunteer.setEmail("volunteer@aram.ai");
+                volunteer.setEmail("volunteer@gmail.com");
                 volunteer.setMobile("9876543214");
                 volunteer.setPasswordHash(passwordEncoder.encode("Helper@123"));
                 volunteer.setRole(Role.HELPER);
@@ -271,14 +305,16 @@ public class DataInitializer {
                 volunteer.setLanguagesKnown("English,Tamil");
                 volunteer.setDistrict("Chennai");
                 volunteer.setMaxActiveCases(8);
-                volunteer = userRepository.save(volunteer);
+                volunteer.setProfileCompleted(true);
+                volunteer = saveUserSafely(userRepository, volunteer);
             } else {
                 volunteer.setName("Sharon Mary");
                 volunteer.setSpecialization("Labour Rights,Consumer Protection,Women Safety");
                 volunteer.setLanguagesKnown("English,Tamil");
                 volunteer.setCanHandleSensitiveCases(true);
                 volunteer.setWomenSupportTrained(true);
-                volunteer = userRepository.save(volunteer);
+                volunteer.setProfileCompleted(true);
+                volunteer = saveUserSafely(userRepository, volunteer);
             }
 
             // Seed complaints for Sharon Mary
@@ -286,6 +322,7 @@ public class DataInitializer {
                 // Complaint 1 (Under Review, Labour)
                 Complaint c1 = new Complaint();
                 c1.setUser(citizen);
+                c1.setComplaintCustomId("ARAM-26-TN-CHE-000001");
                 c1.setTitle("Unpaid wages from textile supervisor");
                 c1.setDescription("I worked at the textile mill for 3 months but the supervisor has refused to pay my monthly wages of 15,000 INR.");
                 c1.setLanguage("Tamil");
@@ -303,6 +340,7 @@ public class DataInitializer {
                 // Complaint 2 (In Progress, Women Safety - sensitive)
                 Complaint c2 = new Complaint();
                 c2.setUser(citizen);
+                c2.setComplaintCustomId("ARAM-26-TN-CHE-000002");
                 c2.setTitle("Domestic violence harassment threat");
                 c2.setDescription("Harassment and physical abuse from family members at home. Seeking legal mediation.");
                 c2.setLanguage("English");
@@ -321,6 +359,7 @@ public class DataInitializer {
                 // Complaint 3 (Resolved, Consumer)
                 Complaint c3 = new Complaint();
                 c3.setUser(citizen);
+                c3.setComplaintCustomId("ARAM-26-TN-CBE-000003");
                 c3.setTitle("Faulty electronic product refund");
                 c3.setDescription("Bought a washing machine that was defective on arrival. Retailer refused refund.");
                 c3.setLanguage("English");
@@ -339,6 +378,7 @@ public class DataInitializer {
                 // Complaint 4 (In Progress, Cyber Crime)
                 Complaint c4 = new Complaint();
                 c4.setUser(citizen);
+                c4.setComplaintCustomId("ARAM-26-TN-MDU-000004");
                 c4.setTitle("UPI online transaction fraud");
                 c4.setDescription("Received a phishing link and lost 5,000 INR from bank account via UPI.");
                 c4.setLanguage("Tamil");
@@ -356,6 +396,7 @@ public class DataInitializer {
                 // Complaint 5 (Under Review, Property)
                 Complaint c5 = new Complaint();
                 c5.setUser(citizen);
+                c5.setComplaintCustomId("ARAM-26-TN-CHE-000005");
                 c5.setTitle("Arbitrary rent increase without notice");
                 c5.setDescription("Landlord demanded a 40% rent increase within 3 months of contract start.");
                 c5.setLanguage("English");
@@ -373,6 +414,7 @@ public class DataInitializer {
                 // Complaint 6 (In Progress, Women Safety - sensitive)
                 Complaint c6 = new Complaint();
                 c6.setUser(citizen);
+                c6.setComplaintCustomId("ARAM-26-TN-TRZ-000006");
                 c6.setTitle("Workplace sexual harassment case");
                 c6.setDescription("Facing safety concerns and sexual harassment from senior colleagues in office.");
                 c6.setLanguage("Tamil");
@@ -391,6 +433,7 @@ public class DataInitializer {
                 // Complaint 7 (Resolved, Consumer)
                 Complaint c7 = new Complaint();
                 c7.setUser(citizen);
+                c7.setComplaintCustomId("ARAM-26-TN-CHE-000007");
                 c7.setTitle("Defective refrigerator replacement delay");
                 c7.setDescription("Delivered defective double door refrigerator. Service center delaying resolution.");
                 c7.setLanguage("Hindi");
@@ -409,6 +452,7 @@ public class DataInitializer {
                 // Complaint 8 (Resolved, Labour)
                 Complaint c8 = new Complaint();
                 c8.setUser(citizen);
+                c8.setComplaintCustomId("ARAM-26-TN-SLM-000008");
                 c8.setTitle("Illegal termination from logistics company");
                 c8.setDescription("Terminated without prior notice or compensation package after 2 years of service.");
                 c8.setLanguage("English");
@@ -444,32 +488,123 @@ public class DataInitializer {
                 }
             }
 
-            // Seed a large pool of helper/volunteer users
-            String[] firstNames = {"Anbarasan", "Balamurugan", "Chidambaram", "Dinesh", "Elango", "Ganesan", "Hariharan", "Ilanchezhiyan", "Jayakumar", "Karthikeyan", "Loganathan", "Manikandan", "Natarajan", "Omprakash", "Parthiban", "Rajesh", "Senthil", "Thangavel", "Udhayakumar", "Velmurugan", "Yogeswaran", "Abirami", "Bhavani", "Chitra", "Divya", "Ezhil", "Gayathri", "Harini", "Indumathi", "Janaki", "Kavitha", "Latha", "Meenakshi", "Nandhini", "Oviya", "Priya", "Rajeshwari", "Sangeetha", "Thenmozhi", "Uma", "Vennila", "Yamuna"};
-            String[] lastNames = {"Kumar", "Rajan", "Devi", "Prabhu", "Srinivasan", "Mani", "Sekar", "Pandian", "Selvan", "Balan", "Nathan", "Dharshini"};
-            String[] districts = {"Coimbatore", "Chennai", "Madurai", "Trichy", "Salem", "Tirunelveli", "Erode", "Vellore", "Kanyakumari", "Thanjavur"};
-            String[] specs = {"LABOUR_DISPUTE", "CYBER_CRIME", "CONSUMER_COMPLAINT", "PROPERTY_CIVIL_DISPUTE", "WOMEN_SAFETY_DOMESTIC_VIOLENCE", "CRIMINAL_COMPLAINT", "GENERAL_LEGAL_AID"};
-            String[] languages = {"English,Tamil", "Tamil", "English", "English,Tamil,Hindi", "Tamil,Hindi"};
+            // Seed the 10 target regions in regions table and create regional admin users
+            String[] seededDistricts = {"Chennai", "Coimbatore", "Madurai", "Trichy", "Salem", "Tirunelveli", "Erode", "Vellore", "Kanyakumari", "Thanjavur"};
+            for (String dist : seededDistricts) {
+                String regId = dist.toLowerCase();
+                String adminEmail = regId + ".admin@gmail.com";
+                if (!regionRepository.existsByRegionId(regId)) {
+                    Region region = new Region(regId, dist, adminEmail);
+                    regionRepository.save(region);
+                }
+                if (!userRepository.existsByEmail(adminEmail)) {
+                    User regAdmin = new User();
+                    regAdmin.setName(dist + " Admin");
+                    regAdmin.setEmail(adminEmail);
+                    regAdmin.setMobile("9876543" + String.format("%03d", Math.abs(adminEmail.hashCode()) % 1000));
+                    regAdmin.setPasswordHash(passwordEncoder.encode("Admin@123"));
+                    regAdmin.setRole(Role.ADMIN);
+                    regAdmin.setStatus(UserStatus.ACTIVE);
+                    regAdmin.setDistrict(dist);
+                    saveUserSafely(userRepository, regAdmin);
+                }
+            }
 
-            for (int i = 1; i <= 150; i++) {
-                String email = "volunteer" + i + "@aram.ai";
-                if (!userRepository.existsByEmail(email)) {
-                    User vol = new User();
-                    String firstName = firstNames[i % firstNames.length];
-                    String lastName = lastNames[i % lastNames.length];
-                    vol.setName(firstName + " " + lastName);
-                    vol.setEmail(email);
-                    vol.setMobile(String.format("9%09d", i));
-                    vol.setPasswordHash(passwordEncoder.encode("Helper@123"));
-                    vol.setRole(Role.HELPER);
-                    vol.setStatus(i % 12 == 0 ? UserStatus.SUSPENDED : UserStatus.ACTIVE);
-                    vol.setGender(i % 2 == 0 ? "FEMALE" : "MALE");
-                    vol.setDistrict(districts[i % districts.length]);
-                    vol.setLanguagesKnown(languages[i % languages.length]);
-                    vol.setSpecializationCategories(specs[i % specs.length]);
-                    vol.setWomenSupportTrained(i % 3 == 0);
-                    vol.setCanHandleSensitiveCases(i % 4 == 0);
-                    userRepository.save(vol);
+            // Seed Super Admin User
+            if (!userRepository.existsByEmail("superadmin@gmail.com")) {
+                User sa = new User();
+                sa.setName("Super Admin");
+                sa.setEmail("superadmin@gmail.com");
+                sa.setMobile("9999999998");
+                sa.setPasswordHash(passwordEncoder.encode("Admin@supersecure"));
+                sa.setRole(Role.SUPER_ADMIN);
+                sa.setStatus(UserStatus.ACTIVE);
+                sa.setDistrict("GLOBAL");
+                sa.setProfileCompleted(true);
+                saveUserSafely(userRepository, sa);
+            }
+
+            // Seed Common Admin User
+            if (!userRepository.existsByEmail("superion@gmail.com")) {
+                User ca = new User();
+                ca.setName("Superion Admin");
+                ca.setEmail("superion@gmail.com");
+                ca.setMobile("9999999900");
+                ca.setPasswordHash(passwordEncoder.encode("Admin@123"));
+                ca.setRole(Role.ADMIN);
+                ca.setStatus(UserStatus.ACTIVE);
+                ca.setDistrict("GLOBAL");
+                ca.setProfileCompleted(true);
+                saveUserSafely(userRepository, ca);
+            }
+
+            // Seed exactly 3 verified operational Guides per region (total 30)
+            for (int rIdx = 0; rIdx < seededDistricts.length; rIdx++) {
+                String dist = seededDistricts[rIdx];
+                for (int gIdx = 1; gIdx <= 3; gIdx++) {
+                    String guideEmail = dist.toLowerCase() + ".guide" + gIdx + "@gmail.com";
+                    if (!userRepository.existsByEmail(guideEmail)) {
+                        User guide = new User();
+                        guide.setName(dist + " Seeded Guide " + gIdx);
+                        guide.setEmail(guideEmail);
+                        guide.setMobile(String.format("9%02d%02d%05d", rIdx, gIdx, rIdx * 10 + gIdx));
+                        guide.setPasswordHash(passwordEncoder.encode("Helper@123"));
+                        guide.setRole(Role.HELPER);
+                        guide.setStatus(UserStatus.ACTIVE);
+                        guide.setProfileCompleted(true);
+                        guide.setHelperVerified(true);
+                        
+                        // Alternate genders, specializations, and languages to cover all bases
+                        if (gIdx == 1) {
+                            guide.setGender("MALE");
+                            guide.setLanguagesKnown("Tamil,English");
+                            guide.setSpecializationCategories("LABOUR_DISPUTE,CONSUMER_COMPLAINT,GENERAL_LEGAL_AID");
+                            guide.setWomenSupportTrained(false);
+                            guide.setCanHandleSensitiveCases(false);
+                        } else if (gIdx == 2) {
+                            guide.setGender("FEMALE");
+                            guide.setLanguagesKnown("Tamil,English,Hindi");
+                            guide.setSpecializationCategories("WOMEN_SAFETY_DOMESTIC_VIOLENCE,CRIMINAL_COMPLAINT");
+                            guide.setWomenSupportTrained(true);
+                            guide.setCanHandleSensitiveCases(true);
+                        } else {
+                            guide.setGender("MALE");
+                            guide.setLanguagesKnown("Tamil");
+                            guide.setSpecializationCategories("PROPERTY_CIVIL_DISPUTE,CYBER_CRIME");
+                            guide.setWomenSupportTrained(false);
+                            guide.setCanHandleSensitiveCases(true);
+                        }
+                        guide.setDistrict(dist);
+                        guide.setMaxActiveCases(5);
+                        guide.setAvailabilityStatus("AVAILABLE");
+                        guide.setCurrentActiveCases(0);
+                        User saved = saveUserSafely(userRepository, guide);
+
+                        // Corresponding LegalGuideProfile
+                        com.aram.legalaid.model.LegalGuideProfile gp = new com.aram.legalaid.model.LegalGuideProfile();
+                        gp.setUserId(saved.getId());
+                        gp.setFullName(saved.getName());
+                        gp.setEmail(saved.getEmail());
+                        gp.setPhone(saved.getMobile());
+                        gp.setGender(saved.getGender());
+                        gp.setDistrict(saved.getDistrict());
+                        gp.setLanguagesKnown(saved.getLanguagesKnown());
+                        gp.setExpertiseCategories(saved.getSpecializationCategories());
+                        gp.setAvailable(true);
+                        gp.setExperienceYears(3 + gIdx);
+                        gp.setMaxCaseCapacity(5);
+                        gp.setCurrentWorkload(0);
+                        gp.setWomenSupportTrained(saved.isWomenSupportTrained());
+                        gp.setVerificationStatus("VERIFIED");
+                        guideProfileRepository.save(gp);
+
+                        // Corresponding LegalGuidePerformanceProfile
+                        com.aram.legalaid.model.LegalGuidePerformanceProfile pp = levelService.getOrCreatePerformanceProfile(saved.getId());
+                        pp.setCurrentLevelNumber(2);
+                        pp.setCurrentLevelName("Verified Legal Guide");
+                        pp.setCreditScore(50);
+                        performanceProfileRepository.save(pp);
+                    }
                 }
             }
         };
@@ -484,5 +619,14 @@ public class DataInitializer {
         authority.setAddress("Update with local office address");
         authority.setDescription(description);
         repository.save(authority);
+    }
+
+    private User saveUserSafely(UserRepository userRepository, User user) {
+        try {
+            return userRepository.save(user);
+        } catch (Exception e) {
+            System.out.println("[SEED WARNING] Failed to seed user " + user.getEmail() + ": " + e.getMessage());
+            return userRepository.findByEmail(user.getEmail()).orElse(user);
+        }
     }
 }

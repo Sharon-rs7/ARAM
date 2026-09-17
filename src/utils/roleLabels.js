@@ -1,32 +1,52 @@
 export const ROLE_LABELS = {
-  CITIZEN: "Public User",
+  CITIZEN: "Citizen",
+  GUIDE: "Legal Guide",
   HELPER: "Legal Guide",
   VOLUNTEER: "Legal Guide",
-  ADMIN: "Admin",
+  ADMIN: "Regional Admin",
+  SUPER_ADMIN: "Super Admin",
 };
 
 export const ROLE_PORTAL_LABELS = {
-  CITIZEN: "Public User Portal",
+  CITIZEN: "Citizen Portal",
+  GUIDE: "Legal Guide Portal",
   HELPER: "Legal Guide Portal",
   VOLUNTEER: "Legal Guide Portal",
-  ADMIN: "Admin Panel",
+  ADMIN: "Regional Admin Panel",
+  SUPER_ADMIN: "Super Admin Panel",
 };
 
 export const ROLE_DASHBOARD_LABELS = {
-  CITIZEN: "Public User Dashboard",
+  CITIZEN: "Citizen Dashboard",
+  GUIDE: "Legal Guide Dashboard",
   HELPER: "Legal Guide Dashboard",
   VOLUNTEER: "Legal Guide Dashboard",
-  ADMIN: "Admin Dashboard",
+  ADMIN: "Regional Admin Dashboard",
+  SUPER_ADMIN: "Super Admin Dashboard",
 };
 
+export function normalizeRole(rawRole) {
+  if (!rawRole) return null;
+  let r = String(rawRole).toUpperCase().replace(/^ROLE_/, "");
+  if (r === "HELPER" || r === "VOLUNTEER") return "GUIDE";
+  if (r === "CITIZEN") return "CITIZEN";
+  if (r === "ADMIN") return "ADMIN";
+  if (r === "SUPER_ADMIN") return "SUPER_ADMIN";
+  return r;
+}
+
 export function getRoleLabel(role) {
-  return ROLE_LABELS[String(role || "").toUpperCase()] || role || "";
+  const norm = normalizeRole(role);
+  return ROLE_LABELS[String(norm || "").toUpperCase()] || role || "";
 }
 
 export function getRolePortalLabel(role) {
-  return ROLE_PORTAL_LABELS[String(role || "").toUpperCase()] || role || "";
+  const norm = normalizeRole(role);
+  return ROLE_PORTAL_LABELS[String(norm || "").toUpperCase()] || role || "";
 }
 
 export function getRoleDashboardLabel(role) {
-  return ROLE_DASHBOARD_LABELS[String(role || "").toUpperCase()] || role || "";
+  const norm = normalizeRole(role);
+  return ROLE_DASHBOARD_LABELS[String(norm || "").toUpperCase()] || role || "";
 }
+

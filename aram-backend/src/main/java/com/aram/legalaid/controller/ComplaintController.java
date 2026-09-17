@@ -29,8 +29,18 @@ public class ComplaintController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ComplaintResponse> getById(@PathVariable Long id) {
-        return ResponseEntity.ok(complaintService.getById(id));
+    public ResponseEntity<ComplaintResponse> getById(@PathVariable String id) {
+        try {
+            Long numericId = Long.parseLong(id);
+            return ResponseEntity.ok(complaintService.getById(numericId));
+        } catch (NumberFormatException e) {
+            return ResponseEntity.ok(complaintService.getByCustomId(id));
+        }
+    }
+
+    @GetMapping("/custom/{customId}")
+    public ResponseEntity<ComplaintResponse> getByCustomId(@PathVariable String customId) {
+        return ResponseEntity.ok(complaintService.getByCustomId(customId));
     }
 
     @PostMapping("/{id}/reanalyze")

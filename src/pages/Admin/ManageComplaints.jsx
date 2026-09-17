@@ -1,4 +1,4 @@
-import DashboardLayout from "@/components/layout/DashboardLayout";
+import DashboardLayout from "@/components/common/DashboardLayout";
 import {
   Search,
   Filter,
@@ -12,12 +12,15 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { adminService } from "../../services/adminService";
+import { adminService } from "@/services/adminService";
 import SearchInput from "@/components/common/SearchInput";
+import { useAuth } from "@/context/AuthContext";
 
 
 const ManageComplaints = () => {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const adminDistrict = user?.district || "GLOBAL";
   const [search, setSearch] = useState("");
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -27,7 +30,10 @@ const ManageComplaints = () => {
     async function loadComplaints() {
       try {
         const list = await adminService.getComplaints();
-        setComplaints(list || []);
+        const filtered = adminDistrict && adminDistrict !== "GLOBAL"
+          ? list.filter(c => c.district && c.district.toLowerCase() === adminDistrict.toLowerCase())
+          : list;
+        setComplaints(filtered || []);
       } catch (err) {
         console.error("Failed to load complaints:", err);
       } finally {
@@ -35,7 +41,7 @@ const ManageComplaints = () => {
       }
     }
     loadComplaints();
-  }, []);
+  }, [adminDistrict]);
 
   const filteredComplaints = complaints.filter((item) => {
     const id = item.id ? String(item.id) : "";

@@ -2,10 +2,11 @@ import os
 import shutil
 import tempfile
 import uuid
-from fastapi import APIRouter, UploadFile, File, HTTPException, status
+from fastapi import APIRouter, UploadFile, File, HTTPException, status, Depends
+from app.auth import verify_internal_token
 from app.services.ocr_queue import ocr_job_store
 
-router = APIRouter(prefix="/documents/ocr", tags=["Async OCR Job Queue"])
+router = APIRouter(prefix="/documents/ocr", tags=["Async OCR Job Queue"], dependencies=[Depends(verify_internal_token)])
 
 @router.post("/async", status_code=status.HTTP_202_ACCEPTED)
 def enqueue_ocr_job(file: UploadFile = File(...)):

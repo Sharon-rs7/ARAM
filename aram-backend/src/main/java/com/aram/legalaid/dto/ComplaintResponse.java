@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 
 public record ComplaintResponse(
         Long id,
+        String complaintCustomId,
+        String formattedComplaintId,
         Long userId,
         String userName,
         String title,
@@ -41,6 +43,7 @@ public record ComplaintResponse(
         String resolutionSummary,
         String reopenReason,
         String safeContactMethod,
-        String safeContactTime
+        String safeContactTime,
+        boolean guideRequested
 ) {}
 

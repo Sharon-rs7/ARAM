@@ -20,15 +20,21 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import com.aram.legalaid.util.FileUploadValidator;
+import com.aram.legalaid.util.UploadCategory;
 
 @Service
 public class UserService {
     private final UserRepository userRepository;
     private final Path profileUploadDir;
+    private final FileUploadValidator fileUploadValidator;
 
-    public UserService(UserRepository userRepository, @Value("${app.upload.dir:uploads}") String uploadDir) {
+    public UserService(UserRepository userRepository, 
+                       @Value("${app.upload.dir:uploads}") String uploadDir,
+                       FileUploadValidator fileUploadValidator) {
         this.userRepository = userRepository;
         this.profileUploadDir = Path.of(uploadDir, "profile");
+        this.fileUploadValidator = fileUploadValidator;
     }
 
     public User currentUser() {
@@ -79,18 +85,12 @@ public class UserService {
     }
 
     public User updateAvatar(MultipartFile file) {
-        if (file == null || file.isEmpty()) throw new BadRequestException("Avatar file is required");
-        if (file.getSize() > 2L * 1024L * 1024L) throw new BadRequestException("Avatar must be 2MB or less");
-        Set<String> allowed = Set.of("image/jpeg", "image/png", "image/webp");
-        if (!allowed.contains(file.getContentType())) throw new BadRequestException("Avatar must be JPG, PNG, or WEBP");
+        String storedName = fileUploadValidator.validateAndGenerateSafeName(file, UploadCategory.IMAGE);
 
         try {
-            Files.createDirectories(profileUploadDir);
-            String original = file.getOriginalFilename() == null ? "avatar" : file.getOriginalFilename();
-            String extension = original.contains(".") ? original.substring(original.lastIndexOf(".")) : ".jpg";
-            String storedName = UUID.randomUUID() + extension;
-            Path target = profileUploadDir.resolve(storedName);
-            file.transferTo(target);
+            Path target = fileUploadValidator.getSafeUploadPath(storedName, "profile");
+            Files.createDirectories(target.getParent());
+            Files.copy(file.getInputStream(), target, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
             User user = currentUser();
             user.setAvatarUrl("/uploads/profile/" + storedName);
             return userRepository.save(user);

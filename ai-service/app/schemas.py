@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, Any, Union
 
 class ComplaintAnalyzeRequest(BaseModel):
     complaintText: str
@@ -14,25 +14,33 @@ class ChatAskRequest(BaseModel):
     language: Optional[str] = "en"
     userRole: Optional[str] = "CITIZEN"
     complaintId: Optional[int] = None
+    sessionId: Optional[str] = None
+    caseId: Optional[str] = None
 
 class VolunteerProfileSchema(BaseModel):
     id: int
     name: str
-    gender: str
-    languagesKnown: List[str]
-    district: str
-    specializationCategories: List[str]
+    gender: Optional[str] = "ANY"
+    languagesKnown: Optional[Union[List[str], str]] = ["English"]
+    district: Optional[str] = "Coimbatore"
+    specializationCategories: Optional[Union[List[str], str]] = ["GENERAL_LEGAL_AID"]
     maxActiveCases: Optional[int] = 5
     currentActiveCases: Optional[int] = 0
     availabilityStatus: Optional[str] = "AVAILABLE"
     womenSupportTrained: Optional[bool] = False
+    eloRating: Optional[int] = 1000
+    averageRating: Optional[float] = 0.0
+    feedbackCount: Optional[int] = 0
+    supportsTanglish: Optional[bool] = False
+    supportsHinglish: Optional[bool] = False
 
 class VolunteerMatchRequest(BaseModel):
-    category: str
-    language: str
-    preferWomanVolunteer: bool
-    district: str
-    volunteers: List[VolunteerProfileSchema]
+    complaintId: Optional[Any] = ""
+    category: Optional[str] = "GENERAL_LEGAL_AID"
+    language: Optional[str] = "en"
+    preferWomanVolunteer: Optional[bool] = False
+    district: Optional[str] = "Coimbatore"
+    volunteers: List[VolunteerProfileSchema] = []
 
 class DocumentRecommendRequest(BaseModel):
     complaintText: str

@@ -1,8 +1,9 @@
 import os
 import subprocess
-from fastapi import APIRouter, BackgroundTasks, HTTPException
+from fastapi import APIRouter, BackgroundTasks, HTTPException, Depends
+from app.auth import verify_internal_token
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(verify_internal_token)])
 
 def run_train_script():
     try:
