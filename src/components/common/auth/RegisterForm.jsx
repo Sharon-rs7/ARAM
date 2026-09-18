@@ -5,6 +5,7 @@ import { authService } from "@/services/authService";
 import { toast } from "sonner";
 import Checkbox from "@/components/common/Checkbox";
 import { useTheme } from "@/context/ThemeContext";
+import GoogleAuthModal from "@/components/common/auth/GoogleAuthModal";
 
 const TN_DISTRICTS = [
   "Chennai", "Coimbatore", "Madurai", "Tiruchirappalli", "Salem", 
@@ -25,6 +26,7 @@ const RegisterForm = () => {
   const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [googleModalOpen, setGoogleModalOpen] = useState(false);
 
   const [form, setForm] = useState({
     fullName: "",
@@ -415,26 +417,9 @@ const RegisterForm = () => {
       {/* 3. Google Sign-In Button (Moved to Bottom) */}
       <button
         type="button"
-        onClick={async () => {
+        onClick={() => {
           setError("");
-          try {
-            const googleEmail = window.prompt("Enter your Google Account email to register:", form.email.trim() || "citizen.google@gmail.com");
-            if (!googleEmail || !googleEmail.trim()) return;
-            const cleanEmail = googleEmail.trim().toLowerCase();
-            const googleName = cleanEmail.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, l => l.toUpperCase());
-            const res = await authService.loginWithGoogle({
-              email: cleanEmail,
-              name: form.fullName.trim() || googleName,
-              avatarUrl: `https://api.dicebear.com/7.x/bottts/svg?seed=${cleanEmail}`,
-              googleId: "google_" + btoa(cleanEmail).substring(0, 12)
-            });
-            toast.success(`Registered and signed in as ${cleanEmail} via Google!`);
-            navigate("/citizen/dashboard");
-          } catch (err) {
-            const msg = err?.response?.data?.message || err?.message || "Google registration failed.";
-            setError(msg);
-            toast.error(msg);
-          }
+          setGoogleModalOpen(true);
         }}
         className="w-full h-12 rounded-2xl border border-slate-300 dark:border-emerald-700/50 hover:border-[#163D32] dark:hover:border-emerald-400 bg-white dark:bg-[#182C26] hover:bg-slate-50 dark:hover:bg-[#1E3830] text-slate-800 dark:text-slate-100 text-xs sm:text-sm font-bold transition-all duration-200 flex items-center justify-center gap-3 shadow-xs cursor-pointer active:scale-[0.99]"
       >
@@ -466,6 +451,12 @@ const RegisterForm = () => {
           Sign in here →
         </Link>
       </p>
+
+      {/* Google Auth Modal */}
+      <GoogleAuthModal 
+        isOpen={googleModalOpen} 
+        onClose={() => setGoogleModalOpen(false)} 
+      />
     </div>
   );
 };

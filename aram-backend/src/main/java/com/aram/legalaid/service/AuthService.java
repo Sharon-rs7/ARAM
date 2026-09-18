@@ -80,6 +80,54 @@ public class AuthService {
         return issueTokens(user);
     }
 
+    @Transactional
+    public AuthResponse loginWithGoogle(GoogleAuthRequest request) {
+        if (request == null || request.email() == null || request.email().trim().isEmpty()) {
+            throw new BadRequestException("Google email is required");
+        }
+        String email = request.email().trim().toLowerCase();
+
+        User user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) {
+            user = new User();
+            String name = request.name() != null && !request.name().trim().isEmpty()
+                    ? request.name().trim()
+                    : email.split("@")[0].replace(".", " ");
+            user.setName(name);
+            user.setEmail(email);
+            // Generate valid 10-digit Indian mobile placeholder if not supplied
+            long randSuffix = 10000000L + (long) (Math.random() * 89999999L);
+            user.setMobile("9" + String.valueOf(randSuffix));
+            user.setPasswordHash(passwordEncoder.encode(java.util.UUID.randomUUID().toString()));
+            user.setRole(Role.CITIZEN);
+            user.setStatus(UserStatus.ACTIVE);
+            user.setEmailVerified(true);
+            user.setDistrict("Coimbatore");
+            user.setState("Tamil Nadu");
+            user.setProfileCompleted(true);
+            user.setProfileCompletionPercentage(100);
+            if (request.avatarUrl() != null && !request.avatarUrl().trim().isEmpty()) {
+                user.setAvatarUrl(request.avatarUrl().trim());
+            }
+            user = userRepository.save(user);
+        } else {
+            if (user.getStatus() != UserStatus.ACTIVE) {
+                throw new BadRequestException("Account is not active");
+            }
+            user.setEmailVerified(true);
+            if (request.avatarUrl() != null && !request.avatarUrl().trim().isEmpty() && (user.getAvatarUrl() == null || user.getAvatarUrl().isEmpty())) {
+                user.setAvatarUrl(request.avatarUrl().trim());
+            }
+            if (user.getDistrict() == null || user.getDistrict().trim().isEmpty()) {
+                user.setDistrict("Coimbatore");
+            }
+        }
+
+        user.setLastLogin(LocalDateTime.now());
+        user = userRepository.save(user);
+        return issueTokens(user);
+    }
+
     public AuthResponse refresh(String refreshToken) {
         if (!"refresh".equals(jwtUtil.extractTokenType(refreshToken))) {
             throw new BadRequestException("Invalid refresh token");

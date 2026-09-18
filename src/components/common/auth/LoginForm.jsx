@@ -7,6 +7,8 @@ import { authService } from "@/services/authService";
 import { toast } from "sonner";
 import Checkbox from "@/components/common/Checkbox";
 
+import GoogleAuthModal from "@/components/common/auth/GoogleAuthModal";
+
 const LoginForm = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
@@ -18,7 +20,7 @@ const LoginForm = () => {
   const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [googleLoading, setGoogleLoading] = useState(false);
+  const [googleModalOpen, setGoogleModalOpen] = useState(false);
   const [showDemoBox, setShowDemoBox] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -62,47 +64,9 @@ const LoginForm = () => {
     }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleLogin = () => {
     setError("");
-    setGoogleLoading(true);
-    try {
-      const googleEmail = window.prompt("Enter your Google Account email to continue:", email.trim() || "citizen.google@gmail.com");
-      if (!googleEmail || !googleEmail.trim()) {
-        setGoogleLoading(false);
-        return;
-      }
-      
-      const cleanEmail = googleEmail.trim().toLowerCase();
-      const googleName = cleanEmail.split("@")[0].replace(/[._]/g, " ").replace(/\b\w/g, l => l.toUpperCase());
-
-      const res = await authService.loginWithGoogle({
-        email: cleanEmail,
-        name: googleName,
-        avatarUrl: `https://api.dicebear.com/7.x/bottts/svg?seed=${cleanEmail}`,
-        googleId: "google_" + btoa(cleanEmail).substring(0, 12)
-      });
-
-      login(res);
-      toast.success(`Signed in as ${cleanEmail} via Google!`);
-
-      const role = String(res?.user?.role || res?.role || "").toUpperCase();
-      if (role === "SUPER_ADMIN") {
-        navigate("/superadmin/dashboard");
-      } else if (role === "ADMIN") {
-        navigate("/admin/dashboard");
-      } else if (role === "VOLUNTEER" || role === "GUIDE" || role === "HELPER") {
-        navigate("/guide/dashboard");
-      } else {
-        navigate("/citizen/dashboard");
-      }
-    } catch (err) {
-      console.error("Google sign-in error:", err);
-      const msg = err?.response?.data?.message || err?.message || "Google Sign-In failed.";
-      setError(msg);
-      toast.error(msg);
-    } finally {
-      setGoogleLoading(false);
-    }
+    setGoogleModalOpen(true);
   };
 
   const fillDemo = (demoEmail, demoPass) => {
@@ -342,6 +306,12 @@ const LoginForm = () => {
           </Link>
         </p>
       </div>
+
+      {/* Google Auth Modal */}
+      <GoogleAuthModal 
+        isOpen={googleModalOpen} 
+        onClose={() => setGoogleModalOpen(false)} 
+      />
     </div>
   );
 };

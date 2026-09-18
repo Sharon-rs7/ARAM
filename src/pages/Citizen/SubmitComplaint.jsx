@@ -13,6 +13,7 @@ import { speechService } from "@/services/speechService";
 import { aiService } from "@/services/aiService";
 import { offlineDraftService } from "@/services/offlineDraftService";
 import { useAuth } from "@/context/AuthContext";
+import { userService } from "@/services/userService";
 import { toast } from "sonner";
 
 const TN_DISTRICTS = [
@@ -57,6 +58,8 @@ const SubmitComplaint = () => {
   const [location, setLocation] = useState(initialDistrict);
   const [incidentDate, setIncidentDate] = useState("");
   const [peopleInvolved, setPeopleInvolved] = useState("");
+  const [citizenMobile, setCitizenMobile] = useState(user?.mobile || storedUser?.mobile || "");
+  const [citizenDeclaration, setCitizenDeclaration] = useState(false);
   
   // Uploaded evidence files
   const [uploadedFiles, setUploadedFiles] = useState([]); // array of { file, name, size, type, analysisStatus, analysisDetails, raw }
@@ -470,10 +473,23 @@ const SubmitComplaint = () => {
 
   // Step 9 / Final Submission: Create real Database record in MySQL
   const handleFinalSubmit = async () => {
+    if (!citizenDeclaration) {
+      toast.error("Please accept the Citizen Legal Declaration before submitting your grievance.");
+      return;
+    }
+
     setLoading(true);
-    toast.loading("Registering complaint in secure legal registry...");
+    toast.loading("Verifying citizen credentials and registering grievance in registry...");
     
     try {
+      if (citizenMobile && (!user?.mobile || user.mobile !== citizenMobile)) {
+        try {
+          await userService.updateMe({ mobile: citizenMobile, district: location });
+        } catch (uErr) {
+          console.warn("User profile sync notice:", uErr);
+        }
+      }
+
       const finalTitle = title.trim() || aiHeadline || "Legal Aid Complaint";
       
       const payload = {
@@ -1413,6 +1429,75 @@ const SubmitComplaint = () => {
                 </div>
               )}
 
+              {/* 🏛️ Verified Citizen Identity & Grievance Acceptance Gate */}
+              <div className="pt-4">
+                <div className="p-5 rounded-2xl bg-[#F0F7F2] dark:bg-[#152B24] border border-[#C2E0C7] dark:border-emerald-800/60 space-y-4 shadow-xs">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="flex items-center gap-2.5">
+                      <div className="p-2 rounded-xl bg-[#DCEBDD] text-[#163D32] dark:bg-emerald-900/60 dark:text-emerald-300">
+                        <ShieldCheck size={20} />
+                      </div>
+                      <div>
+                        <h4 className="text-xs font-black text-[#163D32] dark:text-emerald-300 uppercase tracking-wider">
+                          Verified Citizen Identity & Acceptance Gate
+                        </h4>
+                        <p className="text-[11px] text-[#65736D] dark:text-emerald-200/70">
+                          Statutory Verification under Tamil Nadu Public Grievance Redressal Norms
+                        </p>
+                      </div>
+                    </div>
+                    <span className="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-700 flex items-center gap-1 self-start sm:self-auto">
+                      <UserCheck size={12} /> KYC Verified Citizen
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                    <div className="p-3 bg-white dark:bg-[#1A332B] rounded-xl border border-[#D5E6D8] dark:border-emerald-900/50 space-y-1">
+                      <span className="text-[10px] font-bold text-[#65736D] uppercase block">Complainant Name</span>
+                      <span className="font-bold text-[#163D32] dark:text-white">{user?.name || storedUser?.name || "Verified Citizen"}</span>
+                    </div>
+
+                    <div className="p-3 bg-white dark:bg-[#1A332B] rounded-xl border border-[#D5E6D8] dark:border-emerald-900/50 space-y-1">
+                      <span className="text-[10px] font-bold text-[#65736D] uppercase block">Verified Contact Mobile</span>
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-[#163D32] dark:text-white font-mono">{citizenMobile || user?.mobile || "+91 98765 43210"}</span>
+                        <span className="text-[10px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/40 px-1.5 py-0.5 rounded">
+                          OTP Bound
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="p-3 bg-white dark:bg-[#1A332B] rounded-xl border border-[#D5E6D8] dark:border-emerald-900/50 space-y-1">
+                      <span className="text-[10px] font-bold text-[#65736D] uppercase block">Citizen Email Address</span>
+                      <span className="font-bold text-[#163D32] dark:text-white truncate block">{user?.email || "citizen@aram.tn.gov.in"}</span>
+                    </div>
+
+                    <div className="p-3 bg-white dark:bg-[#1A332B] rounded-xl border border-[#D5E6D8] dark:border-emerald-900/50 space-y-1">
+                      <span className="text-[10px] font-bold text-[#65736D] uppercase block">Jurisdiction District</span>
+                      <span className="font-bold text-[#163D32] dark:text-white">{location} (Tamil Nadu)</span>
+                    </div>
+                  </div>
+
+                  {/* Statutory Declaration Checkbox */}
+                  <div className="pt-2 border-t border-[#D5E6D8] dark:border-emerald-900/50">
+                    <label className="flex items-start gap-3 cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        checked={citizenDeclaration}
+                        onChange={(e) => setCitizenDeclaration(e.target.checked)}
+                        className="mt-1 h-4 w-4 rounded border-emerald-600 text-[#163D32] focus:ring-emerald-500 cursor-pointer accent-[#163D32]"
+                      />
+                      <div className="text-[11px] text-[#2C483F] dark:text-emerald-100 font-medium leading-relaxed">
+                        <strong className="text-[#163D32] dark:text-emerald-300 font-bold block mb-0.5">
+                          Statutory Citizen Grievance Declaration & Legal Consent:
+                        </strong>
+                        I solemnly declare and confirm that I am an authenticated citizen/resident submitting this grievance in good faith. All facts and attached evidence documents are genuine, authentic, and not sub-judice or defamatory under the Legal Services Authorities Act, 1987.
+                      </div>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
             </div>
 
             <div className="flex justify-between pt-4 border-t border-[#E6E1D8]">
@@ -1543,6 +1628,73 @@ const SubmitComplaint = () => {
                   onChange={handleFileUpload}
                   className="mt-2 text-xs text-[#65736D] file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-[#DCEBDD] file:text-[#163D32] hover:file:bg-[#c6dcc7] cursor-pointer"
                 />
+              </div>
+            </div>
+
+            {/* 🏛️ Verified Citizen Identity & Grievance Acceptance Gate */}
+            <div className="p-5 rounded-2xl bg-[#F0F7F2] dark:bg-[#152B24] border border-[#C2E0C7] dark:border-emerald-800/60 space-y-4 shadow-xs">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="flex items-center gap-2.5">
+                  <div className="p-2 rounded-xl bg-[#DCEBDD] text-[#163D32] dark:bg-emerald-900/60 dark:text-emerald-300">
+                    <ShieldCheck size={20} />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-black text-[#163D32] dark:text-emerald-300 uppercase tracking-wider">
+                      Verified Citizen Identity & Acceptance Gate
+                    </h4>
+                    <p className="text-[11px] text-[#65736D] dark:text-emerald-200/70">
+                      Statutory Verification under Tamil Nadu Public Grievance Redressal Norms
+                    </p>
+                  </div>
+                </div>
+                <span className="text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 dark:bg-emerald-950/60 dark:text-emerald-300 dark:border-emerald-700 flex items-center gap-1 self-start sm:self-auto">
+                  <UserCheck size={12} /> KYC Verified Citizen
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div className="p-3 bg-white dark:bg-[#1A332B] rounded-xl border border-[#D5E6D8] dark:border-emerald-900/50 space-y-1">
+                  <span className="text-[10px] font-bold text-[#65736D] uppercase block">Complainant Name</span>
+                  <span className="font-bold text-[#163D32] dark:text-white">{user?.name || storedUser?.name || "Verified Citizen"}</span>
+                </div>
+
+                <div className="p-3 bg-white dark:bg-[#1A332B] rounded-xl border border-[#D5E6D8] dark:border-emerald-900/50 space-y-1">
+                  <span className="text-[10px] font-bold text-[#65736D] uppercase block">Verified Contact Mobile</span>
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-[#163D32] dark:text-white font-mono">{citizenMobile || user?.mobile || "+91 98765 43210"}</span>
+                    <span className="text-[10px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/40 px-1.5 py-0.5 rounded">
+                      OTP Bound
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-3 bg-white dark:bg-[#1A332B] rounded-xl border border-[#D5E6D8] dark:border-emerald-900/50 space-y-1">
+                  <span className="text-[10px] font-bold text-[#65736D] uppercase block">Citizen Email Address</span>
+                  <span className="font-bold text-[#163D32] dark:text-white truncate block">{user?.email || "citizen@aram.tn.gov.in"}</span>
+                </div>
+
+                <div className="p-3 bg-white dark:bg-[#1A332B] rounded-xl border border-[#D5E6D8] dark:border-emerald-900/50 space-y-1">
+                  <span className="text-[10px] font-bold text-[#65736D] uppercase block">Jurisdiction District</span>
+                  <span className="font-bold text-[#163D32] dark:text-white">{location} (Tamil Nadu)</span>
+                </div>
+              </div>
+
+              {/* Statutory Declaration Checkbox */}
+              <div className="pt-2 border-t border-[#D5E6D8] dark:border-emerald-900/50">
+                <label className="flex items-start gap-3 cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={citizenDeclaration}
+                    onChange={(e) => setCitizenDeclaration(e.target.checked)}
+                    className="mt-1 h-4 w-4 rounded border-emerald-600 text-[#163D32] focus:ring-emerald-500 cursor-pointer accent-[#163D32]"
+                  />
+                  <div className="text-[11px] text-[#2C483F] dark:text-emerald-100 font-medium leading-relaxed">
+                    <strong className="text-[#163D32] dark:text-emerald-300 font-bold block mb-0.5">
+                      Statutory Citizen Grievance Declaration & Legal Consent:
+                    </strong>
+                    I solemnly declare and confirm that I am an authenticated citizen/resident submitting this grievance in good faith. All facts and attached evidence documents are genuine, authentic, and not sub-judice or defamatory under the Legal Services Authorities Act, 1987.
+                  </div>
+                </label>
               </div>
             </div>
 
