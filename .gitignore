@@ -18,3 +18,9 @@ temp_mysql_data/
 _cleanup_archive/
 *.parquet
 *.parquet.*
+.project
+.classpath
+.settings/
+.vscode/
+.idea/
+scratch/

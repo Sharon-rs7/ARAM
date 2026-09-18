@@ -1,26 +1,34 @@
 # 🏛️ ARAM — Tamil Nadu Public Legal Aid & Grievance Redressal Platform
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](https://opensource.org/licenses/MIT)
-[![Spring Boot](https://img.shields.io/badge/Spring_Boot-3.3.5-brightgreen.svg)](https://spring.io/projects/spring-boot)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-teal.svg)](https://fastapi.tiangolo.com)
-[![React](https://img.shields.io/badge/React-18.3-blue.svg)](https://react.dev)
-[![Vite](https://img.shields.io/badge/Vite-5.4-purple.svg)](https://vitejs.dev)
-[![RAG Grounding](https://img.shields.io/badge/RAG_Grounding-1%2C306_Statutory_Provisions-orange.svg)]()
+<p align="center">
+  <img src="https://img.shields.io/badge/Platform-Tamil_Nadu_Public_Legal_Aid-1E3A8A?style=for-the-badge&logo=shield" alt="ARAM Platform" />
+  <img src="https://img.shields.io/badge/Spring_Boot-3.3.5-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" alt="Spring Boot" />
+  <img src="https://img.shields.io/badge/FastAPI-0.110+-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" />
+  <img src="https://img.shields.io/badge/React-18.3-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React" />
+  <img src="https://img.shields.io/badge/Vite-5.4-646CFF?style=for-the-badge&logo=vite&logoColor=white" alt="Vite" />
+  <img src="https://img.shields.io/badge/RAG_Grounding-1%2C306_Statutory_Provisions-EA580C?style=for-the-badge&logo=book" alt="RAG Grounding" />
+  <img src="https://img.shields.io/badge/License-MIT-059669?style=for-the-badge" alt="MIT License" />
+</p>
 
-**ARAM** is an enterprise-grade, multilingual Public Legal Aid & Citizen Grievance Redressal system built for the citizens and district administrations of Tamil Nadu and India.
+---
 
-ARAM bridges the critical gap between citizens facing legal or administrative grievances and the formal justice apparatus by providing:
-1. **Authenticated, Case-Aware Legal AI Copilot**: Dynamic, real-time query resolution grounded strictly against 1,306 certified Indian law provisions with fail-closed hallucination prevention.
-2. **End-to-End Grievance Lifecycle Management**: Full tracking from complaint submission, automated category classification, and document verification to assigned legal guide resolution.
-3. **38-District Telemetry & Regional Governance**: District-scoped oversight for District Grievance Redressal Officers and statewide analytics for the Super Administrator.
+## 📌 Overview
+
+**ARAM** is an enterprise-grade, multilingual Public Legal Aid & Citizen Grievance Redressal platform engineered for the citizens, legal guides, and district administrations of **Tamil Nadu**.
+
+ARAM bridges the critical gap between citizens facing legal or administrative grievances and the formal justice apparatus by delivering:
+
+1. **Authenticated, Case-Aware Legal AI Copilot**: Dynamic query resolution grounded strictly against 1,306 certified statutory provisions of Indian Law with fail-closed hallucination prevention.
+2. **Deterministic 7-Stage Grievance Lifecycle**: Automated classification, OCR document readiness scoring, and milestone tracking from intake to formal redressal.
+3. **Statewide 38-District Command Center**: Real-time regional telemetry for District Grievance Redressal Officers and statewide administration for the Super Administrator.
 4. **Verified Legal Guide Force**: Dispatch and caseload management for 120+ specialized advocates, dispute mediators, and paralegal volunteers.
-5. **Multilingual Voice & Document Verification**: Speech intake in Tamil (தமிழ்), Hindi (हिंदी), and English with automated OCR document readiness scoring.
+5. **Multilingual Speech & Document OCR**: Voice and text support in Tamil (தமிழ்), Hindi (हिंदी), and English with automated evidentiary verification.
 
 ---
 
 ## 🏗️ System Architecture & Microservice Topology
 
-`
+```text
                                ┌────────────────────────────────────────┐
                                │       REACT 18 + VITE FRONTEND         │
                                │   TailwindCSS • Lucide • Recharts UI   │
@@ -48,52 +56,52 @@ ARAM bridges the critical gap between citizens facing legal or administrative gr
 │ │  LLM Router (Qwen / Gemini 2.5)    │ │
 │ └────────────────────────────────────┘ │
 └────────────────────────────────────────┘
-`
+```
 
 ---
 
-## ⚡ Key Workflows & Engine Specifications
+## ⚡ Core Platform Capabilities
 
-### 1. Zero-Hardcode Authenticated Citizen AI Chatbot
+### 1. Authenticated Citizen Legal AI Assistant
 > **Core Principle:** *Gemini speaks for ARAM; ARAM decides what Gemini is allowed to know and say.*
 
-- **Server-Side Identity Anchor**: Authenticated citizen context is extracted strictly via Spring Security SecurityContextHolder (never trusted from client parameters).
-- **Proactive Case Disambiguation**: Proactively retrieves and lists the citizen's active complaints (ARAM-XX-TN-XXX-XXXXXX) when asking generic status questions.
-- **Dynamic Case Context**: Queries database state in real-time to return title, status, priority, district, assigned legal guide notes, and uploaded document verification statuses.
+- **Server-Side Identity Anchor**: Authenticated citizen context is extracted strictly via Spring Security `SecurityContextHolder` (client user parameters are never trusted).
+- **Proactive Case Disambiguation**: Proactively retrieves and lists the citizen's active complaints (`ARAM-XX-TN-XXX-XXXXXX`) when asking generic status questions.
+- **Dynamic Case Context Binding**: Queries database state in real-time to return title, status, priority, district, assigned legal guide notes, and uploaded document verification statuses.
 - **Fail-Closed Legal Grounding Gate**: If no verified statutory section exists in the 1,306-chunk corpus for a query, ARAM outputs a truthful uncertainty response instead of fabricating laws or penalties.
-- **Cross-User Privacy Guard**: Queries for unauthorized or non-existent case IDs safely return non-disclosure notices without disclosing case existence.
+- **Cross-User Privacy Guard**: Queries for unauthorized or non-existent case IDs safely return non-disclosure notices.
 
-`
+```text
 Citizen Query ──► JWT Auth ──► CitizenContextTool ──► Dynamic Query Analyzer
-                                                              │
-   ┌──────────────────────────────────────────────────────────┘
+                                                               │
+   ┌───────────────────────────────────────────────────────────┘
    ▼
 Hybrid RAG ──► BM25 + Vector + Jurisdiction Filter ──► Reranker ──► Legal Grounding Gate
-                                                                           │
-   ┌───────────────────────────────────────────────────────────────────────┘
+                                                                            │
+   ┌────────────────────────────────────────────────────────────────────────┘
    ▼
 LLM Router (Qwen / Gemini) ──► Grounding Validator ──► Personalized Response (EN/TA/HI)
-`
+```
 
 ---
 
 ### 2. Grievance Submission & Real-Time Case Lifecycle
-Every grievance submitted to ARAM goes through a deterministic 7-stage lifecycle:
+Every grievance submitted to ARAM follows a deterministic 7-stage lifecycle:
 
-`
+```text
 [SUBMITTED] ──► [AI_TRIAGED] ──► [GUIDE_ASSIGNED] ──► [UNDER_INVESTIGATION] ──► [AUTHORITY_RECOMMENDED] ──► [RESOLVED] ──► [CLOSED]
-`
+```
 
-- **Custom Case ID Generation**: ARAM-{YY}-TN-{DISTRICT_CODE}-{SEQUENTIAL_NUMBER}
-- **Automated Triage**: Predicts category, priority level, and preliminary competent authority (DLSA, Labour Commissioner, Sub-Registrar, Consumer Forum, 1930 Cyber Cell).
-- **Document Evidence Engine**: Optical character recognition (OCR) and readiness scoring for title deeds, rental agreements, FIRs, and pay slips.
+- **Sequential Case ID**: `ARAM-{YY}-TN-{DISTRICT_CODE}-{SEQUENTIAL_NUMBER}` (e.g. `ARAM-26-TN-CBE-000037`).
+- **Automated AI Triage**: Analyzes description to predict category, priority, and competent authority (DLSA, Labour Commissioner, Sub-Registrar Office, Consumer Forum, 1930 Cyber Cell).
+- **OCR Evidence Engine**: Validates document readiness for title deeds, rental agreements, FIRs, and pay slips.
 - **Real-Time WebSockets**: Live status updates and bi-directional messaging between Citizen and Assigned Legal Guide.
 
 ---
 
-### 3. Statewide 38-District Administration & Governance
+### 3. Statewide 38-District Administration
 - **Super Administrator Command Center**:
-  - Live 38-district telemetry matrix displaying active caseloads, pending reviews, and resolution rates.
+  - Live 38-district telemetry grid displaying active caseloads, pending reviews, and resolution rates.
   - Onboarding and credential management for District Grievance Redressal Officers.
   - Legal guide force allocation (120+ specialized advocates across Tamil Nadu).
   - Cryptographic audit trail and compliance sweeps.
@@ -103,32 +111,38 @@ Every grievance submitted to ARAM goes through a deterministic 7-stage lifecycle
 
 ---
 
-## 🚀 Microservices & Folder Structure
+## 🚀 Repository Structure
 
-`
-My-aram-app/
+```text
+ARAM/
 ├── src/                          # React 18 + Vite Frontend Portal
 │   ├── components/               # Reusable UI components (Citizen, Admin, SuperAdmin, Guide)
 │   ├── context/                  # AuthContext, NotificationContext, WebSocket contexts
 │   ├── pages/                    # Role-based dashboards & grievance management views
 │   └── services/                 # Axios API clients & WebSocket connection managers
-├── aram-backend/                 # Spring Boot 3 Core Backend Service
+├── aram-backend/                 # Spring Boot 3 Core Backend Service (Port 8082)
 │   ├── src/main/java/            # Controllers, Services, Security, DTOs, and Repositories
-│   ├── src/main/resources/       # application.properties, application-mysql.properties
-│   └── pom.xml                   # Maven dependencies (Spring Security, JPA, MySQL, Redis, JJWT)
-├── ai-service/                   # FastAPI AI & Hybrid RAG Microservice
+│   ├── src/main/resources/       # application.yml, schema.sql
+│   └── pom.xml                   # Maven dependencies (Spring Security, JPA, MySQL, Redis)
+├── ai-service/                   # FastAPI AI & Hybrid RAG Microservice (Port 8000)
 │   ├── app/                      # Chatbot engine, routers, OCR, STT, and classification models
-│   ├── llm/                      # Multi-provider LLM router & grounding validation
+│   ├── datasets/                 # Benchmark & statutory legal datasets
 │   ├── models/                   # Pre-compiled vector & BM25 indices (1,306 statutory chunks)
-│   ├── rag/                      # Dense vector search, RRF fusion, and jurisdiction filter
-│   └── requirements.txt          # Python dependencies (FastAPI, Uvicorn, Scikit-learn, PyPDF2)
-├── scripts/                      # Automated verification and test suites
-└── .env.example                  # Environment configuration templates
-`
+│   └── requirements.txt          # Python dependencies (FastAPI, Uvicorn, LangChain, FAISS)
+├── docs/                         # Authoritative Architectural Documentation
+│   ├── AI_ARCHITECTURE.md        # AI pipeline, fail-closed grounding, dynamic context binding
+│   ├── SYSTEM_WORKFLOW.md        # Grievance lifecycle state machine & district governance
+│   ├── API.md                    # REST & WebSocket API specification
+│   └── ARAM_Hackathon_Pitch_Deck.pptx # Executive platform presentation
+├── scripts/                      # Operational test suites and verification scripts
+├── docker-compose.yml            # Multi-container orchestration (Backend, AI, MySQL, Redis)
+├── docker-compose.prod.yml       # Production deployment profile
+└── .env.example                  # Environment configuration template
+```
 
 ---
 
-## 🛠️ Getting Started & Local Development
+## 🛠️ Local Development & Quick Start
 
 ### Prerequisites
 - **Node.js**: v18.0+ & npm
@@ -139,43 +153,45 @@ My-aram-app/
 ---
 
 ### 1. AI Microservice Setup (FastAPI)
-`ash
+```bash
 cd ai-service
 python -m venv venv
-# On Windows:
+
+# Activate virtual environment
+# Windows:
 .\venv\Scripts\activate
-# On Linux/macOS:
+# Linux/macOS:
 source venv/bin/activate
 
 pip install -r requirements.txt
 cp .env.example .env
 
-# Start FastAPI server on port 8000
+# Launch FastAPI server on port 8000
 uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
-`
+```
 
 ---
 
 ### 2. Core Backend Setup (Spring Boot)
-`ash
+```bash
 cd aram-backend
 cp .env.example .env
 
 # Build and run with MySQL profile on port 8082
 ./mvnw clean spring-boot:run -Dspring-boot.run.profiles=mysql
-`
+```
 
 ---
 
 ### 3. Frontend Portal Setup (React + Vite)
-`ash
+```bash
 # In repository root
 npm install
 cp .env.example .env
 
 # Launch Vite development server on port 5173
 npm run dev
-`
+```
 
 Visit **http://localhost:5173** in your browser.
 
@@ -197,13 +213,23 @@ Visit **http://localhost:5173** in your browser.
 ## 🧪 Automated Testing & Verification
 
 Run the comprehensive test suites:
-`ash
+
+```bash
 # Direct AI Microservice Intent & Context Suite (7/7 tests)
 python scripts/test_citizen_ai_flows.py
 
 # Live JWT Authenticated End-to-End Chatbot Suite (6/6 tests)
 python scratch/test_end_to_end_citizen_chat.py
-`
+```
+
+---
+
+## 📚 Documentation Hub
+
+For in-depth technical documentation, refer to:
+- [AI Architecture & Legal Grounding](docs/AI_ARCHITECTURE.md)
+- [System & Operational Workflows](docs/SYSTEM_WORKFLOW.md)
+- [REST & WebSocket API Reference](docs/API.md)
 
 ---
 
