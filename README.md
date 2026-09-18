@@ -181,14 +181,16 @@ Visit **http://localhost:5173** in your browser.
 
 ---
 
-## 🔐 Verified Seed Accounts & Credentials
+## 🔐 User Roles & Access Hierarchy
 
-| Role | Email | Password | Access Scope |
-| :--- | :--- | :--- | :--- |
-| **Super Administrator** | superadmin@gmail.com | SuperAdmin@123 | Statewide Command Center (All 38 Districts) |
-| **District Redressal Officer** | dmin@gmail.com | Admin@123 | District Portal & Regional Triage |
-| **Legal Guide / Advocate** | olunteer@gmail.com | Helper@123 | Assigned Grievance Caseload & Chat |
-| **Citizen (Multi-Case)** | citizen@gmail.com | Citizen@123 | Citizen Dashboard, Assistant, & History |
+| Role | Access Scope | Primary Dashboard |
+| :--- | :--- | :--- |
+| **Super Administrator** | Statewide Command Center (All 38 Districts, Telemetry, Admins, AI Audit) | `/superadmin/dashboard` |
+| **District Redressal Officer** | District Portal, Regional Grievance Triage, and Guide Dispatch | `/admin/dashboard` |
+| **Legal Guide / Advocate** | Assigned Grievance Caseload, Document Reviews, and Citizen Chat | `/guide/dashboard` |
+| **Citizen / Public User** | Grievance Filing, AI Legal Assistant, Document Tracking, and Inbox | `/citizen/dashboard` |
+
+> Default local test accounts are populated during initial development startup via Spring Boot `DataInitializer.java`. For staging and production deployments, user credentials and administrator access must be provisioned securely via authenticated API or administrative invite.
 
 ---
 
