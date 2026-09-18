@@ -174,9 +174,16 @@ def classify_intent(text: str) -> Tuple[str, Dict[str, Any]]:
     if any(k in clean_lower for k in LEGAL_QUESTION_KEYWORDS) or re.search(r"^what\s+is\s+.*(act|section|law|tribunal|dlsa|court)\??$", clean_lower):
         return INTENTS["LEGAL_QUESTION"], {"confidence": 0.90}
 
-    # 9. Check Complaint Procedure / Where to approach
-    if any(k in clean_lower for k in ["where to complain", "whom to approach", "enga complaint", "yaar kitta complaint", "yarkita complaint"]):
-        return INTENTS["LEGAL_PROCEDURE"], {"confidence": 0.88}
+    # 9. Check Follow-Up Action & Legal Procedure Queries (e.g. "how can i solve this", "enna pannanum")
+    follow_up_patterns = [
+        r"\b(how\s+can\s+i\s+solve|how\s+to\s+solve|how\s+to\s+resolve|how\s+to\s+proceed|how\s+can\s+we\s+solve)\b",
+        r"\b(what\s+should\s+i\s+do|what\s+can\s+i\s+do|what\s+to\s+do\s+next|next\s+step|immediate\s+action)\b",
+        r"\b(epdi\s+solve\s+panradhu|enna\s+pannanum|epdi\s+proceed\s+panradhu|adutha\s+step\s+enna|first\s+action\s+enna)\b",
+        r"\b(kaise\s+solve\s+karein|kya\s+karna\s+hoga|kya\s+karein|aage\s+kya\s+karein)\b",
+        r"\b(where\s+to\s+complain|whom\s+to\s+approach|enga\s+complaint|yaar\s+kitta\s+complaint|yarkita\s+complaint)\b"
+    ]
+    if any(re.search(p, clean_lower) for p in follow_up_patterns):
+        return INTENTS["LEGAL_PROCEDURE"], {"confidence": 0.95, "is_follow_up": True}
 
     # 10. Check if utterance has ANY real legal domain keywords
     has_legal_keyword = any(k in clean_lower for k in LEGAL_DOMAIN_KEYWORDS)

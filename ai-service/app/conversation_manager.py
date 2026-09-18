@@ -106,9 +106,34 @@ class ConversationManager:
                 "retrievedSources": [],
                 "legalAssessment": None,
                 "humanReviewRequired": False,
-                "history": []
+                "history": [],
+                "provisionalCase": {
+                    "conversationCaseId": f"conv_case_{session_id}",
+                    "issues": [],
+                    "facts": [],
+                    "location": {
+                        "state": "Tamil Nadu",
+                        "district": district or "Coimbatore"
+                    },
+                    "evidence": [],
+                    "missingFacts": [],
+                    "languagePreference": language or "en",
+                    "linkedComplaintId": None
+                }
             }
             self.save_state(session_id, state)
+
+        if "provisionalCase" not in state:
+            state["provisionalCase"] = {
+                "conversationCaseId": f"conv_case_{session_id}",
+                "issues": [],
+                "facts": state.get("facts", []),
+                "location": state.get("jurisdiction", {"state": "Tamil Nadu", "district": "Coimbatore"}),
+                "evidence": state.get("evidenceReferences", []),
+                "missingFacts": state.get("missingInformation", []),
+                "languagePreference": state.get("language", "en"),
+                "linkedComplaintId": None
+            }
 
         return state
 
@@ -127,18 +152,51 @@ class ConversationManager:
             state["category"] = category
         if language and language != state.get("language"):
             state["language"] = language
+            if "provisionalCase" in state:
+                state["provisionalCase"]["languagePreference"] = language
 
         clean_msg = user_message.strip()
         if clean_msg and clean_msg not in state["facts"]:
             state["facts"].append(clean_msg)
+            if "provisionalCase" in state:
+                state["provisionalCase"]["facts"].append(clean_msg)
 
         state["history"].append({"role": "user", "content": clean_msg, "timestamp": time.time()})
         self.save_state(session_id, state)
         return state
 
+    def set_provisional_issues(self, session_id: str, issues: List[Dict[str, Any]], evidence: Optional[List[str]] = None, language: Optional[str] = None):
+        state = self.get_or_create_state(session_id, language=language or "en")
+        if "provisionalCase" not in state:
+            state["provisionalCase"] = {
+                "conversationCaseId": f"conv_case_{session_id}",
+                "issues": [],
+                "facts": [],
+                "location": state.get("jurisdiction", {}),
+                "evidence": [],
+                "missingFacts": [],
+                "languagePreference": language or state.get("language", "en"),
+                "linkedComplaintId": None
+            }
+        state["provisionalCase"]["issues"] = issues
+        if evidence:
+            state["provisionalCase"]["evidence"] = evidence
+            state["evidenceReferences"] = evidence
+        if language:
+            state["provisionalCase"]["languagePreference"] = language
+            state["language"] = language
+        self.save_state(session_id, state)
+        return state
+
+    def get_provisional_case(self, session_id: str) -> Optional[Dict[str, Any]]:
+        state = self.get_or_create_state(session_id)
+        return state.get("provisionalCase")
+
     def set_language(self, session_id: str, language: str) -> Dict[str, Any]:
         state = self.get_or_create_state(session_id)
         state["language"] = language
+        if "provisionalCase" in state:
+            state["provisionalCase"]["languagePreference"] = language
         self.save_state(session_id, state)
         return state
 

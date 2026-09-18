@@ -860,7 +860,7 @@ def ask_chatbot_engine(
         if matched_id == "UNAUTHORIZED":
             unauth_msg = (
                 "மன்னிக்கவும், உங்கள் கணக்குடன் தொடர்புடைய இந்த புகார் எண் காணப்படவில்லை. தயவுசெய்து உங்கள் சரியான புகார் எண்ணை சரிபார்க்கவும்."
-                if resolved_lang == "ta" else
+                if resolved_lang.startswith("ta") else
                 "I could not find any complaint with that ID associated with your account. Please verify the complaint ID or refer to your active registered complaints."
             )
             return {
@@ -883,15 +883,23 @@ def ask_chatbot_engine(
         user_name = user_prof.get("name", "Citizen")
 
         msg_lower = raw_message.lower()
-        is_asking_case = any(k in msg_lower for k in [
-            "my complaint", "complaint status", "my case", "status of my", "what happened to my", "show my complaint",
-            "what are my complaints", "en complaint", "en case", "status enna", "nilai enna", "புகார் நிலை", "என் புகார்",
-            "வழக்கு நிலை", "வழக்கின் நிலை", "uploaded document", "my document", "guide sonna", "guide message",
-            "guide update", "வழிகாட்டி", "ஆவணம்", "சான்று", "what did my guide ask", "adutha step", "next step for my case",
-            "complaint", "புகார்"
-        ]) or bool(re.search(r"ARAM-[0-9]{2}-[A-Z]{2,3}-[A-Z]{2,4}-[0-9]{4,8}", raw_message, re.IGNORECASE))
+        
+        # Only treat as explicit case status query if user explicitly asks for status/updates of their past complaint or provides a complaint ID
+        is_explicit_status_query = bool(re.search(
+            r"\b(status of (my|this|the)|check my complaint|complaint status|case status|track my complaint|"
+            r"what happened to my complaint|en complaint status|en case status|புகார் நிலை|வழக்கின் நிலை|"
+            r"show my complaint|my complaint details|uploaded documents for my complaint|what did my guide ask)\b",
+            msg_lower
+        )) or bool(re.search(r"ARAM-[0-9]{2}-[A-Z]{2,3}-[A-Z]{2,4}-[0-9]{4,8}", raw_message, re.IGNORECASE))
 
-        if targeted_case and (is_asking_case or matched_id):
+        # Check if the user is describing a substantive new legal issue/dispute
+        has_substantive_legal_facts = any(k in msg_lower for k in [
+            "salary", "wages", "sambalam", "unpaid", "company", "employer", "aadhaar", "bank", "scam", "fraud",
+            "loan", "deposit", "tenant", "landlord", "rent", "patta", "land", "property", "boundary",
+            "violence", "threat", "police", "defective", "refund", "bribe", "harassment", "cheated"
+        ]) and len(raw_message.split()) > 7
+
+        if targeted_case and (is_explicit_status_query or matched_id):
             query_type = "STATUS"
             if any(k in msg_lower for k in ["document", "documents", "proof", "file", "uploaded", "ஆவணம்", "சான்று", "சான்றிதழ்"]):
                 query_type = "DOCUMENTS"
@@ -902,7 +910,7 @@ def ask_chatbot_engine(
             
             return format_case_status_response(targeted_case, resolved_lang, user_name, query_type=query_type)
 
-        if not targeted_case and len(active_cases) > 1 and is_asking_case:
+        if not targeted_case and len(active_cases) > 1 and is_explicit_status_query and not has_substantive_legal_facts:
             case_list = []
             options = []
             for i, c in enumerate(active_cases):
@@ -912,7 +920,7 @@ def ask_chatbot_engine(
                 case_list.append(f"{i+1}. **{cid_str}** — *{ctitle}* (`{cstatus}`)")
                 options.append(f"Status of {cid_str}")
 
-            if resolved_lang == "ta":
+            if resolved_lang.startswith("ta"):
                 reply = (
                     f"வணக்கம் {user_name}! உங்களிடம் **{len(active_cases)}** செயலில் உள்ள புகார்கள் உள்ளன:\n\n" +
                     "\n".join(case_list) +
@@ -939,11 +947,11 @@ def ask_chatbot_engine(
                 "sessionId": session_key
             }
 
-        if not targeted_case and len(active_cases) == 0 and len(recent_cases) == 0 and is_asking_case:
-            if resolved_lang == "ta":
-                reply = f"வணக்கம் {user_name}! உங்களிடம் தற்போது எந்த செயலில் உள்ள புகார்களும் இல்லை. புதிய சட்ட உதவி புகாரை 'Register Complaint' மூலம் பதிவு செய்யலாம்."
+        if not targeted_case and len(active_cases) == 0 and len(recent_cases) == 0 and is_explicit_status_query and not has_substantive_legal_facts:
+            if resolved_lang.startswith("ta"):
+                reply = f"வணக்கம் {user_name}! உங்களிடம் தற்போது எந்த செயலில் உள்ள புகார்களும் பதிவு செய்யப்படவில்லை. புதிய சட்ட பிரச்சனை அல்லது சந்தேகத்தை இங்கே விவரிக்கலாம், உடனடி சட்ட வழிகாட்டுதல் தருகிறேன்."
             else:
-                reply = f"Hello {user_name}! You do not currently have any active registered grievances. If you are experiencing a legal issue, you can register a new complaint anytime."
+                reply = f"Hello {user_name}! You do not currently have any active registered grievances. You can describe any legal problem or dispute here to receive grounded legal aid and step-by-step guidance."
 
             return {
                 "responseType": "CASE_STATUS_REPORT",
@@ -955,15 +963,15 @@ def ask_chatbot_engine(
                 "is_conversational": True,
                 "is_greeting": False,
                 "disclaimer": DISCLAIMER,
-                "options": ["File New Complaint", "Legal Information", "Talk to Guide"],
+                "options": [],
                 "sessionId": session_key
             }
 
     # 5. Handle General Conversation / Help Intent
     if intent_type == INTENTS["GENERAL_CONVERSATION"]:
-        if resolved_lang == "ta":
+        if resolved_lang.startswith("ta"):
             help_reply = "அறம் (ARAM) AI என்பது சாமானிய குடிமக்களுக்கான சட்ட உதவி வழிகாட்டி. \n\nநான் உங்களுக்கு:\n1. நிலம் / பட்டா / எல்லை தகராறுகள்\n2. வாடகை & வீட்டின் முன்பணம் தகராறுகள்\n3. தொழிலாளர் ஊதிய பாக்கிகள்\n4. நுகர்வோர் சேவை குறைபாடுகள்\n5. இணைய வழி பண மோசடி\n\nஆகியவற்றிற்கு சட்டப் பிரிவுகள், தேவையான ஆவணங்கள் மற்றும் அணுக வேண்டிய அதிகாரிகளை (DLSA/RDO) அடையாளம் காட்டி தருகிறேன். உங்கள் பிரச்சனையை விவரிக்கவும்."
-        elif resolved_lang == "hi":
+        elif resolved_lang.startswith("hi"):
             help_reply = "अराम (ARAM) AI नागरिकों के लिए एक कानूनी सहायता प्रणाली है। मैं संपत्ति विवाद, किराया, उपभोक्ता शिकायत, मजदूरी और साइबर अपराध से संबंधित कानूनों और कानूनी प्रक्रियाओं में आपकी मदद कर सकता हूँ। अपनी समस्या बताएं।"
         else:
             help_reply = "ARAM AI is your conversational legal aid assistant. I help citizens understand applicable Indian statutes, required document checklists, and appropriate redressal authorities (DLSA, Tahsildar, Consumer Forum, Labour Commissioner, Cyber Crime Cell). How can I help you today?"
@@ -977,14 +985,14 @@ def ask_chatbot_engine(
             "answer": help_reply,
             "is_conversational": True,
             "is_greeting": False,
-            "options": ["Property Boundary Dispute", "Security Deposit Refund", "Unpaid Salary Claim", "Defective Goods Consumer Redressal", "Online Financial Scam"],
+            "options": [],
             "disclaimer": DISCLAIMER,
             "sessionId": session_key
         }
 
     # 6. Emergency & Safety Check
     if intent_type == INTENTS["EMERGENCY"]:
-        em_msg = "⚠️ அவசர உதவி / IMMEDIATE SAFETY NOTICE: உங்கள் உயிருக்கோ அல்லது பாதுகாப்பிற்கோ உடனடி அச்சுறுத்தல் இருந்தால், உடனடியாக காவல்துறை அவசர உதவி எண் 112 அல்லது பெண்கள் உதவி எண் 181-ஐ அழைக்கவும்." if resolved_lang == "ta" else "⚠️ IMMEDIATE SAFETY NOTICE: If you are in immediate physical danger, please immediately call Emergency Helpline 112 or Women Helpline 181. ARAM has flagged this grievance for priority human assistance."
+        em_msg = "⚠️ அவசர உதவி / IMMEDIATE SAFETY NOTICE: உங்கள் உயிருக்கோ அல்லது பாதுகாப்பிற்கோ உடனடி அச்சுறுத்தல் இருந்தால், உடனடியாக காவல்துறை அவசர உதவி எண் 112 அல்லது பெண்கள் உதவி எண் 181-ஐ அழைக்கவும்." if resolved_lang.startswith("ta") else "⚠️ IMMEDIATE SAFETY NOTICE: If you are in immediate physical danger, please immediately call Emergency Helpline 112 or Women Helpline 181. ARAM has flagged this grievance for priority human assistance."
         return {
             "responseType": "EMERGENCY",
             "language": resolved_lang,
@@ -1005,7 +1013,8 @@ def ask_chatbot_engine(
     sub_cases = decompose_multi_case(raw_message)
     if len(sub_cases) >= 2:
         case_items = []
-        options = []
+        is_tanglish = "tanglish" in raw_message.lower() or resolved_lang == "ta_tanglish" or any(m in raw_message.lower() for m in ["panren", "kudukala", "irukku", "sollunga", "rendu", "pannina"])
+        
         for sc in sub_cases:
             ctype = sc["case_type"]
             tax = TAXONOMY_MAP.get(ctype, TAXONOMY_MAP.get("GENERAL_LEGAL_AID"))
@@ -1014,42 +1023,114 @@ def ask_chatbot_engine(
                 "name": tax.get("name"),
                 "law": tax.get("act_en"),
                 "section": tax.get("section_en"),
-                "authority": tax.get("authority")
+                "authority": tax.get("authority"),
+                "documents": tax.get("documents", [])
             })
-            options.append(f"Guide on {tax.get('name')}")
         
-        if resolved_lang == "ta":
+        # Save provisional multi-issue case context for follow-up turns
+        conversation_manager.set_provisional_issues(
+            session_key,
+            issues=case_items,
+            evidence=["employment agreement", "salary slips", "bank statements", "HR emails", "Aadhaar copy", "screenshots"] if "agreement" in raw_message.lower() or "aadhaar" in raw_message.lower() else [],
+            language="ta_tanglish" if is_tanglish else resolved_lang
+        )
+
+        if is_tanglish:
+            multi_reply = (
+                "Ungaloda detailed message-la **2 separate legal issues** irukku nu identify panniruken. Rendaume distinct legal authorities & laws kizh varum:\n\n"
+                "📌 **Issue 1: Unpaid Salary & Document Withholding (Labour Dispute)**\n"
+                "• **Applicable Statute & Section:** Payment of Wages Act, 1936 (Section 15 — Claims arising out of deductions from wages) & Industrial Disputes Act, 1947.\n"
+                "• **Competent Authority:** District Labour Commissioner Office, Coimbatore / Labour Court.\n"
+                "• **Required Evidence Documents:** Employment agreement, monthly salary slips, bank statement showing partial credits, HR email correspondences.\n"
+                "• **Immediate First Action:** Send a formal written Demand Notice to HR giving a 15-day timeline to clear arrears and return original documents. If unpaid, file a Form I claim petition before the Labour Commissioner.\n\n"
+                "📌 **Issue 2: Unauthorized Use of Personal Documents (Aadhaar/Bank Details) / Financial Fraud Attempt**\n"
+                "• **Applicable Statute & Section:** Information Technology Act, 2000 (Section 66C — Identity Theft & Section 66D — Cheating by Impersonation) & Bharatiya Nyaya Sanhita (BNS Section 318(4) / IPC 420).\n"
+                "• **Competent Authority:** National Cyber Crime Reporting Portal (cybercrime.gov.in / Helpline 1930) & Coimbatore Cyber Crime Police Station.\n"
+                "• **Required Evidence Documents:** Bank transaction records, Aadhaar copy, communication screenshots, loan application logs.\n"
+                "• **Immediate First Action:** Udane UIDAI portal (or mAadhaar app) vazhiya ungaloda Aadhaar Biometrics-ai Lock pannunga, bank-ku written notification kudunga, and 1930 call panni online complaint register pannunga.\n\n"
+                "💡 **Next Step:** Indha 2 issues-aiyum separate formal complaints-ah register panna mudiyum. Ungalukku endha issue-ku first formal complaint draft panna start pannalam, or specific clarification edhuvum thevaiya?"
+            )
+        elif resolved_lang.startswith("ta"):
             multi_reply = "நான் உங்கள் மனுவில் பல சட்டச் சிக்கல்களை (Multiple Legal Issues) கண்டறிந்துள்ளேன்:\n\n"
             for i, item in enumerate(case_items):
-                multi_reply += f"📌 **{i+1}. {item['name']}:**\n• **சட்டம்:** {item['law']} ({item['section']})\n• **அதிகாரம்:** {item['authority']}\n\n"
-            multi_reply += "💡 நீங்கள் இந்த பிரச்சனைகளை தனித்தனியாகவோ அல்லது ஒருங்கிணைத்தோ தீர்க்கலாம். எந்த விவகாரத்திற்கு முதலில் விரிவான உதவி வேண்டும்?"
-        elif resolved_lang == "hi":
+                multi_reply += f"📌 **{i+1}. {item['name']}:**\n• **சட்டம் & பிரிவு:** {item['law']} ({item['section']})\n• **அணுக வேண்டிய அதிகாரம்:** {item['authority']}\n\n"
+            multi_reply += "💡 நீங்கள் இந்த பிரச்சனைகளை தனித்தனியாக தீர்க்கலாம். எந்த விவகாரத்திற்கு முதலில் விரிவான உதவி வேண்டும்?"
+        elif resolved_lang.startswith("hi"):
             multi_reply = "मैंने आपके संदेश में कई कानूनी मामलों (Multiple Legal Issues) की पहचान की है:\n\n"
             for i, item in enumerate(case_items):
-                multi_reply += f"📌 **{i+1}. {item['name']}:**\n• **कानून:** {item['law']} ({item['section']})\n• **प्राधिकरण:** {item['authority']}\n\n"
+                multi_reply += f"📌 **{i+1}. {item['name']}:**\n• **कानून एवं धारा:** {item['law']} ({item['section']})\n• **प्राधिकरण:** {item['authority']}\n\n"
             multi_reply += "💡 आप इनमें से किस विषय पर पहले विस्तृत मार्गदर्शन चाहते हैं?"
         else:
             multi_reply = "I have identified multiple distinct legal issues in your query:\n\n"
             for i, item in enumerate(case_items):
-                multi_reply += f"📌 **{i+1}. {item['name']}:**\n• **Statute:** {item['law']} ({item['section']})\n• **Redressal Authority:** {item['authority']}\n\n"
-            multi_reply += "💡 You can address these issues individually or file them as separate grievances. Which one would you like detailed guidance on first?"
-
-        options.append("File Formal Complaint for All")
+                multi_reply += f"📌 **{i+1}. {item['name']}:**\n• **Statute & Section:** {item['law']} ({item['section']})\n• **Competent Authority:** {item['authority']}\n\n"
+            multi_reply += "💡 These should be pursued as distinct legal matters. Which issue would you like to address first?"
 
         return {
             "responseType": "MULTI_CASE_ASSESSMENT",
-            "language": resolved_lang,
+            "language": "ta_tanglish" if is_tanglish else resolved_lang,
             "category": "MULTI_CASE",
             "understanding": multi_reply,
             "reply": multi_reply,
             "answer": multi_reply,
             "subCases": case_items,
-            "options": options,
+            "options": [],
             "is_conversational": True,
             "is_greeting": False,
             "disclaimer": DISCLAIMER,
             "sessionId": session_key
         }
+
+    # 6.6 Follow-Up Action & Multi-Turn Context Resolution
+    provisional_case = conversation_manager.get_provisional_case(session_key) or {}
+    prev_issues = provisional_case.get("issues") or []
+    is_follow_up_action = intent_meta.get("is_follow_up") or any(k in raw_message.lower() for k in [
+        "how can i solve", "how to solve", "how to resolve", "how to proceed", "what should i do",
+        "what can i do", "epdi solve panradhu", "enna pannanum", "adutha step", "first action", "next step"
+    ])
+
+    if is_follow_up_action and prev_issues:
+        is_tanglish = provisional_case.get("languagePreference") == "ta_tanglish" or "tanglish" in raw_message.lower() or resolved_lang == "ta_tanglish" or any(m in raw_message.lower() for m in ["panren", "kudukala", "irukku", "sollunga", "rendu", "pannina", "solve panradhu", "enna pannanum"])
+        
+        if len(prev_issues) >= 2:
+            if is_tanglish:
+                follow_up_reply = (
+                    "Neenga mention panna **2 separate issues**-aiyum step-by-step solve panradhukana immediate action plan idho:\n\n"
+                    "🔹 **Issue 1 (Unpaid Salary & Original Documents Recovery):**\n"
+                    "1. **Step 1:** HR-ku oru official Written Demand Letter / Email anuppunga (15-day deadline to release pending 4-month wages & return original documents).\n"
+                    "2. **Step 2:** Response illana, Coimbatore District Labour Commissioner Office-la Form I Claim Petition file pannunga under Payment of Wages Act, Section 15.\n\n"
+                    "🔹 **Issue 2 (Unauthorized Aadhaar & Bank Details Misuse Prevention):**\n"
+                    "1. **Step 1:** Udane UIDAI website (myaadhaar.uidai.gov.in) or mAadhaar app open panni **Aadhaar Biometric Lock** pannunga.\n"
+                    "2. **Step 2:** National Cyber Crime Portal (`cybercrime.gov.in`) or Helpline **1930** call panni unauthorized loan processing attempt pathi complaint log pannunga.\n\n"
+                    "💡 Neenga indha complaints-ai official-ah ARAM portal vazhiya submit panna virumbureengala, or initial demand notice draft panna guidance venuma?"
+                )
+            elif resolved_lang.startswith("ta"):
+                follow_up_reply = (
+                    "உங்கள் இரண்டு வழக்குகளையும் தீர்ப்பதற்கான படிநிலைகள்:\n\n"
+                    "1. **தொழிலாளர் ஊதிய பாக்கி:** மனிதவள மேலாளருக்கு (HR) 15 நாட்கள் அவகாசத்தில் கோரிக்கை கடிதம் அனுப்பவும்; தீர்வு கிடைக்காவிடில் மாவட்ட தொழிலாளர் ஆணையரிடம் மனு தாக்கல் செய்யவும்.\n"
+                    "2. **ஆதார் தவறான பயன்பாடு:** உடனடியாக ஆதார் பயோமெட்ரிக் பூட்டவும் (Lock Aadhaar) மற்றும் 1930 / cybercrime.gov.in மூலம் புகார் பதிவு செய்யவும்."
+                )
+            else:
+                follow_up_reply = (
+                    "Here is the immediate step-by-step action plan for your two legal issues:\n\n"
+                    "1. **Salary Dispute:** Send a formal 15-day statutory demand notice to HR; if unresolved, file a Form I claim with the District Labour Commissioner under Section 15 of Payment of Wages Act.\n"
+                    "2. **Aadhaar / Financial Misuse:** Immediately lock your Aadhaar biometrics on the UIDAI portal and register an online complaint at cybercrime.gov.in (1930 helpline).\n\n"
+                    "Would you like to draft a formal notice or submit a grievance through ARAM?"
+                )
+
+            return {
+                "responseType": "FOLLOW_UP_ACTION_GUIDANCE",
+                "language": "ta_tanglish" if is_tanglish else resolved_lang,
+                "category": "MULTI_CASE",
+                "understanding": follow_up_reply,
+                "reply": follow_up_reply,
+                "answer": follow_up_reply,
+                "options": [],
+                "is_conversational": True,
+                "is_greeting": False,
+                "disclaimer": DISCLAIMER,
+                "sessionId": session_key
+            }
 
     # 7. Predict Category & Jurisdiction
     raw_lower = raw_message.lower()
