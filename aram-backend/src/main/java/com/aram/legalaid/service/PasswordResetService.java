@@ -37,8 +37,9 @@ public class PasswordResetService {
     public AuthMessageResponse forgotPassword(ForgotPasswordRequest request) {
         String email = request.email().trim().toLowerCase();
         
-        // Security best practice: don't reveal in response if email exists or not
-        boolean userExists = userRepository.existsByEmail(email);
+        // Strict account validation: user must have an existing registered account
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new BadRequestException("No account found with this email address. Please create a new account."));
 
         Optional<PasswordResetOtp> existingOpt = otpRepository.findTopByEmailOrderByCreatedAtDesc(email);
         if (existingOpt.isPresent()) {
@@ -67,15 +68,10 @@ public class PasswordResetService {
         System.out.println("EXPIRES AT: " + expiryTime);
         System.out.println("==================================================\n");
 
-        if (userExists) {
-            auditLogService.log("PASSWORD_RESET_REQUESTED", email, "Forgot password OTP requested.");
-            Optional<User> userOpt = userRepository.findByEmail(email);
-            if (userOpt.isPresent()) {
-                emailService.sendPasswordResetOtpEmail(email, userOpt.get().getName(), otp);
-            }
-        }
+        auditLogService.log("PASSWORD_RESET_REQUESTED", email, "Forgot password OTP requested.");
+        emailService.sendPasswordResetOtpEmail(email, user.getName(), otp);
 
-        return new AuthMessageResponse("If the email is registered, a password reset OTP has been sent.", true);
+        return new AuthMessageResponse("Password reset OTP has been sent to your registered email.", true);
     }
 
     @Transactional

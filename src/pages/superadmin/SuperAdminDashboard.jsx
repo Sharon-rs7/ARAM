@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import DashboardLayout from "@/components/common/DashboardLayout";
 import { adminService } from "@/services/adminService";
 import { regionalAdminService } from "@/services/regionalAdminService";
+import { API_BUSINESS_URL } from "@/services/api";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { 
@@ -63,12 +64,14 @@ export default function SuperAdminDashboard() {
 
   const [citizenSearch, setCitizenSearch] = useState("");
   const [citizenDistrictFilter, setCitizenDistrictFilter] = useState("ALL");
+  const [citizenStatusFilter, setCitizenStatusFilter] = useState("ALL");
 
   const [guideSearch, setGuideSearch] = useState("");
   const [guideDistrictFilter, setGuideDistrictFilter] = useState("ALL");
   const [guideStatusFilter, setGuideStatusFilter] = useState("ALL");
 
   const [adminSearch, setAdminSearch] = useState("");
+  const [adminStatusFilter, setAdminStatusFilter] = useState("ALL");
 
   // Modals & Action States
   const [selectedComplaint, setSelectedComplaint] = useState(null);
@@ -242,9 +245,12 @@ export default function SuperAdminDashboard() {
       if (citizenDistrictFilter !== "ALL" && (!u.district || u.district.toLowerCase() !== citizenDistrictFilter.toLowerCase())) {
         return false;
       }
+      if (citizenStatusFilter !== "ALL" && u.status !== citizenStatusFilter) {
+        return false;
+      }
       return true;
     });
-  }, [users, citizenSearch, citizenDistrictFilter]);
+  }, [users, citizenSearch, citizenDistrictFilter, citizenStatusFilter]);
 
   // Filtered Guides
   const filteredGuides = useMemo(() => {
@@ -276,6 +282,11 @@ export default function SuperAdminDashboard() {
         status: found ? found.status : "UNASSIGNED"
       };
     }).filter(item => {
+      if (adminStatusFilter !== "ALL") {
+        if (adminStatusFilter === "ACTIVE" && item.status !== "ACTIVE") return false;
+        if (adminStatusFilter === "SUSPENDED" && item.status !== "SUSPENDED") return false;
+        if (adminStatusFilter === "UNASSIGNED" && item.status !== "UNASSIGNED") return false;
+      }
       const search = adminSearch.toLowerCase().trim();
       if (!search) return true;
       const distMatch = item.district.toLowerCase().includes(search);
@@ -283,7 +294,7 @@ export default function SuperAdminDashboard() {
       const emailMatch = item.admin && item.admin.email.toLowerCase().includes(search);
       return distMatch || nameMatch || emailMatch;
     });
-  }, [users, adminSearch]);
+  }, [users, adminSearch, adminStatusFilter]);
 
   // Action Handlers
   const handleToggleUserStatus = async (userId, currentStatus) => {
@@ -1020,8 +1031,18 @@ export default function SuperAdminDashboard() {
                   ))}
                 </select>
 
+                <select
+                  value={citizenStatusFilter}
+                  onChange={(e) => setCitizenStatusFilter(e.target.value)}
+                  className="h-9.5 rounded-xl border border-slate-200 dark:border-emerald-800/60 bg-white dark:bg-[#182C26] px-3 text-xs text-slate-800 dark:text-white font-medium outline-none focus:border-[#163D32]"
+                >
+                  <option value="ALL">All Statuses</option>
+                  <option value="ACTIVE">Active Only</option>
+                  <option value="SUSPENDED">Suspended Only</option>
+                </select>
+
                 <a
-                  href="http://localhost:8082/api/admin/users/export?role=CITIZEN"
+                  href={`${API_BUSINESS_URL}/admin/users/export?role=CITIZEN`}
                   target="_blank"
                   rel="noreferrer"
                   className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-[#182C26] hover:bg-slate-200 text-slate-700 dark:text-emerald-200 text-xs font-bold transition flex items-center gap-1.5 border border-slate-200 dark:border-emerald-800"
@@ -1286,6 +1307,17 @@ export default function SuperAdminDashboard() {
                     className="w-full h-9.5 rounded-xl border border-slate-200 dark:border-emerald-800/60 bg-white dark:bg-[#182C26] pl-8.5 pr-3 text-xs text-slate-800 dark:text-white placeholder:text-slate-400 outline-none focus:border-[#163D32]"
                   />
                 </div>
+
+                <select
+                  value={adminStatusFilter}
+                  onChange={(e) => setAdminStatusFilter(e.target.value)}
+                  className="h-9.5 rounded-xl border border-slate-200 dark:border-emerald-800/60 bg-white dark:bg-[#182C26] px-3 text-xs text-slate-800 dark:text-white font-medium outline-none focus:border-[#163D32]"
+                >
+                  <option value="ALL">All Statuses</option>
+                  <option value="ACTIVE">Active Admin</option>
+                  <option value="SUSPENDED">Suspended</option>
+                  <option value="UNASSIGNED">Unassigned District</option>
+                </select>
 
                 <button
                   onClick={() => setShowCreateAdminModal(true)}

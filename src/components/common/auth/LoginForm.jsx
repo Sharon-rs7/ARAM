@@ -267,35 +267,40 @@ const LoginForm = () => {
         </button>
 
         {showDemoBox && (
-          <div className="mt-3 p-3 rounded-2xl bg-slate-50 dark:bg-[#162923] border border-slate-200 dark:border-emerald-800/50 grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-center">
-            <button
-              type="button"
-              onClick={() => fillDemo("citizen@gmail.com", "Citizen@123")}
-              className="py-2 px-1 rounded-xl bg-white dark:bg-[#1C352E] hover:bg-[#DCEBDD] dark:hover:bg-emerald-900/60 border border-slate-200 dark:border-emerald-700/50 text-[10px] font-bold text-slate-800 dark:text-emerald-100 transition cursor-pointer active:scale-95"
-            >
-              Citizen
-            </button>
-            <button
-              type="button"
-              onClick={() => fillDemo("volunteer@gmail.com", "Admin@123")}
-              className="py-2 px-1 rounded-xl bg-white dark:bg-[#1C352E] hover:bg-[#DCEBDD] dark:hover:bg-emerald-900/60 border border-slate-200 dark:border-emerald-700/50 text-[10px] font-bold text-slate-800 dark:text-emerald-100 transition cursor-pointer active:scale-95"
-            >
-              Legal Guide
-            </button>
-            <button
-              type="button"
-              onClick={() => fillDemo("admin@gmail.com", "Admin@123")}
-              className="py-2 px-1 rounded-xl bg-white dark:bg-[#1C352E] hover:bg-[#DCEBDD] dark:hover:bg-emerald-900/60 border border-slate-200 dark:border-emerald-700/50 text-[10px] font-bold text-slate-800 dark:text-emerald-100 transition cursor-pointer active:scale-95"
-            >
-              Nodal Admin
-            </button>
-            <button
-              type="button"
-              onClick={() => fillDemo("superadmin@gmail.com", "Admin@123")}
-              className="py-2 px-1 rounded-xl bg-white dark:bg-[#1C352E] hover:bg-[#DCEBDD] dark:hover:bg-emerald-900/60 border border-slate-200 dark:border-emerald-700/50 text-[10px] font-bold text-slate-800 dark:text-emerald-100 transition cursor-pointer active:scale-95"
-            >
-              SuperAdmin
-            </button>
+          <div className="mt-3 p-3 rounded-2xl bg-slate-50 dark:bg-[#162923] border border-slate-200 dark:border-emerald-800/50 space-y-2 text-center">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+              <button
+                type="button"
+                onClick={() => fillDemo("citizen@gmail.com", "Citizen@123")}
+                className="py-2 px-1 rounded-xl bg-white dark:bg-[#1C352E] hover:bg-[#DCEBDD] dark:hover:bg-emerald-900/60 border border-slate-200 dark:border-emerald-700/50 text-[10px] font-bold text-slate-800 dark:text-emerald-100 transition cursor-pointer active:scale-95"
+              >
+                Citizen
+              </button>
+              <button
+                type="button"
+                onClick={() => fillDemo("salem.admin@gmail.com", "Admin@123")}
+                className="py-2 px-1 rounded-xl bg-white dark:bg-[#1C352E] hover:bg-[#DCEBDD] dark:hover:bg-emerald-900/60 border border-slate-200 dark:border-emerald-700/50 text-[10px] font-bold text-slate-800 dark:text-emerald-100 transition cursor-pointer active:scale-95"
+              >
+                Salem Admin
+              </button>
+              <button
+                type="button"
+                onClick={() => fillDemo("salem.guide1@gmail.com", "Admin@123")}
+                className="py-2 px-1 rounded-xl bg-white dark:bg-[#1C352E] hover:bg-[#DCEBDD] dark:hover:bg-emerald-900/60 border border-slate-200 dark:border-emerald-700/50 text-[10px] font-bold text-slate-800 dark:text-emerald-100 transition cursor-pointer active:scale-95"
+              >
+                Salem Guide
+              </button>
+              <button
+                type="button"
+                onClick={() => fillDemo("superadmin@gmail.com", "Admin@123")}
+                className="py-2 px-1 rounded-xl bg-white dark:bg-[#1C352E] hover:bg-[#DCEBDD] dark:hover:bg-emerald-900/60 border border-slate-200 dark:border-emerald-700/50 text-[10px] font-bold text-slate-800 dark:text-emerald-100 transition cursor-pointer active:scale-95"
+              >
+                Super Admin
+              </button>
+            </div>
+            <div className="text-[10px] text-slate-500 dark:text-emerald-300/60 text-left px-1">
+              💡 Any district works: <code>&lt;district&gt;.admin@gmail.com</code> / <code>Admin@123</code> & <code>&lt;district&gt;.guide1@gmail.com</code> / <code>Admin@123</code>
+            </div>
           </div>
         )}
       </div>

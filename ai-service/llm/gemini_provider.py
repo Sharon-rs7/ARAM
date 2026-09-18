@@ -98,4 +98,119 @@ class GeminiProvider(BaseLLMProvider):
         except Exception as e:
             raise RuntimeError(f"Gemini API generation error: {e}")
 
+    def generate_conversational_response(
+        self,
+        user_message: str,
+        language: str = "en",
+        conversation_history: Optional[List[Dict[str, str]]] = None,
+        context_notes: Optional[str] = None
+    ) -> str:
+        """
+        Generates a natural, empathetic, and intelligent conversational response
+        as ARAM AI (covering capabilities, supported languages, how the system works,
+        advice, or general discussion in Tamil, Tanglish, Hindi, or English).
+        """
+        if not self.is_available():
+            self._init_client()
+
+        if not self.is_available():
+            return self._build_conversational_fallback(user_message, language)
+
+        import google.generativeai as genai
+
+        system_instruction = (
+            "You are ARAM AI (அறம் AI), an intelligent, empathetic, and official conversational legal aid assistant "
+            "for citizens of Tamil Nadu and India.\n\n"
+            "Key Capabilities & Persona:\n"
+            "1. You understand and communicate fluently in Tamil, Tanglish (Tamil in English letters), Hindi, Hinglish, and English.\n"
+            "2. When the user asks conversational questions such as:\n"
+            "   - 'unaku ennala epd help pana mudium' / 'how can you help me': explain that you analyze legal problems, give statutory guidance, provide evidence document checklists, break down complex multi-issue disputes, support Voice note STT and Document OCR, and route complaints to Regional Administrators and Legal Aid Advocates.\n"
+            "   - 'ethalang unaku therium' / 'what languages do you know': confirm that you support Tamil, Tanglish, Hindi, and English fluently.\n"
+            "   - 'inth system epd work aaguthu' / 'how does this system work': clearly describe the Citizen -> AI Triage & Analysis -> Regional Admin & Advocate Resolution workflow.\n"
+            "3. Always match the user's language and style (e.g. if the user talks in Tanglish, reply in friendly, structured Tanglish with emoji bullets; if in Tamil, reply in Tamil; if in Hindi, reply in Hindi; if in English, reply in English).\n"
+            "4. Be friendly, structured, clear, and action-oriented. Keep the reply concise and easy to read on mobile."
+        )
+
+        generation_config = genai.types.GenerationConfig(
+            temperature=0.3,
+            max_output_tokens=600
+        )
+
+        history_text = ""
+        if conversation_history:
+            for turn in conversation_history[-4:]:
+                if isinstance(turn, dict):
+                    history_text += f"{turn.get('role', 'User')}: {turn.get('content', '')}\n"
+                elif isinstance(turn, str):
+                    history_text += f"• {turn}\n"
+
+        prompt = f"System Instruction: {system_instruction}\n\n"
+        if history_text:
+            prompt += f"Recent Chat History:\n{history_text}\n\n"
+        if context_notes:
+            prompt += f"Context Notes: {context_notes}\n\n"
+        prompt += f"User Language: {language}\nUser Message: {user_message}\n\nARAM AI Response:"
+
+        try:
+            response = self.client.generate_content(prompt, generation_config=generation_config)
+            return response.text.strip()
+        except Exception as e:
+            print(f"[GEMINI CONVERSATIONAL ERROR] {e}")
+            return self._build_conversational_fallback(user_message, language)
+
+    def _build_conversational_fallback(self, user_message: str, language: str) -> str:
+        is_tanglish = language == "ta_tanglish" or any(m in user_message.lower() for m in ["panren", "kudukala", "therium", "mudium", "epd", "work aaguthu", "sollunga"])
+        is_ta = language.startswith("ta") and not is_tanglish
+        is_hi = language.startswith("hi")
+
+        if is_tanglish:
+            return (
+                "Vanakkam! 🙏 Naan **ARAM AI (அறம் AI)** — ungaloda official legal aid assistant! ⚖️\n\n"
+                "Ennala ungalukku indha vishayangal-la help panna mudiyum:\n"
+                "1. **Statutory Legal Guidance 📜:** Indian & Tamil Nadu sattangalin padi sariyaana sections & remedies solven.\n"
+                "2. **Multi-Issue Decomposition 🧩:** Ungalukku 2 or more problems irundha (e.g., salary pending + Aadhaar misuse), adhai thanithaniyaaga pirithu step-by-step action plan tharuven.\n"
+                "3. **Document Evidence Checklist 📋:** Dispute-ku thevaiyaana original proofs & documents list solven.\n"
+                "4. **Voice STT & Document OCR 🎙️📄:** Voice notes and uploaded papers-ai direct-ah analyze panna mudiyum.\n"
+                "5. **Admin & Guide Routing 🤝:** District Regional Admin & Legal Aid Advocates kitta direct-ah formal grievance submit panna mudiyum.\n\n"
+                "🌍 **Supported Languages:** Tamil, Tanglish, Hindi, and English!\n\n"
+                "Ungalukku ippo enna legal problem or clarification thevai? Sollunga, naan guide panren! 😊"
+            )
+        elif is_ta:
+            return (
+                "வணக்கம்! 🙏 நான் **அறம் (ARAM) AI** — உங்கள் அதிகாரப்பூர்வ சட்ட உதவி உதவியாளர். ⚖️\n\n"
+                "நான் உங்களுக்கு எவ்வாறு உதவ முடியும்:\n"
+                "1. **சட்ட வழிகாட்டுதல் 📜:** இந்திய மற்றும் தமிழக சட்டங்களின்படி சரியான சட்டப் பிரிவுகள் மற்றும் தீர்வு முறைகள்.\n"
+                "2. **பல சிக்கல்கள் பகுப்பாய்வு 🧩:** ஊதிய பாக்கி, நிலத் தகராறு, மோசடி போன்ற பல சிக்கல்களை தனித்தனியாக பிரித்து வழிநடத்துதல்.\n"
+                "3. **ஆவண சரிபார்ப்பு பட்டியல் 📋:** புகாருக்கு தேவையான அசல் சான்றுகளின் பட்டியல்.\n"
+                "4. **குரல் பதிவு & ஆவண ஸ்கேன் 🎙️📄:** வாய்ஸ் மெசேஜ் மற்றும் ஆவணங்களை நேரடியாக ஆய்வு செய்தல்.\n"
+                "5. **வழக்கறிஞர் இணைப்பு 🤝:** மாவட்ட நிர்வாகம் மற்றும் சட்ட வழிகாட்டிகளுடன் உங்கள் மனுவை அதிகாரப்பூர்வமாக இணைத்தல்.\n\n"
+                "🌍 **ஆதரிக்கப்படும் மொழிகள்:** தமிழ், தங்கிலீஷ், இந்தி, ஆங்கிலம்.\n\n"
+                "உங்கள் பிரச்சனை அல்லது சந்தேகத்தை விவரிக்கவும், உடனடி வழிகாட்டுகிறேன்! 😊"
+            )
+        elif is_hi:
+            return (
+                "नमस्ते! 🙏 मैं **अराम (ARAM) AI** हूँ — आपका आधिकारिक कानूनी सहायता सहायक। ⚖️\n\n"
+                "मैं आपकी इस प्रकार सहायता कर सकता हूँ:\n"
+                "1. **कानूनी मार्गदर्शन 📜:** भारतीय कानूनों के अनुसार सही धाराएं एवं कानूनी प्रक्रियाएं।\n"
+                "2. **बहु-मामला विश्लेषण 🧩:** यदि एक से अधिक विवाद हैं तो उन्हें अलग-अलग चरणबद्ध हल करना।\n"
+                "3. **दस्तावेज़ सूची 📋:** शिकायत के लिए आवश्यक प्रमाण पत्रों की सूची।\n"
+                "4. **वॉइस और दस्तावेज़ स्कैन 🎙️📄:** वॉइस रिकॉर्डिंग और दस्तावेज़ों का त्वरित विश्लेषण।\n"
+                "5. **जिला प्रशासन एवं वकील सहायता 🤝:** आपकी शिकायत को सीधे जिला स्तर पर अग्रेषित करना।\n\n"
+                "🌍 **समर्थित भाषाएं:** तमिल, तंगलिश, हिंदी, अंग्रेजी।\n\n"
+                "अपनी कानूनी समस्या बताएं, मैं आपकी पूरी सहायता करूँगा! 😊"
+            )
+        else:
+            return (
+                "Vanakkam! 🙏 I am **ARAM AI** — your conversational legal aid assistant. ⚖️\n\n"
+                "Here is how I can assist you:\n"
+                "1. **Statutory Legal Guidance 📜:** Providing applicable Indian and Tamil Nadu statutes, sections, and legal procedures.\n"
+                "2. **Multi-Issue Decomposition 🧩:** Breaking down complex multi-part disputes into actionable sub-cases.\n"
+                "3. **Evidence Checklist 📋:** Listing required supporting deeds, receipts, and records.\n"
+                "4. **Voice STT & Document OCR 🎙️📄:** Transcribing voice notes and scanning uploaded documents.\n"
+                "5. **Official Redressal Routing 🤝:** Routing complaints directly to District Administrators and verified Legal Aid Advocates.\n\n"
+                "🌍 **Supported Languages:** Tamil, Tanglish, Hindi, and English.\n\n"
+                "How can I help you today? Please describe your legal grievance or question! 😊"
+            )
+
 gemini_provider = GeminiProvider()
+

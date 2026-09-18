@@ -36,10 +36,10 @@ LANGUAGE_SELECTION_PATTERNS = [
 ]
 
 SUBMIT_COMPLAINT_PATTERNS = [
-    r"^(submit\s+complaint|file\s+complaint|register\s+complaint|lodge\s+complaint|submit\s+this\s+complaint|file\s+grievance|submit\s+grievance)$",
-    r"^(complaint\s+submit\s+pannu|complaint\s+register\s+pannu|complaint\s+submit\s+panu|complaint\s+register\s+panu|complaint\s+podunga|complaint\s+file\s+pannu)$",
-    r"^(ithai\s+complaint\s+ah\s+register\s+pannu|ithu\s+complaint\s+ah\s+submit\s+pannu|complaint\s+submit\s+pannunga|புகார்\s+பதிவு\s+செய்|புகார்\s+அளி|புகாரை\s+பதிவு\s+செய்)$",
-    r"^(submit|register\s+it|file\s+it)$"
+    r".*(submit|file|register|lodge)\s+.*(complaint|commplaint|grievance|case).*",
+    r".*(can\s+u|can\s+you)\s+(submit|file|register|lodge)\s+.*",
+    r".*complaint\s+(submit|register|file|poda|podunga|kudukka).*",
+    r".*(புகார்\s+பதிவு|புகார்\s+அளி|புகாரை\s+பதிவு).*"
 ]
 
 THANKS_PATTERNS = [
@@ -57,7 +57,11 @@ GENERAL_CONVO_PATTERNS = [
     r"^(how\s+are\s+you|how\s+r\s+u|epdi\s+iruka|epdi\s+irukinga|eppadi\s+irukinga|kya\s+haal\s+hai|aap\s+kaise\s+ho)\??$",
     r"^(ok|okay|cool|super|great|got\s+it|understood|purinjathu|seri|apdiya|acha|theek\s+hai|sari)$",
     r"^(hello,?\s*can\s+you\s+help\s+me|can\s+you\s+help\s+me|i\s+need\s+help)\??$",
-    r"^(what\s+is\s+this\s+app|what\s+services\s+do\s+you\s+provide)\??$"
+    r"^(what\s+is\s+this\s+app|what\s+services\s+do\s+you\s+provide)\??$",
+    r".*(unaku|unakku|unala|unnala)\s+.*(help\s+pana|help\s+panna|help\s+panradhu|mudium|mudiyum).*",
+    r".*(ethalang|ethana\s+language|ethana\s+mozhi|what\s+languages|which\s+languages|languages\s+you\s+know|languages\s+supported).*",
+    r".*(inth\s+system|intha\s+system|this\s+system|how\s+does\s+this\s+system|how\s+this\s+system|aram\s+system|aram\s+app|aram)\s+.*(epd|epdi|eppadi|work\s+aaguthu|work\s+aagudhu|works|working|function).*",
+    r".*(how\s+does\s+(aram|this\s+app|this\s+bot|the\s+system)\s+work).*"
 ]
 
 EMERGENCY_KEYWORDS = [
@@ -154,7 +158,8 @@ def classify_intent(text: str) -> Tuple[str, Dict[str, Any]]:
             "tamil pesa mudiyuma", "tamil theriyuma", "tamil la pesunga", "tamil pesunga", "tamil la pesuviya",
             "tamil la sollunga", "tamil la sollu", "tamilil sollunga",
             "can you speak tamil", "can we speak in tamil", "speak in tamil", "talk in tamil", 
-            "switch to tamil", "தமிழ்ல பேசலாமா", "தமிழில் பேசலாமா", "தமிழ்ல பேசுங்க", "தமிழில் பேச முடியுமா", "தமிழ் பேச முடியுமா"
+            "switch to tamil", "தமிழ்ல பேசலாமா", "தமிழில் பேசலாமா", "தமிழ்ல பேசுங்க", "தமிழில் பேச முடியுமா", "தமிழ் பேச முடியுமா",
+            "தமிழ்ல சொல்லுங்க", "தமிழில் சொல்லுங்கள்", "தமிழில் விளக்குங்கள்", "தமிழ்ல சொல்லு"
         ]):
             return INTENTS["LANGUAGE_SELECTION"], {"confidence": 0.99, "selected_language": "ta"}
 
@@ -162,7 +167,7 @@ def classify_intent(text: str) -> Tuple[str, Dict[str, Any]]:
             "hindi me baat karo", "hindi bol sakte ho", "kya aap hindi बोलte hain", "kya aap hindi bolte hain",
             "can you speak hindi", "speak in hindi", "talk in hindi", "switch to hindi", "hindi aati hai",
             "hindi me batao", "hindi mein batao", "hindi me samjhao", "hindi mein samjhao",
-            "हिंदी में बात करो", "क्या आप हिंदी बोलते हैं", "हिंदी में बताओ"
+            "हिंदी में बात करो", "क्या आप हिंदी बोलते हैं", "हिंदी में बताओ", "हिंदी में समझाइए", "हिंदी में बोलो"
         ]):
             return INTENTS["LANGUAGE_SELECTION"], {"confidence": 0.99, "selected_language": "hi"}
 

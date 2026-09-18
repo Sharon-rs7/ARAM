@@ -53,6 +53,11 @@ public class ComplaintController {
         return ResponseEntity.ok(complaintService.updateStatus(id, request));
     }
 
+    @PostMapping("/{id}/email-copy")
+    public ResponseEntity<java.util.Map<String, Object>> emailCopy(@PathVariable Long id) {
+        return ResponseEntity.ok(complaintService.emailCopy(id));
+    }
+
     @PostMapping("/check-similarity")
     public ResponseEntity<java.util.Map<String, Object>> checkSimilarity(@RequestBody java.util.Map<String, String> payload) {
         String title = payload.getOrDefault("title", "");

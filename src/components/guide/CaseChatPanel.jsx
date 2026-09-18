@@ -164,10 +164,16 @@ export default function CaseChatPanel({ complaintId, userRole }) {
       if (!token) return;
 
       const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-      const wsHost = (import.meta.env.VITE_API_BASE_URL || "http://localhost:8082/api")
-        .replace(/^https?:\/\//, "")
-        .replace(/\/api$/, "");
-      const wsUrl = `${wsProtocol}//${wsHost}/ws/updates?token=${token}`;
+      const host = window.location.hostname || "localhost";
+      let wsEndpoint;
+      if (import.meta.env.VITE_WS_URL) {
+        wsEndpoint = `${import.meta.env.VITE_WS_URL}/ws/updates`;
+      } else if (host === "localhost" || host === "127.0.0.1") {
+        wsEndpoint = `${wsProtocol}//${host}:8082/ws/updates`;
+      } else {
+        wsEndpoint = `${wsProtocol}//${window.location.host}/ws/updates`;
+      }
+      const wsUrl = `${wsEndpoint}?token=${token}`;
 
       socket = new WebSocket(wsUrl);
 

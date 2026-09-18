@@ -14,6 +14,7 @@ const OTPForm = () => {
   const [otp, setOtp] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isNotFound, setIsNotFound] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
   
   // Password Reset Fields
@@ -126,6 +127,7 @@ const OTPForm = () => {
 
   const handleResend = async () => {
     setError("");
+    setIsNotFound(false);
     setTimer(30);
     setResendDisabled(true);
 
@@ -135,6 +137,11 @@ const OTPForm = () => {
     } catch (err) {
       const msg = err?.response?.data?.message || err?.message || "Failed to resend OTP.";
       setError(msg);
+      const notFound = msg.toLowerCase().includes("no account found") || 
+                       msg.toLowerCase().includes("create a new account") ||
+                       err?.response?.status === 404 ||
+                       (err?.response?.status === 400 && msg.toLowerCase().includes("no account"));
+      setIsNotFound(notFound);
       toast.error(msg);
     }
   };
@@ -261,9 +268,23 @@ const OTPForm = () => {
       </div>
 
       {error && (
-        <div className="mb-6 p-3.5 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs flex items-center gap-2.5">
-          <AlertCircle size={16} className="shrink-0" />
-          <span>{error}</span>
+        <div className="mb-6 p-3.5 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs">
+          <div className="flex items-start gap-2.5">
+            <AlertCircle size={16} className="shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <span className="leading-relaxed">{error}</span>
+              {isNotFound && (
+                <div className="mt-2.5 pt-2 border-t border-red-200">
+                  <Link
+                    to={`/register?email=${encodeURIComponent(email)}`}
+                    className="inline-flex items-center gap-1 font-bold text-emerald-800 hover:underline"
+                  >
+                    Create a new account now →
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
 

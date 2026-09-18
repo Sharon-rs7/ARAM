@@ -11,10 +11,12 @@ const ForgotPasswordForm = () => {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [isNotFound, setIsNotFound] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setIsNotFound(false);
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
@@ -31,6 +33,11 @@ const ForgotPasswordForm = () => {
     } catch (err) {
       const msg = err?.response?.data?.message || err?.message || "Failed to trigger recovery. Please check email address.";
       setError(msg);
+      const notFound = msg.toLowerCase().includes("no account found") || 
+                       msg.toLowerCase().includes("create a new account") ||
+                       err?.response?.status === 404 ||
+                       (err?.response?.status === 400 && msg.toLowerCase().includes("no account"));
+      setIsNotFound(notFound);
       toast.error(msg);
     } finally {
       setLoading(false);
@@ -71,9 +78,41 @@ const ForgotPasswordForm = () => {
       </div>
 
       {error && (
-        <div className="mb-5 p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800/60 text-rose-700 dark:text-rose-200 text-xs flex items-start gap-2.5">
-          <AlertCircle size={16} className="shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" />
-          <span className="font-medium leading-relaxed">{error}</span>
+        <div className="mb-5 p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-800/60 text-rose-700 dark:text-rose-200 text-xs transition-all animate-in fade-in duration-200">
+          <div className="flex items-start gap-2.5">
+            <AlertCircle size={17} className="shrink-0 mt-0.5 text-rose-600 dark:text-rose-400" />
+            <div className="flex-1 text-left">
+              <p className="font-bold text-[13px] text-rose-800 dark:text-rose-100">
+                {isNotFound ? "Account Not Found" : "Verification Error"}
+              </p>
+              <p className="mt-1 font-medium leading-relaxed">
+                {error}
+              </p>
+              {isNotFound && (
+                <div className="mt-3 pt-3 border-t border-rose-200/70 dark:border-rose-800/50 flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                  <Link
+                    to={`/register?email=${encodeURIComponent(email.trim().toLowerCase())}`}
+                    className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#163D32] hover:bg-[#1F5948] text-white font-bold text-xs shadow-xs transition active:scale-95 cursor-pointer"
+                  >
+                    <span>Create New Account</span>
+                    <ArrowRight size={13} />
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEmail("");
+                      setError("");
+                      setIsNotFound(false);
+                      document.getElementById("email")?.focus();
+                    }}
+                    className="inline-flex items-center justify-center px-3 py-2 rounded-xl border border-rose-300 dark:border-rose-700 hover:bg-rose-100/50 dark:hover:bg-rose-900/30 text-rose-800 dark:text-rose-200 font-semibold text-xs transition cursor-pointer"
+                  >
+                    Try Another Email
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       )}
 
@@ -92,7 +131,13 @@ const ForgotPasswordForm = () => {
               autoCorrect="off"
               spellCheck={false}
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setEmail(e.target.value);
+                if (error) {
+                  setError("");
+                  setIsNotFound(false);
+                }
+              }}
               placeholder="name@example.com"
               required
               autoComplete="email"

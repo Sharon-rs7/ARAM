@@ -7,8 +7,16 @@ import { notificationService } from "@/services/notificationService.js";
 import { adminService } from "@/services/adminService.js";
 import { normalizeRole } from "@/utils/roleLabels";
 
-export const API_BUSINESS_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8082/api";
-export const API_AUTH_URL = import.meta.env.VITE_AUTH_SERVICE_BASE_URL || "http://localhost:8082/api";
+const resolveApiUrl = (envVar) => {
+  if (envVar) return envVar;
+  if (typeof window !== "undefined" && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+    return `${window.location.origin}/api`;
+  }
+  return "http://localhost:8082/api";
+};
+
+export const API_BUSINESS_URL = resolveApiUrl(import.meta.env.VITE_API_BASE_URL);
+export const API_AUTH_URL = resolveApiUrl(import.meta.env.VITE_AUTH_SERVICE_BASE_URL);
 export const API_BASE_URL = API_BUSINESS_URL;
 export const USE_MOCKS = import.meta.env.VITE_USE_MOCKS === "true";
 

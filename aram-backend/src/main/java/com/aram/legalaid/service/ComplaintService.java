@@ -7,6 +7,7 @@ import com.aram.legalaid.exception.ResourceNotFoundException;
 import com.aram.legalaid.model.*;
 import com.aram.legalaid.repository.AIResultRepository;
 import com.aram.legalaid.repository.ComplaintRepository;
+import com.aram.legalaid.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,13 +28,14 @@ public class ComplaintService {
     private final AIClientService aiClientService;
     private final ProfileCompletionService profileCompletionService;
     private final EmailService emailService;
+    private final UserRepository userRepository;
     private final JobService jobService;
     private final RedisNotificationPublisher redisNotificationPublisher;
 
     public ComplaintService(ComplaintRepository complaintRepository, AIResultRepository aiResultRepository, UserService userService,
                             AIAnalysisService aiAnalysisService, NotificationService notificationService, MapperService mapperService,
                             BlockchainService blockchainService, AIClientService aiClientService, ProfileCompletionService profileCompletionService,
-                            EmailService emailService, JobService jobService, RedisNotificationPublisher redisNotificationPublisher) {
+                            EmailService emailService, UserRepository userRepository, JobService jobService, RedisNotificationPublisher redisNotificationPublisher) {
         this.complaintRepository = complaintRepository;
         this.aiResultRepository = aiResultRepository;
         this.userService = userService;
@@ -44,6 +46,7 @@ public class ComplaintService {
         this.aiClientService = aiClientService;
         this.profileCompletionService = profileCompletionService;
         this.emailService = emailService;
+        this.userRepository = userRepository;
         this.jobService = jobService;
         this.redisNotificationPublisher = redisNotificationPublisher;
     }
@@ -121,6 +124,21 @@ public class ComplaintService {
         });
         
         notificationService.create(user, "Your complaint has been submitted successfully. Complaint Custom ID: " + savedComplaint.getComplaintCustomId(), NotificationType.IN_APP);
+
+        // Notify district and global admins
+        try {
+            List<User> admins = userService.getAdmins();
+            for (User admin : admins) {
+                if (admin.getDistrict() == null || admin.getDistrict().equalsIgnoreCase("GLOBAL") || (savedComplaint.getDistrict() != null && admin.getDistrict().equalsIgnoreCase(savedComplaint.getDistrict()))) {
+                    notificationService.create(admin, "New complaint registered in " + savedComplaint.getDistrict() + ": " + savedComplaint.getComplaintCustomId() + " (" + savedComplaint.getTitle() + ")", NotificationType.IN_APP);
+                }
+            }
+            userRepository.findByRole(Role.SUPER_ADMIN).forEach(superAdmin -> {
+                notificationService.create(superAdmin, "New grievance filed: " + savedComplaint.getComplaintCustomId() + " (" + savedComplaint.getDistrict() + ")", NotificationType.IN_APP);
+            });
+        } catch (Exception nEx) {
+            System.err.println("Admin notification error: " + nEx.getMessage());
+        }
 
         // Redis WebSocket publish for new complaint submission
         redisNotificationPublisher.publishNotification(
@@ -342,6 +360,32 @@ public class ComplaintService {
         return list.stream()
                 .map(c -> mapperService.toComplaintResponse(c, aiResultRepository.findByComplaint(c).orElse(null)))
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.Map<String, Object> emailCopy(Long id) {
+        Complaint complaint = findComplaint(id);
+        User currentUser = userService.currentUser();
+        
+        if (!currentUser.getId().equals(complaint.getUser().getId()) && currentUser.getRole() != Role.ADMIN && currentUser.getRole() != Role.SUPER_ADMIN) {
+            throw new ForbiddenException("You can only email copies of your own complaints.");
+        }
+        
+        String recipientEmail = currentUser.getEmail();
+        String customId = complaint.getComplaintCustomId() != null ? complaint.getComplaintCustomId() : ("CMP-" + complaint.getId());
+        emailService.sendComplaintSubmittedEmail(
+            recipientEmail,
+            currentUser.getName(),
+            customId,
+            complaint.getDistrict() != null ? complaint.getDistrict() : "Tamil Nadu",
+            (complaint.getUser() != null && complaint.getUser().getState() != null) ? complaint.getUser().getState() : "Tamil Nadu"
+        );
+        
+        return java.util.Map.of(
+            "success", true,
+            "message", "Complaint copy sent to " + recipientEmail,
+            "email", recipientEmail
+        );
     }
 
     private void validateLanguage(String language) {

@@ -10,6 +10,7 @@ import { complaintService } from "@/services/complaintService";
 import { speechService } from "@/services/speechService";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
+import { useNotifications } from "@/context/NotificationContext";
 import { toast } from "sonner";
 
 // Simple Markdown-to-JSX Formatter for Gemini-like chat bubbles
@@ -85,6 +86,7 @@ const Chatbot = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { language } = useLanguage();
+  const { fetchNotifications } = useNotifications();
 
   const [messages, setMessages] = useState([
     {
@@ -165,6 +167,9 @@ const Chatbot = () => {
       };
 
       const res = await complaintService.createComplaint(payload);
+      if (typeof fetchNotifications === "function") {
+        fetchNotifications();
+      }
       toast.dismiss(toastId);
       toast.success("Complaint successfully registered!");
 

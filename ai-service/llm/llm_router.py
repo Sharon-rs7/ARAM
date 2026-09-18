@@ -20,6 +20,20 @@ class LLMRouter:
             return gemini_provider
         return None
 
+    def generate_conversational_response(
+        self,
+        user_message: str,
+        language: str = "en",
+        conversation_history: Optional[List[Dict[str, str]]] = None,
+        context_notes: Optional[str] = None
+    ) -> str:
+        return gemini_provider.generate_conversational_response(
+            user_message=user_message,
+            language=language,
+            conversation_history=conversation_history,
+            context_notes=context_notes
+        )
+
     def route_and_generate(
         self,
         query: str,

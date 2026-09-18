@@ -75,35 +75,28 @@ public class NotificationWebSocketHandler extends TextWebSocketHandler {
             // Perform strict authentication and authorization checks on each WebSocket connection
             boolean authorized = false;
 
-            if ("ADMIN".equals(wsRoleStr) || "SUPER_ADMIN".equals(wsRoleStr)) {
+            Object targetUserIdObj = payload.get("userId");
+            Long targetUserId = null;
+            if (targetUserIdObj != null) {
+                if (targetUserIdObj instanceof Number) {
+                    targetUserId = ((Number) targetUserIdObj).longValue();
+                } else {
+                    try {
+                        targetUserId = Long.parseLong(targetUserIdObj.toString());
+                    } catch (NumberFormatException ignored) {}
+                }
+            }
+
+            if (targetUserId != null && targetUserId.equals(wsUserId)) {
                 authorized = true;
+            } else if ("ADMIN".equals(wsRoleStr) || "SUPER_ADMIN".equals(wsRoleStr)) {
+                if (complaint == null || wsDistrict == null || wsDistrict.isEmpty() || wsDistrict.equalsIgnoreCase("GLOBAL") || (complaint.getDistrict() != null && wsDistrict.equalsIgnoreCase(complaint.getDistrict()))) {
+                    authorized = true;
+                }
             } else if (complaint != null) {
-                // If it's a citizen case update
-                if ("CITIZEN".equals(wsRoleStr)) {
-                    if (complaint.getUser().getId().equals(wsUserId)) {
-                        authorized = true;
-                    }
-                } else if ("HELPER".equals(wsRoleStr)) {
-                    // Guide must be assigned to the case
-                    if (complaint.getAssignedHelper() != null && complaint.getAssignedHelper().getId().equals(wsUserId)) {
-                        authorized = true;
-                    }
-                }
-            } else {
-                // General or targeted job/user update without a complaint context
-                Object targetUserIdObj = payload.get("userId");
-                Long targetUserId = null;
-                if (targetUserIdObj != null) {
-                    if (targetUserIdObj instanceof Number) {
-                        targetUserId = ((Number) targetUserIdObj).longValue();
-                    } else {
-                        try {
-                            targetUserId = Long.parseLong(targetUserIdObj.toString());
-                        } catch (NumberFormatException ignored) {}
-                    }
-                }
-                
-                if (targetUserId != null && targetUserId.equals(wsUserId)) {
+                if ("CITIZEN".equals(wsRoleStr) && complaint.getUser().getId().equals(wsUserId)) {
+                    authorized = true;
+                } else if ("HELPER".equals(wsRoleStr) && complaint.getAssignedHelper() != null && complaint.getAssignedHelper().getId().equals(wsUserId)) {
                     authorized = true;
                 }
             }

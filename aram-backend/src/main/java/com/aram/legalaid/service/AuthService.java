@@ -96,13 +96,27 @@ public class AuthService {
             user.setName(name);
             user.setEmail(email);
             // Generate valid 10-digit Indian mobile placeholder if not supplied
-            long randSuffix = 10000000L + (long) (Math.random() * 89999999L);
+            long randSuffix = 100000000L + (long) (Math.random() * 899999999L);
             user.setMobile("9" + String.valueOf(randSuffix));
             user.setPasswordHash(passwordEncoder.encode(java.util.UUID.randomUUID().toString()));
-            user.setRole(Role.CITIZEN);
+
+            Role assignedRole = Role.CITIZEN;
+            if (request.role() != null && !request.role().trim().isEmpty()) {
+                String r = request.role().trim().toUpperCase();
+                if ("HELPER".equals(r) || "GUIDE".equals(r) || "VOLUNTEER".equals(r)) {
+                    assignedRole = Role.HELPER;
+                } else if ("ADMIN".equals(r)) {
+                    assignedRole = Role.ADMIN;
+                }
+            }
+            user.setRole(assignedRole);
             user.setStatus(UserStatus.ACTIVE);
             user.setEmailVerified(true);
-            user.setDistrict("Coimbatore");
+
+            String district = (request.district() != null && !request.district().trim().isEmpty())
+                    ? request.district().trim()
+                    : "Coimbatore";
+            user.setDistrict(district);
             user.setState("Tamil Nadu");
             user.setProfileCompleted(true);
             user.setProfileCompletionPercentage(100);

@@ -455,7 +455,9 @@ const RegisterForm = () => {
       {/* Google Auth Modal */}
       <GoogleAuthModal 
         isOpen={googleModalOpen} 
-        onClose={() => setGoogleModalOpen(false)} 
+        onClose={() => setGoogleModalOpen(false)}
+        defaultRole={form.role === "GUIDE" || form.role === "VOLUNTEER" ? "HELPER" : form.role || "CITIZEN"}
+        defaultDistrict={form.district || "Coimbatore"}
       />
     </div>
   );

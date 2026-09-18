@@ -13,6 +13,7 @@ import { speechService } from "@/services/speechService";
 import { aiService } from "@/services/aiService";
 import { offlineDraftService } from "@/services/offlineDraftService";
 import { useAuth } from "@/context/AuthContext";
+import { useNotifications } from "@/context/NotificationContext";
 import { userService } from "@/services/userService";
 import { toast } from "sonner";
 
@@ -31,6 +32,7 @@ const SubmitComplaint = () => {
   const navigate = useNavigate();
   const routerLocation = useLocation();
   const { user } = useAuth();
+  const { fetchNotifications } = useNotifications();
   const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
   const initialDistrict = user?.district || storedUser?.district || "Coimbatore";
   
@@ -530,6 +532,9 @@ const SubmitComplaint = () => {
       await offlineDraftService.clearDraft();
       setCreatedComplaint(res);
       setSimpleStep("success");
+      if (typeof fetchNotifications === "function") {
+        fetchNotifications();
+      }
       toast.dismiss();
       toast.success("Complaint successfully registered!");
     } catch (err) {

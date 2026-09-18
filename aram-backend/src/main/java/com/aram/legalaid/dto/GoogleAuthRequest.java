@@ -7,5 +7,7 @@ public record GoogleAuthRequest(
         String email,
         String name,
         String avatarUrl,
-        String googleId
+        String googleId,
+        String role,
+        String district
 ) {}

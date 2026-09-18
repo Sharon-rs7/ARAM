@@ -21,7 +21,7 @@ class Settings:
     PROCESSING_TIMEOUT: int = int(os.getenv("PROCESSING_TIMEOUT", "60"))
 
     # Deepgram Speech-to-Text Integration
-    DEEPGRAM_API_KEY: str = os.getenv("DEEPGRAM_API_KEY", "21523dc672a85ac06efa93c3cf96ba9c6cce910f")
+    DEEPGRAM_API_KEY: str = os.getenv("DEEPGRAM_API_KEY", "")
     STT_ENGINE: str = os.getenv("STT_ENGINE", "deepgram")  # 'deepgram' or 'whisper'
     DEEPGRAM_MODEL: str = os.getenv("DEEPGRAM_MODEL", "nova-3")
 
