@@ -16,3 +16,5 @@ mysql_data_standalone/
 mysql_local_data/
 temp_mysql_data/
 _cleanup_archive/
+*.parquet
+*.parquet.*
