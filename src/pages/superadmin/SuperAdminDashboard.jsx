@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import DashboardLayout from "@/components/common/DashboardLayout";
 import { adminService } from "@/services/adminService";
 import { regionalAdminService } from "@/services/regionalAdminService";
@@ -11,7 +11,7 @@ import {
   Phone, Mail, ArrowRight, Shield, Activity, TrendingUp,
   UserX, UserCheck, ShieldAlert as AlertIcon, RefreshCw, BarChart2,
   Search, Filter, Plus, Send, Eye, ShieldCheck, Download, AlertTriangle,
-  Award, Briefcase, ChevronRight, Lock
+  Award, Briefcase, ChevronRight, Lock, Layers
 } from "lucide-react";
 
 export const TN_DISTRICTS = [
@@ -28,8 +28,22 @@ export const TN_DISTRICTS = [
 export default function SuperAdminDashboard() {
   const navigate = useNavigate();
   const { user: authUser } = useAuth();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [activeTab, setActiveTab] = useState("districts"); // districts, complaints, citizens, guides, admins, ai_audit
+  const urlTab = searchParams.get("tab");
+  const [activeTab, setActiveTabState] = useState(urlTab || "districts");
+
+  useEffect(() => {
+    if (urlTab && urlTab !== activeTab) {
+      setActiveTabState(urlTab);
+    }
+  }, [urlTab]);
+
+  const setActiveTab = (tabId) => {
+    setActiveTabState(tabId);
+    setSearchParams({ tab: tabId });
+  };
+
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -564,40 +578,79 @@ export default function SuperAdminDashboard() {
           </div>
         </div>
 
-        {/* Navigation Tabs Header */}
-        <div className="flex border-b border-[#E6E1D8] dark:border-emerald-900/60 gap-1 sm:gap-2 overflow-x-auto text-xs font-bold pb-px">
-          {[
-            { id: "districts", label: "38 District Grids", icon: MapPin, count: 38 },
-            { id: "complaints", label: "Statewide Grievance Queue", icon: FileText, count: complaints.length },
-            { id: "citizens", label: "Citizen Registry", icon: Users, count: stats.totalCitizens },
-            { id: "guides", label: "Legal Guide Force", icon: UserCheck, count: stats.totalGuides },
-            { id: "admins", label: "District Admin Management", icon: Shield, count: stats.totalAdmins },
-            { id: "ai_audit", label: "AI Compliance & Audit Stream", icon: Bot, count: null }
-          ].map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-3 border-b-2 font-extrabold transition cursor-pointer whitespace-nowrap ${
-                  isActive
-                    ? "border-[#163D32] dark:border-emerald-400 text-[#163D32] dark:text-emerald-300 bg-[#DCEBDD]/20 dark:bg-emerald-950/40 rounded-t-xl"
-                    : "border-transparent text-[#65736D] dark:text-emerald-200/60 hover:text-[#18332B] dark:hover:text-white"
-                }`}
-              >
-                <Icon size={16} className={isActive ? "text-[#163D32] dark:text-emerald-400" : "text-[#65736D] dark:text-emerald-400/60"} />
-                <span>{tab.label}</span>
-                {tab.count !== null && (
-                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${
-                    isActive ? "bg-[#163D32] text-white" : "bg-slate-200 dark:bg-emerald-900/50 text-slate-700 dark:text-emerald-200"
-                  }`}>
-                    {tab.count}
-                  </span>
-                )}
-              </button>
-            );
-          })}
+        {/* View Header & Quick Module Switcher */}
+        <div className="bg-[#FFFDF8] dark:bg-[#11201B] p-4 sm:p-5 rounded-2xl border border-[#E6E1D8] dark:border-emerald-800/50 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-[#DCEBDD] dark:bg-emerald-950/80 text-[#163D32] dark:text-emerald-300 flex items-center justify-center shrink-0 border border-[#163D32]/20 dark:border-emerald-700/50 shadow-xs">
+              {activeTab === "districts" && <MapPin size={20} />}
+              {activeTab === "complaints" && <FileText size={20} />}
+              {activeTab === "citizens" && <Users size={20} />}
+              {activeTab === "guides" && <Scale size={20} />}
+              {activeTab === "admins" && <ShieldCheck size={20} />}
+              {activeTab === "ai_audit" && <Bot size={20} />}
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#163D32] text-white">
+                  {activeTab === "districts" && "Statewide Grid"}
+                  {activeTab === "complaints" && "Grievance Triage"}
+                  {activeTab === "citizens" && "Directory"}
+                  {activeTab === "guides" && "Specialized Force"}
+                  {activeTab === "admins" && "Administration"}
+                  {activeTab === "ai_audit" && "Security & Ledger"}
+                </span>
+                <span className="text-xs text-[#65736D] dark:text-emerald-300/60 font-semibold">
+                  Select options from Sidebar or quick pills below
+                </span>
+              </div>
+              <h2 className="text-base sm:text-lg font-black text-[#18332B] dark:text-white mt-0.5">
+                {activeTab === "districts" && "38 Tamil Nadu District Telemetry Grid"}
+                {activeTab === "complaints" && "Statewide Grievance Operations Queue"}
+                {activeTab === "citizens" && "Tamil Nadu Citizen Registry & Profiles"}
+                {activeTab === "guides" && "Specialized Legal Guide Force (120+)"}
+                {activeTab === "admins" && "Tamil Nadu 38 District Regional Administrators"}
+                {activeTab === "ai_audit" && "AI Compliance Sweeps & Cryptographic Blockchain Audit"}
+              </h2>
+            </div>
+          </div>
+
+          {/* Quick Module Switcher (Pill Style - Flex Wrap, No Ugly Scrollbars) */}
+          <div className="flex flex-wrap items-center gap-1.5 bg-[#F7F1E6]/70 dark:bg-[#182C26] p-1.5 rounded-xl border border-[#E6E1D8] dark:border-emerald-800/40 text-xs font-bold">
+            {[
+              { id: "districts", label: "38 Districts", icon: MapPin },
+              { id: "complaints", label: "Grievances", icon: FileText, count: complaints.length },
+              { id: "citizens", label: "Citizens", icon: Users, count: stats.totalCitizens },
+              { id: "guides", label: "Legal Guides", icon: Scale, count: stats.totalGuides },
+              { id: "admins", label: "Admins", icon: ShieldCheck, count: stats.totalAdmins },
+              { id: "ai_audit", label: "AI Audit", icon: Bot }
+            ].map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold transition cursor-pointer ${
+                    isActive
+                      ? "bg-[#163D32] text-white shadow-xs"
+                      : "text-[#65736D] dark:text-emerald-200/70 hover:text-[#18332B] dark:hover:text-white hover:bg-white/60 dark:hover:bg-emerald-900/40"
+                  }`}
+                >
+                  <Icon size={13} className={isActive ? "text-[#DCEBDD]" : ""} />
+                  <span>{tab.label}</span>
+                  {tab.count !== undefined && (
+                    <span
+                      className={`text-[9px] font-black px-1.5 py-0.2 rounded-full ${
+                        isActive ? "bg-white/20 text-white" : "bg-[#E6E1D8] dark:bg-emerald-950 text-[#18332B] dark:text-emerald-300"
+                      }`}
+                    >
+                      {tab.count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* ========================================================================= */}

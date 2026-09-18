@@ -3,14 +3,18 @@ import Topbar from "@/components/common/Topbar";
 import CitizenSidebar from "@/components/citizen/CitizenSidebar";
 import GuideSidebar from "@/components/guide/GuideSidebar";
 import AdminSidebar from "@/components/admin/AdminSidebar";
+import SuperAdminSidebar from "@/components/superadmin/SuperAdminSidebar";
 import { useAuth } from "@/context/AuthContext";
 
 const DashboardLayout = ({ children, role }) => {
   const { user } = useAuth();
+  const isSuperAdmin = role === "superadmin" || user?.role === "SUPER_ADMIN" || user?.district === "GLOBAL" || user?.email === "superadmin@gmail.com";
   const currentRole = role || (
-    user?.role === "ADMIN" || user?.role === "REGIONAL_ADMIN" || user?.role === "SUPER_ADMIN"
-      ? "admin" 
-      : (user?.role === "VOLUNTEER" || user?.role === "GUIDE" || user?.role === "HELPER" ? "guide" : "citizen")
+    isSuperAdmin
+      ? "superadmin"
+      : (user?.role === "ADMIN" || user?.role === "REGIONAL_ADMIN"
+          ? "admin" 
+          : (user?.role === "VOLUNTEER" || user?.role === "GUIDE" || user?.role === "HELPER" ? "guide" : "citizen"))
   );
   
   const [sidebarWidth, setSidebarWidth] = useState(260);
@@ -28,6 +32,7 @@ const DashboardLayout = ({ children, role }) => {
       {/* Sidebar */}
       {!isMobile && (
         <aside style={{ width: `${sidebarWidth}px` }} className="shrink-0 h-full">
+          {currentRole === "superadmin" && <SuperAdminSidebar />}
           {currentRole === "admin" && <AdminSidebar />}
           {currentRole === "guide" && <GuideSidebar />}
           {currentRole === "citizen" && <CitizenSidebar />}
