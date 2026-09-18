@@ -13,8 +13,8 @@ const features = [
   },
   {
     icon: Mic,
-    title: "Multilingual Voice AI (Faster-Whisper)",
-    desc: "Direct local voice input in Tamil (தமிழ்), Hindi (हिंदी), and English with high-accuracy phonetic parsing for legal terminology.",
+    title: "Multilingual Voice Assistant",
+    desc: "Direct voice input in Tamil (தமிழ்), Hindi (हिंदी), and English for hands-free grievance registration and guidance.",
     color: "bg-[#F6D8C8] text-[#8C3B1E]"
   },
   {

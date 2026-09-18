@@ -17,7 +17,7 @@ class Settings:
     MAX_AUDIO_SIZE_MB: int = int(os.getenv("MAX_AUDIO_SIZE_MB", "25"))
     MAX_DOC_SIZE_MB: int = int(os.getenv("MAX_DOC_SIZE_MB", "10"))
     ALLOWED_AUDIO_TYPES: str = os.getenv("ALLOWED_AUDIO_TYPES", "audio/webm,audio/wav,audio/mpeg,audio/mp4,audio/ogg")
-    WHISPER_PRELOAD: bool = os.getenv("WHISPER_PRELOAD", "True").lower() in ("true", "1", "yes")
+    WHISPER_PRELOAD: bool = False
     PROCESSING_TIMEOUT: int = int(os.getenv("PROCESSING_TIMEOUT", "60"))
 
     # Deepgram Speech-to-Text Integration

@@ -28,7 +28,7 @@ const Hero = () => {
 
       recorder.onstop = async () => {
         const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
-        toast.info("Transcribing legal problem with Faster-Whisper...");
+        toast.info("Transcribing your grievance voice input...");
         try {
           const res = await speechService.transcribeAudio(audioBlob, "ta-IN");
           if (res?.text) {
@@ -43,7 +43,7 @@ const Hero = () => {
       recorder.start();
       setMediaRecorder(recorder);
       setIsRecording(true);
-      toast.info("Listening... Speak your legal problem in Tamil, Hindi, or English.");
+      toast.info("Listening... Speak your grievance in Tamil, Hindi, or English.");
     } catch (err) {
       toast.error("Microphone access unavailable.");
       navigate("/citizen/chatbot");

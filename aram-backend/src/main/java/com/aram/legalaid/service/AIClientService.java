@@ -23,17 +23,19 @@ public class AIClientService {
     private final RestTemplate restTemplate;
     private final AIServiceProperties properties;
     private final UserService userService;
+    private final CitizenChatContextService citizenChatContextService;
 
     @Value("${ai.internal.token:aram-secret-token-2026}")
     private String internalToken;
 
-    public AIClientService(AIServiceProperties properties, @Lazy UserService userService) {
+    public AIClientService(AIServiceProperties properties, @Lazy UserService userService, @Lazy CitizenChatContextService citizenChatContextService) {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setConnectTimeout(2000); // 2 seconds connect timeout
         requestFactory.setReadTimeout(30000);   // 30 seconds read timeout (covers Whisper & heavy OCR models)
         this.restTemplate = new RestTemplate(requestFactory);
         this.properties = properties;
         this.userService = userService;
+        this.citizenChatContextService = citizenChatContextService;
     }
 
     private HttpHeaders getHeaders() {
@@ -138,7 +140,25 @@ public class AIClientService {
     public Map<String, Object> askChatbot(AiChatRequest request) {
         String url = properties.getUrl() + "/chat/ask";
         try {
-            HttpEntity<AiChatRequest> entity = new HttpEntity<>(request, getHeaders());
+            AiChatRequest enrichedRequest = request;
+            if (request.citizenContext() == null && citizenChatContextService != null) {
+                CitizenChatContextDTO ctx = citizenChatContextService.buildContext(
+                        request.message(),
+                        request.complaintId(),
+                        request.complaintCustomId()
+                );
+                enrichedRequest = new AiChatRequest(
+                        request.message(),
+                        request.language(),
+                        request.userRole(),
+                        request.complaintId(),
+                        request.complaintCustomId(),
+                        request.conversationId(),
+                        request.sessionId(),
+                        ctx
+                );
+            }
+            HttpEntity<AiChatRequest> entity = new HttpEntity<>(enrichedRequest, getHeaders());
             ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
             return (Map<String, Object>) response.getBody();
         } catch (Exception e) {
@@ -235,7 +255,18 @@ public class AIClientService {
     public Map<String, Object> askCaseAssistant(Map<String, Object> body) {
         String url = properties.getUrl() + "/ai/case-assistant";
         try {
-            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, getHeaders());
+            Map<String, Object> enrichedBody = new HashMap<>(body);
+            if (!enrichedBody.containsKey("citizenContext") && citizenChatContextService != null) {
+                String msg = (String) enrichedBody.getOrDefault("message", enrichedBody.getOrDefault("query", enrichedBody.getOrDefault("userQuery", "")));
+                Long complaintId = null;
+                if (enrichedBody.get("complaintId") instanceof Number n) {
+                    complaintId = n.longValue();
+                }
+                String customId = (String) enrichedBody.get("caseId");
+                CitizenChatContextDTO ctx = citizenChatContextService.buildContext(msg, complaintId, customId);
+                enrichedBody.put("citizenContext", ctx);
+            }
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(enrichedBody, getHeaders());
             ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
             return response.getBody() != null ? response.getBody() : Map.of();
         } catch (Exception e) {

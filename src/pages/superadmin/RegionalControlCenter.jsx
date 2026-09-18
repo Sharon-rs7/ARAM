@@ -488,10 +488,10 @@ export default function RegionalControlCenter() {
             <button
               onClick={() => navigate(isSuperAdmin ? "/superadmin/dashboard" : "/admin/dashboard")}
               className="flex items-center gap-1.5 text-xs font-bold text-[#65736D] dark:text-emerald-300/70 hover:text-[#18332B] dark:hover:text-white hover:bg-[#F7F1E6] dark:hover:bg-[#182C26] px-3 py-2 rounded-xl transition cursor-pointer"
-              title="Return to 38 District Grid"
+              title="Return to District Network"
             >
               <ArrowLeft size={16} />
-              <span>Back to 38 Districts</span>
+              <span>Back to District Network</span>
             </button>
             <span className="text-slate-300 dark:text-emerald-900">/</span>
             <div className="flex items-center gap-2">

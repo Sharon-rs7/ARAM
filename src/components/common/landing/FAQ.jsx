@@ -8,7 +8,7 @@ const faqs = [
   },
   {
     q: "Can I speak my grievance in Tamil or Hindi?",
-    a: "Yes. ARAM integrates local Faster-Whisper speech AI supporting Tamil (தமிழ்), Hindi (हिंदी), and English voice inputs directly from your microphone."
+    a: "Yes. ARAM features native voice support for Tamil (தமிழ்), Hindi (हिंदी), and English voice inputs directly from your microphone."
   },
   {
     q: "How does ARAM prevent AI hallucinations?",

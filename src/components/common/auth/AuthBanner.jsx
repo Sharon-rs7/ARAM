@@ -21,7 +21,7 @@ const AuthBanner = () => {
     {
       badge: "Multilingual Engine",
       title: "Voice-First Multilingual Accessibility",
-      desc: "Speak your problem naturally in your native dialect with our state-of-the-art Faster-Whisper legal audio copilot.",
+      desc: "Speak your grievance naturally in your native language with voice-first assistance in Tamil, Hindi, and English.",
       icon: Languages,
       color: "from-amber-500/20 to-emerald-500/10"
     }

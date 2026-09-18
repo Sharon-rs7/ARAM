@@ -13,8 +13,11 @@ from app.safety_filter import DISCLAIMER
 
 router = APIRouter()
 
+from app.chatbot_engine import ask_chatbot_engine
+
 class CaseAssistantRequest(BaseModel):
     complaintId: Optional[Any] = None
+    complaintCustomId: Optional[str] = None
     message: Optional[str] = None
     userQuery: Optional[str] = None
     query: Optional[str] = None
@@ -27,6 +30,7 @@ class CaseAssistantRequest(BaseModel):
     category: Optional[str] = None
     evidenceFindings: Optional[List[Dict[str, Any]]] = None
     conversationHistory: Optional[List[Dict[str, Any]]] = None
+    citizenContext: Optional[Dict[str, Any]] = None
 
 @router.post("/ai/case-assistant", dependencies=[Depends(verify_internal_token)])
 @router.post("/case-assistant", dependencies=[Depends(verify_internal_token)])
@@ -43,6 +47,16 @@ def case_assistant_endpoint(
         if not query_msg:
             query_msg = f"Provide legal aid action guidance for: {request.caseTitle or ''} {request.caseDescription or ''}".strip()
         complaint_id = request.complaintId
+
+        if request.citizenContext or user_role == "CITIZEN":
+            return ask_chatbot_engine(
+                message=query_msg,
+                language=request.language,
+                user_role=user_role,
+                complaint_id=complaint_id,
+                citizen_context=request.citizenContext,
+                complaint_custom_id=request.complaintCustomId
+            )
 
         # 1. Fetch Case Context from Mongo if complaintId provided
         mongo_ctx = None

@@ -29,7 +29,11 @@ public class WebSocketHandshakeInterceptor implements HandshakeInterceptor {
         if (request instanceof ServletServerHttpRequest servletRequest) {
             HttpServletRequest httpServletRequest = servletRequest.getServletRequest();
             String token = httpServletRequest.getParameter("token");
-            if (token != null && !token.isEmpty()) {
+            if (token != null && !token.trim().isEmpty()) {
+                token = token.trim();
+                if (token.startsWith("Bearer ")) {
+                    token = token.substring(7).trim();
+                }
                 try {
                     String username = jwtUtil.extractUsername(token);
                     if (username != null && jwtUtil.isTokenValid(token, username)) {

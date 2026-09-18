@@ -185,16 +185,19 @@ def chat_ask(
             user_role=user_role,
             complaint_id=request.complaintId,
             case_context=case_context_str,
-            session_id=request.sessionId or request.caseId
+            session_id=request.sessionId or request.caseId or request.conversationId,
+            citizen_context=request.citizenContext,
+            complaint_custom_id=request.complaintCustomId,
+            conversation_id=request.conversationId
         )
         
         # Log to Mongo
         log_ai_action("chatbot_logs", res)
         
         return res
-    except HTTPException as he:
-        raise he
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/documents/ocr")

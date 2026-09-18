@@ -1,5 +1,8 @@
 import numpy as np
-import onnxruntime as ort
+try:
+    import onnxruntime as ort
+except Exception:
+    ort = None
 from app.ml.model_loader import ml_model_loader
 from app.ml.text_preprocessor import clean_text
 from app.complaint_classifier import keyword_category

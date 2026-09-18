@@ -1,6 +1,9 @@
 import os
 import numpy as np
-import onnxruntime as ort
+try:
+    import onnxruntime as ort
+except Exception:
+    ort = None
 from app.ml.text_preprocessor import clean_text
 
 class DocumentClassifier:

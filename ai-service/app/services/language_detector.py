@@ -1,6 +1,9 @@
 import os
 import numpy as np
-import onnxruntime as ort
+try:
+    import onnxruntime as ort
+except Exception:
+    ort = None
 from langdetect import detect
 
 class LanguageDetector:

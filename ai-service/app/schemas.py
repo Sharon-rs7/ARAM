@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Optional, List, Any, Union
+from typing import Optional, List, Any, Union, Dict
 
 class ComplaintAnalyzeRequest(BaseModel):
     complaintText: str
@@ -13,9 +13,12 @@ class ChatAskRequest(BaseModel):
     message: str
     language: Optional[str] = "en"
     userRole: Optional[str] = "CITIZEN"
-    complaintId: Optional[int] = None
+    complaintId: Optional[Any] = None
+    complaintCustomId: Optional[str] = None
     sessionId: Optional[str] = None
     caseId: Optional[str] = None
+    conversationId: Optional[str] = None
+    citizenContext: Optional[Dict[str, Any]] = None
 
 class VolunteerProfileSchema(BaseModel):
     id: int

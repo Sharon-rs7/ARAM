@@ -6,11 +6,13 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
+import { useNotifications } from "@/context/NotificationContext";
 
 const Topbar = ({ onToggleSidebar, role = "citizen" }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { language, changeLanguage, availableLanguages } = useLanguage();
+  const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
   
   const [profileDropdown, setProfileDropdown] = useState(false);
   const [notifDropdown, setNotifDropdown] = useState(false);
@@ -69,7 +71,11 @@ const Topbar = ({ onToggleSidebar, role = "citizen" }) => {
             title="Notifications"
           >
             <Bell size={18} />
-            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-[#B96845] animate-pulse" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-[#163D32] text-white text-[10px] font-black flex items-center justify-center border-2 border-white animate-pulse shadow-xs">
+                {unreadCount > 9 ? "9+" : unreadCount}
+              </span>
+            )}
           </button>
 
           {notifDropdown && (
@@ -78,39 +84,53 @@ const Topbar = ({ onToggleSidebar, role = "citizen" }) => {
                 <span className="text-xs font-black uppercase tracking-wider text-[#163D32] flex items-center gap-1.5">
                   <Bell size={14} className="text-[#1F5948]" /> Notifications & Alerts
                 </span>
-                <span className="text-[10px] font-bold bg-[#DCEBDD] text-[#163D32] px-2 py-0.5 rounded-full">
-                  Live
-                </span>
+                <div className="flex items-center gap-2">
+                  {unreadCount > 0 && (
+                    <button
+                      onClick={markAllAsRead}
+                      className="text-[10px] font-bold text-[#1F5948] hover:underline cursor-pointer"
+                    >
+                      Mark read
+                    </button>
+                  )}
+                  <span className="text-[10px] font-bold bg-[#DCEBDD] text-[#163D32] px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-ping" />
+                    Live
+                  </span>
+                </div>
               </div>
 
               <div className="space-y-2 max-h-64 overflow-y-auto divide-y divide-[#E6E1D8]/60 text-xs">
-                <div className="pt-2 pb-1 space-y-0.5">
-                  <p className="font-bold text-[#18332B] flex items-center justify-between">
-                    <span>New Case Registered</span>
-                    <span className="text-[9px] text-[#8B9690] font-normal">Just now</span>
+                {notifications.slice(0, 6).map((n) => (
+                  <div
+                    key={n.id}
+                    onClick={() => {
+                      markAsRead(n.id);
+                      if (n.complaintId) {
+                        navigate(role === "admin" ? `/admin/complaint/${n.complaintId}` : `/citizen/complaint/${n.complaintId}`);
+                        setNotifDropdown(false);
+                      }
+                    }}
+                    className={`pt-2 pb-1.5 space-y-0.5 cursor-pointer transition rounded-lg p-1.5 ${
+                      n.read || n.readFlag ? "opacity-75 hover:bg-[#F7F1E6]/40" : "bg-[#DCEBDD]/20 hover:bg-[#DCEBDD]/40"
+                    }`}
+                  >
+                    <p className="font-bold text-[#18332B] flex items-center justify-between">
+                      <span className="truncate pr-2">{n.title || "Legal Alert"}</span>
+                      <span className="text-[9px] text-[#8B9690] font-normal shrink-0">
+                        {n.time || "Just now"}
+                      </span>
+                    </p>
+                    <p className="text-[11px] text-[#65736D] leading-relaxed line-clamp-2">
+                      {n.message}
+                    </p>
+                  </div>
+                ))}
+                {notifications.length === 0 && (
+                  <p className="text-center py-6 text-xs text-[#8B9690]">
+                    No notifications yet. You're completely up to date!
                   </p>
-                  <p className="text-[11px] text-[#65736D]">
-                    Case ARAM-26-TN-CBE-000039 registered under Property & Title Registration.
-                  </p>
-                </div>
-                <div className="pt-2 pb-1 space-y-0.5">
-                  <p className="font-bold text-[#18332B] flex items-center justify-between">
-                    <span>Legal Guide Dispatched</span>
-                    <span className="text-[9px] text-[#8B9690] font-normal">5m ago</span>
-                  </p>
-                  <p className="text-[11px] text-[#65736D]">
-                    Coimbatore Seeded Guide 1 assigned to triage dispute.
-                  </p>
-                </div>
-                <div className="pt-2 pb-1 space-y-0.5">
-                  <p className="font-bold text-[#18332B] flex items-center justify-between">
-                    <span>Statutory Authority Triage</span>
-                    <span className="text-[9px] text-[#8B9690] font-normal">1h ago</span>
-                  </p>
-                  <p className="text-[11px] text-[#65736D]">
-                    Revenue & Tahsildar routing verified by AI pipeline.
-                  </p>
-                </div>
+                )}
               </div>
 
               <div className="pt-2 border-t border-[#E6E1D8] flex justify-between items-center text-[11px]">
@@ -119,12 +139,12 @@ const Topbar = ({ onToggleSidebar, role = "citizen" }) => {
                   onClick={() => setNotifDropdown(false)}
                   className="font-bold text-[#1F5948] hover:underline"
                 >
-                  View full notifications center →
+                  View full center →
                 </Link>
                 <button
                   type="button"
                   onClick={() => setNotifDropdown(false)}
-                  className="text-[#8B9690] hover:text-[#18332B] font-semibold"
+                  className="text-[#8B9690] hover:text-[#18332B] font-semibold cursor-pointer"
                 >
                   Close
                 </button>

@@ -1,6 +1,9 @@
 import os
 import json
-import onnxruntime as ort
+try:
+    import onnxruntime as ort
+except Exception:
+    ort = None
 import joblib
 
 class ModelLoader:
@@ -35,7 +38,7 @@ class ModelLoader:
 
         for name in model_names:
             path = os.path.join(self.models_dir, f"{name}.onnx")
-            if os.path.exists(path):
+            if os.path.exists(path) and ort is not None:
                 try:
                     self.models[name] = ort.InferenceSession(path, providers=['CPUExecutionProvider'])
                     print(f"[ONNX LOADED] {name}.onnx successfully.")

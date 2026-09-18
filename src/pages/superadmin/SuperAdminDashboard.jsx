@@ -507,7 +507,7 @@ export default function SuperAdminDashboard() {
               Tamil Nadu Statewide Command Center
             </h1>
             <p className="text-xs sm:text-sm text-emerald-100/80 mt-1 max-w-2xl font-medium leading-relaxed">
-              Real-time governance, 38-district legal grid monitoring, citizen registry, legal guide dispatch, and immutable blockchain ledger.
+              Real-time governance, 38-district public grievance redressal monitoring, citizen registry, legal guide dispatch, and transparent audit trail.
             </p>
           </div>
 
@@ -544,19 +544,19 @@ export default function SuperAdminDashboard() {
           <div className="bg-[#FFFDF8] dark:bg-[#11201B] p-4.5 rounded-2xl border border-[#E6E1D8] dark:border-emerald-800/50 shadow-xs flex flex-col justify-between">
             <span className="text-[10px] font-extrabold text-[#65736D] dark:text-emerald-300/70 uppercase tracking-wider">Total Complaints</span>
             <span className="text-2xl sm:text-3xl font-black text-[#18332B] dark:text-white mt-1.5">{stats.totalComplaints}</span>
-            <span className="text-[10px] text-slate-400 dark:text-emerald-400/60 font-semibold mt-1">38 Districts Total</span>
+            <span className="text-[10px] text-slate-400 dark:text-emerald-400/60 font-semibold mt-1">38 Districts Statewide</span>
           </div>
 
           <div className="bg-[#FFFDF8] dark:bg-[#11201B] p-4.5 rounded-2xl border border-[#E6E1D8] dark:border-emerald-800/50 shadow-xs flex flex-col justify-between">
             <span className="text-[10px] font-extrabold text-[#65736D] dark:text-emerald-300/70 uppercase tracking-wider">Active In-Review</span>
             <span className="text-2xl sm:text-3xl font-black text-[#1F5948] dark:text-emerald-400 mt-1.5">{stats.pendingComplaints}</span>
-            <span className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold mt-1">Pending Triage</span>
+            <span className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold mt-1">Pending Review</span>
           </div>
 
           <div className="bg-[#FFFDF8] dark:bg-[#11201B] p-4.5 rounded-2xl border border-[#E6E1D8] dark:border-emerald-800/50 shadow-xs flex flex-col justify-between">
             <span className="text-[10px] font-extrabold text-[#65736D] dark:text-emerald-300/70 uppercase tracking-wider">Resolved Cases</span>
             <span className="text-2xl sm:text-3xl font-black text-emerald-700 dark:text-emerald-300 mt-1.5">{stats.resolvedComplaints}</span>
-            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mt-1">Legally Closed</span>
+            <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold mt-1">Grievances Resolved</span>
           </div>
 
           <div className="bg-[#FFFDF8] dark:bg-[#11201B] p-4.5 rounded-2xl border border-[#E6E1D8] dark:border-emerald-800/50 shadow-xs flex flex-col justify-between">
@@ -568,7 +568,7 @@ export default function SuperAdminDashboard() {
           <div className="bg-[#FFFDF8] dark:bg-[#11201B] p-4.5 rounded-2xl border border-[#E6E1D8] dark:border-emerald-800/50 shadow-xs flex flex-col justify-between">
             <span className="text-[10px] font-extrabold text-[#65736D] dark:text-emerald-300/70 uppercase tracking-wider">Legal Guides</span>
             <span className="text-2xl sm:text-3xl font-black text-[#18332B] dark:text-white mt-1.5">{stats.totalGuides}</span>
-            <span className="text-[10px] text-slate-400 dark:text-emerald-400/60 font-semibold mt-1">Specialized Force</span>
+            <span className="text-[10px] text-slate-400 dark:text-emerald-400/60 font-semibold mt-1">Specialized Advocates</span>
           </div>
 
           <div className="bg-[#FFFDF8] dark:bg-[#11201B] p-4.5 rounded-2xl border border-[#E6E1D8] dark:border-emerald-800/50 shadow-xs flex flex-col justify-between">
@@ -592,32 +592,32 @@ export default function SuperAdminDashboard() {
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#163D32] text-white">
-                  {activeTab === "districts" && "Statewide Grid"}
-                  {activeTab === "complaints" && "Grievance Triage"}
+                  {activeTab === "districts" && "District Network"}
+                  {activeTab === "complaints" && "Grievance Redressal"}
                   {activeTab === "citizens" && "Directory"}
-                  {activeTab === "guides" && "Specialized Force"}
+                  {activeTab === "guides" && "Advocate Network"}
                   {activeTab === "admins" && "Administration"}
                   {activeTab === "ai_audit" && "Security & Ledger"}
                 </span>
                 <span className="text-xs text-[#65736D] dark:text-emerald-300/60 font-semibold">
-                  Select options from Sidebar or quick pills below
+                  Select options from Sidebar or quick navigation below
                 </span>
               </div>
               <h2 className="text-base sm:text-lg font-black text-[#18332B] dark:text-white mt-0.5">
-                {activeTab === "districts" && "38 Tamil Nadu District Telemetry Grid"}
-                {activeTab === "complaints" && "Statewide Grievance Operations Queue"}
+                {activeTab === "districts" && "Tamil Nadu District Grievance Redressal Network"}
+                {activeTab === "complaints" && "Statewide Grievance Redressal Queue"}
                 {activeTab === "citizens" && "Tamil Nadu Citizen Registry & Profiles"}
                 {activeTab === "guides" && "Specialized Legal Guide Force (120+)"}
-                {activeTab === "admins" && "Tamil Nadu 38 District Regional Administrators"}
-                {activeTab === "ai_audit" && "AI Compliance Sweeps & Cryptographic Blockchain Audit"}
+                {activeTab === "admins" && "Tamil Nadu District Grievance Redressal Officers"}
+                {activeTab === "ai_audit" && "AI Compliance Sweeps & Cryptographic Audit"}
               </h2>
             </div>
           </div>
 
-          {/* Quick Module Switcher (Pill Style - Flex Wrap, No Ugly Scrollbars) */}
+          {/* Quick Module Switcher */}
           <div className="flex flex-wrap items-center gap-1.5 bg-[#F7F1E6]/70 dark:bg-[#182C26] p-1.5 rounded-xl border border-[#E6E1D8] dark:border-emerald-800/40 text-xs font-bold">
             {[
-              { id: "districts", label: "38 Districts", icon: MapPin },
+              { id: "districts", label: "District Portals", icon: MapPin },
               { id: "complaints", label: "Grievances", icon: FileText, count: complaints.length },
               { id: "citizens", label: "Citizens", icon: Users, count: stats.totalCitizens },
               { id: "guides", label: "Legal Guides", icon: Scale, count: stats.totalGuides },
@@ -654,7 +654,7 @@ export default function SuperAdminDashboard() {
         </div>
 
         {/* ========================================================================= */}
-        {/* TAB 1: 38 DISTRICT GRIDS */}
+        {/* TAB 1: DISTRICT PORTALS */}
         {/* ========================================================================= */}
         {activeTab === "districts" && (
           <div className="space-y-6 animate-in fade-in duration-200">
@@ -663,10 +663,10 @@ export default function SuperAdminDashboard() {
             <div className="rounded-3xl bg-[#FFFDF8] dark:bg-[#11201B] p-5 sm:p-6 border border-[#E6E1D8] dark:border-emerald-800/50 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
                 <h3 className="text-base font-black text-[#163D32] dark:text-emerald-300 flex items-center gap-2">
-                  <MapPin size={18} /> Tamil Nadu 38 District Caseload & Jurisdiction Grid
+                  <MapPin size={18} /> Tamil Nadu 38 District Grievance & Legal Redressal Network
                 </h3>
                 <p className="text-xs text-[#65736D] dark:text-emerald-200/60 mt-0.5">
-                  Click any district to inspect its live operations center, audit grievances, or manage assigned administrators.
+                  Select any district portal to inspect active grievances, track resolutions, or manage designated redressal officers.
                 </p>
               </div>
 
@@ -687,7 +687,7 @@ export default function SuperAdminDashboard() {
                     onClick={() => setDistrictFilter("all")}
                     className={`px-3 py-1.5 rounded-lg transition cursor-pointer ${districtFilter === "all" ? "bg-white dark:bg-[#1C352E] text-[#163D32] dark:text-emerald-300 shadow-xs" : "text-slate-500 dark:text-emerald-200/60"}`}
                   >
-                    All 38
+                    All (38)
                   </button>
                   <button
                     onClick={() => setDistrictFilter("with_cases")}
@@ -1260,7 +1260,7 @@ export default function SuperAdminDashboard() {
         )}
 
         {/* ========================================================================= */}
-        {/* TAB 5: DISTRICT ADMIN MANAGEMENT */}
+        {/* TAB 5: DISTRICT REDRESSAL OFFICERS */}
         {/* ========================================================================= */}
         {activeTab === "admins" && (
           <div className="space-y-5 animate-in fade-in duration-200">
@@ -1268,10 +1268,10 @@ export default function SuperAdminDashboard() {
             <div className="rounded-3xl bg-[#FFFDF8] dark:bg-[#11201B] p-5 sm:p-6 border border-[#E6E1D8] dark:border-emerald-800/50 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
                 <h3 className="text-base font-black text-[#163D32] dark:text-emerald-300 flex items-center gap-2">
-                  <Shield size={18} /> Tamil Nadu 38 District Regional Administrators ({stats.totalAdmins} / 38)
+                  <Shield size={18} /> Tamil Nadu District Grievance Redressal Officers ({stats.totalAdmins} / 38)
                 </h3>
                 <p className="text-xs text-[#65736D] dark:text-emerald-200/60 mt-0.5">
-                  Assign, reassign, invite, or reset credentials for District Administrators across all 38 districts.
+                  Assign, reassign, invite, or manage credentials for District Grievance Redressal Officers across all 38 districts.
                 </p>
               </div>
 

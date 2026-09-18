@@ -54,7 +54,7 @@ const Dashboard = () => {
 
       recorder.onstop = async () => {
         const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
-        toast.info("Transcribing legal problem with Faster-Whisper...");
+        toast.info("Transcribing your grievance voice input...");
         try {
           const res = await speechService.transcribeAudio(audioBlob, "ta-IN");
           if (res?.text) {
@@ -68,7 +68,7 @@ const Dashboard = () => {
       recorder.start();
       setMediaRecorder(recorder);
       setIsRecording(true);
-      toast.info("Listening... Speak your legal problem clearly.");
+      toast.info("Listening... Speak your grievance clearly in Tamil, English, or Hindi.");
     } catch (err) {
       toast.error("Microphone access denied or unavailable.");
     }
@@ -90,13 +90,13 @@ const Dashboard = () => {
         <div className="relative overflow-hidden rounded-3xl bg-[#163D32] p-8 sm:p-10 text-white shadow-md">
           <div className="relative z-10 max-w-2xl space-y-4">
             <div className="inline-flex items-center gap-2 rounded-full bg-[#DCEBDD]/20 px-3 py-1 text-xs font-bold text-[#DCEBDD]">
-              <Sparkles size={14} /> AI-Powered Legal Aid Platform
+              <Sparkles size={14} /> Tamil Nadu Public Legal Aid & Grievance Portal
             </div>
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">
               Hello, {user?.name || "Citizen"}. How can ARAM assist you today?
             </h1>
             <p className="text-xs sm:text-sm text-[#DCEBDD]/90 leading-relaxed">
-              Describe any legal situation or dispute in Tamil, English, or Hindi to receive immediate grounded legal sections, document checklists, and authorized guide assistance.
+              Describe any grievance, legal issue, or dispute in Tamil, English, or Hindi to receive immediate verified guidance, document requirements, and assigned legal guide assistance.
             </p>
 
             {/* Hero Actions */}
@@ -106,7 +106,7 @@ const Dashboard = () => {
                 onClick={() => navigate("/citizen/chatbot")}
                 icon={MessageSquare}
               >
-                Ask ARAM AI Legal Assistant
+                Ask ARAM Legal Assistant
               </Button>
               <button
                 onClick={handleStartVoiceTriage}
@@ -117,7 +117,7 @@ const Dashboard = () => {
                 }`}
               >
                 <Mic size={16} />
-                <span>{isRecording ? "Stop & Transcribe" : "Speak Problem (Faster-Whisper)"}</span>
+                <span>{isRecording ? "Stop & Transcribe" : "Speak Grievance (Voice)"}</span>
               </button>
             </div>
           </div>

@@ -294,7 +294,7 @@ const Chatbot = () => {
 
       recorder.onstop = async () => {
         const audioBlob = new Blob(chunks, { type: "audio/webm" });
-        toast.info("Transcribing speech with Faster-Whisper...");
+        toast.info("Transcribing voice input...");
         try {
           const res = await speechService.transcribeAudio(audioBlob, language || "ta-IN");
           if (res?.text) {

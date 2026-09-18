@@ -3,17 +3,22 @@ import re
 import time
 from app.ocr.image_quality import check_image_quality
 
-# Initialize EasyOCR reader safely
-easyocr_available = False
-reader = None
-try:
-    import easyocr
-    reader = easyocr.Reader(['en'], gpu=False)
-    easyocr_available = True
-    print("REAL EasyOCR PyTorch reader loaded successfully in ocr_engine.")
-except Exception as e:
-    import traceback
-    print(f"EasyOCR not loaded: {e}. Traceback: {traceback.format_exc()}. Falling back to mock/low-resource.")
+# Initialize EasyOCR reader lazily
+easyocr_available = True
+_reader = None
+
+def get_reader():
+    global _reader
+    if _reader is None:
+        try:
+            import easyocr
+            _reader = easyocr.Reader(['en'], gpu=False)
+            print("REAL EasyOCR PyTorch reader loaded successfully in ocr_engine.")
+        except Exception as e:
+            import traceback
+            print(f"EasyOCR not loaded: {e}. Falling back.")
+            _reader = False
+    return _reader if _reader is not False else None
 
 # Pytesseract check
 pytesseract_available = False
@@ -59,9 +64,10 @@ def extract_ocr_text(file_path: str) -> dict:
     lang_detected = "en"
 
     # If EasyOCR is available, perform extraction
-    if easyocr_available and reader is not None:
+    ocr_reader = get_reader()
+    if ocr_reader is not None:
         try:
-            results = reader.readtext(file_path)
+            results = ocr_reader.readtext(file_path)
             engine_name = "easyocr"
             
             conf_sum = 0.0

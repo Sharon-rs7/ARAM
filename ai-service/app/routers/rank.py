@@ -1,6 +1,9 @@
 import os
 import numpy as np
-import onnxruntime as ort
+try:
+    import onnxruntime as ort
+except Exception:
+    ort = None
 from fastapi import APIRouter, HTTPException, Depends
 from app.auth import verify_internal_token
 from pydantic import BaseModel

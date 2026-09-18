@@ -1,6 +1,9 @@
 import os
 import numpy as np
-import onnxruntime as ort
+try:
+    import onnxruntime as ort
+except Exception:
+    ort = None
 
 class ONNXRunner:
     def __init__(self, model_filename: str):

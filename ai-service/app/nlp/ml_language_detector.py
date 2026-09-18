@@ -1,7 +1,10 @@
 import os
 import re
 import numpy as np
-import onnxruntime as ort
+try:
+    import onnxruntime as ort
+except Exception:
+    ort = None
 from app.ml.text_preprocessor import clean_text
 
 class MLLanguageDetector:
@@ -12,7 +15,7 @@ class MLLanguageDetector:
         self.load_model()
 
     def load_model(self):
-        if os.path.exists(self.onnx_path):
+        if os.path.exists(self.onnx_path) and ort is not None:
             try:
                 self.session = ort.InferenceSession(self.onnx_path, providers=['CPUExecutionProvider'])
                 print("[ONNX LOADED] ML Language Detector session active.")

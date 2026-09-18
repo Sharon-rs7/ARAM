@@ -1,6 +1,9 @@
 import datetime
 import uuid
-import pymongo
+try:
+    import pymongo
+except Exception:
+    pymongo = None
 from app.config import settings
 
 class MongoManager:
@@ -10,6 +13,8 @@ class MongoManager:
         self.init_db()
 
     def init_db(self):
+        if pymongo is None:
+            return
         try:
             self.client = pymongo.MongoClient(settings.MONGO_URI, serverSelectionTimeoutMS=2000)
             if settings.MONGO_DB_NAME:
@@ -51,5 +56,7 @@ def log_ai_action(collection_name: str, payload: dict):
             return
         except Exception as ex:
             print(f"Failed to log to MongoDB: {ex}")
-            
-    print(f"[MONGO LOG FALLBACK] Collection: {collection_name} | Entry: {log_entry}")
+    try:
+        print(f"[MONGO LOG FALLBACK] Collection: {collection_name} | Request: {log_entry['requestId']}")
+    except Exception:
+        pass

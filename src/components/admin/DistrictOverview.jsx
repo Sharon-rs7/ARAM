@@ -65,7 +65,7 @@ const DistrictOverview = ({ districts = [], district = null, onSelectDistrict = 
         <div>
           <h3 className="text-base font-black text-[#163D32] dark:text-emerald-300 flex items-center gap-2">
             <MapPin size={18} className="text-[#1F5948] dark:text-emerald-400" /> 
-            <span>Tamil Nadu 38 District Legal Grid</span>
+            <span>Tamil Nadu District Grievance Centers</span>
           </h3>
           <p className="text-xs text-[#65736D] dark:text-emerald-200/60 mt-0.5">
             Real-time caseload, administrative oversight, and legal guide coverage across all districts

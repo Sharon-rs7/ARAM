@@ -1,5 +1,8 @@
 import os
-import onnxruntime as ort
+try:
+    import onnxruntime as ort
+except Exception:
+    ort = None
 from app.config import settings
 
 class ModelLoader:
@@ -11,6 +14,8 @@ class ModelLoader:
         model_dir = settings.MODEL_DIR
         
         def load_onnx(filename):
+            if ort is None:
+                return None
             path = os.path.join(model_dir, filename)
             if os.path.exists(path):
                 try:

@@ -37,7 +37,7 @@ const SuperAdminSidebar = () => {
       items: [
         {
           id: "districts",
-          label: "38 District Grids",
+          label: "District Grievance Portals",
           href: "/superadmin/dashboard?tab=districts",
           tab: "districts",
           icon: MapPin,
@@ -180,7 +180,7 @@ const SuperAdminSidebar = () => {
           </div>
         ))}
 
-        {/* 38 District Quick Selector */}
+        {/* District Quick Selector */}
         {!collapsed && (
           <div className="pt-2 border-t border-emerald-800/50">
             <button
@@ -188,10 +188,10 @@ const SuperAdminSidebar = () => {
               className="w-full flex items-center justify-between px-3 py-2 text-xs font-bold text-emerald-200/90 hover:text-white hover:bg-emerald-800/30 rounded-xl transition cursor-pointer"
             >
               <div className="flex items-center gap-2">
-                <MapPin size={15} className="text-emerald-400" />
-                <span className="text-[11px] font-black uppercase tracking-wider text-[#DCEBDD]/70">
-                  Regional Deep-Dive (38)
-                </span>
+                 <MapPin size={15} className="text-emerald-400" />
+                 <span className="text-[11px] font-black uppercase tracking-wider text-[#DCEBDD]/70">
+                   District Portals (38)
+                 </span>
               </div>
               <ChevronDown
                 size={14}
@@ -212,7 +212,7 @@ const SuperAdminSidebar = () => {
                     type="text"
                     value={districtQuery}
                     onChange={(e) => setDistrictQuery(e.target.value)}
-                    placeholder="Search 38 districts..."
+                    placeholder="Search district portal..."
                     className="w-full h-7 rounded-lg bg-emerald-950/80 border border-emerald-700/50 pl-7 pr-2 text-[11px] text-white placeholder-emerald-400/50 outline-none focus:border-emerald-400"
                   />
                 </div>

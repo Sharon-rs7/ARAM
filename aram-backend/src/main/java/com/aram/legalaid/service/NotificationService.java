@@ -17,11 +17,18 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final UserService userService;
     private final MapperService mapperService;
+    private final com.aram.legalaid.websocket.NotificationWebSocketHandler webSocketHandler;
 
-    public NotificationService(NotificationRepository notificationRepository, UserService userService, MapperService mapperService) {
+    public NotificationService(
+            NotificationRepository notificationRepository,
+            UserService userService,
+            MapperService mapperService,
+            com.aram.legalaid.websocket.NotificationWebSocketHandler webSocketHandler
+    ) {
         this.notificationRepository = notificationRepository;
         this.userService = userService;
         this.mapperService = mapperService;
+        this.webSocketHandler = webSocketHandler;
     }
 
     @Transactional
@@ -31,7 +38,22 @@ public class NotificationService {
         notification.setMessage(message);
         notification.setType(type == null ? NotificationType.IN_APP : type);
         notification.setStatus(NotificationStatus.SENT);
-        return notificationRepository.save(notification);
+        Notification saved = notificationRepository.save(notification);
+
+        // Real-time broadcast to connected WebSocket sessions
+        try {
+            java.util.Map<String, Object> payload = new java.util.HashMap<>();
+            payload.put("type", type != null ? type.name() : "IN_APP");
+            payload.put("message", message);
+            payload.put("userId", user != null ? user.getId() : null);
+            payload.put("notificationId", saved.getId());
+            payload.put("timestamp", System.currentTimeMillis());
+            webSocketHandler.handleNotificationMessage(payload);
+        } catch (Exception e) {
+            System.err.println("[NOTIFICATION WS BROADCAST ERROR] " + e.getMessage());
+        }
+
+        return saved;
     }
 
     @Transactional
