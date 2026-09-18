@@ -100,7 +100,7 @@ def classify_intent(text: str) -> Tuple[str, Dict[str, Any]]:
                 return INTENTS["SUBMIT_COMPLAINT"], {"confidence": 0.99}
 
     # 3. Check Explicit Language Requests (only for short language switches, not long grievance descriptions)
-    if word_count <= 7 and not (has_legal_keyword and word_count > 4):
+    if word_count <= 8 and not (has_legal_keyword and word_count > 4):
         # Hinglish check
         if "hinglish" in clean_lower:
             return INTENTS["LANGUAGE_SELECTION"], {"confidence": 0.99, "selected_language": "hi_hinglish"}
@@ -108,16 +108,51 @@ def classify_intent(text: str) -> Tuple[str, Dict[str, Any]]:
         # Tanglish check
         if any(phrase in clean_lower for phrase in [
             "tanglish", "thannglish", "thanglish", "tanglish la", "thannglish la", "thanglish la",
-            "tanglish pesalama", "tanglish la pesa", "tanglish la pesuviya"
+            "tanglish pesalama", "tanglish la pesa", "tanglish la pesuviya", "tanglish-la", "in tanglish"
         ]) or (("tamil" in clean_lower or "tamizh" in clean_lower) and any(v in clean_lower for v in ["pesuviya", "pesuva", "pesuveera", "pesalama", "pesalam", "pesa mudiyuma", "pesa mudium"])):
             if any(c.isascii() for c in clean) and not any('\u0b80' <= c <= '\u0bff' for c in clean):
                 return INTENTS["LANGUAGE_SELECTION"], {"confidence": 0.99, "selected_language": "ta_tanglish"}
             else:
                 return INTENTS["LANGUAGE_SELECTION"], {"confidence": 0.99, "selected_language": "ta"}
 
+        # Generic Reply/Replay/Translate in Language
+        lang_switch_match = re.search(r"\b(reply|replay|tell|speak|explain|translate|convert|change|switch|say|guide|show|give|sollu|sollunga|pesunga|batao|samjhao)\s+(me\s+)?(in\s+|la\s+|mein\s+|me\s+)?(hindi|tamil|tanglish|hinglish|english)\b", clean_lower)
+        if lang_switch_match:
+            chosen = lang_switch_match.group(4).lower()
+            if chosen == "hindi":
+                return INTENTS["LANGUAGE_SELECTION"], {"confidence": 0.99, "selected_language": "hi"}
+            elif chosen == "tamil":
+                return INTENTS["LANGUAGE_SELECTION"], {"confidence": 0.99, "selected_language": "ta"}
+            elif chosen in ["tanglish", "hinglish"]:
+                return INTENTS["LANGUAGE_SELECTION"], {"confidence": 0.99, "selected_language": "ta_tanglish" if chosen == "tanglish" else "hi_hinglish"}
+            else:
+                return INTENTS["LANGUAGE_SELECTION"], {"confidence": 0.99, "selected_language": "en"}
+
+        # Reverse pattern: "in hindi please", "hindi la sollunga", "hindi me batao", "hindi replay"
+        reverse_lang_match = re.search(r"\b(in\s+)?(hindi|tamil|tanglish|hinglish|english)\s+(please|sollunga|solla|pesunga|pesalama|batao|bataiye|samjhao|karo|me|mein|la|reply|replay)\b", clean_lower)
+        if reverse_lang_match:
+            chosen = reverse_lang_match.group(2).lower()
+            if chosen == "hindi":
+                return INTENTS["LANGUAGE_SELECTION"], {"confidence": 0.99, "selected_language": "hi"}
+            elif chosen == "tamil":
+                return INTENTS["LANGUAGE_SELECTION"], {"confidence": 0.99, "selected_language": "ta"}
+            elif chosen in ["tanglish", "hinglish"]:
+                return INTENTS["LANGUAGE_SELECTION"], {"confidence": 0.99, "selected_language": "ta_tanglish" if chosen == "tanglish" else "hi_hinglish"}
+            else:
+                return INTENTS["LANGUAGE_SELECTION"], {"confidence": 0.99, "selected_language": "en"}
+
+        # Direct short language prompts (e.g. "hindi ?", "hindi?", "tamil?", "english?")
+        if re.search(r"^(\s*| )(hindi|hindi\?|hindi\s*\?|in hindi|in hindi\?|हिंदी|हिंदी\?|हिंदी\s*\?)(\s*| )$", clean_lower):
+            return INTENTS["LANGUAGE_SELECTION"], {"confidence": 0.99, "selected_language": "hi"}
+        if re.search(r"^(\s*| )(tamil|tamil\?|tamil\s*\?|in tamil|in tamil\?|தமிழ்|தமிழ்\?|தமிழ்\s*\?)(\s*| )$", clean_lower):
+            return INTENTS["LANGUAGE_SELECTION"], {"confidence": 0.99, "selected_language": "ta"}
+        if re.search(r"^(\s*| )(english|english\?|english\s*\?|in english|in english\?|ஆங்கிலம்|ஆங்கிலம்\?)(\s*| )$", clean_lower):
+            return INTENTS["LANGUAGE_SELECTION"], {"confidence": 0.99, "selected_language": "en"}
+
         if any(phrase in clean_lower for phrase in [
             "tamil la pesalama", "tamiil la pesalama", "tamilil pesalama", "tamil la pesalam", 
             "tamil pesa mudiyuma", "tamil theriyuma", "tamil la pesunga", "tamil pesunga", "tamil la pesuviya",
+            "tamil la sollunga", "tamil la sollu", "tamilil sollunga",
             "can you speak tamil", "can we speak in tamil", "speak in tamil", "talk in tamil", 
             "switch to tamil", "தமிழ்ல பேசலாமா", "தமிழில் பேசலாமா", "தமிழ்ல பேசுங்க", "தமிழில் பேச முடியுமா", "தமிழ் பேச முடியுமா"
         ]):
@@ -126,12 +161,14 @@ def classify_intent(text: str) -> Tuple[str, Dict[str, Any]]:
         if any(phrase in clean_lower for phrase in [
             "hindi me baat karo", "hindi bol sakte ho", "kya aap hindi बोलte hain", "kya aap hindi bolte hain",
             "can you speak hindi", "speak in hindi", "talk in hindi", "switch to hindi", "hindi aati hai",
-            "हिंदी में बात करो", "क्या आप हिंदी बोलते हैं"
+            "hindi me batao", "hindi mein batao", "hindi me samjhao", "hindi mein samjhao",
+            "हिंदी में बात करो", "क्या आप हिंदी बोलते हैं", "हिंदी में बताओ"
         ]):
             return INTENTS["LANGUAGE_SELECTION"], {"confidence": 0.99, "selected_language": "hi"}
 
         if any(phrase in clean_lower for phrase in [
-            "speak in english", "can you speak english", "talk in english", "switch to english", "english please"
+            "speak in english", "can you speak english", "talk in english", "switch to english", "english please",
+            "explain in english", "tell in english", "tell me in english"
         ]):
             return INTENTS["LANGUAGE_SELECTION"], {"confidence": 0.99, "selected_language": "en"}
 

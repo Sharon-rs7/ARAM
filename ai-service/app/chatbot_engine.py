@@ -525,17 +525,17 @@ TANGLISH_MARKERS = [
     "pananum", "pannum", "pannanum", "thrla", "therila", "theriyala", "enga", 
     "yarkita", "yaarkita", "enaku", "enakku", "sottu", "sothu", "nila", "nilam", 
     "patta", "panam", "kuduka", "kudukala", "sambalam", "police", "keta", "solla", 
-    "vanakkam", "nan", "illai", "veedu", "vaadagai", "vadagai", "mosadi"
+    "vanakkam", "nan", "illai", "veedu", "vaadagai", "vadagai", "mosadi", "solv",
+    "panradhu", "sollunga"
+]
+
+HINGLISH_MARKERS = [
+    "kaise", "karein", "karna", "hoga", "kare", "karo", "batao", "bataiye", "samjhao", 
+    "madad", "chahiye", "mera", "meri", "mere", "hai", "hain", "kya", "kyu", "kyun", 
+    "paise", "naukri", "vetan", "shikayat", "vivad", "karega", "karenge"
 ]
 
 def detect_language_smart(raw_text: str, current_session_lang: Optional[str] = None, requested_lang: Optional[str] = None) -> str:
-    if requested_lang and requested_lang.startswith("ta"):
-        return "ta"
-    if requested_lang and requested_lang.startswith("hi"):
-        return "hi"
-    if requested_lang and requested_lang.startswith("en"):
-        return "en"
-    
     clean = raw_text.lower().strip()
 
     if clean in ["hi", "hello", "hey", "good morning", "good evening", "good afternoon", "how are you", "test", "ok", "okay", "thanks", "thank you", "bye", "goodbye"]:
@@ -547,11 +547,16 @@ def detect_language_smart(raw_text: str, current_session_lang: Optional[str] = N
         return "hi"
 
     if any(marker in clean for marker in TANGLISH_MARKERS):
-        return "ta"
-    
-    # If session has persisted language and current text is short/neutral, preserve session language
-    if current_session_lang and current_session_lang in ["ta", "hi"] and len(clean.split()) <= 4:
+        return "ta_tanglish" if current_session_lang == "ta_tanglish" else "ta"
+    if any(marker in clean for marker in HINGLISH_MARKERS):
+        return "hi"
+
+    # If session has persisted language and current text is short/follow-up, preserve session language
+    if current_session_lang and current_session_lang in ["ta", "hi", "ta_tanglish", "hi_hinglish"] and len(clean.split()) <= 6:
         return current_session_lang
+
+    if requested_lang and requested_lang not in ["en", "auto"]:
+        return requested_lang
 
     try:
         det = language_detector.detect(raw_text)
@@ -713,30 +718,124 @@ def ask_chatbot_engine(
     # Classify intent first
     intent_type, intent_meta = classify_intent(raw_message)
 
-    # 1. Handle Language Selection Intent (e.g. "tamil?", "தமிழ்ல பேசுங்க", "thannglish la pesa mudium ha")
+    # 1. Handle Language Selection Intent (e.g. "tamil?", "hindi?", "replay me in hindi ?", "தமிழ்ல பேசுங்க", "thannglish la pesa mudium ha")
     if intent_type == INTENTS["LANGUAGE_SELECTION"]:
         target_lang = intent_meta.get("selected_language", "ta")
-        conversation_manager.set_language(session_key, "ta" if target_lang == "ta_tanglish" else target_lang)
+        effective_lang = "hi" if target_lang in ["hi", "hi_hinglish"] else ("ta" if target_lang in ["ta", "ta_tanglish"] else target_lang)
+        conversation_manager.set_language(session_key, effective_lang)
 
+        provisional_case = conversation_manager.get_provisional_case(session_key) or {}
+        active_issues = provisional_case.get("issues") or []
+
+        if active_issues:
+            # Re-render active case analysis dynamically in target language
+            if target_lang in ["hi", "hi_hinglish"]:
+                if len(active_issues) >= 2:
+                    reply_text = (
+                        "मैंने आपके संदेश में **2 अलग-अलग कानूनी मामलों** की पहचान की है:\n\n"
+                        "📌 **मामला 1: बकाया वेतन और मूल दस्तावेज़ रोकना (श्रम विवाद)**\n"
+                        "• **लागू कानून एवं धारा:** Payment of Wages Act, 1936 (धारा 15 — मजदूरी से कटौती से संबंधित दावे) एवं Industrial Disputes Act, 1947।\n"
+                        "• **सक्षम प्राधिकारी:** जिला श्रम आयुक्त कार्यालय (District Labour Commissioner Office), कोयंबटूर / श्रम न्यायालय।\n"
+                        "• **आवश्यक दस्तावेज़:** रोजगार समझौता (Employment Agreement), मासिक वेतन पर्ची (Salary Slips), बैंक स्टेटमेंट, एचआर ईमेल पत्राचार।\n"
+                        "• **तत्काल कार्रवाई:** एचआर को 15 दिन का कानूनी मांग नोटिस (Statutory Demand Notice) भेजें। समाधान न होने पर श्रम आयुक्त के समक्ष Form I दावा याचिका दायर करें।\n\n"
+                        "📌 **मामला 2: व्यक्तिगत दस्तावेज़ों (आधार / बैंक विवरण) का अनधिकृत उपयोग / वित्तीय धोखाधड़ी का प्रयास**\n"
+                        "• **लागू कानून एवं धारा:** Information Technology Act, 2000 (धारा 66C — पहचान की चोरी, धारा 66D — धोखाधड़ी) एवं Bharatiya Nyaya Sanhita (BNS 318(4) / IPC 420)।\n"
+                        "• **सक्षम प्राधिकारी:** राष्ट्रीय साइबर अपराध रिपोर्टिंग पोर्टल (cybercrime.gov.in / हेल्पलाइन 1930) और कोयंबटूर साइबर सेल।\n"
+                        "• **आवश्यक दस्तावेज़:** बैंक स्टेटमेंट, आधार प्रति, संचार स्क्रीनशॉट, ऋण आवेदन रिकॉर्ड।\n"
+                        "• **तत्काल कार्रवाई:** तुरंत UIDAI पोर्टल (myaadhaar.uidai.gov.in) पर जाकर आधार बायोमेट्रिक्स को लॉक करें, बैंक को सूचित करें और 1930 पर शिकायत दर्ज करें।\n\n"
+                        "💡 **अगला कदम:** आप इन दोनों मामलों के लिए अलग-अलग औपचारिक शिकायतें दर्ज कर सकते हैं। आप पहले किस मामले पर कार्रवाई करना चाहते हैं?"
+                    )
+                else:
+                    item = active_issues[0]
+                    reply_text = f"मैंने आपके मामले का हिंदी में विश्लेषण किया है:\n\n📌 **{item.get('name', 'कानूनी मामला')}**\n• **कानून एवं धारा:** {item.get('law', '')} ({item.get('section', '')})\n• **सक्षम प्राधिकारी:** {item.get('authority', '')}\n\n💡 आप आगे की कार्रवाई के लिए औपचारिक शिकायत दर्ज कर सकते हैं।"
+            elif target_lang == "ta":
+                if len(active_issues) >= 2:
+                    reply_text = (
+                        "உங்கள் மனுவில் **2 தனித்தனி சட்டப் பிரச்சனைகள்** கண்டறியப்பட்டுள்ளன:\n\n"
+                        "📌 **விவகாரம் 1: ஊதிய பாக்கி & அசல் ஆவணங்கள் திரும்ப தராமை (தொழிலாளர் தகராறு)**\n"
+                        "• **சட்டம் & பிரிவு:** Payment of Wages Act, 1936 (பிரிவு 15) மற்றும் Industrial Disputes Act, 1947.\n"
+                        "• **அணுக வேண்டிய அதிகாரம்:** மாவட்ட தொழிலாளர் ஆணையர் அலுவலகம் (Labour Commissioner), கோயம்புத்தூர் / தொழிலாளர் நீதிமன்றம்.\n"
+                        "• **தேவையான ஆவணங்கள்:** வேலைவாய்ப்பு ஒப்பந்தம், மாத சம்பள ரசீதுகள், வங்கி கணக்கு அறிக்கை, HR மின்னஞ்சல்கள்.\n"
+                        "• **உடனடி நடவடிக்கை:** நிறுவனத்திற்கு 15 நாட்கள் அவகாசத்தில் சம்பள பாக்கி மற்றும் ஆவணங்களை கோரி எழுத்துப்பூர்வ அறிவிப்பு அனுப்பவும். தீர்வு இல்லாவிடில் தொழிலாளர் ஆணையரிடம் படிவம்-1 மனு தாக்கல் செய்யவும்.\n\n"
+                        "📌 **விவகாரம் 2: ஆதார் மற்றும் வங்கி விவரங்களை அனுமதியின்றி தவறாக பயன்படுத்துதல் / நிதி மோசடி முயற்சி**\n"
+                        "• **சட்டம் & பிரிவு:** தகவல் தொழில்நுட்ப சட்டம், 2000 (Information Technology Act - Sec 66C/66D) மற்றும் பாரதிய நியாய சன்ஹிதா (BNS 318(4) / IPC 420).\n"
+                        "• **அணுக வேண்டிய அதிகாரம்:** தேசிய இணைய குற்றப்பிரிவு தளம் (cybercrime.gov.in / உதவி எண் 1930) மற்றும் கோயம்புத்தூர் சைபர் கிரைம் காவல் நிலையம்.\n"
+                        "• **தேவையான ஆவணங்கள்:** வங்கி பரிவர்த்தனை அறிக்கை, ஆதார் நகல், தகவல் பரிமாற்ற ஸ்கிரீன்ஷாட்கள்.\n"
+                        "• **உடனடி நடவடிக்கை:** உடனடியாக UIDAI தளம் வழியாக உங்கள் ஆதார் பயோமெட்ரிக்கை Lock செய்யவும், உங்கள் வங்கிக்கு தெரிவிக்கவும், 1930 எண்ணில் புகார் பதிவு செய்யவும்.\n\n"
+                        "💡 **அடுத்த நடவடிக்கை:** இந்த 2 பிரச்சனைகளையும் தனித்தனியாக முறையான புகாராக பதிவு செய்யலாம். எந்த விவகாரத்திற்கு முதலில் மனு தாக்கல் செய்ய வேண்டும்?"
+                    )
+                else:
+                    item = active_issues[0]
+                    reply_text = f"உங்கள் வழக்கின் சட்ட விவரங்கள்:\n\n📌 **{item.get('name', 'சட்டப் பிரச்சனை')}**\n• **சட்டம் & பிரிவு:** {item.get('law', '')} ({item.get('section', '')})\n• **அணுக வேண்டிய அதிகாரம்:** {item.get('authority', '')}\n\n💡 நீங்கள் அதிகாரப்பூர்வ புகார் பதிவு செய்ய விரும்புகிறீர்களா?"
+            elif target_lang == "ta_tanglish":
+                if len(active_issues) >= 2:
+                    reply_text = (
+                        "Ungaloda detailed message-la **2 separate legal issues** irukku nu identify panniruken. Rendaume distinct legal authorities & laws kizh varum:\n\n"
+                        "📌 **Issue 1: Unpaid Salary & Document Withholding (Labour Dispute)**\n"
+                        "• **Applicable Statute & Section:** Payment of Wages Act, 1936 (Section 15 — Claims arising out of deductions from wages) & Industrial Disputes Act, 1947.\n"
+                        "• **Competent Authority:** District Labour Commissioner Office, Coimbatore / Labour Court.\n"
+                        "• **Required Evidence Documents:** Employment agreement, monthly salary slips, bank statement showing partial credits, HR email correspondences.\n"
+                        "• **Immediate First Action:** Send a formal written Demand Notice to HR giving a 15-day timeline to clear arrears and return original documents. If unpaid, file a Form I claim petition before the Labour Commissioner.\n\n"
+                        "📌 **Issue 2: Unauthorized Use of Personal Documents (Aadhaar/Bank Details) / Financial Fraud Attempt**\n"
+                        "• **Applicable Statute & Section:** Information Technology Act, 2000 (Section 66C — Identity Theft & Section 66D — Cheating by Impersonation) & Bharatiya Nyaya Sanhita (BNS Section 318(4) / IPC 420).\n"
+                        "• **Competent Authority:** National Cyber Crime Reporting Portal (cybercrime.gov.in / Helpline 1930) & Coimbatore Cyber Crime Police Station.\n"
+                        "• **Required Evidence Documents:** Bank transaction records, Aadhaar copy, communication screenshots, loan application logs.\n"
+                        "• **Immediate First Action:** Udane UIDAI portal (or mAadhaar app) vazhiya ungaloda Aadhaar Biometrics-ai Lock pannunga, bank-ku written notification kudunga, and 1930 call panni online complaint register pannunga.\n\n"
+                        "💡 **Next Step:** Indha 2 issues-aiyum separate formal complaints-ah register panna mudiyum. Ungalukku endha issue-ku first formal complaint draft panna start pannalam, or specific clarification edhuvum thevaiya?"
+                    )
+                else:
+                    item = active_issues[0]
+                    reply_text = f"Ungaloda case details Tanglish-la idho:\n\n📌 **{item.get('name', 'Legal Issue')}**\n• **Law & Section:** {item.get('law', '')} ({item.get('section', '')})\n• **Authority:** {item.get('authority', '')}\n\n💡 Next step formal complaint draft panna start pannalama?"
+            else:
+                if len(active_issues) >= 2:
+                    reply_text = (
+                        "I have identified **2 separate legal issues** in your grievance:\n\n"
+                        "📌 **Issue 1: Unpaid Salary & Document Withholding (Labour Dispute)**\n"
+                        "• **Applicable Statute & Section:** Payment of Wages Act, 1936 (Section 15 — Claims arising out of deductions from wages) & Industrial Disputes Act, 1947.\n"
+                        "• **Competent Authority:** District Labour Commissioner Office, Coimbatore / Labour Court.\n"
+                        "• **Required Evidence Documents:** Employment agreement, monthly salary slips, bank statement showing partial credits, HR email correspondences.\n"
+                        "• **Immediate First Action:** Send a formal written Demand Notice to HR giving a 15-day timeline to clear arrears and return original documents. If unpaid, file a Form I claim petition before the Labour Commissioner.\n\n"
+                        "📌 **Issue 2: Unauthorized Use of Personal Documents (Aadhaar/Bank Details) / Financial Fraud Attempt**\n"
+                        "• **Applicable Statute & Section:** Information Technology Act, 2000 (Section 66C — Identity Theft & Section 66D — Cheating by Impersonation) & Bharatiya Nyaya Sanhita (BNS Section 318(4) / IPC 420).\n"
+                        "• **Competent Authority:** National Cyber Crime Reporting Portal (cybercrime.gov.in / Helpline 1930) & Coimbatore Cyber Crime Police Station.\n"
+                        "• **Required Evidence Documents:** Bank transaction records, Aadhaar copy, communication screenshots, loan application logs.\n"
+                        "• **Immediate First Action:** Immediately lock your Aadhaar biometrics via UIDAI (myaadhaar.uidai.gov.in), provide written notice to your bank branch, and call 1930 to register an online complaint.\n\n"
+                        "💡 **Next Step:** Both issues can be registered as distinct formal grievances through ARAM. Which issue would you like to draft or proceed with first?"
+                    )
+                else:
+                    item = active_issues[0]
+                    reply_text = f"Here is the summary of your legal matter in English:\n\n📌 **{item.get('name', 'Legal Issue')}**\n• **Applicable Statute & Section:** {item.get('law', '')} ({item.get('section', '')})\n• **Competent Authority:** {item.get('authority', '')}\n\n💡 Would you like to proceed with formal complaint filing?"
+
+            return {
+                "responseType": "MULTI_CASE_ASSESSMENT",
+                "language": "hi" if target_lang in ["hi", "hi_hinglish"] else ("ta_tanglish" if target_lang == "ta_tanglish" else ("ta" if target_lang == "ta" else "en")),
+                "category": "MULTI_CASE",
+                "understanding": reply_text,
+                "reply": reply_text,
+                "answer": reply_text,
+                "subCases": active_issues,
+                "options": [],
+                "is_conversational": True,
+                "is_greeting": False,
+                "disclaimer": DISCLAIMER,
+                "sessionId": session_key
+            }
+
+        # Default greeting/acknowledgment if no prior case was active
         if target_lang == "ta_tanglish":
             reply_text = "Kandippa pesa mudiyum! 👍 Ungalukku enna legal problem or doubt irukku nu Tanglish-laye sollunga. Naan ungalukku thelivaana sattam matrum procedure solren."
-            opts = []
         elif target_lang == "hi_hinglish":
             reply_text = "Haan zaroor! Main Hinglish mein bhi baat kar sakta hoon. 👍 Aapko kis legal problem ya issue mein madad chahiye? Aap Hinglish ya Hindi mein bataiye, main guide karunga."
-            opts = []
         elif target_lang == "ta":
             reply_text = "வணக்கம்! நான் தமிழில் பேசுகிறேன் 👍\n\nஉங்கள் சட்டப் பிரச்சனை அல்லது கேள்வியைப் பற்றி கூறுங்கள். நான் உங்களுக்கு தகுந்த சட்டப் பிரிவுகள் மற்றும் தீர்வு முறைகளை விளக்குகிறேன்."
-            opts = []
         elif target_lang == "hi":
             reply_text = "नमस्ते! मैं हिंदी में बात कर सकता हूँ 👍\n\nकृपया अपनी कानूनी समस्या या प्रश्न बताएं। मैं आपको सही कानून, आवश्यक दस्तावेज और शिकायत दर्ज करने की प्रक्रिया के बारे में मार्गदर्शन करूँगा।"
-            opts = []
         else:
             reply_text = "Hello! I have switched to English 👍\n\nPlease describe your legal issue or question. I will guide you with relevant statutory sections, required documents, and where to file your grievance."
-            opts = []
 
         return {
             "responseType": "LANGUAGE_SELECTION",
-            "language": "hi" if target_lang == "hi_hinglish" else ("ta" if target_lang == "ta_tanglish" else target_lang),
+            "language": "hi" if target_lang in ["hi", "hi_hinglish"] else ("ta_tanglish" if target_lang == "ta_tanglish" else ("ta" if target_lang == "ta" else "en")),
             "category": "CONVERSATIONAL",
             "understanding": reply_text,
             "reply": reply_text,
@@ -1090,10 +1189,29 @@ def ask_chatbot_engine(
     ])
 
     if is_follow_up_action and prev_issues:
-        is_tanglish = provisional_case.get("languagePreference") == "ta_tanglish" or "tanglish" in raw_message.lower() or resolved_lang == "ta_tanglish" or any(m in raw_message.lower() for m in ["panren", "kudukala", "irukku", "sollunga", "rendu", "pannina", "solve panradhu", "enna pannanum"])
+        current_pref = provisional_case.get("languagePreference", resolved_lang)
         
         if len(prev_issues) >= 2:
-            if is_tanglish:
+            if resolved_lang.startswith("hi") or current_pref in ["hi", "hi_hinglish"]:
+                follow_up_reply = (
+                    "आपके दोनों कानूनी मामलों को हल करने के लिए चरणबद्ध कार्ययोजना:\n\n"
+                    "🔹 **मुद्दा 1 (बकाया वेतन एवं मूल दस्तावेज़ वसूली):**\n"
+                    "1. **चरण 1:** एचआर को 15 दिनों का कानूनी मांग नोटिस (Demand Notice) भेजें।\n"
+                    "2. **चरण 2:** समाधान न होने पर Payment of Wages Act, धारा 15 के तहत जिला श्रम आयुक्त कार्यालय, कोयंबटूर में Form I दावा याचिका दायर करें।\n\n"
+                    "🔹 **मुद्दा 2 (आधार एवं बैंक विवरण का अनधिकृत दुरुपयोग रोकथाम):**\n"
+                    "1. **चरण 1:** तुरंत UIDAI पोर्टल (myaadhaar.uidai.gov.in) पर जाकर आधार बायोमेट्रिक लॉक करें।\n"
+                    "2. **चरण 2:** राष्ट्रीय साइबर अपराध पोर्टल (cybercrime.gov.in) या हेल्पलाइन **1930** पर शिकायत दर्ज करें।\n\n"
+                    "💡 क्या आप ARAM पोर्टल के माध्यम से आधिकारिक शिकायत दर्ज करना चाहते हैं?"
+                )
+                resp_lang = "hi"
+            elif resolved_lang == "ta" or current_pref == "ta":
+                follow_up_reply = (
+                    "உங்கள் இரண்டு வழக்குகளையும் தீர்ப்பதற்கான படிநிலைகள்:\n\n"
+                    "1. **தொழிலாளர் ஊதிய பாக்கி:** மனிதவள மேலாளருக்கு (HR) 15 நாட்கள் அவகாசத்தில் கோரிக்கை கடிதம் அனுப்பவும்; தீர்வு கிடைக்காவிடில் மாவட்ட தொழிலாளர் ஆணையரிடம் மனு தாக்கல் செய்யவும்.\n"
+                    "2. **ஆதார் தவறான பயன்பாடு:** உடனடியாக ஆதார் பயோமெட்ரிக் பூட்டவும் (Lock Aadhaar) மற்றும் 1930 / cybercrime.gov.in மூலம் புகார் பதிவு செய்யவும்."
+                )
+                resp_lang = "ta"
+            elif current_pref == "ta_tanglish" or resolved_lang == "ta_tanglish" or any(m in raw_message.lower() for m in ["panren", "kudukala", "irukku", "sollunga", "rendu", "pannina", "solve panradhu", "enna pannanum"]):
                 follow_up_reply = (
                     "Neenga mention panna **2 separate issues**-aiyum step-by-step solve panradhukana immediate action plan idho:\n\n"
                     "🔹 **Issue 1 (Unpaid Salary & Original Documents Recovery):**\n"
@@ -1104,12 +1222,7 @@ def ask_chatbot_engine(
                     "2. **Step 2:** National Cyber Crime Portal (`cybercrime.gov.in`) or Helpline **1930** call panni unauthorized loan processing attempt pathi complaint log pannunga.\n\n"
                     "💡 Neenga indha complaints-ai official-ah ARAM portal vazhiya submit panna virumbureengala, or initial demand notice draft panna guidance venuma?"
                 )
-            elif resolved_lang.startswith("ta"):
-                follow_up_reply = (
-                    "உங்கள் இரண்டு வழக்குகளையும் தீர்ப்பதற்கான படிநிலைகள்:\n\n"
-                    "1. **தொழிலாளர் ஊதிய பாக்கி:** மனிதவள மேலாளருக்கு (HR) 15 நாட்கள் அவகாசத்தில் கோரிக்கை கடிதம் அனுப்பவும்; தீர்வு கிடைக்காவிடில் மாவட்ட தொழிலாளர் ஆணையரிடம் மனு தாக்கல் செய்யவும்.\n"
-                    "2. **ஆதார் தவறான பயன்பாடு:** உடனடியாக ஆதார் பயோமெட்ரிக் பூட்டவும் (Lock Aadhaar) மற்றும் 1930 / cybercrime.gov.in மூலம் புகார் பதிவு செய்யவும்."
-                )
+                resp_lang = "ta_tanglish"
             else:
                 follow_up_reply = (
                     "Here is the immediate step-by-step action plan for your two legal issues:\n\n"
@@ -1117,10 +1230,11 @@ def ask_chatbot_engine(
                     "2. **Aadhaar / Financial Misuse:** Immediately lock your Aadhaar biometrics on the UIDAI portal and register an online complaint at cybercrime.gov.in (1930 helpline).\n\n"
                     "Would you like to draft a formal notice or submit a grievance through ARAM?"
                 )
+                resp_lang = "en"
 
             return {
                 "responseType": "FOLLOW_UP_ACTION_GUIDANCE",
-                "language": "ta_tanglish" if is_tanglish else resolved_lang,
+                "language": resp_lang,
                 "category": "MULTI_CASE",
                 "understanding": follow_up_reply,
                 "reply": follow_up_reply,
