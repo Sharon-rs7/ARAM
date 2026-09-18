@@ -4,6 +4,7 @@ import DashboardLayout from "@/components/common/DashboardLayout";
 import { adminService } from "@/services/adminService";
 import { regionalAdminService } from "@/services/regionalAdminService";
 import { API_BUSINESS_URL } from "@/services/api";
+import Avatar from "@/components/common/Avatar";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { 
@@ -1072,9 +1073,12 @@ export default function SuperAdminDashboard() {
                       <tr key={c.id} className="hover:bg-[#F7F1E6]/40 dark:hover:bg-[#182C26]/60 transition">
                         <td className="py-3.5 px-4 font-bold text-[#18332B] dark:text-white">
                           <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-full bg-[#DCEBDD] text-[#163D32] font-black flex items-center justify-center text-xs">
-                              {c.name?.charAt(0) || "C"}
-                            </div>
+                            <Avatar
+                              name={c.name}
+                              role="CITIZEN"
+                              size="sm"
+                              showRoleBadge={false}
+                            />
                             <div>
                               <span>{c.name}</span>
                               <span className="text-[10px] text-slate-400 dark:text-emerald-400/50 block font-normal">ID #{c.id}</span>
@@ -1196,11 +1200,16 @@ export default function SuperAdminDashboard() {
                     {filteredGuides.map((g) => (
                       <tr key={g.id} className="hover:bg-[#F7F1E6]/40 dark:hover:bg-[#182C26]/60 transition">
                         <td className="py-3.5 px-4">
-                          <div className="font-bold text-[#18332B] dark:text-white flex items-center gap-1.5">
-                            <span>{g.name}</span>
-                            {g.helperVerified && <CheckCircle2 size={13} className="text-emerald-600 dark:text-emerald-400" />}
+                          <div className="flex items-center gap-2.5">
+                            <Avatar name={g.name} role="GUIDE" size="sm" showRoleBadge />
+                            <div>
+                              <div className="font-bold text-[#18332B] dark:text-white flex items-center gap-1.5">
+                                <span>{g.name}</span>
+                                {g.helperVerified && <CheckCircle2 size={13} className="text-emerald-600 dark:text-emerald-400" />}
+                              </div>
+                              <span className="text-[10px] text-slate-400 dark:text-emerald-400/60 font-mono block">{g.email}</span>
+                            </div>
                           </div>
-                          <span className="text-[10px] text-slate-400 dark:text-emerald-400/60 font-mono block">{g.email}</span>
                         </td>
                         <td className="py-3.5 px-4 font-bold text-[#163D32] dark:text-emerald-300">
                           {g.district || "Statewide"}
@@ -1355,12 +1364,15 @@ export default function SuperAdminDashboard() {
                           </td>
                           <td className="py-3.5 px-4">
                             {hasAdmin ? (
-                              <div>
-                                <span className="font-bold text-[#18332B] dark:text-white flex items-center gap-1.5">
-                                  <span>{admin.name}</span>
-                                  <ShieldCheck size={13} className="text-emerald-600 dark:text-emerald-400" />
-                                </span>
-                                <span className="text-[10px] text-slate-400 dark:text-emerald-400/60 font-mono block">{admin.email}</span>
+                              <div className="flex items-center gap-2.5">
+                                <Avatar name={admin.name} role="ADMIN" size="sm" showRoleBadge />
+                                <div>
+                                  <span className="font-bold text-[#18332B] dark:text-white flex items-center gap-1.5">
+                                    <span>{admin.name}</span>
+                                    <ShieldCheck size={13} className="text-emerald-600 dark:text-emerald-400" />
+                                  </span>
+                                  <span className="text-[10px] text-slate-400 dark:text-emerald-400/60 font-mono block">{admin.email}</span>
+                                </div>
                               </div>
                             ) : (
                               <span className="text-amber-600 dark:text-amber-400 font-bold text-[11px] flex items-center gap-1">

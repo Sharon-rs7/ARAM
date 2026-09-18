@@ -4,6 +4,7 @@ import { authService } from '@/services/authService';
 import { useAuth } from '@/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import Avatar from '@/components/common/Avatar';
 
 export const GoogleAuthModal = ({ isOpen, onClose, defaultRole = 'CITIZEN', defaultDistrict = 'Coimbatore' }) => {
   const { login } = useAuth();
@@ -210,10 +211,12 @@ export const GoogleAuthModal = ({ isOpen, onClose, defaultRole = 'CITIZEN', defa
                   className='w-full flex items-center justify-between p-3 rounded-2xl border border-slate-200 dark:border-emerald-900/40 hover:border-emerald-500/60 dark:hover:border-emerald-500/60 bg-slate-50/50 dark:bg-[#142620]/60 hover:bg-emerald-50/30 dark:hover:bg-[#16332A] transition group text-left cursor-pointer'
                 >
                   <div className='flex items-center gap-3'>
-                    <img 
-                      src={acc.avatar} 
-                      alt={acc.name} 
-                      className='w-10 h-10 rounded-full border border-slate-200 dark:border-emerald-700/50 bg-white dark:bg-slate-800 p-0.5' 
+                    <Avatar
+                      src={acc.avatar}
+                      name={acc.name}
+                      role={acc.role}
+                      size="md"
+                      showRoleBadge={true}
                     />
                     <div>
                       <div className='text-xs font-bold text-slate-800 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition'>

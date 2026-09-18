@@ -111,8 +111,8 @@ const SuperAdminSidebar = () => {
             </div>
           </div>
         ) : (
-          <div className="font-black text-sm text-[#DCEBDD] tracking-wider mx-auto">
-            ARAM
+          <div className="mx-auto">
+            <Logo variant="mark" size="sm" light={true} />
           </div>
         )}
 

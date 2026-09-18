@@ -7,6 +7,7 @@ import {
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { useNotifications } from "@/context/NotificationContext";
+import Avatar from "@/components/common/Avatar";
 
 const Topbar = ({ onToggleSidebar, role = "citizen" }) => {
   const { user, logout } = useAuth();
@@ -159,9 +160,13 @@ const Topbar = ({ onToggleSidebar, role = "citizen" }) => {
             onClick={() => setProfileDropdown(!profileDropdown)}
             className="flex items-center gap-2 rounded-full p-1.5 pr-3 hover:bg-[#DCEBDD]/30 transition"
           >
-            <div className="h-8 w-8 rounded-full bg-[#163D32] text-white flex items-center justify-center font-bold text-xs">
-              {user?.name ? user.name[0].toUpperCase() : "U"}
-            </div>
+            <Avatar
+              src={user?.avatarUrl}
+              name={user?.name}
+              role={user?.role}
+              size="sm"
+              showRoleBadge={true}
+            />
             <div className="hidden text-left sm:block">
               <p className="text-xs font-bold text-[#18332B] leading-none">{user?.name || "Citizen"}</p>
               <p className="text-[10px] text-[#65736D] font-medium mt-0.5">{user?.role || "CITIZEN"}</p>

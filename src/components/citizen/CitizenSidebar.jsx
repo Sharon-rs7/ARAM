@@ -32,8 +32,7 @@ const CitizenSidebar = () => {
       
       {/* Top Brand */}
       <div className="p-4 border-b border-white/10 flex items-center justify-between">
-        {!collapsed && <Logo size="sm" light={true} />}
-        {collapsed && <div className="font-extrabold text-lg text-white">ARAM</div>}
+        <Logo size="sm" light={true} variant={collapsed ? "mark" : "full"} />
         <button
           onClick={() => setCollapsed(!collapsed)}
           className="p-1 rounded-lg text-white/70 hover:bg-white/10 hover:text-white"

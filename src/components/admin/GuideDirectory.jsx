@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { UserCheck, Search, CheckCircle, Shield, Plus, X, User, Mail, Phone, MapPin } from "lucide-react";
 import { adminService } from "@/services/adminService";
 import { toast } from "sonner";
+import Avatar from "@/components/common/Avatar";
 
 export default function GuideDirectory({ guides = [], district = "Salem", onGuideAdded = () => {} }) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -120,7 +121,10 @@ export default function GuideDirectory({ guides = [], district = "Salem", onGuid
               filtered.map((g) => (
                 <tr key={g.id} className="hover:bg-[#F7F1E6]/50 transition duration-100">
                   <td className="py-3.5 px-4 font-bold text-[#18332B]">
-                    {g.name}
+                    <div className="flex items-center gap-2.5">
+                      <Avatar name={g.name} role="GUIDE" size="sm" showRoleBadge />
+                      <span>{g.name}</span>
+                    </div>
                   </td>
                   <td className="py-3.5 px-4 text-[#65736D] font-medium">
                     {g.email}
