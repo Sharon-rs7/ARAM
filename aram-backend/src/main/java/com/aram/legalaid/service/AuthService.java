@@ -59,6 +59,9 @@ public class AuthService {
         user.setStatus(UserStatus.ACTIVE);
         user.setGender(request.gender());
         user.setSpecialization(request.specialization());
+        if (request.district() != null && !request.district().trim().isEmpty()) {
+            user.setDistrict(request.district().trim());
+        }
         User saved = userRepository.save(user);
         return issueTokens(saved);
     }
@@ -132,8 +135,10 @@ public class AuthService {
             if (request.avatarUrl() != null && !request.avatarUrl().trim().isEmpty() && (user.getAvatarUrl() == null || user.getAvatarUrl().isEmpty())) {
                 user.setAvatarUrl(request.avatarUrl().trim());
             }
-            if (user.getDistrict() == null || user.getDistrict().trim().isEmpty()) {
-                user.setDistrict("Coimbatore");
+            if (request.district() != null && !request.district().trim().isEmpty()) {
+                user.setDistrict(request.district().trim());
+            } else if (user.getDistrict() == null || user.getDistrict().trim().isEmpty()) {
+                user.setDistrict("Chennai");
             }
         }
 

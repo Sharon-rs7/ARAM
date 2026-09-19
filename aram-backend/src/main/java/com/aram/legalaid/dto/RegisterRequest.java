@@ -26,5 +26,6 @@ public record RegisterRequest(
 
         Role role,
         String gender,
-        String specialization
+        String specialization,
+        String district
 ) {}

@@ -79,7 +79,7 @@ const Profile = () => {
             name: userData.name || authUser?.name || "",
             email: userData.email || authUser?.email || "",
             mobile: userData.mobile || authUser?.mobile || "",
-            district: userData.district || authUser?.district || "Kanyakumari",
+            district: userData.district || authUser?.district || "",
             address: userData.address || authUser?.address || "",
             preferredLanguage: userData.preferredLanguage || "Tamil & English",
             idType: "Aadhaar Card (UIDAI)",
@@ -105,7 +105,7 @@ const Profile = () => {
             name: authUser.name || "",
             email: authUser.email || "",
             mobile: authUser.mobile || "",
-            district: authUser.district || "Kanyakumari",
+            district: authUser.district || "",
             address: authUser.address || "",
             preferredLanguage: "Tamil & English",
             idType: "Aadhaar Card (UIDAI)",
@@ -404,6 +404,7 @@ const Profile = () => {
                     onChange={(e) => setProfile({ ...profile, district: e.target.value })}
                     className="w-full h-11 pl-10 pr-4 rounded-xl border border-[#DDE2DF] bg-white text-[#18332B] font-semibold outline-none focus:border-[#163D32] focus:ring-2 focus:ring-[#DCEBDD] disabled:bg-[#F7F1E6]/70 disabled:cursor-not-allowed shadow-2xs cursor-pointer appearance-none"
                   >
+                    <option value="">Select District</option>
                     {TN_DISTRICTS.map((dist) => (
                       <option key={dist} value={dist}>
                         {dist} District
@@ -426,7 +427,7 @@ const Profile = () => {
                     value={profile.address}
                     disabled={!isEditing}
                     onChange={(e) => setProfile({ ...profile, address: e.target.value })}
-                    placeholder="e.g. 14B, Gandhi Nagar, Nagercoil, Kanyakumari - 629001"
+                    placeholder="e.g. 14B, Gandhi Nagar, Main Road, Chennai - 600002"
                     className="w-full h-11 pl-10 pr-3 rounded-xl border border-[#DDE2DF] bg-white text-[#18332B] font-medium outline-none focus:border-[#163D32] focus:ring-2 focus:ring-[#DCEBDD] disabled:bg-[#F7F1E6]/70 disabled:cursor-not-allowed shadow-2xs"
                   />
                   <Building size={15} className="absolute left-3.5 top-3.5 text-[#65736D]" />
