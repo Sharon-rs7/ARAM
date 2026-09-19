@@ -33,5 +33,6 @@ public record UserUpdateRequest(
         Boolean simpleModeEnabled,
         Double speechRatePreference,
         Boolean whatsappOptIn,
-        Boolean mobileVerified
+        Boolean mobileVerified,
+        Boolean claimMobile
 ) {}

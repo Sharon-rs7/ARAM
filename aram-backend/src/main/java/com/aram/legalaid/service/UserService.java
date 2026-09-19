@@ -65,10 +65,20 @@ public class UserService {
         if (request.mobile() != null) {
             String trimmedMobile = request.mobile().trim();
             if (!trimmedMobile.isEmpty() && !trimmedMobile.equals(user.getMobile())) {
-                if (userRepository.existsByMobile(trimmedMobile)) throw new BadRequestException("Mobile number already exists");
-                user.setMobile(trimmedMobile);
-            } else if (trimmedMobile.isEmpty() && user.getMobile() != null) {
-                user.setMobile(null);
+                java.util.Optional<User> existingUserOpt = userRepository.findByMobile(trimmedMobile);
+                if (existingUserOpt.isPresent() && !existingUserOpt.get().getId().equals(user.getId())) {
+                    User existing = existingUserOpt.get();
+                    if (Boolean.TRUE.equals(request.claimMobile())) {
+                        String placeholder = "90" + String.format("%08d", existing.getId() % 100000000L);
+                        existing.setMobile(placeholder);
+                        userRepository.save(existing);
+                        user.setMobile(trimmedMobile);
+                    } else {
+                        throw new BadRequestException("MOBILE_ALREADY_EXISTS:Mobile number " + trimmedMobile + " is already linked to another account.");
+                    }
+                } else {
+                    user.setMobile(trimmedMobile);
+                }
             }
         }
         if (request.bio() != null) user.setBio(request.bio());

@@ -161,14 +161,22 @@ public class AdminController {
         if (request.mobile() != null) {
             String trimmedMobile = request.mobile().trim();
             if (!trimmedMobile.isEmpty() && !trimmedMobile.equals(user.getMobile())) {
-                if (userRepository.existsByMobile(trimmedMobile)) {
-                    throw new com.aram.legalaid.exception.BadRequestException("Mobile number already exists");
+                java.util.Optional<User> existingUserOpt = userRepository.findByMobile(trimmedMobile);
+                if (existingUserOpt.isPresent() && !existingUserOpt.get().getId().equals(user.getId())) {
+                    User existing = existingUserOpt.get();
+                    if (Boolean.TRUE.equals(request.claimMobile())) {
+                        String placeholder = "90" + String.format("%08d", existing.getId() % 100000000L);
+                        existing.setMobile(placeholder);
+                        userRepository.save(existing);
+                        user.setMobile(trimmedMobile);
+                        details.append("claimed_mobile ");
+                    } else {
+                        throw new com.aram.legalaid.exception.BadRequestException("MOBILE_ALREADY_EXISTS:Mobile number " + trimmedMobile + " is already linked to another account.");
+                    }
+                } else {
+                    user.setMobile(trimmedMobile);
+                    details.append("mobile ");
                 }
-                user.setMobile(trimmedMobile);
-                details.append("mobile ");
-            } else if (trimmedMobile.isEmpty() && user.getMobile() != null) {
-                user.setMobile(null);
-                details.append("cleared_mobile ");
             }
         }
         if (request.status() != null) { user.setStatus(request.status()); details.append("status=").append(request.status()).append(" "); }

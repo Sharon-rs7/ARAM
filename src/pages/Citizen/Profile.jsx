@@ -4,7 +4,7 @@ import {
   User, Mail, Phone, MapPin, ShieldCheck, Edit3, Save, Globe, 
   AlertCircle, CheckCircle2, Clock, FileText, CheckCircle, ExternalLink, 
   RefreshCw, X, ShieldAlert, BadgeCheck, Lock, Building, PlusCircle, ArrowRight,
-  Bell, MessageSquare, Check
+  Bell, MessageSquare, Check, AlertTriangle
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { userService } from "@/services/userService";
@@ -45,6 +45,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [conflictData, setConflictData] = useState(null);
 
   const [notifySms, setNotifySms] = useState(() => {
     return localStorage.getItem("aram_pref_sms") !== "false";
@@ -151,9 +152,9 @@ const Profile = () => {
   const completeness = calculateCompleteness();
   const isProfileComplete = completeness === 100;
 
-  // Handle Save
-  const handleSave = async (e) => {
-    if (e) e.preventDefault();
+  // Handle Save (Supports seamless mobile transfer and conflict resolution)
+  const handleSave = async (e, claimMobile = false) => {
+    if (e && e.preventDefault) e.preventDefault();
 
     if (!profile.name?.trim() || profile.name.trim().length < 2) {
       toast.error("Full Name must be at least 2 characters.");
@@ -172,7 +173,7 @@ const Profile = () => {
     }
 
     setSaving(true);
-    const toastId = toast.loading("Updating citizen identity in official registry...");
+    const toastId = toast.loading(claimMobile ? "Transferring mobile number to this account..." : "Updating citizen identity in official registry...");
 
     try {
       const payload = {
@@ -180,7 +181,8 @@ const Profile = () => {
         mobile: cleanMobile,
         district: profile.district.trim(),
         address: profile.address?.trim() || "",
-        preferredLanguage: profile.preferredLanguage || "Tamil & English"
+        preferredLanguage: profile.preferredLanguage || "Tamil & English",
+        claimMobile: !!claimMobile
       };
 
       const updated = await userService.updateMe(payload);
@@ -201,12 +203,52 @@ const Profile = () => {
       }
 
       setIsEditing(false);
+      setConflictData(null);
       toast.dismiss(toastId);
-      toast.success("Citizen profile and jurisdiction updated successfully in database!");
+      toast.success(claimMobile ? "Mobile number transferred & profile updated successfully!" : "Citizen profile and jurisdiction updated successfully in database!");
     } catch (err) {
       toast.dismiss(toastId);
-      const msg = err.response?.data?.message || err.message || "Failed to update profile";
-      toast.error(`Update failed: ${msg}`);
+      const msg = err.response?.data?.message || err.message || "";
+      if (msg.includes("MOBILE_ALREADY_EXISTS") || msg.toLowerCase().includes("mobile number already exists") || msg.toLowerCase().includes("already linked")) {
+        setConflictData({
+          mobile: cleanMobile,
+          message: "This mobile number is already linked to another account in the ARAM system."
+        });
+        toast.error("Mobile number is already registered to another account. You can transfer it or save other details.", { duration: 6000 });
+      } else {
+        toast.error(`Update failed: ${msg || "Failed to update profile"}`);
+      }
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSaveDistrictOnly = async () => {
+    setSaving(true);
+    const toastId = toast.loading("Saving district and address updates...");
+    try {
+      const payload = {
+        name: profile.name.trim(),
+        mobile: authUser?.mobile || undefined,
+        district: profile.district.trim(),
+        address: profile.address?.trim() || "",
+        preferredLanguage: profile.preferredLanguage || "Tamil & English"
+      };
+      const updated = await userService.updateMe(payload);
+      setProfile(prev => ({
+        ...prev,
+        name: updated?.name || payload.name,
+        district: updated?.district || payload.district,
+        address: updated?.address || payload.address
+      }));
+      if (updateUser) updateUser(updated || payload);
+      setIsEditing(false);
+      setConflictData(null);
+      toast.dismiss(toastId);
+      toast.success("District and address updated successfully in database!");
+    } catch (err) {
+      toast.dismiss(toastId);
+      toast.error("Failed to update district: " + (err.response?.data?.message || err.message));
     } finally {
       setSaving(false);
     }
@@ -457,6 +499,52 @@ const Profile = () => {
               </div>
 
             </div>
+
+            {/* Interactive Mobile Conflict Resolution Gate */}
+            {conflictData && (
+              <div className="p-4 rounded-2xl bg-amber-50/90 border border-amber-300 text-amber-900 space-y-3 mt-4 animate-in fade-in duration-200">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="text-amber-600 shrink-0 mt-0.5" size={20} />
+                  <div className="space-y-1">
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-amber-900">
+                      Mobile Number (+91 {conflictData.mobile}) is Already Registered
+                    </h4>
+                    <p className="text-xs text-amber-800 leading-relaxed">
+                      This mobile number is linked to another existing account in the ARAM legal aid portal. If this is your official mobile number, you can immediately transfer and bind it to this active account.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2 pt-1 sm:pl-8">
+                  <button
+                    type="button"
+                    disabled={saving}
+                    onClick={() => handleSave(null, true)}
+                    className="px-4 py-2 bg-[#163D32] hover:bg-[#1F5948] text-white text-xs font-bold rounded-xl transition shadow-xs cursor-pointer flex items-center gap-1.5 disabled:opacity-50"
+                  >
+                    <CheckCircle2 size={14} />
+                    <span>Transfer & Bind to this Account</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    disabled={saving}
+                    onClick={handleSaveDistrictOnly}
+                    className="px-3.5 py-2 bg-white hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold rounded-xl transition cursor-pointer disabled:opacity-50"
+                  >
+                    Keep Current Number & Save District Only
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setConflictData(null)}
+                    className="px-3 py-2 text-xs text-amber-700 hover:text-amber-900 font-semibold cursor-pointer"
+                  >
+                    Dismiss
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* In-Form Prominent Save Button */}
             <div className="pt-3 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-[#E6E1D8] mt-4">
