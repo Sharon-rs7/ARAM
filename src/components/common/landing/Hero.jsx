@@ -1,178 +1,125 @@
-import React, { useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   Leaf, ArrowRight, MessageSquare, FileText, Compass, 
-  Mic, Keyboard, FileUp, Users, Scale 
+  Shield, CheckCircle2, Scale 
 } from "lucide-react";
-import { speechService } from "@/services/speechService";
 import { useLanguage } from "@/context/LanguageContext";
-import { toast } from "sonner";
 
 const Hero = () => {
   const navigate = useNavigate();
-  const { language, changeLanguage, availableLanguages, t } = useLanguage();
-  const [isRecording, setIsRecording] = useState(false);
-  const [mediaRecorder, setMediaRecorder] = useState(null);
-
-  const handleVoice = async () => {
-    if (isRecording) {
-      if (mediaRecorder) mediaRecorder.stop();
-      setIsRecording(false);
-      return;
-    }
-
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
-      const audioChunks = [];
-
-      recorder.ondataavailable = (e) => {
-        if (e.data.size > 0) audioChunks.push(e.data);
-      };
-
-      recorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
-        toast.info("Transcribing your grievance voice input...");
-        try {
-          const res = await speechService.transcribeAudio(audioBlob, "auto");
-          const transcribedText = (res?.transcript || res?.text || "").trim();
-          if (transcribedText) {
-            if (res?.detectedLanguage) {
-              toast.success(`Recognized in ${res.detectedLanguage}!`);
-            }
-            navigate(`/citizen/chatbot?q=${encodeURIComponent(transcribedText)}`);
-          } else {
-            navigate("/citizen/chatbot");
-          }
-        } catch (err) {
-          toast.error("Voice recognition failed. Opening assistant...");
-          navigate("/citizen/chatbot");
-        }
-      };
-
-      recorder.start();
-      setMediaRecorder(recorder);
-      setIsRecording(true);
-      toast.info("Listening... Speak your grievance in Tamil, Hindi, or English.");
-    } catch (err) {
-      toast.error("Microphone access unavailable.");
-      navigate("/citizen/chatbot");
-    }
-  };
+  const { t } = useLanguage();
 
   return (
-    <section className="relative pt-24 pb-8 sm:pt-32 sm:pb-12 lg:pt-32 lg:pb-10 overflow-hidden bg-[#FAF8F2]">
+    <section className="relative pt-24 pb-10 sm:pt-28 sm:pb-12 lg:pt-32 lg:pb-14 overflow-hidden bg-[#FAF8F2]">
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
           
           {/* Left Column: Civic Messaging & Actions */}
-          <div className="lg:col-span-6 space-y-5 text-left">
+          <div className="lg:col-span-7 space-y-5 text-left">
             
             {/* Civic Eyebrow Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full bg-[#E5F0E6] border border-[#CDE3CF] px-4 py-1.5 text-xs font-bold text-[#167957] shadow-2xs">
-              <Leaf size={14} className="text-[#167957]" />
+            <div className="inline-flex items-center gap-2 rounded-full bg-[#E5F0E6] border border-[#CDE3CF] px-3.5 py-1.5 text-xs font-bold text-[#167957] shadow-2xs">
+              <Leaf size={14} className="text-[#167957] shrink-0" />
               <span>{t("hero.eyebrow", "Accessible Justice for Every Citizen")}</span>
             </div>
 
-            {/* Main Heading */}
-            <h1 className="text-4xl sm:text-5xl lg:text-[46px] xl:text-[52px] font-black text-[#163D32] tracking-tight leading-[1.12]">
+            {/* Main Editorial Heading */}
+            <h1 className="text-3xl sm:text-5xl lg:text-[46px] xl:text-[52px] font-black text-[#163D32] tracking-tight leading-[1.14]">
               {t("hero.title1", "Your Rights. Our Support.")} <br />
               <span className="text-[#12805A]">{t("hero.title2", "A Fairer Tomorrow.")}</span>
             </h1>
 
-            {/* Grounded Subtitle */}
+            {/* Supporting Scannable Text */}
             <p className="text-sm sm:text-base text-[#4A5D54] leading-relaxed max-w-xl">
-              ARAM AI helps citizens understand legal information, identify <strong className="text-[#163D32] font-semibold">the right authorities</strong>, organize supporting evidence, and connect with verified <strong className="text-[#163D32] font-semibold">legal guides</strong> — in Tamil, English, and Hindi.
+              ARAM helps citizens understand legal information, identify <strong className="text-[#163D32] font-semibold">the right authorities</strong>, organize supporting evidence, and connect with verified <strong className="text-[#163D32] font-semibold">legal guides</strong> — in Tamil, English, and Hindi.
             </p>
 
-            {/* Primary Action Buttons Row 1 */}
-            <div className="flex flex-wrap items-center gap-3 pt-1">
-              {/* Primary CTA: Ask ARAM AI */}
+            {/* Structured CTAs with Clear Dominance Hierarchy */}
+            <div className="pt-2 flex flex-col sm:flex-row sm:items-center gap-3">
+              {/* PRIMARY CTA: Ask ARAM AI (Dominant) */}
               <button
                 type="button"
                 onClick={() => navigate("/citizen/chatbot")}
-                className="flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-[#0D3B2E] hover:bg-[#165340] text-white font-bold text-sm shadow-md transition cursor-pointer min-h-[44px]"
+                className="flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full bg-[#0D3B2E] hover:bg-[#165340] text-white font-bold text-sm shadow-md hover:shadow-lg transition-all duration-150 cursor-pointer min-h-[48px] active:scale-[0.98]"
               >
-                <MessageSquare size={16} />
+                <MessageSquare size={17} />
                 <span>{t("hero.askAi", "Ask ARAM AI")}</span>
-                <ArrowRight size={15} />
+                <ArrowRight size={16} />
               </button>
 
-              {/* Secondary CTA: File a Grievance */}
+              {/* SECONDARY CTA: File a Grievance */}
               <button
                 type="button"
                 onClick={() => navigate("/citizen/submit-complaint")}
-                className="flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-white border border-[#12805A] hover:border-[#0D3B2E] text-[#12805A] hover:bg-[#E8F3ED] font-bold text-sm shadow-2xs transition cursor-pointer min-h-[44px]"
+                className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-full bg-white border border-[#12805A] hover:border-[#0D3B2E] text-[#12805A] hover:bg-[#E8F3ED] font-bold text-sm shadow-2xs transition-all duration-150 cursor-pointer min-h-[48px] active:scale-[0.98]"
               >
                 <FileText size={16} className="text-[#12805A]" />
                 <span>{t("hero.fileGrievance", "File a Grievance")}</span>
               </button>
 
-              {/* Tertiary CTA: Track My Case */}
+              {/* TERTIARY CTA: Track My Case */}
               <button
                 type="button"
                 onClick={() => navigate("/track-complaint")}
-                className="flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-white border border-[#12805A] hover:border-[#0D3B2E] text-[#12805A] hover:bg-[#E8F3ED] font-bold text-sm shadow-2xs transition cursor-pointer min-h-[44px]"
+                className="flex items-center justify-center gap-1.5 px-4 py-3 rounded-full text-[#4A5D54] hover:text-[#163D32] hover:bg-[#DCEBDD]/40 font-bold text-xs sm:text-sm transition cursor-pointer min-h-[44px]"
               >
-                <Compass size={16} className="text-[#12805A]" />
+                <Compass size={15} className="text-[#12805A]" />
                 <span>{t("hero.trackCase", "Track My Case")}</span>
               </button>
             </div>
 
-            {/* Secondary Quick Action Pills Row 2 */}
-            <div className="pt-2 flex flex-wrap items-center gap-2.5">
-              <button
-                type="button"
-                onClick={handleVoice}
-                className={`flex items-center gap-2 px-4 py-2 rounded-full border font-bold text-xs transition shadow-2xs cursor-pointer min-h-[38px] ${
-                  isRecording
-                    ? "bg-red-600 text-white border-red-700 animate-pulse"
-                    : "bg-white border-[#DDE2DF] hover:border-[#12805A] text-[#163D32] hover:bg-[#E8F3ED]/60"
-                }`}
-              >
-                <Mic size={14} className={isRecording ? "text-white" : "text-[#12805A]"} />
-                <span>{isRecording ? t("hero.listening", "Listening...") : "Speak"}</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => navigate("/citizen/chatbot")}
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-[#DDE2DF] hover:border-[#12805A] text-[#163D32] hover:bg-[#E8F3ED]/60 font-bold text-xs transition shadow-2xs cursor-pointer min-h-[38px]"
-              >
-                <Keyboard size={14} className="text-[#12805A]" />
-                <span>Type</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => navigate("/citizen/documents")}
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-[#DDE2DF] hover:border-[#12805A] text-[#163D32] hover:bg-[#E8F3ED]/60 font-bold text-xs transition shadow-2xs cursor-pointer min-h-[38px]"
-              >
-                <FileUp size={14} className="text-[#12805A]" />
-                <span>Upload</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => navigate("/citizen/submit-complaint")}
-                className="flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-[#DDE2DF] hover:border-[#12805A] text-[#163D32] hover:bg-[#E8F3ED]/60 font-bold text-xs transition shadow-2xs cursor-pointer min-h-[38px]"
-              >
-                <Users size={14} className="text-[#12805A]" />
-                <span>Connect</span>
-              </button>
+            {/* Reassuring Civic Safeguard Tagline */}
+            <div className="pt-3 flex items-center gap-4 text-xs font-semibold text-[#65736D]">
+              <span className="flex items-center gap-1">
+                <CheckCircle2 size={13} className="text-[#12805A]" />
+                No Legal Fees
+              </span>
+              <span>•</span>
+              <span className="flex items-center gap-1">
+                <CheckCircle2 size={13} className="text-[#12805A]" />
+                Strict PII Privacy
+              </span>
+              <span>•</span>
+              <span className="flex items-center gap-1">
+                <CheckCircle2 size={13} className="text-[#12805A]" />
+                Tamil Nadu DLSA Aligned
+              </span>
             </div>
 
           </div>
 
-          {/* Right Column: CM Vijay Civic Showcase Visual */}
-          <div className="lg:col-span-6 flex items-center justify-center lg:justify-end relative mt-4 lg:mt-0">
-            <div className="relative w-full max-w-[580px]">
-              <img
-                src="/assets/cm_vijay_hero@2x.png"
-                alt="Hon'ble Chief Minister Thalapathy Vijay - ARAM Civic Legal Aid & Justice"
-                className="w-full h-auto object-contain transition-transform duration-300 hover:scale-[1.01]"
-                loading="eager"
-              />
+          {/* Right Column: Hero Visual Card (Tamil Nadu Map & Leadership Showcase) */}
+          <div className="lg:col-span-5 flex items-center justify-center lg:justify-end relative mt-6 lg:mt-0">
+            <div className="relative w-full max-w-[520px] rounded-3xl overflow-hidden bg-gradient-to-br from-[#FFFDF8] to-[#F5EFE3] border border-[#E6E1D8] shadow-lg p-2 sm:p-3">
+              
+              <div className="relative rounded-2xl overflow-hidden bg-white/70">
+                <img
+                  src="/assets/cm_vijay_hero@2x.png"
+                  alt="ARAM Civic Legal Aid & Justice Platform - Government of Tamil Nadu Citizen Legal Access"
+                  className="w-full h-auto object-cover transition-transform duration-300 hover:scale-[1.01]"
+                  loading="eager"
+                />
+              </div>
+
+              {/* Overlay Neutral Civic Message Card */}
+              <div className="mt-2.5 p-3 sm:p-3.5 rounded-2xl bg-white/95 backdrop-blur-xs border border-[#E6E1D8]/80 text-left space-y-1 shadow-2xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-[#167957] bg-[#E5F0E6] px-2 py-0.5 rounded-full">
+                    Civic Access Initiative
+                  </span>
+                  <span className="text-[10px] font-semibold text-[#65736D]">
+                    Tamil Nadu
+                  </span>
+                </div>
+                <p className="text-xs sm:text-[13px] font-bold text-[#163D32] leading-snug">
+                  “சட்ட உதவி எல்லோருக்கும் — அதுவே நியாயமான சமூகத்தின் அடையாளம்.”
+                </p>
+                <p className="text-[11px] font-medium text-[#4A5D54]">
+                  Justice should be accessible to everyone • People • Law • Support
+                </p>
+              </div>
+
             </div>
           </div>
 

@@ -2,16 +2,18 @@ import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 
 import Hero from "@/components/common/landing/Hero";
+import WaysToGetHelp from "@/components/common/landing/WaysToGetHelp";
 import TrustStrip from "@/components/common/landing/TrustStrip";
 import HowItWorks from "@/components/common/landing/HowItWorks";
 import Features from "@/components/common/landing/Features";
 import AIHumanBridge from "@/components/common/landing/AIHumanBridge";
+import TrustSafety from "@/components/common/landing/TrustSafety";
 import WhoCanUse from "@/components/common/landing/WhoCanUse";
 import About from "@/components/common/landing/About";
 import ImmediateAssistance from "@/components/common/landing/ImmediateAssistance";
 import FAQ from "@/components/common/landing/FAQ";
-import Contact from "@/components/common/landing/Contact";
 import CTA from "@/components/common/landing/CTA";
+import Contact from "@/components/common/landing/Contact";
 
 const LandingPage = () => {
   return (
@@ -19,16 +21,18 @@ const LandingPage = () => {
       <Navbar />
       <main>
         <Hero />
+        <WaysToGetHelp />
         <TrustStrip />
         <HowItWorks />
         <Features />
         <AIHumanBridge />
+        <TrustSafety />
         <WhoCanUse />
         <About />
         <ImmediateAssistance />
         <FAQ />
-        <Contact />
         <CTA />
+        <Contact />
       </main>
       <Footer />
     </div>

@@ -47,6 +47,7 @@ public class SecurityConfig {
                             "/ws/updates",
                             "/ws/updates/**",
                             "/api/support/contact",
+                            "/api/public/**",
                             "/error"
                         ).permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/authorities/**").authenticated()

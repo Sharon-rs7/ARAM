@@ -28,10 +28,10 @@ const Navbar = () => {
 
   const navLinks = [
     { name: t("nav.home", "Home"), href: "/" },
-    { name: t("nav.about", "About"), href: "/about" },
-    { name: t("nav.services", "Services"), href: "/services" },
-    { name: t("nav.trackGrievance", "Track Grievance"), href: "/track-complaint" },
-    { name: t("nav.contact", "Contact"), href: "/contact" },
+    { name: t("nav.howItWorks", "How ARAM Works"), href: "/#how-it-works" },
+    { name: t("nav.services", "Services"), href: "/#services" },
+    { name: t("nav.trackCase", "Track Case"), href: "/track-complaint" },
+    { name: t("nav.contact", "Contact"), href: "/#contact" },
   ];
 
   return (
@@ -46,22 +46,43 @@ const Navbar = () => {
           <Logo size="md" />
 
           {/* Desktop Nav Links */}
-          <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                to={link.href}
-                className={`text-xs font-bold uppercase tracking-wider transition hover:text-[#1F5948] ${
-                  location.pathname === link.href ? "text-[#163D32] border-b-2 border-[#163D32] pb-1" : "text-[#65736D]"
-                }`}
-              >
-                {link.name}
-              </Link>
-            ))}
+          <div className="hidden md:flex items-center gap-7">
+            {navLinks.map((link) => {
+              const isHash = link.href.includes("#");
+              const isActive = location.pathname === link.href;
+              return isHash ? (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  className="text-xs font-bold uppercase tracking-wider transition hover:text-[#1F5948] text-[#65736D]"
+                >
+                  {link.name}
+                </a>
+              ) : (
+                <Link
+                  key={link.name}
+                  to={link.href}
+                  className={`text-xs font-bold uppercase tracking-wider transition hover:text-[#1F5948] ${
+                    isActive ? "text-[#163D32] border-b-2 border-[#163D32] pb-1" : "text-[#65736D]"
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              );
+            })}
           </div>
 
           {/* Language & Actions */}
-          <div className="hidden md:flex items-center gap-3.5">
+          <div className="hidden md:flex items-center gap-3">
+            {/* Ask ARAM AI primary pill */}
+            <Link
+              to="/citizen/chatbot"
+              className="px-4 py-2 rounded-full bg-[#12805A] hover:bg-[#0D6245] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition hover:shadow-md cursor-pointer"
+            >
+              <Sparkles size={14} className="text-[#A3E5C9]" />
+              <span>Ask ARAM AI</span>
+            </Link>
+
             {/* Search Button */}
             <Link
               to="/citizen/chatbot"
@@ -204,28 +225,52 @@ const Navbar = () => {
 
           {/* Navigation Links */}
           <div className="space-y-1 pt-1 border-t border-[#E6E1D8]/60">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                to={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`block py-2.5 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition min-h-[44px] flex items-center ${
-                  location.pathname === link.href
-                    ? "bg-[#DCEBDD]/50 text-[#163D32]"
-                    : "text-[#18332B] hover:bg-[#F7F1E6] hover:text-[#1F5948]"
-                }`}
-              >
-                {link.name}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const isHash = link.href.includes("#");
+              const isActive = location.pathname === link.href;
+              return isHash ? (
+                <a
+                  key={link.name}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block py-2.5 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition min-h-[44px] flex items-center text-[#18332B] hover:bg-[#F7F1E6] hover:text-[#1F5948]"
+                >
+                  {link.name}
+                </a>
+              ) : (
+                <Link
+                  key={link.name}
+                  to={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block py-2.5 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition min-h-[44px] flex items-center ${
+                    isActive
+                      ? "bg-[#DCEBDD]/50 text-[#163D32]"
+                      : "text-[#18332B] hover:bg-[#F7F1E6] hover:text-[#1F5948]"
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              );
+            })}
           </div>
 
-          {/* User Sign In / Dashboard CTA */}
-          <div className="pt-2 border-t border-[#E6E1D8]">
+          {/* Action CTAs in Mobile Drawer */}
+          <div className="pt-2 border-t border-[#E6E1D8] space-y-2">
+            {/* Ask ARAM AI Mobile Button */}
+            <Link
+              to="/citizen/chatbot"
+              onClick={() => setMobileMenuOpen(false)}
+              className="w-full text-center text-xs py-3 min-h-[44px] rounded-full bg-[#12805A] hover:bg-[#0D6245] text-white font-bold flex items-center justify-center gap-2 shadow-sm transition"
+            >
+              <Sparkles size={15} className="text-[#A3E5C9]" />
+              <span>Ask ARAM AI</span>
+            </Link>
+
+            {/* User Sign In / Dashboard CTA */}
             <Link
               to={user ? (user.role === "ADMIN" ? "/admin/dashboard" : user.role === "VOLUNTEER" || user.role === "GUIDE" ? "/guide/dashboard" : "/citizen/dashboard") : "/login"}
               onClick={() => setMobileMenuOpen(false)}
-              className="btn-aram-primary w-full text-center text-xs py-3 min-h-[44px] flex items-center justify-center gap-2 shadow-sm"
+              className="btn-aram-primary w-full text-center text-xs py-3 min-h-[44px] flex items-center justify-center gap-2 shadow-sm rounded-full"
             >
               {user ? (
                 <span>{t("nav.dashboard", "Open Dashboard")}</span>
