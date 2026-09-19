@@ -149,7 +149,8 @@ public class ComplaintService {
         );
 
         try {
-            emailService.sendComplaintSubmittedEmail(user.getEmail(), user.getName(), savedComplaint.getComplaintCustomId(), savedComplaint.getDistrict(), user.getState());
+            String citizenState = (user.getState() != null && !user.getState().trim().isEmpty()) ? user.getState() : "Tamil Nadu";
+            emailService.sendComplaintSubmittedEmail(user.getEmail(), user.getName(), savedComplaint.getComplaintCustomId(), savedComplaint.getDistrict(), citizenState);
         } catch (Exception e) {
             System.err.println("Failed to send complaint submission email: " + e.getMessage());
         }
@@ -309,7 +310,7 @@ public class ComplaintService {
         
         // Enforce state transitions
         validateTransition(complaint.getStatus(), request.status());
-
+        ComplaintStatus oldStatus = complaint.getStatus();
         complaint.setStatus(request.status());
         if (request.note() != null) {
             complaint.setLegalOpinion(request.note());
@@ -329,6 +330,29 @@ public class ComplaintService {
         }
 
         notificationService.create(saved.getUser(), "Your complaint status changed to " + saved.getStatus(), NotificationType.IN_APP);
+
+        if (saved.getUser() != null && saved.getUser().getEmail() != null && oldStatus != request.status()) {
+            try {
+                emailService.sendComplaintStatusUpdateEmail(
+                    saved.getUser().getEmail(),
+                    saved.getUser().getName(),
+                    saved.getComplaintCustomId(),
+                    oldStatus.name(),
+                    request.status().name()
+                );
+                if (request.status() == ComplaintStatus.RESOLVED || request.status() == ComplaintStatus.RESOLVED_BY_GUIDE) {
+                    emailService.sendCaseResolvedEmail(
+                        saved.getUser().getEmail(),
+                        saved.getUser().getName(),
+                        saved.getComplaintCustomId(),
+                        request.note()
+                    );
+                }
+            } catch (Exception mEx) {
+                System.err.println("Status update email error: " + mEx.getMessage());
+            }
+        }
+
         return mapperService.toComplaintResponse(saved, aiResultRepository.findByComplaint(saved).orElse(null));
     }
 

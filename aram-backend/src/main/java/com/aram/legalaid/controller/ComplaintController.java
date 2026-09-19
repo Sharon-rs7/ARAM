@@ -48,7 +48,7 @@ public class ComplaintController {
         return ResponseEntity.ok(complaintService.reAnalyze(id));
     }
 
-    @PutMapping("/{id}/status")
+    @RequestMapping(value = "/{id}/status", method = {RequestMethod.PUT, RequestMethod.PATCH})
     public ResponseEntity<ComplaintResponse> updateStatus(@PathVariable Long id, @Valid @RequestBody StatusUpdateRequest request) {
         return ResponseEntity.ok(complaintService.updateStatus(id, request));
     }

@@ -4,31 +4,34 @@ import {
   Landmark,
   Scale,
 } from "lucide-react";
-
-const users = [
-  {
-    icon: UserRound,
-    title: "Citizens",
-    desc: "Submit complaints and receive AI guidance.",
-  },
-  {
-    icon: Scale,
-    title: "Legal Volunteers",
-    desc: "Assist citizens and provide legal support.",
-  },
-  {
-    icon: Landmark,
-    title: "Government Officials",
-    desc: "Review and resolve assigned complaints.",
-  },
-  {
-    icon: Users,
-    title: "Administrators",
-    desc: "Monitor platform activities and analytics.",
-  },
-];
+import { useLanguage } from "@/context/LanguageContext";
 
 const WhoCanUse = () => {
+  const { t } = useLanguage();
+
+  const users = [
+    {
+      icon: UserRound,
+      title: t("whoCanUse.u1Title", "Citizens"),
+      desc: t("whoCanUse.u1Desc", "Submit complaints and receive AI guidance."),
+    },
+    {
+      icon: Scale,
+      title: t("whoCanUse.u2Title", "Legal Volunteers"),
+      desc: t("whoCanUse.u2Desc", "Assist citizens and provide legal support."),
+    },
+    {
+      icon: Landmark,
+      title: t("whoCanUse.u3Title", "Government Officials"),
+      desc: t("whoCanUse.u3Desc", "Review and resolve assigned complaints."),
+    },
+    {
+      icon: Users,
+      title: t("whoCanUse.u4Title", "Administrators"),
+      desc: t("whoCanUse.u4Desc", "Monitor platform activities and analytics."),
+    },
+  ];
+
   return (
     <section className="bg-slate-50 dark:bg-[#07090c] py-28 transition-colors duration-300">
       <div className="mx-auto max-w-[1400px] px-6">
@@ -36,12 +39,11 @@ const WhoCanUse = () => {
         <div className="text-center">
 
           <h2 className="text-5xl font-bold text-slate-900 dark:text-white tracking-tight">
-            Who Can Use ARAM
+            {t("whoCanUse.title", "Who Can Use ARAM")}
           </h2>
 
           <p className="mx-auto mt-5 max-w-2xl text-lg text-slate-500 dark:text-slate-400 font-medium">
-            Built for every stakeholder involved in the legal assistance
-            ecosystem.
+            {t("whoCanUse.subtitle", "Built for every stakeholder involved in the legal assistance ecosystem.")}
           </p>
 
         </div>

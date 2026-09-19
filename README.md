@@ -459,13 +459,16 @@ cd aram-backend
 ## 📊 Section 19 — Project Implementation Status
 
 - **IMPLEMENTED**:
-  - Full React 19 Frontend with responsive Citizen, Guide, Admin, and SuperAdmin dashboards.
-  - Spring Boot 3.3.5 core backend with JWT authentication, role guards, and JPA MySQL integration.
-  - Interactive Google OAuth Identity modal with backend auto-provisioning (`/api/auth/google`).
-  - Statutory Citizen Verification & Grievance Declaration Gate with unique case ID generation.
-  - 1,306-chunk Hybrid RAG pipeline with BM25, dense embeddings, RRF, and fail-closed legal grounding.
-  - Real-time Spring WebSocket STOMP live updates (`/ws/updates`).
-  - Statewide 38-district telemetry matrix and regional administrative isolation.
+  - **Super Admin Command Center & Statewide Analytics**: Live executive intelligence dashboard with real-time KPIs, interactive 8-stage case lifecycle funnel, SLA aging buckets (<24h to 14d+), legal domain breakdown, guide capacity utilization, and multi-filter scoping (Today, 7d, 30d, All Time; All 38 Tamil Nadu districts).
+  - **38-District Redressal Matrix & Regional Control**: Real-time performance tracking, capacity monitoring, and direct drilldown into Regional Control Centers across all 38 revenue districts of Tamil Nadu.
+  - **High-Availability Voice-to-Text (STT) Multi-Engine**: Primary Deepgram Cloud STT (Nova-3 multilingual) with instant hot-standby failover to local preloaded Faster-Whisper. Supports Tamil, Tanglish, Hindi, and English.
+  - **Tamper-Evident SHA-256 Blockchain Ledger**: Serialized block mining with pessimistic DB write locks and full cryptographic chain validation (`BlockchainService.verifyFullChain()`).
+  - **Confidential Sensitive Case Operations**: Automated detection of women safety and domestic violence cases with zero citizen PII exposure.
+  - **Full 5-Portal Unified Frontend**: Responsive portals for Citizen, Legal Guide, District Admin, Super Admin, and AI Microservice with unified navigation and role-aware Topbar search.
+  - **Spring Boot 3.3.5 Core Backend**: JWT authentication, BCrypt hashing, role guards, JPA MySQL integration, and resilient asynchronous email dispatch with outbox preservation.
+  - **Legal Guide Credit & Workload System**: Gamified credit scoring, active case caps, and specialized legal domain assignments.
+  - **1,306-chunk Hybrid RAG Pipeline**: Dense vector + BM25 reciprocal rank fusion with fail-closed legal grounding against statutory Tamil Nadu and Central law provisions.
+  - **Real-Time WebSocket Messaging**: Multi-channel Spring STOMP broker for instant citizen-guide communication and notification pushes.
 
 - **PARTIALLY IMPLEMENTED**:
   - OCR document verification: Rule-based text extraction and format validation are active; deep visual layout parsing is undergoing refinement.

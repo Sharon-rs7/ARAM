@@ -49,7 +49,11 @@ export default function MyAnalytics() {
     setError("");
     try {
       const analytics = await volunteerService.getMyVolunteerAnalytics();
-      setData(analytics);
+      if (analytics) {
+        setData(analytics);
+      } else {
+        throw new Error("Empty analytics response");
+      }
     } catch (err) {
       console.error("Failed to load self analytics", err);
       setError("Unable to load your analytics profile. Check connection with backend server.");
@@ -227,33 +231,33 @@ export default function MyAnalytics() {
               {/* Profile Header */}
               <div className="text-center space-y-3">
                 <div className="h-20 w-20 rounded-full bg-slate-100 mx-auto flex items-center justify-center text-slate-800 font-extrabold text-2xl border border-slate-200">
-                  {volunteer.name.split(" ").map(n => n[0]).join("")}
+                  {(volunteer?.name || "Legal Guide").trim().split(/\s+/).map(n => n ? n[0] : "").filter(Boolean).join("") || "G"}
                 </div>
                 <div>
                   <div className="flex justify-center items-center gap-1.5">
-                    <h2 className="text-lg font-extrabold text-slate-800">{volunteer.name}</h2>
-                    {volunteer.verified && (
+                    <h2 className="text-lg font-extrabold text-slate-800">{volunteer?.name || "Legal Guide"}</h2>
+                    {volunteer?.verified && (
                       <span className="text-indigo-600 bg-indigo-50 border border-indigo-150 rounded-full p-0.5" title="Verified Legal Guide">
                         <ShieldCheck size={14} />
                       </span>
                     )}
                   </div>
                   <p className="text-xs text-indigo-600 font-semibold uppercase tracking-wider mt-0.5">
-                    {volunteer.role === "HELPER" ? "Legal Guide" : volunteer.role}
+                    {volunteer?.role === "HELPER" ? "Legal Guide" : (volunteer?.role || "Legal Guide")}
                   </p>
                 </div>
                 <div className="flex justify-center">
                   <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase border ${
-                    volunteer.availabilityStatus === "AVAILABLE" 
+                    volunteer?.availabilityStatus === "AVAILABLE" 
                       ? "bg-green-50 text-green-700 border-green-200"
-                      : volunteer.availabilityStatus === "BUSY"
+                      : volunteer?.availabilityStatus === "BUSY"
                       ? "bg-amber-50 text-amber-700 border-amber-200"
                       : "bg-red-50 text-red-700 border-red-200"
                   }`}>
                     <span className={`h-1.5 w-1.5 rounded-full ${
-                      volunteer.availabilityStatus === "AVAILABLE" ? "bg-green-600" : volunteer.availabilityStatus === "BUSY" ? "bg-amber-500" : "bg-red-500"
+                      volunteer?.availabilityStatus === "AVAILABLE" ? "bg-green-600" : volunteer?.availabilityStatus === "BUSY" ? "bg-amber-500" : "bg-red-500"
                     }`} />
-                    {volunteer.availabilityStatus}
+                    {volunteer?.availabilityStatus || "AVAILABLE"}
                   </span>
                 </div>
               </div>
@@ -264,19 +268,19 @@ export default function MyAnalytics() {
               <div className="space-y-3.5 text-xs text-slate-600">
                 <div className="flex items-center gap-2.5">
                   <Mail size={16} className="text-slate-400 shrink-0" />
-                  <span className="truncate">{volunteer.email}</span>
+                  <span className="truncate">{volunteer?.email || "—"}</span>
                 </div>
                 <div className="flex items-center gap-2.5">
                   <Phone size={16} className="text-slate-400 shrink-0" />
-                  <span>{volunteer.phone}</span>
+                  <span>{volunteer?.phone || "—"}</span>
                 </div>
                 <div className="flex items-center gap-2.5">
                   <MapPin size={16} className="text-slate-400 shrink-0" />
-                  <span>{volunteer.district} ({volunteer.serviceArea})</span>
+                  <span>{volunteer?.district || "Tamil Nadu"} ({volunteer?.serviceArea || "District Legal Aid"})</span>
                 </div>
                 <div className="flex items-center gap-2.5">
                   <Calendar size={16} className="text-slate-400 shrink-0" />
-                  <span>Experience Level: <strong className="text-slate-800">{volunteer.experienceLevel} ({volunteer.yearsExperience} yrs)</strong></span>
+                  <span>Experience Level: <strong className="text-slate-800">{volunteer?.experienceLevel || "SENIOR"} ({volunteer?.yearsExperience || 2} yrs)</strong></span>
                 </div>
               </div>
 
@@ -287,7 +291,7 @@ export default function MyAnalytics() {
                 <div>
                   <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">My Specialization Tags</h4>
                   <div className="flex flex-wrap gap-1.5">
-                    {volunteer.specializations.map((spec) => (
+                    {(volunteer?.specializations || []).map((spec) => (
                       <span key={spec} className="px-2 py-0.5 rounded-md bg-blue-50 text-blue-700 font-semibold text-[10px] uppercase border border-blue-100">
                         {spec}
                       </span>
@@ -298,7 +302,7 @@ export default function MyAnalytics() {
                 <div>
                   <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Languages known</h4>
                   <div className="flex flex-wrap gap-1.5">
-                    {volunteer.languages.map((lang) => (
+                    {(volunteer?.languages || []).map((lang) => (
                       <span key={lang} className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-semibold text-[10px] uppercase">
                         {lang}
                       </span>

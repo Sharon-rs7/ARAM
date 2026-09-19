@@ -2,16 +2,19 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { 
   Bell, Search, User, LogOut, Shield, ChevronDown, 
-  HelpCircle, Settings, CheckCircle2, AlertTriangle, FileText
+  HelpCircle, Settings, CheckCircle2, AlertTriangle, FileText,
+  Sun, Moon
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { useNotifications } from "@/context/NotificationContext";
+import { useTheme } from "@/context/ThemeContext";
 import Avatar from "@/components/common/Avatar";
 
 const Topbar = ({ onToggleSidebar, role = "citizen" }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const { resolvedTheme, setMode } = useTheme();
   const { language, changeLanguage, availableLanguages } = useLanguage();
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
   
@@ -22,8 +25,22 @@ const Topbar = ({ onToggleSidebar, role = "citizen" }) => {
   const handleSearch = (e) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
-    navigate(`/citizen/chatbot?q=${encodeURIComponent(searchQuery)}`);
+    if (user?.role === "SUPER_ADMIN") {
+      navigate(`/superadmin/dashboard?tab=complaints&search=${encodeURIComponent(searchQuery)}`);
+    } else if (user?.role === "ADMIN") {
+      navigate(`/admin/complaints?search=${encodeURIComponent(searchQuery)}`);
+    } else if (user?.role === "LEGAL_GUIDE" || user?.role === "VOLUNTEER") {
+      navigate(`/volunteer/dashboard?search=${encodeURIComponent(searchQuery)}`);
+    } else {
+      navigate(`/citizen/chatbot?q=${encodeURIComponent(searchQuery)}`);
+    }
   };
+
+  const searchPlaceholder = user?.role === "SUPER_ADMIN" || user?.role === "ADMIN"
+    ? "Search grievances across all 38 districts (ID, citizen, keyword)..."
+    : user?.role === "LEGAL_GUIDE" || user?.role === "VOLUNTEER"
+    ? "Search assigned cases or legal topics..."
+    : "Ask ARAM AI legal questions (e.g., land title, RTI, 498A)...";
 
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-[#DDE2DF] bg-[#FFFDF8]/95 px-4 backdrop-blur-md sm:px-6">
@@ -36,7 +53,7 @@ const Topbar = ({ onToggleSidebar, role = "citizen" }) => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Ask ARAM AI legal questions (e.g., land title, RTI, 498A)..."
+            placeholder={searchPlaceholder}
             className="w-full h-10 rounded-full border border-[#DDE2DF] bg-white pl-10 pr-4 text-xs font-medium text-[#18332B] placeholder-[#8B9690] focus:border-[#163D32] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#DCEBDD]/50 transition shadow-2xs"
           />
         </form>
@@ -59,6 +76,21 @@ const Topbar = ({ onToggleSidebar, role = "citizen" }) => {
             </button>
           ))}
         </div>
+
+        {/* Light & Dark Mode Toggle Icon */}
+        <button
+          type="button"
+          onClick={() => setMode(resolvedTheme === "dark" ? "LIGHT" : "DARK")}
+          className="p-2 rounded-full text-[#163D32] hover:bg-[#DCEBDD]/40 transition cursor-pointer border border-[#E6E1D8] bg-[#F7F1E6]/70 flex items-center justify-center shadow-2xs"
+          title={resolvedTheme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          aria-label="Toggle light/dark theme"
+        >
+          {resolvedTheme === "dark" ? (
+            <Sun size={17} className="text-[#C58A25]" />
+          ) : (
+            <Moon size={17} className="text-[#163D32]" />
+          )}
+        </button>
 
         {/* Notifications Popover */}
         <div className="relative">

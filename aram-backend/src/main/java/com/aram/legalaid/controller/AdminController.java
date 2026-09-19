@@ -71,6 +71,9 @@ public class AdminController {
     @Autowired
     private com.aram.legalaid.scheduler.AuditMonitoringScheduler auditMonitoringScheduler;
 
+    @Autowired
+    private com.aram.legalaid.service.StatewideAnalyticsService statewideAnalyticsService;
+
     public AdminController(AdminService adminService, ComplaintService complaintService, UserRepository userRepository,
                            ComplaintRepository complaintRepository, MapperService mapperService,
                            AuditLogService auditLogService, AuditLogRepository auditLogRepository,
@@ -122,7 +125,7 @@ public class AdminController {
         return ResponseEntity.ok(complaintService.allComplaints());
     }
 
-    @PutMapping("/complaints/{id}/status")
+    @RequestMapping(value = "/complaints/{id}/status", method = {RequestMethod.PUT, RequestMethod.PATCH})
     public ResponseEntity<ComplaintResponse> updateStatus(@PathVariable Long id, @Valid @RequestBody StatusUpdateRequest request, Principal principal) {
         ComplaintResponse response = complaintService.updateStatus(id, request);
         String adminName = principal != null ? principal.getName() : "admin@gmail.com";
@@ -254,6 +257,34 @@ public class AdminController {
             );
         } catch (Exception e) {
             System.err.println("FastAPI sync failed: " + e.getMessage());
+        }
+
+        // Email notifications
+        if (saved.getUser() != null && saved.getUser().getEmail() != null) {
+            try {
+                emailService.sendGuideAssignedEmail(
+                    saved.getUser().getEmail(),
+                    saved.getUser().getName(),
+                    saved.getComplaintCustomId(),
+                    helper.getName()
+                );
+            } catch (Exception e) {
+                System.err.println("Failed to send guide assignment email to citizen: " + e.getMessage());
+            }
+        }
+        if (helper.getEmail() != null) {
+            try {
+                emailService.sendGuideNewCaseEmail(
+                    helper.getEmail(),
+                    helper.getName(),
+                    saved.getComplaintCustomId(),
+                    saved.getCategory() != null ? saved.getCategory().name() : "GENERAL",
+                    saved.getDistrict(),
+                    saved.getLanguage() != null ? saved.getLanguage() : "ENGLISH"
+                );
+            } catch (Exception e) {
+                System.err.println("Failed to send new case email to guide: " + e.getMessage());
+            }
         }
 
         return ResponseEntity.ok(mapperService.toComplaintResponse(saved, null));
@@ -726,6 +757,34 @@ public class AdminController {
             );
         } catch (Exception e) {
             System.err.println("FastAPI sync failed: " + e.getMessage());
+        }
+
+        // Email notifications
+        if (saved.getUser() != null && saved.getUser().getEmail() != null) {
+            try {
+                emailService.sendGuideAssignedEmail(
+                    saved.getUser().getEmail(),
+                    saved.getUser().getName(),
+                    saved.getComplaintCustomId(),
+                    volunteer.getName()
+                );
+            } catch (Exception e) {
+                System.err.println("Failed to send guide assignment email to citizen: " + e.getMessage());
+            }
+        }
+        if (volunteer.getEmail() != null) {
+            try {
+                emailService.sendGuideNewCaseEmail(
+                    volunteer.getEmail(),
+                    volunteer.getName(),
+                    saved.getComplaintCustomId(),
+                    saved.getCategory() != null ? saved.getCategory().name() : "GENERAL",
+                    saved.getDistrict(),
+                    saved.getLanguage() != null ? saved.getLanguage() : "ENGLISH"
+                );
+            } catch (Exception e) {
+                System.err.println("Failed to send new case email to volunteer: " + e.getMessage());
+            }
         }
 
         return ResponseEntity.ok(mapperService.toComplaintResponse(saved, null));
@@ -1224,5 +1283,25 @@ public class AdminController {
 
         boolean valid = blockchainService.verifyFullChain();
         return ResponseEntity.ok(Map.of("valid", valid));
+    }
+
+    @GetMapping({"/superadmin/statewide-analytics", "/statewide-analytics"})
+    public ResponseEntity<Map<String, Object>> getStatewideAnalytics(
+            @RequestParam(required = false, defaultValue = "all") String timeRange,
+            @RequestParam(required = false, defaultValue = "ALL") String district,
+            Principal principal
+    ) {
+        String currentEmail = principal != null ? principal.getName() : "superadmin@gmail.com";
+        User currentUser = userRepository.findByEmail(currentEmail).orElse(null);
+        if (currentUser == null || (currentUser.getRole() != Role.SUPER_ADMIN && currentUser.getRole() != Role.ADMIN)) {
+            throw new com.aram.legalaid.exception.ForbiddenException("Super Admin or Admin access required");
+        }
+
+        String effectiveDistrict = district;
+        if (currentUser.getRole() == Role.ADMIN && currentUser.getDistrict() != null && !"GLOBAL".equalsIgnoreCase(currentUser.getDistrict())) {
+            effectiveDistrict = currentUser.getDistrict();
+        }
+
+        return ResponseEntity.ok(statewideAnalyticsService.getStatewideAnalytics(timeRange, effectiveDistrict));
     }
 }

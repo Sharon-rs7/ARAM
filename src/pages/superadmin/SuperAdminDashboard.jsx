@@ -15,6 +15,7 @@ import {
   Search, Filter, Plus, Send, Eye, ShieldCheck, Download, AlertTriangle,
   Award, Briefcase, ChevronRight, Lock, Layers
 } from "lucide-react";
+import StatewideAnalyticsView from "@/components/superadmin/StatewideAnalyticsView";
 
 export const TN_DISTRICTS = [
   "Ariyalur", "Chengalpattu", "Chennai", "Coimbatore", "Cuddalore", 
@@ -33,13 +34,28 @@ export default function SuperAdminDashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const urlTab = searchParams.get("tab");
-  const [activeTab, setActiveTabState] = useState(urlTab || "districts");
+  const [activeTab, setActiveTabState] = useState(urlTab || "analytics");
 
   useEffect(() => {
     if (urlTab && urlTab !== activeTab) {
       setActiveTabState(urlTab);
     }
   }, [urlTab]);
+
+  useEffect(() => {
+    const searchParam = searchParams.get("search");
+    if (searchParam !== null && searchParam !== undefined) {
+      setComplaintSearch(searchParam);
+    }
+    const statusParam = searchParams.get("status");
+    if (statusParam) {
+      setComplaintStatusFilter(statusParam);
+    }
+    const districtParam = searchParams.get("district");
+    if (districtParam) {
+      setComplaintDistrictFilter(districtParam);
+    }
+  }, [searchParams]);
 
   const setActiveTab = (tabId) => {
     setActiveTabState(tabId);
@@ -594,6 +610,7 @@ export default function SuperAdminDashboard() {
         <div className="bg-[#FFFDF8] dark:bg-[#11201B] p-4 sm:p-5 rounded-2xl border border-[#E6E1D8] dark:border-emerald-800/50 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[#DCEBDD] dark:bg-emerald-950/80 text-[#163D32] dark:text-emerald-300 flex items-center justify-center shrink-0 border border-[#163D32]/20 dark:border-emerald-700/50 shadow-xs">
+              {activeTab === "analytics" && <Activity size={20} />}
               {activeTab === "districts" && <MapPin size={20} />}
               {activeTab === "complaints" && <FileText size={20} />}
               {activeTab === "citizens" && <Users size={20} />}
@@ -604,6 +621,7 @@ export default function SuperAdminDashboard() {
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#163D32] text-white">
+                  {activeTab === "analytics" && "Executive Command"}
                   {activeTab === "districts" && "District Network"}
                   {activeTab === "complaints" && "Grievance Redressal"}
                   {activeTab === "citizens" && "Directory"}
@@ -616,6 +634,7 @@ export default function SuperAdminDashboard() {
                 </span>
               </div>
               <h2 className="text-base sm:text-lg font-black text-[#18332B] dark:text-white mt-0.5">
+                {activeTab === "analytics" && "Tamil Nadu Legal Aid Command & Statewide Intelligence"}
                 {activeTab === "districts" && "Tamil Nadu District Grievance Redressal Network"}
                 {activeTab === "complaints" && "Statewide Grievance Redressal Queue"}
                 {activeTab === "citizens" && "Tamil Nadu Citizen Registry & Profiles"}
@@ -629,6 +648,7 @@ export default function SuperAdminDashboard() {
           {/* Quick Module Switcher */}
           <div className="flex flex-wrap items-center gap-1.5 bg-[#F7F1E6]/70 dark:bg-[#182C26] p-1.5 rounded-xl border border-[#E6E1D8] dark:border-emerald-800/40 text-xs font-bold">
             {[
+              { id: "analytics", label: "Statewide Analytics", icon: Activity },
               { id: "districts", label: "District Portals", icon: MapPin },
               { id: "complaints", label: "Grievances", icon: FileText, count: complaints.length },
               { id: "citizens", label: "Citizens", icon: Users, count: stats.totalCitizens },
@@ -664,6 +684,23 @@ export default function SuperAdminDashboard() {
             })}
           </div>
         </div>
+
+        {/* ========================================================================= */}
+        {/* TAB 0: STATEWIDE COMMAND & ANALYTICS */}
+        {/* ========================================================================= */}
+        {activeTab === "analytics" && (
+          <StatewideAnalyticsView
+            onNavigateToComplaints={(statusCode) => {
+              if (statusCode === "CRITICAL") {
+                setComplaintPriorityFilter("CRITICAL");
+                setComplaintStatusFilter("ALL");
+              } else {
+                setComplaintStatusFilter(statusCode);
+              }
+              setActiveTab("complaints");
+            }}
+          />
+        )}
 
         {/* ========================================================================= */}
         {/* TAB 1: DISTRICT PORTALS */}
@@ -1606,7 +1643,7 @@ export default function SuperAdminDashboard() {
                 </p>
                 <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-emerald-900/40 text-xs">
                   <span className="text-[#65736D] dark:text-emerald-300/70 font-bold">Matching Accuracy</span>
-                  <span className="font-black text-[#163D32] dark:text-emerald-400">98.4% Optimal</span>
+                  <span className="font-black text-[#163D32] dark:text-emerald-400">Verified AI Triage</span>
                 </div>
               </div>
             </div>

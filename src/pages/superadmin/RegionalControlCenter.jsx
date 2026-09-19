@@ -747,7 +747,7 @@ export default function RegionalControlCenter() {
                           ARAM AI Forensic Operations Audit
                         </h3>
                         <span className="text-[10px] font-black bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 px-2 py-0.5 rounded-full border border-emerald-300/60">
-                          98.4% Confidence
+                          Verified AI Redressal
                         </span>
                       </div>
                       <span className="text-[11px] text-[#65736D] dark:text-emerald-400/60 font-semibold">

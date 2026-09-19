@@ -25,6 +25,7 @@ public class AdditionalFlowsService {
     private final LegalGuidePerformanceProfileRepository performanceProfileRepository;
     private final AIResultRepository aiResultRepository;
     private final AIClientService aiClientService;
+    private final EmailService emailService;
 
     public AdditionalFlowsService(
             CaseDocumentRequestRepository caseDocumentRequestRepository,
@@ -37,7 +38,8 @@ public class AdditionalFlowsService {
             LegalGuideEloHistoryRepository eloHistoryRepository,
             LegalGuidePerformanceProfileRepository performanceProfileRepository,
             AIResultRepository aiResultRepository,
-            AIClientService aiClientService
+            AIClientService aiClientService,
+            EmailService emailService
     ) {
         this.caseDocumentRequestRepository = caseDocumentRequestRepository;
         this.caseAppointmentRepository = caseAppointmentRepository;
@@ -50,6 +52,7 @@ public class AdditionalFlowsService {
         this.performanceProfileRepository = performanceProfileRepository;
         this.aiResultRepository = aiResultRepository;
         this.aiClientService = aiClientService;
+        this.emailService = emailService;
     }
 
     // Document Requests
@@ -85,6 +88,20 @@ public class AdditionalFlowsService {
                 "Your Legal Guide has requested document: " + documentName + ".",
                 NotificationType.IN_APP
         );
+
+        if (complaint.getUser() != null && complaint.getUser().getEmail() != null) {
+            try {
+                emailService.sendComplaintStatusUpdateEmail(
+                    complaint.getUser().getEmail(),
+                    complaint.getUser().getName(),
+                    complaint.getComplaintCustomId(),
+                    "HELPER_ASSIGNED",
+                    ComplaintStatus.DOCUMENTS_PENDING.name()
+                );
+            } catch (Exception ex) {
+                System.err.println("Document request email failed: " + ex.getMessage());
+            }
+        }
 
         return saved;
     }
@@ -313,6 +330,26 @@ public class AdditionalFlowsService {
                         "Your Legal Guide has shared the case resolution. Please confirm to close your case.",
                         NotificationType.IN_APP
                 );
+
+                if (complaint.getUser() != null && complaint.getUser().getEmail() != null) {
+                    try {
+                        emailService.sendComplaintStatusUpdateEmail(
+                            complaint.getUser().getEmail(),
+                            complaint.getUser().getName(),
+                            complaint.getComplaintCustomId(),
+                            "IN_PROGRESS",
+                            ComplaintStatus.RESOLVED_BY_GUIDE.name()
+                        );
+                        emailService.sendCaseResolvedEmail(
+                            complaint.getUser().getEmail(),
+                            complaint.getUser().getName(),
+                            complaint.getComplaintCustomId(),
+                            details != null ? details : "Legal guidance successfully provided."
+                        );
+                    } catch (Exception ex) {
+                        System.err.println("Resolution email failed: " + ex.getMessage());
+                    }
+                }
                 break;
 
             case "CLOSED_BY_USER":
@@ -328,6 +365,20 @@ public class AdditionalFlowsService {
                 
                 auditLogService.log("USER_CONFIRMED_RESOLVED", currentUser.getEmail(), "Citizen marked complaint " + complaintId + " as closed");
                 updateReputationAndElo(complaintId, null, "Citizen marked case as closed without feedback");
+
+                if (complaint.getUser() != null && complaint.getUser().getEmail() != null) {
+                    try {
+                        emailService.sendComplaintStatusUpdateEmail(
+                            complaint.getUser().getEmail(),
+                            complaint.getUser().getName(),
+                            complaint.getComplaintCustomId(),
+                            "RESOLVED_BY_GUIDE",
+                            ComplaintStatus.CLOSED_BY_USER.name()
+                        );
+                    } catch (Exception ex) {
+                        System.err.println("Case closed email failed: " + ex.getMessage());
+                    }
+                }
                 break;
 
             case "REOPEN_REQUESTED":

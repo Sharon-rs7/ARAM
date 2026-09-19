@@ -56,9 +56,15 @@ const Dashboard = () => {
         const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
         toast.info("Transcribing your grievance voice input...");
         try {
-          const res = await speechService.transcribeAudio(audioBlob, "ta-IN");
-          if (res?.text) {
-            navigate(`/citizen/chatbot?q=${encodeURIComponent(res.text)}`);
+          const res = await speechService.transcribeAudio(audioBlob, "auto");
+          const transcribedText = (res?.transcript || res?.text || "").trim();
+          if (transcribedText) {
+            if (res?.detectedLanguage) {
+              toast.success(`Recognized in ${res.detectedLanguage}!`);
+            }
+            navigate(`/citizen/chatbot?q=${encodeURIComponent(transcribedText)}`);
+          } else {
+            toast.info("No speech detected. Please speak clearly.");
           }
         } catch (err) {
           toast.error("Voice transcription failed. Please type your query.");
@@ -92,8 +98,8 @@ const Dashboard = () => {
             <div className="inline-flex items-center gap-2 rounded-full bg-[#DCEBDD]/20 px-3 py-1 text-xs font-bold text-[#DCEBDD]">
               <Sparkles size={14} /> Tamil Nadu Public Legal Aid & Grievance Portal
             </div>
-            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight">
-              Hello, {user?.name || "Citizen"}. How can ARAM assist you today?
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight text-white">
+              Hello, <span className="text-[#E8C978]">{user?.name || "Citizen"}</span>. How can ARAM assist you today?
             </h1>
             <p className="text-xs sm:text-sm text-[#DCEBDD]/90 leading-relaxed">
               Describe any grievance, legal issue, or dispute in Tamil, English, or Hindi to receive immediate verified guidance, document requirements, and assigned legal guide assistance.

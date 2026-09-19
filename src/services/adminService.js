@@ -175,6 +175,13 @@ export const adminService = {
   deleteAuthorityOffice: async (id) => {
     const res = await api.delete(`/admin/authority-offices/${id}`);
     return res.data;
+  },
+
+  getStatewideAnalytics: async (timeRange = "all", district = "ALL") => {
+    const res = await api.get("/admin/superadmin/statewide-analytics", {
+      params: { timeRange, district }
+    });
+    return res.data;
   }
 };
 export default adminService;
