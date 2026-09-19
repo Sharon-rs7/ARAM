@@ -18,6 +18,17 @@ export default defineConfig({
       '/api': {
         target: 'http://127.0.0.1:8082',
         changeOrigin: true,
+        headers: {
+          Origin: 'http://localhost:5173',
+        },
+      },
+      '/ws': {
+        target: 'http://127.0.0.1:8082',
+        ws: true,
+        changeOrigin: true,
+        headers: {
+          Origin: 'http://localhost:5173',
+        },
       },
       '/telemetry': {
         target: 'http://127.0.0.1:8000',
