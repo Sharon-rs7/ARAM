@@ -85,6 +85,19 @@ public class WhatsAppService {
     }
 
     /**
+     * Sends a security OTP message via WhatsApp.
+     */
+    public boolean sendOtpMessage(String recipientMobile, String otp) {
+        String msg = "🔐 *ARAM Legal Aid Security Verification*\n\n" +
+                "Vanakkam,\n" +
+                "Your password reset verification OTP is: *" + otp + "*\n\n" +
+                "⏱️ This code will expire in 5 minutes.\n" +
+                "⚠️ For security, never share this code with anyone.\n\n" +
+                "— Government of Tamil Nadu • ARAM Citizen Legal Access";
+        return sendTextMessage(recipientMobile, msg);
+    }
+
+    /**
      * Sends a pre-approved Meta Utility Template message.
      */
     public boolean sendTemplateMessage(String recipientMobile, String templateName, String langCode, List<String> parameters) {

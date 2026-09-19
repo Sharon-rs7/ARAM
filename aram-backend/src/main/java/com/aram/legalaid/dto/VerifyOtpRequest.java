@@ -5,8 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record VerifyOtpRequest(
-        @NotBlank(message = "Email is required")
-        @Email(message = "Invalid email address")
+        @NotBlank(message = "Email address or 10-digit mobile number is required")
         String email,
 
         @NotBlank(message = "OTP is required")

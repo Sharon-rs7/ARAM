@@ -19,15 +19,18 @@ public class CommunicationGateway {
     private final NotificationService notificationService;
     private final EmailService emailService;
     private final WhatsAppService whatsAppService;
+    private final SmsService smsService;
 
     public CommunicationGateway(
             NotificationService notificationService,
             EmailService emailService,
-            WhatsAppService whatsAppService
+            WhatsAppService whatsAppService,
+            SmsService smsService
     ) {
         this.notificationService = notificationService;
         this.emailService = emailService;
         this.whatsAppService = whatsAppService;
+        this.smsService = smsService;
     }
 
     /**
@@ -65,6 +68,15 @@ public class CommunicationGateway {
                 whatsAppService.sendTextMessage(citizen.getMobile(), waMsg);
             } catch (Exception e) {
                 log.error("Failed to dispatch WhatsApp submission message: {}", e.getMessage());
+            }
+        }
+
+        // 3. Normal SMS Alert
+        if (citizen.getMobile() != null && !citizen.getMobile().isBlank()) {
+            try {
+                smsService.sendCaseAlert(citizen.getMobile(), caseId, "SUBMITTED");
+            } catch (Exception e) {
+                log.error("Failed to send SMS alert for complaint submission: {}", e.getMessage());
             }
         }
     }
@@ -124,6 +136,15 @@ public class CommunicationGateway {
                 log.error("Failed to dispatch WhatsApp status update: {}", e.getMessage());
             }
         }
+
+        // 4. Normal SMS Alert
+        if (citizen.getMobile() != null && !citizen.getMobile().isBlank()) {
+            try {
+                smsService.sendCaseAlert(citizen.getMobile(), caseId, statusLabel);
+            } catch (Exception e) {
+                log.error("Failed to send SMS status alert: {}", e.getMessage());
+            }
+        }
     }
 
     /**
@@ -163,6 +184,15 @@ public class CommunicationGateway {
                 whatsAppService.sendTextMessage(citizen.getMobile(), waMsg);
             } catch (Exception e) {
                 log.error("Failed to dispatch WhatsApp guide assignment: {}", e.getMessage());
+            }
+        }
+
+        // 3. Normal SMS Alert
+        if (citizen.getMobile() != null && !citizen.getMobile().isBlank()) {
+            try {
+                smsService.sendCaseAlert(citizen.getMobile(), caseId, "LEGAL_GUIDE_ASSIGNED");
+            } catch (Exception e) {
+                log.error("Failed to send SMS guide assigned alert: {}", e.getMessage());
             }
         }
     }

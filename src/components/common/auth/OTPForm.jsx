@@ -250,7 +250,7 @@ const OTPForm = () => {
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#65736D] hover:text-[#163D32] transition cursor-pointer"
         >
           <ArrowLeft size={14} />
-          <span>Change Email</span>
+          <span>Change Account</span>
         </Link>
         <span className="text-[10px] font-bold uppercase tracking-wider text-[#1F5948] bg-[#DCEBDD] px-2.5 py-0.5 rounded-full">
           Step 1 of 2
@@ -263,7 +263,7 @@ const OTPForm = () => {
         </div>
         <h2 className="text-2xl font-extrabold text-[#18332B] tracking-tight">Enter Verification OTP</h2>
         <p className="text-xs text-[#65736D] mt-1">
-          Enter the 6-digit OTP code sent for <strong className="text-[#18332B]">{email || "your email"}</strong>.
+          Enter the 6-digit OTP code sent for <strong className="text-[#18332B]">{email || "your account"}</strong>.
         </p>
       </div>
 

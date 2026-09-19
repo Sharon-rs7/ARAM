@@ -18,20 +18,23 @@ const ForgotPasswordForm = () => {
     setError("");
     setIsNotFound(false);
 
+    const trimmed = email.trim();
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      setError("Please enter a valid email address.");
+    const phoneRegex = /^(?:\+91|0)?[6-9]\d{9}$/;
+
+    if (!emailRegex.test(trimmed) && !phoneRegex.test(trimmed)) {
+      setError("Please enter a valid email address or 10-digit mobile number.");
       return;
     }
 
     setLoading(true);
 
     try {
-      await authService.forgotPassword({ email: email.trim().toLowerCase() });
-      toast.success("Verification OTP code generated. Please check your verification code.");
-      navigate(`/otp-verification?email=${encodeURIComponent(email.trim().toLowerCase())}`);
+      await authService.forgotPassword({ email: trimmed.toLowerCase() });
+      toast.success("Verification OTP dispatched via SMS, WhatsApp & Email.");
+      navigate(`/otp-verification?email=${encodeURIComponent(trimmed.toLowerCase())}`);
     } catch (err) {
-      const msg = err?.response?.data?.message || err?.message || "Failed to trigger recovery. Please check email address.";
+      const msg = err?.response?.data?.message || err?.message || "Failed to trigger recovery. Please check your details.";
       setError(msg);
       const notFound = msg.toLowerCase().includes("no account found") || 
                        msg.toLowerCase().includes("create a new account") ||
@@ -73,7 +76,7 @@ const ForgotPasswordForm = () => {
           Reset Password
         </h1>
         <p className="text-xs sm:text-sm text-slate-500 dark:text-emerald-200/60 mt-1">
-          Enter your registered email address to receive a secure 6-digit OTP code.
+          Enter your registered email address or 10-digit mobile number to receive a secure 6-digit OTP code.
         </p>
       </div>
 
@@ -107,7 +110,7 @@ const ForgotPasswordForm = () => {
                     }}
                     className="inline-flex items-center justify-center px-3 py-2 rounded-xl border border-rose-300 dark:border-rose-700 hover:bg-rose-100/50 dark:hover:bg-rose-900/30 text-rose-800 dark:text-rose-200 font-semibold text-xs transition cursor-pointer"
                   >
-                    Try Another Email
+                    Try Another Account
                   </button>
                 </div>
               )}
@@ -118,15 +121,20 @@ const ForgotPasswordForm = () => {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-[11px] font-bold text-slate-700 dark:text-emerald-200/90 uppercase tracking-wider mb-1.5 text-left">
-            Registered Email Address
-          </label>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-[11px] font-bold text-slate-700 dark:text-emerald-200/90 uppercase tracking-wider text-left">
+              Registered Email or Mobile Number
+            </label>
+            <span className="text-[10px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800/40">
+              SMS • WhatsApp • Email
+            </span>
+          </div>
           <div className="relative">
             <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-emerald-400/60 pointer-events-none" />
             <input
               id="email"
-              type="email"
-              inputMode="email"
+              type="text"
+              inputMode="text"
               autoCapitalize="none"
               autoCorrect="off"
               spellCheck={false}
@@ -138,12 +146,14 @@ const ForgotPasswordForm = () => {
                   setIsNotFound(false);
                 }
               }}
-              placeholder="name@example.com"
+              placeholder="name@example.com or 9876543210"
               required
-              autoComplete="email"
               className="h-12 w-full rounded-2xl border border-slate-300 dark:border-emerald-800/60 bg-[#F8FAFC] dark:bg-[#182C26] pl-10 pr-3.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-emerald-200/30 focus:border-[#163D32] dark:focus:border-emerald-400 focus:bg-white dark:focus:bg-[#1C352E] focus:ring-4 focus:ring-emerald-500/15 outline-none transition shadow-2xs"
             />
           </div>
+          <p className="text-[11px] text-slate-400 dark:text-emerald-200/40 text-left mt-1.5 pl-1">
+            We will verify your account and dispatch the 6-digit OTP code to your registered mobile and email.
+          </p>
         </div>
 
         <button

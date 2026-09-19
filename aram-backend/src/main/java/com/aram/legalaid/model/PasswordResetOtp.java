@@ -5,7 +5,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "password_reset_otps", indexes = {
-        @Index(name = "idx_reset_otp_email", columnList = "email")
+        @Index(name = "idx_reset_otp_email", columnList = "email"),
+        @Index(name = "idx_reset_otp_mobile", columnList = "mobile_number")
 })
 public class PasswordResetOtp {
     @Id
@@ -14,6 +15,9 @@ public class PasswordResetOtp {
 
     @Column(nullable = false, length = 150)
     private String email;
+
+    @Column(name = "mobile_number", length = 20)
+    private String mobileNumber;
 
     @Column(nullable = false, length = 6)
     private String otp;
@@ -41,6 +45,8 @@ public class PasswordResetOtp {
     public void setId(Long id) { this.id = id; }
     public String getEmail() { return email; }
     public void setEmail(String email) { this.email = email; }
+    public String getMobileNumber() { return mobileNumber; }
+    public void setMobileNumber(String mobileNumber) { this.mobileNumber = mobileNumber; }
     public String getOtp() { return otp; }
     public void setOtp(String otp) { this.otp = otp; }
     public LocalDateTime getExpiryTime() { return expiryTime; }

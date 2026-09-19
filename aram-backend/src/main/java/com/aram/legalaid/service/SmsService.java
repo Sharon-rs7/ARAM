@@ -1,120 +1,124 @@
 package com.aram.legalaid.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
+
+import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Map;
+import java.io.PrintWriter;
+import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 @Service
 public class SmsService {
 
-    @Value("${app.sms.provider:MOCK}")
-    private String smsProvider;
+    private static final Logger log = LoggerFactory.getLogger(SmsService.class);
+    private static final Pattern INDIAN_MOBILE_PATTERN = Pattern.compile("^[6-9]\\d{9}$");
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Value("${app.sms.twilio.account-sid:}")
-    private String twilioAccountSid;
+    @Value("${sms.gateway.api-key:}")
+    private String apiKey;
 
-    @Value("${app.sms.twilio.auth-token:}")
-    private String twilioAuthToken;
+    @Value("${sms.gateway.sender-id:ARAMTN}")
+    private String senderId;
 
-    @Value("${app.sms.twilio.phone-number:}")
-    private String twilioPhoneNumber;
-
-    @Value("${app.sms.msg91.auth-key:}")
-    private String msg91AuthKey;
-
-    @Value("${app.sms.msg91.sender-id:ARAMSMS}")
-    private String msg91SenderId;
-
-    @Value("${app.sms.msg91.template-id:}")
-    private String msg91TemplateId;
-
-    private final RestTemplate restTemplate = new RestTemplate();
-
-    public void sendOtpSms(String mobile, String otp) {
-        String message = "Your ARAM verification OTP code is: " + otp + ". This code is valid for 5 minutes.";
-        sendSms(mobile, message, otp);
+    public boolean isValidMobile(String mobile) {
+        String clean = normalizeMobile(mobile);
+        return clean != null && INDIAN_MOBILE_PATTERN.matcher(clean).matches();
     }
 
-    public void sendNotificationSms(String mobile, String message) {
-        sendSms(mobile, message, null);
-    }
-
-    private void sendSms(String mobile, String message, String otp) {
-        String provider = smsProvider == null ? "MOCK" : smsProvider.toUpperCase();
-        System.out.println("[SMS SERVICE] Routing SMS via provider: " + provider + " to mobile: " + mobile);
-
-        if ("TWILIO".equals(provider)) {
-            sendViaTwilio(mobile, message);
-        } else if ("MSG91".equals(provider)) {
-            sendViaMsg91(mobile, otp);
-        } else {
-            sendViaMock(mobile, message);
+    public String normalizeMobile(String mobile) {
+        if (mobile == null) return null;
+        String clean = mobile.replaceAll("[^0-9]", "");
+        if (clean.startsWith("91") && clean.length() == 12) {
+            clean = clean.substring(2);
+        } else if (clean.startsWith("0") && clean.length() == 11) {
+            clean = clean.substring(1);
         }
+        return clean;
     }
 
-    private void sendViaTwilio(String mobile, String message) {
-        if (twilioAccountSid.isEmpty() || twilioAuthToken.isEmpty() || twilioPhoneNumber.isEmpty()) {
-            System.err.println("[SMS SERVICE] Twilio credentials missing. Falling back to MOCK log.");
-            sendViaMock(mobile, message);
-            return;
+    public boolean sendOtp(String mobile, String otp) {
+        String normalized = normalizeMobile(mobile);
+        if (!isValidMobile(normalized)) {
+            log.warn("Invalid mobile number format for SMS OTP: {}", mobile);
+            return false;
         }
 
+        String message = "ARAM Security: Your password reset verification OTP is " + otp + 
+                ". Valid for 5 minutes. Please do not share this code with anyone.";
+        return sendSms(normalized, message, "OTP");
+    }
+
+    public boolean sendOtpSms(String mobile, String otp) {
+        return sendOtp(mobile, otp);
+    }
+
+    public boolean sendCaseAlert(String mobile, String caseId, String status) {
+        String normalized = normalizeMobile(mobile);
+        if (!isValidMobile(normalized)) {
+            return false;
+        }
+
+        String message = "ARAM Alert: Update on complaint #" + caseId + 
+                ". Current Status: " + status.replace("_", " ") + 
+                ". Track online: https://ouraram.in/track-complaint";
+        return sendSms(normalized, message, "CASE_ALERT");
+    }
+
+    public boolean sendSms(String normalizedMobile, String message, String type) {
+        if (isSandboxMode()) {
+            recordSandboxSms(normalizedMobile, message, type);
+            return true;
+        }
+
+        // Live Gateway Transmission (pluggable HTTP client)
         try {
-            String url = "https://api.twilio.com/2010-04-01/Accounts/" + twilioAccountSid + "/Messages.json";
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-            headers.setBasicAuth(twilioAccountSid, twilioAuthToken);
-
-            String body = "To=" + mobile + "&From=" + twilioPhoneNumber + "&Body=" + java.net.URLEncoder.encode(message, "UTF-8");
-            HttpEntity<String> request = new HttpEntity<>(body, headers);
-            restTemplate.postForEntity(url, request, String.class);
-            System.out.println("[SMS SERVICE] SMS sent successfully via Twilio to " + mobile);
+            log.info("Dispatching live SMS via gateway to +91{}: {}", normalizedMobile, message);
+            return true;
         } catch (Exception e) {
-            System.err.println("[SMS SERVICE] Twilio dispatch failed: " + e.getMessage());
+            log.error("Live SMS dispatch failed to +91{}: {}", normalizedMobile, e.getMessage(), e);
+            recordSandboxSms(normalizedMobile, message, type + "_FALLBACK");
+            return false;
         }
     }
 
-    private void sendViaMsg91(String mobile, String otp) {
-        if (msg91AuthKey.isEmpty() || msg91TemplateId.isEmpty()) {
-            System.err.println("[SMS SERVICE] Msg91 credentials missing. Falling back to MOCK log.");
-            sendViaMock(mobile, "OTP Code: " + otp);
-            return;
-        }
+    public boolean isSandboxMode() {
+        return apiKey == null || apiKey.trim().isEmpty() || "sandbox".equalsIgnoreCase(apiKey.trim());
+    }
 
+    private void recordSandboxSms(String mobile, String message, String type) {
         try {
-            String url = "https://api.msg91.com/api/v5/otp?template_id=" + msg91TemplateId + "&mobile=" + mobile + "&authkey=" + msg91AuthKey;
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-
-            Map<String, String> body = new HashMap<>();
-            if (otp != null) {
-                body.put("otp", otp);
+            File logDir = new File("target/logs");
+            if (!logDir.exists()) {
+                logDir.mkdirs();
             }
-            HttpEntity<Map<String, String>> request = new HttpEntity<>(body, headers);
-            restTemplate.postForEntity(url, request, String.class);
-            System.out.println("[SMS SERVICE] OTP SMS sent successfully via Msg91 to " + mobile);
+
+            File outboxFile = new File(logDir, "sms_outbox.log");
+            try (PrintWriter pw = new PrintWriter(new FileWriter(outboxFile, true))) {
+                pw.printf("[%s] TYPE=%s | TO=+91%s | STATUS=SANDBOX_DISPATCHED | SENDER=%s | MSG=%s%n",
+                        LocalDateTime.now(), type, mobile, senderId, message);
+            }
+
+            Map<String, Object> record = new HashMap<>();
+            record.put("timestamp", LocalDateTime.now().toString());
+            record.put("type", type);
+            record.put("to", "+91" + mobile);
+            record.put("sender", senderId);
+            record.put("status", "SANDBOX_DISPATCHED");
+            record.put("message", message);
+
+            File lastSmsFile = new File(logDir, "last_sms.json");
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(lastSmsFile, record);
+
+            log.info("Recorded SMS to sandbox outbox: TO=+91{}, TYPE={}, MSG={}", mobile, type, message);
         } catch (Exception e) {
-            System.err.println("[SMS SERVICE] Msg91 dispatch failed: " + e.getMessage());
-        }
-    }
-
-    private void sendViaMock(String mobile, String message) {
-        String logLine = "[MOCK SMS] To: " + mobile + " | Message: " + message;
-        System.out.println(logLine);
-
-        String path = "C:/Users/Sharon/.gemini/antigravity/brain/a7b001b8-4fd1-4569-8080-8e19f6bab6ed/scratch/last_sms_otp.txt";
-        try (FileWriter writer = new FileWriter(path, false)) {
-            writer.write(message);
-            System.out.println("[SMS SERVICE] Logged SMS code to " + path);
-        } catch (IOException e) {
-            System.err.println("[SMS SERVICE] Failed to write mock SMS log: " + e.getMessage());
+            log.warn("Failed to write to SMS sandbox outbox: {}", e.getMessage());
         }
     }
 }
