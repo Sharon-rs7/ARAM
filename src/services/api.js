@@ -8,8 +8,15 @@ import { adminService } from "@/services/adminService.js";
 import { normalizeRole } from "@/utils/roleLabels";
 
 const resolveApiUrl = (envVar) => {
-  if (envVar) return envVar;
-  return "/api";
+  if (typeof window !== "undefined") {
+    // If envVar is not provided or points to localhost/127.0.0.1, always use relative /api
+    // so Vite dev server proxy routes to the backend seamlessly on both desktop and mobile devices.
+    if (!envVar || envVar.includes("localhost") || envVar.includes("127.0.0.1") || envVar.startsWith("/")) {
+      return "/api";
+    }
+    return envVar;
+  }
+  return envVar || "/api";
 };
 
 export const API_BUSINESS_URL = resolveApiUrl(import.meta.env.VITE_API_BASE_URL);
