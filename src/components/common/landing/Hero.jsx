@@ -16,7 +16,7 @@ const Hero = () => {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
           
           {/* Left Column: Civic Messaging & Actions */}
-          <div className="lg:col-span-7 space-y-5 text-left">
+          <div className="lg:col-span-6 space-y-5 text-left">
             
             {/* Civic Eyebrow Badge */}
             <div className="inline-flex items-center gap-2 rounded-full bg-[#E5F0E6] border border-[#CDE3CF] px-3.5 py-1.5 text-xs font-bold text-[#167957] shadow-2xs">
@@ -89,37 +89,15 @@ const Hero = () => {
 
           </div>
 
-          {/* Right Column: Hero Visual Card (Tamil Nadu Map & Leadership Showcase) */}
-          <div className="lg:col-span-5 flex items-center justify-center lg:justify-end relative mt-6 lg:mt-0">
-            <div className="relative w-full max-w-[520px] rounded-3xl overflow-hidden bg-gradient-to-br from-[#FFFDF8] to-[#F5EFE3] border border-[#E6E1D8] shadow-lg p-2 sm:p-3">
-              
-              <div className="relative rounded-2xl overflow-hidden bg-white/70">
-                <img
-                  src="/assets/cm_vijay_hero@2x.png"
-                  alt="ARAM Civic Legal Aid & Justice Platform - Government of Tamil Nadu Citizen Legal Access"
-                  className="w-full h-auto object-cover transition-transform duration-300 hover:scale-[1.01]"
-                  loading="eager"
-                />
-              </div>
-
-              {/* Overlay Neutral Civic Message Card */}
-              <div className="mt-2.5 p-3 sm:p-3.5 rounded-2xl bg-white/95 backdrop-blur-xs border border-[#E6E1D8]/80 text-left space-y-1 shadow-2xs">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-[#167957] bg-[#E5F0E6] px-2 py-0.5 rounded-full">
-                    Civic Access Initiative
-                  </span>
-                  <span className="text-[10px] font-semibold text-[#65736D]">
-                    Tamil Nadu
-                  </span>
-                </div>
-                <p className="text-xs sm:text-[13px] font-bold text-[#163D32] leading-snug">
-                  “சட்ட உதவி எல்லோருக்கும் — அதுவே நியாயமான சமூகத்தின் அடையாளம்.”
-                </p>
-                <p className="text-[11px] font-medium text-[#4A5D54]">
-                  Justice should be accessible to everyone • People • Law • Support
-                </p>
-              </div>
-
+          {/* Right Column: CM Vijay Civic Showcase Visual */}
+          <div className="lg:col-span-6 flex items-center justify-center lg:justify-end relative mt-6 lg:mt-0">
+            <div className="relative w-full max-w-[580px]">
+              <img
+                src="/assets/cm_vijay_hero@2x.png"
+                alt="Hon'ble Chief Minister Thalapathy Vijay - ARAM Civic Legal Aid & Justice"
+                className="w-full h-auto object-contain rounded-3xl transition-transform duration-300 hover:scale-[1.01]"
+                loading="eager"
+              />
             </div>
           </div>
 
