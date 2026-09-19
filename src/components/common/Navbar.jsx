@@ -65,16 +65,21 @@ const Navbar = () => {
             {/* Language dropdown */}
             <div className="relative">
               <button
+                type="button"
                 onClick={() => setLangMenuOpen(!langMenuOpen)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#E6E1D8] bg-[#FFFDF8] text-xs font-bold text-[#18332B] hover:bg-[#DCEBDD]/40 transition"
+                className="flex items-center gap-2 px-3.5 py-2 rounded-full border border-[#E6E1D8] bg-[#FFFDF8] text-xs font-bold text-[#18332B] hover:bg-[#DCEBDD]/40 transition shadow-2xs cursor-pointer min-h-[38px]"
+                aria-label="Select platform language"
               >
-                <Globe size={14} className="text-[#163D32]" />
-                <span>{availableLanguages.find(l => l.code === language)?.label || "English"}</span>
-                <ChevronDown size={12} />
+                <Globe size={15} className="text-[#163D32]" />
+                <span>{availableLanguages.find(l => l.code === language)?.nativeLabel || "English"}</span>
+                <ChevronDown size={13} className={`transition-transform duration-200 ${langMenuOpen ? "rotate-180" : ""}`} />
               </button>
 
               {langMenuOpen && (
-                <div className="absolute right-0 mt-2 w-36 rounded-2xl bg-[#FFFDF8] border border-[#E6E1D8] shadow-lg py-2 z-50">
+                <div className="absolute right-0 mt-2 w-48 rounded-2xl bg-[#FFFDF8] border border-[#E6E1D8] shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-[#65736D] border-b border-[#E6E1D8]/60">
+                    Choose Language / மொழி
+                  </div>
                   {availableLanguages.map((l) => (
                     <button
                       key={l.code}
@@ -82,10 +87,15 @@ const Navbar = () => {
                         changeLanguage(l.code);
                         setLangMenuOpen(false);
                       }}
-                      className="w-full text-left px-4 py-2 text-xs font-medium text-[#18332B] hover:bg-[#DCEBDD]/40 flex items-center justify-between"
+                      className={`w-full text-left px-4 py-2.5 text-xs font-medium transition flex items-center justify-between cursor-pointer ${
+                        language === l.code ? "bg-[#DCEBDD]/60 text-[#163D32] font-bold" : "text-[#18332B] hover:bg-[#DCEBDD]/30"
+                      }`}
                     >
-                      <span>{l.label}</span>
-                      {language === l.code && <Check size={12} className="text-[#163D32]" />}
+                      <span className="flex items-center gap-2">
+                        <span className="font-semibold">{l.nativeLabel}</span>
+                        <span className="text-[11px] text-[#65736D]">({l.label})</span>
+                      </span>
+                      {language === l.code && <Check size={14} className="text-[#163D32] shrink-0" />}
                     </button>
                   ))}
                 </div>
@@ -96,65 +106,122 @@ const Navbar = () => {
             <button
               type="button"
               onClick={() => setMode(resolvedTheme === "dark" ? "LIGHT" : "DARK")}
-              className="p-2 rounded-full border border-[#E6E1D8] bg-[#FFFDF8] text-[#163D32] hover:bg-[#DCEBDD]/40 transition cursor-pointer flex items-center justify-center shadow-2xs"
+              className="p-2.5 rounded-full border border-[#E6E1D8] bg-[#FFFDF8] text-[#163D32] hover:bg-[#DCEBDD]/40 transition cursor-pointer flex items-center justify-center shadow-2xs min-h-[38px] min-w-[38px]"
               title={resolvedTheme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
               aria-label="Toggle theme"
             >
               {resolvedTheme === "dark" ? (
-                <Sun size={15} className="text-[#C58A25]" />
+                <Sun size={16} className="text-[#C58A25]" />
               ) : (
-                <Moon size={15} className="text-[#163D32]" />
+                <Moon size={16} className="text-[#163D32]" />
               )}
             </button>
 
             {user ? (
               <Link
                 to={user.role === "ADMIN" ? "/admin/dashboard" : user.role === "VOLUNTEER" || user.role === "GUIDE" ? "/guide/dashboard" : "/citizen/dashboard"}
-                className="btn-aram-primary text-xs"
+                className="btn-aram-primary text-xs py-2 px-4 shadow-sm"
               >
                 {t("nav.dashboard", "Dashboard")}
               </Link>
             ) : (
-              <Link to="/login" className="btn-aram-primary text-xs flex items-center gap-1.5">
-                <LogIn size={14} />
+              <Link to="/login" className="btn-aram-primary text-xs flex items-center gap-2 py-2 px-4 shadow-sm">
+                <LogIn size={15} />
                 <span>{t("nav.signIn", "Sign In")}</span>
               </Link>
             )}
           </div>
 
-          {/* Mobile hamburger */}
-          <div className="md:hidden flex items-center gap-3">
+          {/* Mobile top actions & hamburger */}
+          <div className="md:hidden flex items-center gap-2">
+            {/* Quick Mobile Theme Button */}
             <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-xl text-[#163D32] hover:bg-[#DCEBDD]/40"
+              type="button"
+              onClick={() => setMode(resolvedTheme === "dark" ? "LIGHT" : "DARK")}
+              className="p-2 rounded-xl border border-[#E6E1D8] bg-[#FFFDF8] text-[#163D32] min-h-[40px] min-w-[40px] flex items-center justify-center cursor-pointer shadow-2xs"
+              aria-label="Toggle color theme"
             >
-              {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+              {resolvedTheme === "dark" ? <Sun size={15} className="text-[#C58A25]" /> : <Moon size={15} className="text-[#163D32]" />}
+            </button>
+
+            {/* Mobile hamburger */}
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2 rounded-xl border border-[#E6E1D8] bg-[#FFFDF8] text-[#163D32] hover:bg-[#DCEBDD]/40 min-h-[40px] min-w-[40px] flex items-center justify-center cursor-pointer shadow-2xs"
+              aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+              aria-expanded={mobileMenuOpen}
+            >
+              {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
           </div>
 
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* Mobile Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-[#FFFDF8] border-b border-[#E6E1D8] px-4 pt-2 pb-6 space-y-3 shadow-lg">
-          {navLinks.map((link) => (
+        <div className="md:hidden bg-[#FFFDF8] border-b border-[#E6E1D8] px-5 pt-3 pb-6 space-y-4 shadow-xl animate-in slide-in-from-top-3 duration-200">
+          
+          {/* Trilingual Mobile Selector Pill Bar */}
+          <div className="space-y-1.5">
+            <div className="text-[10px] font-black uppercase tracking-wider text-[#65736D]">
+              Platform Language / மொழி
+            </div>
+            <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[#F7F1E6] border border-[#E6E1D8]">
+              {availableLanguages.map((l) => (
+                <button
+                  key={l.code}
+                  type="button"
+                  onClick={() => {
+                    changeLanguage(l.code);
+                  }}
+                  className={`flex-1 py-2 text-xs font-bold rounded-xl transition cursor-pointer text-center min-h-[36px] flex items-center justify-center gap-1 ${
+                    language === l.code
+                      ? "bg-[#163D32] text-white shadow-xs"
+                      : "text-[#18332B] hover:bg-white/70"
+                  }`}
+                >
+                  <span>{l.nativeLabel}</span>
+                  {language === l.code && <Check size={11} className="text-[#DCEBDD]" />}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Navigation Links */}
+          <div className="space-y-1 pt-1 border-t border-[#E6E1D8]/60">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                to={link.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`block py-2.5 px-3 rounded-xl text-xs font-bold uppercase tracking-wider transition min-h-[44px] flex items-center ${
+                  location.pathname === link.href
+                    ? "bg-[#DCEBDD]/50 text-[#163D32]"
+                    : "text-[#18332B] hover:bg-[#F7F1E6] hover:text-[#1F5948]"
+                }`}
+              >
+                {link.name}
+              </Link>
+            ))}
+          </div>
+
+          {/* User Sign In / Dashboard CTA */}
+          <div className="pt-2 border-t border-[#E6E1D8]">
             <Link
-              key={link.href}
-              to={link.href}
+              to={user ? (user.role === "ADMIN" ? "/admin/dashboard" : user.role === "VOLUNTEER" || user.role === "GUIDE" ? "/guide/dashboard" : "/citizen/dashboard") : "/login"}
               onClick={() => setMobileMenuOpen(false)}
-              className="block py-2 text-xs font-bold text-[#18332B] uppercase tracking-wider hover:text-[#1F5948]"
+              className="btn-aram-primary w-full text-center text-xs py-3 min-h-[44px] flex items-center justify-center gap-2 shadow-sm"
             >
-              {link.name}
-            </Link>
-          ))}
-          <div className="pt-4 border-t border-[#E6E1D8] flex flex-col gap-3">
-            <Link
-              to="/login"
-              onClick={() => setMobileMenuOpen(false)}
-              className="btn-aram-primary text-center text-xs"
-            >
-              {user ? t("nav.dashboard", "Open Dashboard") : t("nav.signIn", "Sign In to ARAM")}
+              {user ? (
+                <span>{t("nav.dashboard", "Open Dashboard")}</span>
+              ) : (
+                <>
+                  <LogIn size={15} />
+                  <span>{t("nav.signIn", "Sign In to ARAM")}</span>
+                </>
+              )}
             </Link>
           </div>
         </div>

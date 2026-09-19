@@ -21,14 +21,50 @@ export const translations = {
     },
     hero: {
       badge: "CIVIC LEGAL AID & GRIEVANCE TRIAGE",
+      eyebrow: "Accessible Justice for Every Citizen",
       title1: "Your Rights. Our Support.",
       title2: "A Fairer Tomorrow.",
       subtitle: "ARAM AI bridges the justice gap by translating complex Indian laws, penal codes, and government schemes into clear, actionable steps in Tamil, English, and Hindi.",
       askAi: "Ask ARAM AI",
+      fileGrievance: "File a Grievance",
+      trackCase: "Track My Case",
       speakProblem: "Speak Problem",
       listening: "Listening... Click to Finish",
       uploadDoc: "Upload Document",
       connectGuide: "Connect Guide"
+    },
+    trustStrip: {
+      multilingual: "Multilingual Legal Assistance",
+      multilingualDesc: "Tamil • English • Hindi",
+      verified: "Grounded in Verified Statutes",
+      verifiedDesc: "Certified Indian law provisions",
+      humanSupport: "Human Guide & DLSA Support",
+      humanSupportDesc: "Accredited legal escalation",
+      districtAware: "District-Aware Guidance",
+      districtAwareDesc: "All 38 Tamil Nadu districts"
+    },
+    aiHuman: {
+      tag: "AI + Human Synergy",
+      title: "AI When Possible. Human When Necessary.",
+      subtitle: "The speed of intelligent legal triage combined with the trusted judgment of certified human legal guides.",
+      desc1: "ARAM AI immediately organizes your dispute, identifies applicable statutory sections, prepares required evidence checklists, and checks document readiness.",
+      desc2: "When your matter requires formal legal drafting, statutory filing, or DLSA representation, verified human Legal Guides and accredited advocates step in directly to support you.",
+      bullet1: "Instant 24x7 preliminary statutory analysis and rights explanation",
+      bullet2: "Zero automated dismissal — every complex case has human escalation",
+      bullet3: "Direct coordination with Taluk and District Legal Services Authorities (DLSA)"
+    },
+    immediateHelp: {
+      tag: "Emergency & Statutory Support",
+      title: "Need Immediate Assistance?",
+      subtitle: "Official government helplines for urgent emergencies, women safety, cybercrime, and free legal aid.",
+      emergency: "Emergency Services",
+      emergencySub: "Police, Fire & Ambulance (24x7)",
+      women: "Women Helpline",
+      womenSub: "Safety & Domestic Violence (24x7)",
+      cyber: "Cyber Crime Helpline",
+      cyberSub: "National Financial Fraud Reporting",
+      legalAid: "NALSA Legal Aid",
+      legalAidSub: "Free Legal Aid & DLSA Services"
     },
     howItWorks: {
       tag: "Seamless Journey",
@@ -276,14 +312,50 @@ export const translations = {
     },
     hero: {
       badge: "குடிமக்கள் சட்ட உதவி & குறைதீர்க்கும் தளம்",
+      eyebrow: "ஒவ்வொரு குடிமகனுக்கும் சமமான நீதி",
       title1: "உங்கள் உரிமை. எங்கள் ஆதரவு.",
       title2: "நீதியான எதிர்காலம்.",
       subtitle: "அறம் AI சிக்கலான இந்திய சட்டங்கள், குற்றவியல் பிரிவுகள் மற்றும் அரசு திட்டங்களை தமிழ், ஆங்கிலம் மற்றும் இந்தியில் எளிய, தெளிவான நடைமுறைகளாக மாற்றி அனைவருக்கும் சமநீதி கிடைக்க வழிவகுக்கிறது.",
       askAi: "அறம் AI-யிடம் கேட்க",
+      fileGrievance: "புகார் பதிவு செய்க",
+      trackCase: "வழக்கைக் கண்காணிக்க",
       speakProblem: "குரலில் கூற",
       listening: "கேட்கிறது... முடிக்க கிளிக் செய்யவும்",
       uploadDoc: "ஆவணம் பதிவேற்ற",
       connectGuide: "சட்ட வழிகாட்டியை அணுக"
+    },
+    trustStrip: {
+      multilingual: "மும்மொழி சட்ட உதவி",
+      multilingualDesc: "தமிழ் • ஆங்கிலம் • இந்தி",
+      verified: "உறுதிப்படுத்தப்பட்ட சட்ட விதிகள்",
+      verifiedDesc: "சான்றளிக்கப்பட்ட இந்திய சட்டப் பிரிவுகள்",
+      humanSupport: "மனித வழிகாட்டி & DLSA ஆதரவு",
+      humanSupportDesc: "அங்கீகரிக்கப்பட்ட சட்டப் பிரதிநிதித்துவம்",
+      districtAware: "38 மாவட்ட வழிகாட்டல்",
+      districtAwareDesc: "தமிழ்நாட்டின் அனைத்து மாவட்டங்களுக்கும்"
+    },
+    aiHuman: {
+      tag: "AI மற்றும் மனித ஒருங்கிணைப்பு",
+      title: "சாத்தியமான இடங்களில் AI. தேவையான போது சட்ட வழிகாட்டி.",
+      subtitle: "விரைவான AI சட்டப் பகுப்பாய்வும், அனுபவமிக்க சட்ட வழிகாட்டிகளின் நம்பிக்கையான ஆதரவும்.",
+      desc1: "அறம் AI உடனடியாக உங்கள் வழக்கின் விவரங்களை ஒழுங்கமைத்து, பொருத்தமான சட்டப் பிரிவுகளைக் கண்டறிந்து, தேவையான ஆவணங்களை வகைப்படுத்துகிறது.",
+      desc2: "மனு வரைவு, சட்டப்பூர்வ மனுத் தாக்கல் அல்லது DLSA பிரதிநிதித்துவம் தேவைப்படும் போது, அங்கீகரிக்கப்பட்ட சட்ட வழிகாட்டிகள் நேரடியாக உங்களுடன் இணைகிறார்கள்.",
+      bullet1: "24x7 உடனடி முதற்கட்ட சட்ட ஆய்வு மற்றும் உரிமை விளக்கம்",
+      bullet2: "தானியங்கி நிராகரிப்பு இல்லை — சிக்கலான வழக்குகளுக்கு மனித வழிகாட்டி ஆய்வு",
+      bullet3: "வட்டார மற்றும் மாவட்ட சட்டப் பணிகள் ஆணைக்குழுவுடன் (DLSA) நேரடி ஒருங்கிணைப்பு"
+    },
+    immediateHelp: {
+      tag: "அவசர மற்றும் சட்ட உதவி எண்கள்",
+      title: "உடனடி அவசர உதவி தேவையா?",
+      subtitle: "அவசர விபத்து, மகளிர் பாதுகாப்பு, இணையக் குற்றங்கள் மற்றும் இலவச சட்ட உதவிக்கான அதிகாரப்பூர்வ அரசு எண்கள்.",
+      emergency: "அவசரக் காவல் & மருத்துவ உதவி",
+      emergencySub: "காவல்துறை, தீயணைப்பு & ஆம்புலன்ஸ் (24x7)",
+      women: "மகளிர் உதவி எண்",
+      womenSub: "பாதுகாப்பு & குடும்ப வன்முறை தடுப்பு (24x7)",
+      cyber: "இணையக் குற்றப் பிரிவு",
+      cyberSub: "தேசிய நிதி மோசடி தடுப்பு உதவி எண்",
+      legalAid: "இலவச சட்ட உதவி (NALSA)",
+      legalAidSub: "இலவச சட்ட உதவி & DLSA மையம்"
     },
     howItWorks: {
       tag: "எளிய வழிமுறை",
@@ -531,14 +603,50 @@ export const translations = {
     },
     hero: {
       badge: "नागरिक कानूनी सहायता और शिकायत निवारण",
+      eyebrow: "हर नागरिक के लिए सुलभ न्याय",
       title1: "आपके अधिकार। हमारा समर्थन।",
       title2: "एक न्यायपूर्ण कल।",
       subtitle: "ARAM AI जटिल भारतीय कानूनों, दंड संहिताओं और सरकारी योजनाओं को तमिल, अंग्रेजी और हिंदी में स्पष्ट, व्यावहारिक कदमों में बदलकर न्याय को सभी के लिए सुलभ बनाता है।",
       askAi: "ARAM AI से पूछें",
+      fileGrievance: "शिकायत दर्ज करें",
+      trackCase: "मामला ट्रैक करें",
       speakProblem: "समस्या बोलें",
       listening: "सुन रहा है... समाप्त करने के लिए क्लिक करें",
       uploadDoc: "दस्तावेज़ अपलोड करें",
       connectGuide: "मार्गदर्शक से जुड़ें"
+    },
+    trustStrip: {
+      multilingual: "त्रिभाषी कानूनी सहायता",
+      multilingualDesc: "तमिल • अंग्रेजी • हिंदी",
+      verified: "सत्यापित कानूनी स्रोतों पर आधारित",
+      verifiedDesc: "प्रमाणित भारतीय कानूनी धाराएं",
+      humanSupport: "मानव मार्गदर्शक एवं DLSA सहायता",
+      humanSupportDesc: "अधिकृत कानूनी प्रतिनिधित्व",
+      districtAware: "38 जिलों के लिए मार्गदर्शन",
+      districtAwareDesc: "तमिलनाडु के सभी 38 जिले"
+    },
+    aiHuman: {
+      tag: "AI और मानवीय सहयोग",
+      title: "जहाँ संभव हो AI। जहाँ आवश्यक हो मानवीय सहायता।",
+      subtitle: "बुद्धिमान AI विश्लेषण की गति और प्रमाणित कानूनी मार्गदर्शकों का विश्वसनीय निर्णय।",
+      desc1: "ARAM AI तुरंत आपके मामले के तथ्यों को व्यवस्थित करता है, प्रासंगिक धाराओं की पहचान करता है, आवश्यक साक्ष्य चेकलिस्ट तैयार करता है और दस्तावेजों की जांच करता है।",
+      desc2: "जब आपके मामले में कानूनी मसौदा तैयार करने, औपचारिक याचिका दायर करने या DLSA प्रतिनिधित्व की आवश्यकता होती है, तो प्रमाणित कानूनी मार्गदर्शक सीधे आपकी सहायता करते हैं।",
+      bullet1: "24x7 तत्काल प्रारंभिक कानूनी विश्लेषण और अधिकारों की स्पष्ट व्याख्या",
+      bullet2: "कोई स्वचालित अस्वीकृति नहीं — प्रत्येक जटिल मामले के लिए मानवीय समीक्षा",
+      bullet3: "तालुक और जिला विधिक सेवा प्राधिकरण (DLSA) के साथ सीधा समन्वय"
+    },
+    immediateHelp: {
+      tag: "आपातकालीन एवं वैधानिक हेल्पलाइन",
+      title: "क्या आपको तत्काल सहायता चाहिए?",
+      subtitle: "आपातकाल, महिला सुरक्षा, साइबर अपराध और मुफ्त कानूनी सहायता के लिए आधिकारिक सरकारी हेल्पलाइन।",
+      emergency: "आपातकालीन सेवाएं (पुलिस / एम्बुलेंस)",
+      emergencySub: "पुलिस, अग्निशमन और एम्बुलेंस (24x7)",
+      women: "महिला हेल्पलाइन",
+      womenSub: "सुरक्षा एवं घरेलू हिंसा निवारण (24x7)",
+      cyber: "साइबर अपराध रिपोर्टिंग",
+      cyberSub: "राष्ट्रीय वित्तीय धोखाधड़ी हेल्पलाइन",
+      legalAid: "मुफ्त कानूनी सहायता (NALSA)",
+      legalAidSub: "विधिक सेवा प्राधिकरण (DLSA) सेवाएं"
     },
     howItWorks: {
       tag: "सहज प्रक्रिया",
