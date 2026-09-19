@@ -7,6 +7,7 @@ import {
   HelpCircle, AlertCircle, Sparkles, Building2, User
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 import { complaintService } from "@/services/complaintService";
 import { speechService } from "@/services/speechService";
 import { toast } from "sonner";
@@ -14,6 +15,7 @@ import Button from "@/components/common/Button";
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
   const [complaints, setComplaints] = useState([]);
@@ -81,11 +83,11 @@ const Dashboard = () => {
   };
 
   const categories = [
-    { title: "Women & Family Law", desc: "Maintenance, 498A, DV Act, Custody", color: "bg-[#F6D8C8]/50 border-[#F6D8C8]", query: "Women and family legal protection rights" },
-    { title: "Land & Property", desc: "Patta, Encroachment, Boundary disputes", color: "bg-[#E8C978]/40 border-[#E8C978]", query: "Land title deed patta transfer dispute" },
-    { title: "Consumer & RTI", desc: "Product defect, RTI filing, Fair trade", color: "bg-[#E7E1F2]/50 border-[#E7E1F2]", query: "RTI filing procedure and consumer court claim" },
-    { title: "Labour & Wage Rights", desc: "Unpaid dues, Gratuity, PF settlement", color: "bg-[#DCEBDD] border-[#B8D7BC]", query: "Labour wage non-payment and gratuity settlement" },
-    { title: "Emergency & Cyber Aid", desc: "Online fraud, 1930 Helpline, Harassment", color: "bg-[#F4DDE2]/50 border-[#F4DDE2]", query: "Cyber crime financial fraud and emergency helpline" },
+    { title: t("citizenDashboard.domainWomenTitle", "Women & Family Law"), desc: t("citizenDashboard.domainWomenDesc", "Maintenance, 498A, DV Act, Custody"), color: "bg-[#F6D8C8]/50 border-[#F6D8C8]", query: "Women and family legal protection rights" },
+    { title: t("citizenDashboard.domainLandTitle", "Land & Property"), desc: t("citizenDashboard.domainLandDesc", "Patta, Encroachment, Boundary disputes"), color: "bg-[#E8C978]/40 border-[#E8C978]", query: "Land title deed patta transfer dispute" },
+    { title: t("citizenDashboard.domainConsumerTitle", "Consumer & RTI"), desc: t("citizenDashboard.domainConsumerDesc", "Product defect, RTI filing, Fair trade"), color: "bg-[#E7E1F2]/50 border-[#E7E1F2]", query: "RTI filing procedure and consumer court claim" },
+    { title: t("citizenDashboard.domainLabourTitle", "Labour & Wage Rights"), desc: t("citizenDashboard.domainLabourDesc", "Unpaid dues, Gratuity, PF settlement"), color: "bg-[#DCEBDD] border-[#B8D7BC]", query: "Labour wage non-payment and gratuity settlement" },
+    { title: t("citizenDashboard.domainCyberTitle", "Emergency & Cyber Aid"), desc: t("citizenDashboard.domainCyberDesc", "Online fraud, 1930 Helpline, Harassment"), color: "bg-[#F4DDE2]/50 border-[#F4DDE2]", query: "Cyber crime financial fraud and emergency helpline" },
   ];
 
   return (
@@ -96,13 +98,13 @@ const Dashboard = () => {
         <div className="relative overflow-hidden rounded-3xl bg-[#163D32] p-8 sm:p-10 text-white shadow-md">
           <div className="relative z-10 max-w-2xl space-y-4">
             <div className="inline-flex items-center gap-2 rounded-full bg-[#DCEBDD]/20 px-3 py-1 text-xs font-bold text-[#DCEBDD]">
-              <Sparkles size={14} /> Tamil Nadu Public Legal Aid & Grievance Portal
+              <Sparkles size={14} /> {t("citizenDashboard.portalBadge", "Tamil Nadu Public Legal Aid & Grievance Portal")}
             </div>
             <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight text-white">
-              Hello, <span className="text-[#E8C978]">{user?.name || "Citizen"}</span>. How can ARAM assist you today?
+              {t("citizenDashboard.heroGreeting", "Hello, {name}. How can ARAM assist you today?").replace("{name}", user?.name || "Citizen")}
             </h1>
             <p className="text-xs sm:text-sm text-[#DCEBDD]/90 leading-relaxed">
-              Describe any grievance, legal issue, or dispute in Tamil, English, or Hindi to receive immediate verified guidance, document requirements, and assigned legal guide assistance.
+              {t("citizenDashboard.heroDescription", "Describe any grievance, legal issue, or dispute in Tamil, English, or Hindi to receive immediate verified guidance, document requirements, and assigned legal guide assistance.")}
             </p>
 
             {/* Hero Actions */}
@@ -112,7 +114,7 @@ const Dashboard = () => {
                 onClick={() => navigate("/citizen/chatbot")}
                 icon={MessageSquare}
               >
-                Ask ARAM Legal Assistant
+                {t("citizenDashboard.askLegalAssistant", "Ask ARAM Legal Assistant")}
               </Button>
               <button
                 onClick={handleStartVoiceTriage}
@@ -123,7 +125,7 @@ const Dashboard = () => {
                 }`}
               >
                 <Mic size={16} />
-                <span>{isRecording ? "Stop & Transcribe" : "Speak Grievance (Voice)"}</span>
+                <span>{isRecording ? t("citizenDashboard.stopTranscribe", "Stop & Transcribe") : t("citizenDashboard.speakGrievance", "Speak Grievance (Voice)")}</span>
               </button>
             </div>
           </div>
@@ -140,8 +142,8 @@ const Dashboard = () => {
             <div className="w-10 h-10 rounded-xl bg-[#DCEBDD] text-[#163D32] flex items-center justify-center font-bold group-hover:scale-105 transition">
               <PlusCircle size={20} />
             </div>
-            <h3 className="text-sm font-bold text-[#18332B] group-hover:text-[#163D32]">Submit Grievance</h3>
-            <p className="text-xs text-[#65736D]">File a structured complaint with AI document analysis.</p>
+            <h3 className="text-sm font-bold text-[#18332B] group-hover:text-[#163D32]">{t("citizenDashboard.cardSubmitTitle", "Submit Grievance")}</h3>
+            <p className="text-xs text-[#65736D]">{t("citizenDashboard.cardSubmitDesc", "File a structured complaint with AI document analysis.")}</p>
           </Link>
 
           <Link
@@ -151,8 +153,8 @@ const Dashboard = () => {
             <div className="w-10 h-10 rounded-xl bg-[#F6D8C8]/60 text-[#8C3B1E] flex items-center justify-center font-bold group-hover:scale-105 transition">
               <FileText size={20} />
             </div>
-            <h3 className="text-sm font-bold text-[#18332B] group-hover:text-[#163D32]">Upload Evidence</h3>
-            <p className="text-xs text-[#65736D]">Verify deeds, agreements & FIRs via OCR readiness.</p>
+            <h3 className="text-sm font-bold text-[#18332B] group-hover:text-[#163D32]">{t("citizenDashboard.cardUploadTitle", "Upload Evidence")}</h3>
+            <p className="text-xs text-[#65736D]">{t("citizenDashboard.cardUploadDesc", "Verify deeds, agreements & FIRs via OCR readiness.")}</p>
           </Link>
 
           <Link
@@ -162,8 +164,8 @@ const Dashboard = () => {
             <div className="w-10 h-10 rounded-xl bg-[#E8C978]/40 text-[#7A5A0A] flex items-center justify-center font-bold group-hover:scale-105 transition">
               <Clock size={20} />
             </div>
-            <h3 className="text-sm font-bold text-[#18332B] group-hover:text-[#163D32]">Track Status</h3>
-            <p className="text-xs text-[#65736D]">Milestone progress timeline & guide action plans.</p>
+            <h3 className="text-sm font-bold text-[#18332B] group-hover:text-[#163D32]">{t("citizenDashboard.cardTrackTitle", "Track Status")}</h3>
+            <p className="text-xs text-[#65736D]">{t("citizenDashboard.cardTrackDesc", "Milestone progress timeline & guide action plans.")}</p>
           </Link>
 
           <Link
@@ -173,8 +175,8 @@ const Dashboard = () => {
             <div className="w-10 h-10 rounded-xl bg-[#E7E1F2]/60 text-[#4F3F73] flex items-center justify-center font-bold group-hover:scale-105 transition">
               <HelpCircle size={20} />
             </div>
-            <h3 className="text-sm font-bold text-[#18332B] group-hover:text-[#163D32]">Legal Rights Guide</h3>
-            <p className="text-xs text-[#65736D]">DLSA contacts, government schemes & helplines.</p>
+            <h3 className="text-sm font-bold text-[#18332B] group-hover:text-[#163D32]">{t("citizenDashboard.cardRightsTitle", "Legal Rights Guide")}</h3>
+            <p className="text-xs text-[#65736D]">{t("citizenDashboard.cardRightsDesc", "DLSA contacts, government schemes & helplines.")}</p>
           </Link>
         </div>
 
@@ -182,10 +184,10 @@ const Dashboard = () => {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-extrabold text-[#18332B] tracking-tight">
-              Explore Legal Rights by Domain
+              {t("citizenDashboard.exploreDomainTitle", "Explore Legal Rights by Domain")}
             </h2>
             <Link to="/citizen/chatbot" className="text-xs font-bold text-[#1F5948] hover:underline flex items-center gap-1">
-              Ask any topic <ChevronRight size={14} />
+              {t("citizenDashboard.askAnyTopic", "Ask any topic >")}
             </Link>
           </div>
 
@@ -207,25 +209,25 @@ const Dashboard = () => {
         <div className="rounded-3xl bg-[#FFFDF8] border border-[#E6E1D8] p-6 shadow-sm space-y-4">
           <div className="flex items-center justify-between border-b border-[#E6E1D8] pb-4">
             <div>
-              <h3 className="text-base font-extrabold text-[#18332B]">My Active Grievances</h3>
-              <p className="text-xs text-[#65736D] mt-0.5">Track your submitted complaints and legal guide notes.</p>
+              <h3 className="text-base font-extrabold text-[#18332B]">{t("citizenDashboard.activeGrievancesTitle", "My Active Grievances")}</h3>
+              <p className="text-xs text-[#65736D] mt-0.5">{t("citizenDashboard.activeGrievancesDesc", "Track your submitted complaints and legal guide notes.")}</p>
             </div>
             <Link to="/citizen/history" className="text-xs font-bold text-[#1F5948] hover:underline">
-              View All Grievances →
+              {t("citizenDashboard.viewAllGrievances", "View All Grievances →")}
             </Link>
           </div>
 
           {loading ? (
-            <div className="py-12 text-center text-xs text-[#8B9690]">Loading your grievances...</div>
+            <div className="py-12 text-center text-xs text-[#8B9690]">{t("citizenDashboard.loadingGrievances", "Loading your grievances...")}</div>
           ) : complaints.length === 0 ? (
             <div className="py-12 text-center space-y-3">
               <ShieldCheck className="mx-auto text-[#163D32]" size={36} />
-              <p className="text-xs font-bold text-[#18332B]">No active grievances found.</p>
+              <p className="text-xs font-bold text-[#18332B]">{t("citizenDashboard.noGrievancesTitle", "No active grievances found.")}</p>
               <p className="text-[11px] text-[#65736D] max-w-sm mx-auto">
-                Whenever you submit a grievance or request legal guide representation, your case details will appear here.
+                {t("citizenDashboard.noGrievancesDesc", "Whenever you submit a grievance or request legal guide representation, your case details will appear here.")}
               </p>
               <Button variant="primary" onClick={() => navigate("/citizen/submit-complaint")}>
-                Submit First Grievance
+                {t("citizenDashboard.submitFirstGrievance", "Submit First Grievance")}
               </Button>
             </div>
           ) : (

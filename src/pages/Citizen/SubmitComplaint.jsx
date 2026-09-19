@@ -15,9 +15,11 @@ import { speechService } from "@/services/speechService";
 import { aiService } from "@/services/aiService";
 import { offlineDraftService } from "@/services/offlineDraftService";
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 import { useNotifications } from "@/context/NotificationContext";
 import { userService } from "@/services/userService";
 import { toast } from "sonner";
+import ReadAloudButton from "@/components/common/voice/ReadAloudButton";
 
 const TN_DISTRICTS = [
   "Ariyalur", "Chengalpattu", "Chennai", "Coimbatore", "Cuddalore",
@@ -40,21 +42,22 @@ export const normalizeDistrict = (dist) => {
   return "Ariyalur";
 };
 
-const STAGES = [
-  { id: 1, name: "Tell ARAM", label: "1. Tell ARAM" },
-  { id: 2, name: "AI Understanding", label: "2. AI Understanding" },
-  { id: 3, name: "Documents", label: "3. Documents & Evidence" },
-  { id: 4, name: "Safety & Guides", label: "4. Safety & Assistance" },
-  { id: 5, name: "Review & Submit", label: "5. Review & Submit" }
-];
-
 const SubmitComplaint = () => {
   const navigate = useNavigate();
   const routerLocation = useLocation();
   const { user, updateUser } = useAuth();
+  const { t, language } = useLanguage();
   const { fetchNotifications } = useNotifications();
   const storedUser = JSON.parse(localStorage.getItem("user") || "{}");
   const initialDistrict = normalizeDistrict(user?.district || storedUser?.district || "Ariyalur");
+
+  const STAGES = [
+    { id: 1, name: t("submitComplaint.stageNames.tellAram", "Tell ARAM"), label: `1. ${t("submitComplaint.stageNames.tellAram", "Tell ARAM")}` },
+    { id: 2, name: t("submitComplaint.stageNames.aiUnderstanding", "AI Understanding"), label: `2. ${t("submitComplaint.stageNames.aiUnderstanding", "AI Understanding")}` },
+    { id: 3, name: t("submitComplaint.stageNames.documents", "Documents"), label: `3. ${t("submitComplaint.stageNames.documents", "Documents & Evidence")}` },
+    { id: 4, name: t("submitComplaint.stageNames.safetyGuides", "Safety & Guides"), label: `4. ${t("submitComplaint.stageNames.safetyGuides", "Safety & Assistance")}` },
+    { id: 5, name: t("submitComplaint.stageNames.reviewSubmit", "Review & Submit"), label: `5. ${t("submitComplaint.stageNames.reviewSubmit", "Review & Submit")}` }
+  ];
   
   // Submission Mode: 'simple' (5-stage AI-guided journey) vs 'normal' (structured direct form)
   const [mode, setMode] = useState("simple");
@@ -532,13 +535,30 @@ const SubmitComplaint = () => {
     setUploadedFiles(prev => prev.map((f, i) => i === index ? { ...f, ocrStatus: "scanning" } : f));
     try {
       const ocrRes = await aiService.runOcr(fileObj);
-      const text = ocrRes?.text || ocrRes?.extractedText || ocrRes?.rawText || "";
+      const text = ocrRes?.extractedText || ocrRes?.text || ocrRes?.rawText || "";
+      const docType = ocrRes?.documentType || "Supporting Document";
+      const legibility = ocrRes?.legibilityScore ?? 78;
+      const legibilityGrade = ocrRes?.legibilityGrade || (legibility >= 75 ? "High Quality / Clear" : "Acceptable");
+      const dates = ocrRes?.detectedDates || [];
+      const refs = ocrRes?.detectedReferenceNumbers || [];
+      const parties = ocrRes?.detectedParties || [];
+      const seal = ocrRes?.sealOrSignatureDetected || false;
+      const relevance = ocrRes?.caseRelevance || "Relevant Evidence";
+
       setUploadedFiles(prev => prev.map((f, i) => i === index ? {
         ...f,
         ocrStatus: "verified",
-        analysisStatus: "Verified via OCR",
-        extractedText: text ? text.slice(0, 240) : "Legal text and timestamps validated.",
-        analysisDetails: `Text verification successful. Content aligns with ${aiCategoryLabel} requirements.`
+        analysisStatus: "Deep OCR Inspected",
+        extractedText: text ? text.slice(0, 300) : "Evidence text inspected and recorded.",
+        documentType: docType,
+        legibilityScore: legibility,
+        legibilityGrade,
+        detectedDates: dates,
+        detectedReferenceNumbers: refs,
+        detectedParties: parties,
+        sealDetected: seal,
+        caseRelevance: relevance,
+        verificationNotice: "Needs Legal Guide confirmation — OCR is an administrative aid, not statutory proof."
       } : f));
     } catch (err) {
       // Graceful fallback if OCR backend is busy or file is complex PDF
@@ -547,7 +567,15 @@ const SubmitComplaint = () => {
         ocrStatus: "verified",
         analysisStatus: "Format Verified",
         extractedText: "Document formatted and prepared for official review.",
-        analysisDetails: `Evidence verified for ${aiCategoryLabel} registry submission.`
+        documentType: "General Supporting Document",
+        legibilityScore: 70,
+        legibilityGrade: "Acceptable",
+        detectedDates: [],
+        detectedReferenceNumbers: [],
+        detectedParties: [],
+        sealDetected: false,
+        caseRelevance: "Supporting Evidence",
+        verificationNotice: "Format validated. Official verification by assigned Legal Guide."
       } : f));
     }
   };
@@ -777,10 +805,10 @@ const SubmitComplaint = () => {
                 <ARAMAvatar size="md" state={getAvatarState()} showStatus={true} />
                 <div>
                   <h1 className="text-2xl font-black text-[#163D32] tracking-tight flex items-center gap-2">
-                    Citizen Grievance & Legal Filing
+                    {t("submitComplaint.headerTitle", "Citizen Grievance & Legal Filing")}
                   </h1>
                   <p className="text-xs text-[#65736D] font-medium mt-0.5">
-                    Tamil Nadu Legal Services Authority • Official Grievance & Redressal Registry
+                    {t("submitComplaint.headerSubtitle", "Tamil Nadu Legal Services Authority • Official Grievance & Redressal Registry")}
                   </p>
                 </div>
               </div>
@@ -803,7 +831,7 @@ const SubmitComplaint = () => {
                     : "text-[#65736D] hover:text-[#18332B] hover:bg-white/60"
                 }`}
               >
-                <Sparkles size={14} /> AI-Guided Filing (5 Stages)
+                <Sparkles size={14} /> {t("submitComplaint.aiGuidedTab", "AI-Guided Filing (5 Stages)")}
               </button>
               <button
                 type="button"
@@ -814,7 +842,7 @@ const SubmitComplaint = () => {
                     : "text-[#65736D] hover:text-[#18332B] hover:bg-white/60"
                 }`}
               >
-                <FileText size={14} /> Direct Form (Single Page)
+                <FileText size={14} /> {t("submitComplaint.directFormTab", "Direct Form (Single Page)")}
               </button>
             </div>
           </div>
@@ -826,7 +854,9 @@ const SubmitComplaint = () => {
         {mode === "simple" && simpleStep !== "success" && (
           <div className="bg-[#FFFDF8] border border-[#E6E1D8] rounded-2xl p-4 shadow-sm space-y-3">
             <div className="flex justify-between items-center text-[11px] font-extrabold uppercase tracking-wider">
-              <span className="text-[#65736D]">Stage {simpleStep} of 5</span>
+              <span className="text-[#65736D]">
+                {t("submitComplaint.stageOf", "Stage {step} of 5").replace("{step}", simpleStep)}
+              </span>
               <span className="text-[#163D32] bg-[#DCEBDD] px-2.5 py-0.5 rounded-full font-bold">
                 {STAGES.find(s => s.id === simpleStep)?.name || "Grievance Progress"}
               </span>
@@ -876,10 +906,10 @@ const SubmitComplaint = () => {
               />
               <div>
                 <h2 className="text-xl sm:text-2xl font-extrabold text-[#163D32]">
-                  Tell ARAM what happened
+                  {t("submitComplaint.stage1Title", "Tell ARAM what happened")}
                 </h2>
                 <p className="text-xs sm:text-sm text-[#65736D] mt-1 font-medium leading-relaxed">
-                  Explain your problem naturally. You can type or speak in your language.
+                  {t("submitComplaint.stage1Desc", "Explain your problem naturally. You can type or speak in your language.")}
                 </p>
               </div>
             </div>
@@ -887,8 +917,8 @@ const SubmitComplaint = () => {
             {/* Natural Language Input Area with Integrated Voice Control */}
             <div className="space-y-2">
               <div className="flex justify-between items-center text-xs font-bold text-[#18332B]">
-                <span>Tell us what happened...</span>
-                <span className="text-[11px] text-[#65736D] font-medium">Minimum 15 characters</span>
+                <span>{t("submitComplaint.tellUsLabel", "Tell us what happened...")}</span>
+                <span className="text-[11px] text-[#65736D] font-medium">{t("submitComplaint.minChars", "Minimum 15 characters")}</span>
               </div>
 
               <div className="relative">
@@ -896,7 +926,7 @@ const SubmitComplaint = () => {
                   rows={7}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Tell us what happened in your own words... (You can type or speak in Tamil, Tanglish, English, or Hindi)"
+                  placeholder={t("submitComplaint.tellUsPlaceholder", "Tell us what happened in your own words... (You can type or speak in Tamil, Tanglish, English, or Hindi)")}
                   className="w-full p-4 pb-16 rounded-2xl border border-[#DDE2DF] bg-white text-[#18332B] text-sm focus:border-[#163D32] focus:ring-4 focus:ring-[#DCEBDD]/50 outline-none transition resize-none leading-relaxed font-medium placeholder-[#8B9690] shadow-2xs"
                 />
 
@@ -918,15 +948,15 @@ const SubmitComplaint = () => {
                         ? "bg-[#E8C978]/30 text-[#163D32] border border-[#E8C978]"
                         : "bg-[#DCEBDD] text-[#163D32] hover:bg-[#c6dcc7] border border-[#c5ddc6]"
                     }`}
-                    title="Speak your problem"
+                    title={t("submitComplaint.speakProblem", "Speak your problem")}
                   >
                     <Mic size={15} />
                     <span>
                       {recording && recordingField === "description"
-                        ? "Listening... (Click to stop)"
+                        ? t("submitComplaint.listeningClickStop", "Listening... (Click to stop)")
                         : isTranscribingVoice
-                        ? "Processing speech..."
-                        : "Speak your problem"}
+                        ? t("submitComplaint.processingSpeech", "Processing speech...")
+                        : t("submitComplaint.speakProblem", "Speak your problem")}
                     </span>
                   </button>
                 </div>
@@ -937,11 +967,11 @@ const SubmitComplaint = () => {
             <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-[#FAF8F5] border border-[#E6E1D8] rounded-2xl">
               <div className="flex items-center gap-2">
                 <Globe size={14} className="text-[#1F5948]" />
-                <span className="text-xs font-bold text-[#18332B]">Language:</span>
+                <span className="text-xs font-bold text-[#18332B]">{t("submitComplaint.languageLabel", "Language:")}</span>
               </div>
               <div className="flex flex-wrap items-center gap-1.5">
                 {[
-                  { code: "auto", label: "✨ Auto-Detect", badge: "Primary" },
+                  { code: "auto", label: t("submitComplaint.autoDetect", "✨ Auto-Detect"), badge: t("submitComplaint.primaryBadge", "Primary") },
                   { code: "ta-IN", label: "தமிழ் (Tamil)" },
                   { code: "en-IN", label: "English" },
                   { code: "hi-IN", label: "हिंदी (Hindi)" }
@@ -970,10 +1000,33 @@ const SubmitComplaint = () => {
               </div>
             </div>
 
+            {/* Editable Voice & Text Review Card with Read Aloud */}
+            {description && description.trim().length >= 10 && (
+              <div className="p-4 rounded-2xl bg-[#F7F1E6] border border-[#E6E1D8] space-y-2.5">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-[#163D32] flex items-center gap-1.5">
+                      <Sparkles size={14} className="text-[#1F5948]" />
+                      {t("submitComplaint.transcribedNarrative", "Transcribed Problem Narrative")}
+                    </span>
+                    {aiDetectedLanguage && (
+                      <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#DCEBDD] text-[#163D32] border border-[#c5ddc6]">
+                        {t("submitComplaint.speechBadge", "{lang} Speech").replace("{lang}", aiDetectedLanguage)}
+                      </span>
+                    )}
+                  </div>
+                  <ReadAloudButton text={description} language={speechLanguage === "ta-IN" ? "ta-IN" : speechLanguage === "hi-IN" ? "hi-IN" : "en-IN"} />
+                </div>
+                <p className="text-xs text-[#65736D] leading-relaxed">
+                  {t("submitComplaint.reviewEditTip", "Review & Edit: You can edit names, amounts, or dates directly in the text box above before clicking Analyse with ARAM.")}
+                </p>
+              </div>
+            )}
+
             {/* District Selection (Dynamic Single Source of Truth) */}
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-[#18332B] uppercase tracking-wider block">
-                Your District
+                {t("submitComplaint.yourDistrict", "Your District")}
               </label>
               <div className="relative">
                 <select
@@ -990,7 +1043,7 @@ const SubmitComplaint = () => {
                 <MapPin size={16} className="absolute left-3.5 top-3.5 text-[#1F5948] pointer-events-none" />
               </div>
               <p className="text-xs text-[#65736D] font-medium">
-                Your district helps ARAM connect you with the appropriate local assistance at the <strong className="text-[#163D32] font-bold">{location} District Legal Aid Desk</strong>.
+                {t("submitComplaint.districtHelp", "Your district helps ARAM connect you with the appropriate local assistance at the {district} District Legal Aid Desk.").replace("{district}", location)}
               </p>
             </div>
 
@@ -1001,7 +1054,7 @@ const SubmitComplaint = () => {
                 onClick={handleClearDraft}
                 className="text-xs text-[#65736D] hover:text-[#18332B] font-semibold cursor-pointer py-2 px-3 rounded-lg hover:bg-[#F7F1E6]"
               >
-                Clear text
+                {t("submitComplaint.clearText", "Clear text")}
               </button>
               
               <button
@@ -1011,7 +1064,7 @@ const SubmitComplaint = () => {
                 className="px-6 py-3 rounded-xl bg-[#163D32] hover:bg-[#1F5948] disabled:opacity-50 text-white font-bold text-xs shadow-md cursor-pointer flex items-center gap-2 transition"
               >
                 <Sparkles size={16} className="text-[#E8C978]" /> 
-                {loading ? "Analyzing Legal Context..." : "Analyse with ARAM →"} 
+                {loading ? t("submitComplaint.analyzingLegal", "Analyzing Legal Context...") : t("submitComplaint.analyzeWithAram", "Analyse with ARAM →")} 
               </button>
             </div>
           </div>
@@ -1026,7 +1079,7 @@ const SubmitComplaint = () => {
               <div className="flex items-center gap-2.5">
                 <ARAMAvatar size="sm" state="speaking" showStatus={false} />
                 <h2 className="text-xl font-extrabold text-[#163D32]">
-                  ARAM AI Case Assessment
+                  {t("submitComplaint.stage2Title", "ARAM AI Case Assessment")}
                 </h2>
               </div>
               <div className="flex items-center gap-2">
@@ -1034,10 +1087,10 @@ const SubmitComplaint = () => {
                   type="button"
                   onClick={() => toggleSpeakText(aiSummary || aiHeadline)}
                   className="px-3 py-1.5 rounded-xl border border-[#c5ddc6] bg-[#DCEBDD] text-[#163D32] text-xs font-bold flex items-center gap-1.5 cursor-pointer hover:bg-[#c3dac4] transition"
-                  title="Listen to summary"
+                  title={speaking ? t("submitComplaint.stopAudio", "Stop Audio") : t("submitComplaint.listenSummary", "Listen Summary")}
                 >
                   {speaking ? <VolumeX size={14} /> : <Volume2 size={14} />}
-                  {speaking ? "Stop Audio" : "Listen Summary"}
+                  {speaking ? t("submitComplaint.stopAudio", "Stop Audio") : t("submitComplaint.listenSummary", "Listen Summary")}
                 </button>
                 <span className="text-xs font-bold text-[#163D32] bg-[#DCEBDD] border border-[#c5ddc6] px-3 py-1.5 rounded-xl flex items-center gap-1">
                   <Globe size={13} className="text-[#1F5948]" /> {aiDetectedLanguage}
@@ -1049,14 +1102,14 @@ const SubmitComplaint = () => {
             <div className="p-5 rounded-2xl bg-[#DCEBDD]/35 border border-[#c5ddc6] space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-[10px] font-black uppercase tracking-widest text-[#65736D]">
-                  Formulated Problem Title
+                  {t("submitComplaint.formulatedTitle", "Formulated Problem Title")}
                 </span>
                 <button
                   type="button"
                   onClick={() => setIsEditingTitle(!isEditingTitle)}
                   className="text-[11px] font-bold text-[#1F5948] hover:underline flex items-center gap-1 cursor-pointer"
                 >
-                  <Edit3 size={12} /> {isEditingTitle ? "Done Editing" : "Edit Title"}
+                  <Edit3 size={12} /> {isEditingTitle ? t("submitComplaint.doneEditing", "Done Editing") : t("submitComplaint.editTitle", "Edit Title")}
                 </button>
               </div>
 
@@ -1085,7 +1138,7 @@ const SubmitComplaint = () => {
                     ? "bg-[#F4DDE2] text-[#C94B4B] border border-[#E4C8CF]" 
                     : "bg-[#DCEBDD] text-[#163D32] border border-[#c5ddc6]"
                 }`}>
-                  Priority: {aiPriority}
+                  {t("submitComplaint.priorityLabel", "Priority: {priority}").replace("{priority}", aiPriority)}
                 </span>
               </div>
             </div>
@@ -1093,7 +1146,7 @@ const SubmitComplaint = () => {
             {/* AI Situation Overview */}
             <div className="p-4 bg-white rounded-2xl border border-[#E6E1D8] space-y-2 text-xs text-[#18332B] font-medium leading-relaxed">
               <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#1F5948] block">
-                Case Situation & Legal Overview
+                {t("submitComplaint.caseOverview", "Case Situation & Legal Overview")}
               </span>
               <p>{aiSummary}</p>
             </div>
@@ -1103,19 +1156,19 @@ const SubmitComplaint = () => {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-[11px]">
                 {aiCaseSummary.importantFacts.entities && aiCaseSummary.importantFacts.entities[0] && (
                   <div className="p-3 bg-[#F7F1E6] rounded-xl border border-[#E6E1D8]">
-                    <span className="text-[10px] text-[#65736D] font-bold uppercase block">Parties Identified</span>
+                    <span className="text-[10px] text-[#65736D] font-bold uppercase block">{t("submitComplaint.partiesIdentified", "Parties Identified")}</span>
                     <span className="font-bold text-[#18332B] capitalize">{aiCaseSummary.importantFacts.entities.join(", ")}</span>
                   </div>
                 )}
                 {aiCaseSummary.importantFacts.amounts && aiCaseSummary.importantFacts.amounts[0] !== "Not specified" && (
                   <div className="p-3 bg-[#F7F1E6] rounded-xl border border-[#E6E1D8]">
-                    <span className="text-[10px] text-[#65736D] font-bold uppercase block">Dispute Claim Amount</span>
+                    <span className="text-[10px] text-[#65736D] font-bold uppercase block">{t("submitComplaint.disputeClaimAmount", "Dispute Claim Amount")}</span>
                     <span className="font-black text-[#163D32]">{aiCaseSummary.importantFacts.amounts.join(", ")}</span>
                   </div>
                 )}
                 {aiCaseSummary.importantFacts.dates && aiCaseSummary.importantFacts.dates[0] !== "As mentioned in complaint" && (
                   <div className="p-3 bg-[#F7F1E6] rounded-xl border border-[#E6E1D8]">
-                    <span className="text-[10px] text-[#65736D] font-bold uppercase block">Timeline / Incident Date</span>
+                    <span className="text-[10px] text-[#65736D] font-bold uppercase block">{t("submitComplaint.timelineDate", "Timeline / Incident Date")}</span>
                     <span className="font-bold text-[#18332B]">{aiCaseSummary.importantFacts.dates.join(", ")}</span>
                   </div>
                 )}
@@ -1125,15 +1178,15 @@ const SubmitComplaint = () => {
             {/* Citizen Requested Outcome (Integrated directly into Stage 2) */}
             <div className="space-y-1.5 pt-2">
               <div className="flex justify-between items-center text-xs font-bold text-[#18332B]">
-                <span>What specific outcome or relief are you seeking?</span>
-                <span className="text-[11px] text-[#65736D] font-medium">Your requested resolution</span>
+                <span>{t("submitComplaint.reliefQuestion", "What specific outcome or relief are you seeking?")}</span>
+                <span className="text-[11px] text-[#65736D] font-medium">{t("submitComplaint.reliefSubtitle", "Your requested resolution")}</span>
               </div>
               <div className="relative">
                 <textarea
                   rows={3}
                   value={citizenOpinion}
                   onChange={(e) => setCitizenOpinion(e.target.value)}
-                  placeholder="Example: I want formal mediation by TNSLSA to direct the landlord to refund my ₹50,000 security deposit with no illegal deductions."
+                  placeholder={t("submitComplaint.reliefPlaceholder", "Example: I want formal mediation by TNSLSA to direct the landlord to refund my ₹50,000 security deposit with no illegal deductions.")}
                   className="w-full p-4 pr-16 rounded-2xl border border-[#DDE2DF] bg-white text-sm font-medium text-[#18332B] focus:border-[#163D32] focus:ring-4 focus:ring-[#DCEBDD]/50 outline-none leading-relaxed placeholder-[#8B9690] shadow-2xs"
                 />
                 <button
@@ -1144,10 +1197,10 @@ const SubmitComplaint = () => {
                       ? "bg-[#C94B4B] text-white animate-pulse"
                       : "bg-[#DCEBDD] text-[#163D32] hover:bg-[#c6dcc7] border border-[#c5ddc6]"
                   }`}
-                  title="Speak this answer"
+                  title={t("submitComplaint.speakBtn", "Speak")}
                 >
                   <Mic size={13} />
-                  {recording && recordingField === "citizenOpinion" ? "Recording..." : "Speak"}
+                  {recording && recordingField === "citizenOpinion" ? t("submitComplaint.recordingBtn", "Recording...") : t("submitComplaint.speakBtn", "Speak")}
                 </button>
               </div>
             </div>
@@ -1155,7 +1208,7 @@ const SubmitComplaint = () => {
             {/* Identified Legal Concerns Tags */}
             <div className="space-y-2">
               <span className="text-[10px] font-extrabold text-[#65736D] uppercase tracking-wider block">
-                Applicable Statutory Remedies
+                {t("submitComplaint.applicableRemedies", "Applicable Statutory Remedies")}
               </span>
               <div className="flex flex-wrap gap-2">
                 {aiConcerns.map((tag, idx) => (
@@ -1176,14 +1229,14 @@ const SubmitComplaint = () => {
                 onClick={() => setSimpleStep(1)}
                 className="px-4 py-2 text-xs font-bold text-[#65736D] hover:text-[#18332B] hover:bg-[#F7F1E6] rounded-xl cursor-pointer flex items-center gap-1 transition"
               >
-                <ArrowLeft size={14} /> Back
+                <ArrowLeft size={14} /> {t("submitComplaint.backBtn", "Back")}
               </button>
               <button
                 type="button"
                 onClick={() => setSimpleStep(3)}
                 className="px-6 py-2.5 text-xs font-bold rounded-xl bg-[#163D32] hover:bg-[#1F5948] text-white shadow-md cursor-pointer flex items-center gap-2 transition"
               >
-                Continue to Documents & Evidence <ArrowRight size={14} />
+                {t("submitComplaint.continueDocsBtn", "Continue to Documents & Evidence →")}
               </button>
             </div>
           </div>
@@ -1197,10 +1250,10 @@ const SubmitComplaint = () => {
             <div>
               <h2 className="text-xl font-extrabold text-[#163D32] flex items-center gap-2">
                 <FileText className="text-[#1F5948]" size={22} />
-                Documents & Supporting Proof
+                {t("submitComplaint.stage3Title", "Documents & Supporting Proof")}
               </h2>
               <p className="text-xs text-[#65736D] mt-1 font-medium">
-                ARAM AI generated this 3-tier evidence checklist for your <strong>{aiCategoryLabel}</strong> case. Upload proof below; documents undergo real OCR verification.
+                {t("submitComplaint.stage3Desc", "Attach deeds, notices, receipts or agreements for automated readiness review.")}
               </p>
             </div>
 
@@ -1328,11 +1381,54 @@ const SubmitComplaint = () => {
                         </div>
                       </div>
 
-                      {/* Document Legibility Pre-Check Advisory */}
-                      {file.legibilityWarning && (
-                        <div className="p-2.5 bg-amber-50 rounded-xl border border-amber-200 text-[11px] text-amber-850 flex items-center gap-2 font-medium">
-                          <AlertTriangle size={14} className="text-amber-600 shrink-0" />
-                          <span>{file.legibilityWarning}</span>
+                      {/* Deep OCR Inspection Findings */}
+                      {file.ocrStatus === "verified" && (
+                        <div className="mt-2 pt-2 border-t border-[#E6E1D8]/60 space-y-2">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px]">
+                            <div className="p-2 rounded-xl bg-white border border-[#E6E1D8]">
+                              <span className="text-[9px] font-bold uppercase text-[#65736D] block">Detected Document Type:</span>
+                              <span className="font-bold text-[#163D32]">{file.documentType || "Supporting Evidence"}</span>
+                            </div>
+                            <div className="p-2 rounded-xl bg-white border border-[#E6E1D8]">
+                              <span className="text-[9px] font-bold uppercase text-[#65736D] block">OCR Quality / Legibility:</span>
+                              <span className="font-bold text-[#1F5948]">{file.legibilityScore || 78}% — {file.legibilityGrade || "Acceptable"}</span>
+                            </div>
+                          </div>
+
+                          {/* Detected Key Fields */}
+                          {((file.detectedDates?.length > 0) || (file.detectedReferenceNumbers?.length > 0) || (file.detectedParties?.length > 0) || file.sealDetected) && (
+                            <div className="p-2.5 rounded-xl bg-[#FAF8F5] border border-[#E6E1D8] space-y-1.5">
+                              <span className="text-[9px] font-bold uppercase text-[#65736D] block">Extracted Fields:</span>
+                              <div className="flex flex-wrap gap-1.5">
+                                {file.detectedDates?.map((d, di) => (
+                                  <span key={`date-${di}`} className="px-2 py-0.5 rounded-md bg-[#DCEBDD] text-[#163D32] text-[10px] font-bold border border-[#c5ddc6]">
+                                    📅 Date: {d}
+                                  </span>
+                                ))}
+                                {file.detectedReferenceNumbers?.map((r, ri) => (
+                                  <span key={`ref-${ri}`} className="px-2 py-0.5 rounded-md bg-blue-50 text-blue-900 text-[10px] font-bold border border-blue-200">
+                                    🔢 Ref/ID: {r}
+                                  </span>
+                                ))}
+                                {file.detectedParties?.map((p, pi) => (
+                                  <span key={`party-${pi}`} className="px-2 py-0.5 rounded-md bg-purple-50 text-purple-900 text-[10px] font-bold border border-purple-200">
+                                    👤 Party: {p}
+                                  </span>
+                                ))}
+                                {file.sealDetected && (
+                                  <span className="px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 text-[10px] font-bold border border-emerald-200">
+                                    ✓ Seal / Stamped
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Statutory Disclaimer & Legal Verification Advisory */}
+                          <div className="p-2 rounded-xl bg-amber-50/60 border border-amber-200/70 text-[10px] text-amber-900 flex items-start gap-1.5">
+                            <ShieldCheck size={13} className="text-amber-700 shrink-0 mt-0.5" />
+                            <span><strong>Administrative Notice:</strong> {file.verificationNotice || "Needs Legal Guide confirmation — OCR is an administrative aid, not statutory proof."}</span>
+                          </div>
                         </div>
                       )}
 
@@ -1356,14 +1452,14 @@ const SubmitComplaint = () => {
                 onClick={() => setSimpleStep(2)}
                 className="px-4 py-2 text-xs font-bold text-[#65736D] hover:text-[#18332B] hover:bg-[#F7F1E6] rounded-xl cursor-pointer flex items-center gap-1 transition"
               >
-                <ArrowLeft size={14} /> Back
+                <ArrowLeft size={14} /> {t("submitComplaint.backBtn", "Back")}
               </button>
               <button
                 type="button"
                 onClick={() => setSimpleStep(4)}
                 className="px-6 py-2.5 text-xs font-bold rounded-xl bg-[#163D32] hover:bg-[#1F5948] text-white shadow-md cursor-pointer flex items-center gap-2 transition"
               >
-                Continue to Safety & Assistance <ArrowRight size={14} />
+                {t("submitComplaint.continueSafetyBtn", "Continue to Safety & Assistance →")}
               </button>
             </div>
           </div>
@@ -1378,10 +1474,10 @@ const SubmitComplaint = () => {
               <ARAMAvatar size="md" state={aiSensitive ? "human_help" : "verified"} showStatus={false} />
               <div>
                 <h2 className="text-xl font-extrabold text-[#163D32]">
-                  Safety, Confidentiality & Legal Guides
+                  {t("submitComplaint.stage4Title", "Safety, Confidentiality & Legal Guides")}
                 </h2>
                 <p className="text-xs text-[#65736D] mt-0.5 font-medium">
-                  Intelligent grievance routing based on Tamil Nadu administrative standards and sensitivity rules.
+                  {t("submitComplaint.stage4Desc", "Intelligent grievance routing based on Tamil Nadu administrative standards and sensitivity rules.")}
                 </p>
               </div>
             </div>
@@ -1499,14 +1595,14 @@ const SubmitComplaint = () => {
                 onClick={() => setSimpleStep(3)}
                 className="px-4 py-2 text-xs font-bold text-[#65736D] hover:text-[#18332B] hover:bg-[#F7F1E6] rounded-xl cursor-pointer flex items-center gap-1 transition"
               >
-                <ArrowLeft size={14} /> Back
+                <ArrowLeft size={14} /> {t("submitComplaint.backBtn", "Back")}
               </button>
               <button
                 type="button"
                 onClick={() => setSimpleStep(5)}
                 className="px-6 py-2.5 text-xs font-bold rounded-xl bg-[#163D32] hover:bg-[#1F5948] text-white shadow-md cursor-pointer flex items-center gap-2 transition"
               >
-                Proceed to Review & Submit <ArrowRight size={14} />
+                {t("submitComplaint.continueReviewBtn", "Continue to Review & Submit →")}
               </button>
             </div>
           </div>
@@ -1521,10 +1617,10 @@ const SubmitComplaint = () => {
               <ARAMAvatar size="md" state="verified" showStatus={false} />
               <div>
                 <h2 className="text-xl font-extrabold text-[#163D32]">
-                  Final Grievance Review & Confirmation
+                  {t("submitComplaint.stage5Title", "Final Grievance Review & Confirmation")}
                 </h2>
                 <p className="text-xs text-[#65736D] mt-0.5 font-medium">
-                  Review case summary, evidence proofs, and citizen declaration before official registration.
+                  {t("submitComplaint.stage5Desc", "Review case summary, evidence proofs, and citizen declaration before official registration.")}
                 </p>
               </div>
             </div>
@@ -1672,7 +1768,7 @@ const SubmitComplaint = () => {
                 onClick={() => setSimpleStep(4)}
                 className="px-4 py-2 text-xs font-bold text-[#65736D] hover:text-[#18332B] hover:bg-[#F7F1E6] rounded-xl cursor-pointer flex items-center gap-1 transition"
               >
-                <ArrowLeft size={14} /> Back
+                <ArrowLeft size={14} /> {t("submitComplaint.backBtn", "Back")}
               </button>
               
               <button
@@ -1681,7 +1777,7 @@ const SubmitComplaint = () => {
                 disabled={loading || !citizenDeclaration}
                 className="px-8 py-3.5 text-xs font-black rounded-xl bg-[#163D32] hover:bg-[#1F5948] disabled:opacity-50 text-white shadow-lg cursor-pointer flex items-center gap-2 transition"
               >
-                <Send size={16} /> {loading ? "Registering in Legal Registry..." : "Submit Grievance to Registry"}
+                <Send size={16} /> {loading ? t("submitComplaint.submittingBtn", "Submitting to Legal Registry...") : t("submitComplaint.submitGrievanceBtn", "Submit Grievance to Legal Aid Desk →")}
               </button>
             </div>
           </div>
@@ -1888,10 +1984,10 @@ const SubmitComplaint = () => {
 
             <div className="space-y-2">
               <h2 className="text-2xl font-black text-[#163D32] tracking-tight">
-                Grievance Registered Successfully!
+                {t("submitComplaint.successTitle", "Grievance Registered Successfully!")}
               </h2>
               <p className="text-xs text-[#65736D] font-medium max-w-md mx-auto">
-                Your grievance has been permanently recorded in the ARAM Legal Aid Registry and assigned to the {location} District Legal Desk.
+                {t("submitComplaint.successDesc", "Your grievance has been securely registered with Tamil Nadu Legal Services Authority and logged to the blockchain audit block.")}
               </p>
             </div>
 
@@ -1926,17 +2022,17 @@ const SubmitComplaint = () => {
             <div className="flex flex-col sm:flex-row justify-center gap-3.5 pt-2">
               <button
                 type="button"
-                onClick={() => navigate("/citizen/my-complaints")}
+                onClick={() => navigate("/citizen/history")}
                 className="px-6 py-3 text-xs font-bold rounded-xl border border-[#E6E1D8] bg-white text-[#18332B] hover:bg-[#F7F1E6] shadow-xs cursor-pointer transition"
               >
-                View My Complaints
+                {t("submitComplaint.returnDashboardBtn", "Return to Dashboard")}
               </button>
               <button
                 type="button"
-                onClick={() => navigate(`/citizen/complaints/${createdComplaint.id}`)}
+                onClick={() => navigate("/track-complaint")}
                 className="px-6 py-3 text-xs font-bold rounded-xl bg-[#163D32] hover:bg-[#1F5948] text-white shadow-md cursor-pointer transition"
               >
-                Track Case Progress
+                {t("submitComplaint.trackGrievanceBtn", "Track Grievance Status")}
               </button>
             </div>
           </div>

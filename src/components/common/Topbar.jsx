@@ -15,7 +15,7 @@ const Topbar = ({ onToggleSidebar, role = "citizen" }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { resolvedTheme, setMode } = useTheme();
-  const { language, changeLanguage, availableLanguages } = useLanguage();
+  const { language, changeLanguage, availableLanguages, t } = useLanguage();
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
   
   const [profileDropdown, setProfileDropdown] = useState(false);
@@ -37,10 +37,10 @@ const Topbar = ({ onToggleSidebar, role = "citizen" }) => {
   };
 
   const searchPlaceholder = user?.role === "SUPER_ADMIN" || user?.role === "ADMIN"
-    ? "Search grievances across all 38 districts (ID, citizen, keyword)..."
+    ? t("topbar.searchAdmin", "Search grievances across all 38 districts (ID, citizen, keyword)...")
     : user?.role === "LEGAL_GUIDE" || user?.role === "VOLUNTEER"
-    ? "Search assigned cases or legal topics..."
-    : "Ask ARAM AI legal questions (e.g., land title, RTI, 498A)...";
+    ? t("topbar.searchGuide", "Search assigned cases or legal topics...")
+    : t("topbar.searchCitizen", "Ask ARAM AI legal questions (e.g., land title, RTI, 498A)...");
 
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-[#DDE2DF] bg-[#FFFDF8]/95 px-4 backdrop-blur-md sm:px-6">
@@ -63,16 +63,16 @@ const Topbar = ({ onToggleSidebar, role = "citizen" }) => {
       <div className="flex items-center gap-3 ml-4">
         
         {/* Language selector pill */}
-        <div className="hidden sm:flex items-center bg-[#F7F1E6] rounded-full p-1 border border-[#E6E1D8]">
+        <div className="flex items-center bg-[#F7F1E6] rounded-full p-1 border border-[#E6E1D8]">
           {availableLanguages.map((l) => (
             <button
               key={l.code}
               onClick={() => changeLanguage(l.code)}
-              className={`px-3 py-1 text-[11px] font-bold rounded-full transition ${
+              className={`px-2 sm:px-3 py-1 text-[11px] font-bold rounded-full transition cursor-pointer ${
                 language === l.code ? "bg-[#163D32] text-white shadow-sm" : "text-[#65736D] hover:text-[#18332B]"
               }`}
             >
-              {l.label}
+              {l.nativeLabel || l.label}
             </button>
           ))}
         </div>
@@ -213,14 +213,14 @@ const Topbar = ({ onToggleSidebar, role = "citizen" }) => {
                 onClick={() => setProfileDropdown(false)}
                 className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-[#18332B] hover:bg-[#DCEBDD]/40"
               >
-                <User size={14} /> Profile & Settings
+                <User size={14} /> {t("sidebar.profileSettings", "Profile & Settings")}
               </Link>
               <Link
                 to="/citizen/help"
                 onClick={() => setProfileDropdown(false)}
                 className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-[#18332B] hover:bg-[#DCEBDD]/40"
               >
-                <HelpCircle size={14} /> Help & Legal Aid
+                <HelpCircle size={14} /> {t("sidebar.helpRights", "Help & Legal Aid")}
               </Link>
               <div className="my-1 border-t border-[#E6E1D8]" />
               <button
@@ -228,9 +228,9 @@ const Topbar = ({ onToggleSidebar, role = "citizen" }) => {
                   setProfileDropdown(false);
                   logout();
                 }}
-                className="w-full text-left flex items-center gap-2 px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50"
+                className="w-full text-left flex items-center gap-2 px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 cursor-pointer"
               >
-                <LogOut size={14} /> Sign Out
+                <LogOut size={14} /> {t("sidebar.signOut", "Sign Out")}
               </button>
             </div>
           )}

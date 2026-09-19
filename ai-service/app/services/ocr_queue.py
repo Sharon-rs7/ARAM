@@ -10,6 +10,8 @@ import redis
 
 from app.ocr_engine import extract_ocr_text
 from app.ocr.document_classifier import document_classifier
+from app.ocr.field_extractor import extract_document_fields
+from app.services.telemetry_service import telemetry_service
 from app.mongo_logger import log_ai_action
 
 REDIS_HOST = os.getenv("REDIS_HOST", "127.0.0.1")
@@ -109,20 +111,49 @@ def execute_ocr_processing(job_id: str, temp_file_path: str) -> Dict[str, Any]:
         
         # 2. Document Classification
         doc_res = document_classifier.classify(raw_text)
+        detected_doc_type = doc_res.get("documentType", "General Supporting Document")
+        
+        # 3. Field & Verification Extraction (Dates, Reference IDs, Legibility Score)
+        field_res = extract_document_fields(raw_text, detected_doc_type)
         
         total_time_ms = int((time.time() - start_time) * 1000)
         
         final_result = {
             "ocr": ocr_res,
             "classification": doc_res,
+            "fields": field_res,
+            "legibilityScore": field_res.get("legibilityScore", 70),
+            "legibilityGrade": field_res.get("legibilityGrade", "Acceptable"),
+            "verificationStatus": field_res.get("verificationStatus", "NEEDS_HUMAN_CONFIRMATION"),
+            "statutoryDisclaimer": field_res.get("statutoryDisclaimer", ""),
             "totalProcessingTimeMs": total_time_ms
         }
         
-        print(f"[BACKGROUND WORKER] Finished job '{job_id}' in {total_time_ms}ms ({round(total_time_ms/1000, 2)}s). Result snippet: '{raw_text[:60]}...'")
+        # 4. Record Operational Telemetry
+        telemetry_service.record_event(
+            op_type="OCR",
+            latency_ms=total_time_ms,
+            success=True,
+            details={
+                "documentType": detected_doc_type,
+                "legibilityScore": field_res.get("legibilityScore", 70),
+                "datesFound": len(field_res.get("detectedDates", [])),
+                "refsFound": len(field_res.get("detectedReferenceNumbers", []))
+            }
+        )
+        
+        print(f"[BACKGROUND WORKER] Finished job '{job_id}' in {total_time_ms}ms ({round(total_time_ms/1000, 2)}s). Type: {detected_doc_type}, Legibility: {field_res.get('legibilityScore')}%")
         log_ai_action("async_ocr_queue_logs", {"jobId": job_id, "result": final_result})
         ocr_job_store.update_job(job_id, "COMPLETED", result=final_result)
         return final_result
     except Exception as e:
+        total_time_ms = int((time.time() - start_time) * 1000)
+        telemetry_service.record_event(
+            op_type="OCR",
+            latency_ms=total_time_ms,
+            success=False,
+            details={"error": str(e)}
+        )
         print(f"[BACKGROUND WORKER ERROR] Failed job '{job_id}': {e}")
         ocr_job_store.update_job(job_id, "FAILED", error=str(e))
         raise e

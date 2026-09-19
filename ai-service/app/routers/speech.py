@@ -3,10 +3,12 @@ import shutil
 import tempfile
 import subprocess
 import uuid
+import time
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends
 from app.auth import verify_internal_token
 from typing import Optional
 from app.services.whisper_service import whisper_service
+from app.services.telemetry_service import telemetry_service
 
 router = APIRouter(dependencies=[Depends(verify_internal_token)])
 
@@ -106,6 +108,7 @@ async def transcribe_speech(
     temp_file_path = os.path.join(temp_dir, f"audio_upload_{unique_suffix}_{file.filename}")
     converted_file_path = None
     
+    start_time = time.time()
     try:
         # Save temp file
         with open(temp_file_path, "wb") as buffer:
@@ -151,6 +154,19 @@ async def transcribe_speech(
 
         lang_code = "ta" if detected_language in ["Tamil", "Tanglish"] else ("hi" if detected_language in ["Hindi", "Hinglish"] else "en")
 
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        telemetry_service.record_event(
+            op_type="STT",
+            latency_ms=elapsed_ms,
+            success=not is_empty_speech,
+            details={
+                "provider": result.get("engine", "deepgram"),
+                "language": detected_language,
+                "confidence": confidence,
+                "durationSec": result.get("duration", 0.0)
+            }
+        )
+
         return {
             "success": True,
             "transcript": transcript,
@@ -164,6 +180,13 @@ async def transcribe_speech(
             "message": "Speech transcribed successfully"
         }
     except Exception as e:
+        elapsed_ms = int((time.time() - start_time) * 1000)
+        telemetry_service.record_event(
+            op_type="STT",
+            latency_ms=elapsed_ms,
+            success=False,
+            details={"error": str(e)}
+        )
         print(f"FastAPI transcription endpoint failed: {e}")
         return {
             "success": False,

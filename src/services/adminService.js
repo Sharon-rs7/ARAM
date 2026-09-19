@@ -182,6 +182,18 @@ export const adminService = {
       params: { timeRange, district }
     });
     return res.data;
+  },
+
+  getAiTelemetry: async () => {
+    try {
+      const res = await fetch("http://127.0.0.1:8000/telemetry/stats");
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch (e) {
+      console.warn("Direct AI telemetry fetch error:", e);
+    }
+    return null;
   }
 };
 export default adminService;

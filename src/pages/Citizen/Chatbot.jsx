@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { ARAMAvatar } from "@/components/common/brand/ARAMAvatar";
 import { ARAMBadge } from "@/components/common/brand/ARAMBadge";
 import { ARAMQuickActions } from "@/components/citizen/ARAMQuickActions";
+import ReadAloudButton from "@/components/common/voice/ReadAloudButton";
 
 // Safe inline formatting for bold text (**text**)
 const renderInlineFormatting = (str, isUser = false) => {
@@ -443,10 +444,11 @@ const Chatbot = () => {
           
           if (finalText) {
             setInputQuery(finalText);
-            const detected = res?.detectedLanguage || (/[\u0B80-\u0BFF]/.test(finalText) ? "Tamil" : /[\u0900-\u097F]/.test(finalText) ? "Hindi" : "Voice");
-            const langCode = res?.languageCode || (detected === "Tamil" || detected === "Tanglish" ? "ta" : detected === "Hindi" || detected === "Hinglish" ? "hi" : "en");
-            toast.success(`Recognized (${detected}): "${finalText.slice(0, 32)}${finalText.length > 32 ? '...' : ''}"`);
-            handleSend(finalText, langCode);
+            const detected = res?.detectedLanguage || (/[\u0B80-\u0BFF]/.test(finalText) ? "Tamil" : /[\u0900-\u097F]/.test(finalText) ? "Hindi" : "English");
+            toast.success(`Speech transcribed (${detected})! You can edit the text or press Send.`);
+            if (inputRef.current) {
+              inputRef.current.focus();
+            }
           } else {
             toast.info("No speech detected. Please speak clearly into your microphone.");
           }
@@ -454,9 +456,9 @@ const Chatbot = () => {
           toast.dismiss(toastId);
           console.error("Voice transcription fallback notice:", err);
           if (browserCaptured) {
-            const isTa = /[\u0B80-\u0BFF]/.test(browserCaptured) || /\b(romba|vanakkam|sollunga|panren|irukku)\b/i.test(browserCaptured);
-            const isHi = /[\u0900-\u097F]/.test(browserCaptured) || /\b(madad|namaste|chahiye)\b/i.test(browserCaptured);
-            handleSend(browserCaptured, isTa ? "ta" : isHi ? "hi" : "en");
+            setInputQuery(browserCaptured);
+            toast.success("Speech captured via browser! You can edit the text before sending.");
+            if (inputRef.current) inputRef.current.focus();
           } else {
             toast.error("Voice transcription failed. Please try again or type manually.");
           }
@@ -663,9 +665,17 @@ const Chatbot = () => {
                     </div>
                   )}
 
-                  <span className={`block text-[9px] mt-2 text-right font-mono ${msg.sender === "user" ? "text-emerald-100/75" : "text-[#8B9690]"}`}>
-                    {msg.timestamp}
-                  </span>
+                  <div className="flex items-center justify-between mt-2 pt-1.5 border-t border-[#E6E1D8]/40 gap-2">
+                    {msg.sender === "ai" ? (
+                      <ReadAloudButton 
+                        text={msg.text} 
+                        language={language === "ta" ? "ta-IN" : language === "hi" ? "hi-IN" : "en-IN"} 
+                      />
+                    ) : <span />}
+                    <span className={`text-[9px] font-mono shrink-0 ${msg.sender === "user" ? "text-emerald-100/75" : "text-[#8B9690]"}`}>
+                      {msg.timestamp}
+                    </span>
+                  </div>
                 </div>
               </div>
 

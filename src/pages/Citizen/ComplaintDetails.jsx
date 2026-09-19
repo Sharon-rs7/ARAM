@@ -29,6 +29,7 @@ import { toast } from "sonner";
 import ReadAloudButton from "@/components/common/voice/ReadAloudButton";
 import CaseChatPanel from "@/components/guide/CaseChatPanel";
 import AuthorityLocationCard from "@/components/citizen/AuthorityLocationCard";
+import { useLanguage } from "@/context/LanguageContext";
 
 const TRANSLATIONS = {
   "ta-IN": {
@@ -371,6 +372,7 @@ const GlossaryTip = ({ term }) => (
 const ComplaintDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const { language: activeGlobalLang } = useLanguage();
   const [complaint, setComplaint] = useState(null);
   const [loading, setLoading] = useState(true);
   const [actionPlan, setActionPlan] = useState(null);
@@ -568,11 +570,11 @@ const ComplaintDetails = () => {
     );
   }
 
-  // Resolve case language first
-  const caseLang = complaint?.language || "en-IN";
-  const normalizedLang = caseLang.toLowerCase().includes("tamil") || caseLang.startsWith("ta")
+  // Resolve case language: prefer user's active UI language, or fallback to case language
+  const activeCode = (activeGlobalLang || complaint?.language || "en-IN").toLowerCase();
+  const normalizedLang = activeCode.includes("tamil") || activeCode.startsWith("ta")
     ? "ta-IN"
-    : caseLang.toLowerCase().includes("hindi") || caseLang.startsWith("hi")
+    : activeCode.includes("hindi") || activeCode.startsWith("hi")
     ? "hi-IN"
     : "en-IN";
   const t = TRANSLATIONS[normalizedLang] || TRANSLATIONS["en-IN"];
