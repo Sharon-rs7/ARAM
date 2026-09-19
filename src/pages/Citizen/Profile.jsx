@@ -36,8 +36,9 @@ const Profile = () => {
     district: "",
     address: "",
     preferredLanguage: "Tamil & English",
-    idType: "Aadhaar Card (UIDAI)",
-    idNumber: "",
+    createdAt: null,
+    status: "ACTIVE",
+    role: "CITIZEN",
     isVerified: true
   });
 
@@ -90,9 +91,10 @@ const Profile = () => {
             district: userData.district || authUser?.district || "",
             address: userData.address || authUser?.address || "",
             preferredLanguage: userData.preferredLanguage || "Tamil & English",
-            idType: "Aadhaar Card (UIDAI)",
-            idNumber: userData.mobile ? `XXXX-XXXX-${userData.mobile.slice(-4)}` : "XXXX-XXXX-8921",
-            isVerified: true
+            createdAt: userData.createdAt || authUser?.createdAt || null,
+            status: userData.status || "ACTIVE",
+            role: userData.role || "CITIZEN",
+            isVerified: userData.status === "ACTIVE"
           });
         }
       } catch (err) {
@@ -106,8 +108,9 @@ const Profile = () => {
             district: authUser.district || "",
             address: authUser.address || "",
             preferredLanguage: "Tamil & English",
-            idType: "Aadhaar Card (UIDAI)",
-            idNumber: authUser.mobile ? `XXXX-XXXX-${authUser.mobile.slice(-4)}` : "XXXX-XXXX-8921",
+            createdAt: authUser.createdAt || null,
+            status: authUser.status || "ACTIVE",
+            role: authUser.role || "CITIZEN",
             isVerified: true
           });
         }
@@ -582,12 +585,17 @@ const Profile = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs pt-1">
               <div className="p-3 bg-white rounded-xl border border-[#E6E1D8] space-y-1">
-                <span className="text-[10px] font-bold text-[#65736D] uppercase block">Identity Document Type</span>
-                <span className="font-bold text-[#18332B]">{profile.idType}</span>
+                <span className="text-[10px] font-bold text-[#65736D] uppercase block">Official Registry Identifier</span>
+                <span className="font-mono font-bold text-[#163D32]">
+                  ARAM-TN-{profile.district ? profile.district.toUpperCase().slice(0, 3) : "GEN"}-{String(profile.id || 0).padStart(6, "0")}
+                </span>
               </div>
               <div className="p-3 bg-white rounded-xl border border-[#E6E1D8] space-y-1">
-                <span className="text-[10px] font-bold text-[#65736D] uppercase block">Masked UID / Reference</span>
-                <span className="font-mono font-bold text-[#163D32]">{profile.idNumber}</span>
+                <span className="text-[10px] font-bold text-[#65736D] uppercase block">Statutory Registration Status</span>
+                <span className="font-bold text-[#18332B] flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+                  {profile.status || "ACTIVE"} Citizen ({profile.district ? `${profile.district} Jurisdiction` : "Tamil Nadu Jurisdiction"})
+                </span>
               </div>
             </div>
           </div>
