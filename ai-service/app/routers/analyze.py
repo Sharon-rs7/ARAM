@@ -114,11 +114,8 @@ def analyze_complaint(request: ComplaintMLRequest):
         # 7. Same Language Response Selection
         response_lang = detected_lang
         
-        # Check if category model is loaded
-        if not ml_model_loader.is_available("category_model"):
-            raise HTTPException(status_code=500, detail="ML Classifier models are currently offline. Analysis failed.")
-            
-        fallback_used = not cat_res.get("modelBased", False)
+        # Fallback indicator
+        fallback_used = not ml_model_loader.is_available("category_model") or not cat_res.get("modelBased", False)
         localized_msg = get_localized_response("complaint_received", response_lang)
         
         # Manual Review flags

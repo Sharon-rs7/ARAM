@@ -8,9 +8,11 @@ import {
 import { complaintService } from "@/services/complaintService";
 import SearchInput from "@/components/common/SearchInput";
 import Button from "@/components/common/Button";
+import { useLanguage } from "@/context/LanguageContext";
 
 const ComplaintHistory = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [complaints, setComplaints] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -49,10 +51,10 @@ const ComplaintHistory = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-2xl sm:text-3xl font-extrabold text-[#18332B] tracking-tight">
-              My Grievance History
+              {t("complaintHistory.title", "My Grievance History")}
             </h1>
             <p className="text-xs text-[#65736D] mt-1">
-              Track status, evidence verification, and legal guide notes for all submitted cases.
+              {t("complaintHistory.subtitle", "Track status, evidence verification, and legal guide notes for all submitted cases.")}
             </p>
           </div>
           <Button
@@ -60,7 +62,7 @@ const ComplaintHistory = () => {
             onClick={() => navigate("/citizen/submit-complaint")}
             icon={PlusCircle}
           >
-            File New Grievance
+            {t("complaintHistory.newGrievanceBtn", "File New Grievance")}
           </Button>
         </div>
 
@@ -70,22 +72,27 @@ const ComplaintHistory = () => {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onClear={() => setSearch("")}
-            placeholder="Search by case ID, keyword, or title..."
+            placeholder={t("complaintHistory.searchPlaceholder", "Search complaints by title, ID, or description...")}
             className="w-full sm:w-80"
           />
 
           <div className="flex gap-1.5 overflow-x-auto w-full sm:w-auto">
-            {["ALL", "PENDING", "IN_PROGRESS", "RESOLVED"].map((st) => (
+            {[
+              { id: "ALL", label: t("complaintHistory.filterAll", "All Statuses") },
+              { id: "PENDING", label: t("complaintHistory.filterSubmitted", "Submitted") },
+              { id: "IN_PROGRESS", label: t("complaintHistory.filterInProgress", "In Progress") },
+              { id: "RESOLVED", label: t("complaintHistory.filterResolved", "Resolved") }
+            ].map((st) => (
               <button
-                key={st}
-                onClick={() => setStatusFilter(st)}
+                key={st.id}
+                onClick={() => setStatusFilter(st.id)}
                 className={`px-3 py-1.5 rounded-full text-xs font-bold transition ${
-                  statusFilter === st
+                  statusFilter === st.id
                     ? "bg-[#163D32] text-white"
                     : "bg-[#F7F1E6] text-[#65736D] hover:text-[#18332B]"
                 }`}
               >
-                {st.replace("_", " ")}
+                {st.label}
               </button>
             ))}
           </div>
@@ -94,13 +101,13 @@ const ComplaintHistory = () => {
         {/* Case Cards / Table */}
         {loading ? (
           <div className="py-16 text-center text-xs text-[#8B9690] rounded-3xl bg-[#FFFDF8] border border-[#E6E1D8]">
-            Loading grievance records...
+            {t("citizenDashboard.loadingGrievances", "Loading grievance records...")}
           </div>
         ) : filtered.length === 0 ? (
           <div className="py-16 text-center space-y-3 rounded-3xl bg-[#FFFDF8] border border-[#E6E1D8]">
             <FileText className="mx-auto text-[#65736D]" size={36} />
-            <p className="text-xs font-bold text-[#18332B]">No matching grievances found.</p>
-            <p className="text-[11px] text-[#65736D]">Try clearing your search filters or file a new grievance.</p>
+            <p className="text-xs font-bold text-[#18332B]">{t("complaintHistory.noComplaintsTitle", "No matching grievances found.")}</p>
+            <p className="text-[11px] text-[#65736D]">{t("complaintHistory.noComplaintsDesc", "Try clearing your search filters or file a new grievance.")}</p>
           </div>
         ) : (
           <div className="space-y-3">

@@ -6,25 +6,27 @@ import {
   Search, Shield, HelpCircle, Bell, User, LogOut, ChevronLeft
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 
 const CitizenSidebar = () => {
   const location = useLocation();
   const { logout } = useAuth();
+  const { t } = useLanguage();
   const [collapsed, setCollapsed] = useState(false);
 
   const mainLinks = [
-    { label: "Dashboard", href: "/citizen/dashboard", icon: Home },
-    { label: "Ask ARAM AI", href: "/citizen/chatbot", icon: MessageSquare },
-    { label: "Submit Grievance", href: "/citizen/submit-complaint", icon: PlusCircle },
-    { label: "My Grievances", href: "/citizen/history", icon: Clock },
-    { label: "Documents & Evidence", href: "/citizen/documents", icon: FileText },
-    { label: "Track Status", href: "/track-complaint", icon: Search },
+    { label: t("sidebar.dashboard", "Dashboard"), href: "/citizen/dashboard", icon: Home },
+    { label: t("sidebar.askAi", "Ask ARAM AI"), href: "/citizen/chatbot", icon: MessageSquare },
+    { label: t("sidebar.submitGrievance", "Submit Grievance"), href: "/citizen/submit-complaint", icon: PlusCircle },
+    { label: t("sidebar.myGrievances", "My Grievances"), href: "/citizen/history", icon: Clock },
+    { label: t("sidebar.documentsEvidence", "Documents & Evidence"), href: "/citizen/documents", icon: FileText },
+    { label: t("sidebar.trackStatus", "Track Status"), href: "/track-complaint", icon: Search },
   ];
 
   const secondaryLinks = [
-    { label: "Notifications", href: "/citizen/notifications", icon: Bell },
-    { label: "Help & Rights Guide", href: "/citizen/help", icon: HelpCircle },
-    { label: "Profile & Settings", href: "/citizen/profile", icon: User },
+    { label: t("sidebar.notifications", "Notifications"), href: "/citizen/notifications", icon: Bell },
+    { label: t("sidebar.helpRights", "Help & Rights Guide"), href: "/citizen/help", icon: HelpCircle },
+    { label: t("sidebar.profileSettings", "Profile & Settings"), href: "/citizen/profile", icon: User },
   ];
 
   return (
@@ -32,8 +34,7 @@ const CitizenSidebar = () => {
       
       {/* Top Brand */}
       <div className="p-4 border-b border-white/10 flex items-center justify-between">
-        {!collapsed && <Logo size="sm" light={true} />}
-        {collapsed && <div className="font-extrabold text-lg text-white">ARAM</div>}
+        <Logo size="sm" light={true} variant={collapsed ? "mark" : "full"} />
         <button
           onClick={() => setCollapsed(!collapsed)}
           className="p-1 rounded-lg text-white/70 hover:bg-white/10 hover:text-white"
@@ -45,7 +46,7 @@ const CitizenSidebar = () => {
       {/* Nav List */}
       <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
         <div>
-          {!collapsed && <p className="px-3 text-[10px] font-extrabold uppercase tracking-widest text-[#DCEBDD]/60 mb-2">Legal Aid Portal</p>}
+          {!collapsed && <p className="px-3 text-[10px] font-extrabold uppercase tracking-widest text-[#DCEBDD]/60 mb-2">{t("sidebar.portalTitle", "Legal Aid Portal")}</p>}
           <nav className="space-y-1">
             {mainLinks.map((item) => {
               const Icon = item.icon;
@@ -70,7 +71,7 @@ const CitizenSidebar = () => {
         </div>
 
         <div>
-          {!collapsed && <p className="px-3 text-[10px] font-extrabold uppercase tracking-widest text-[#DCEBDD]/60 mb-2">Support & Settings</p>}
+          {!collapsed && <p className="px-3 text-[10px] font-extrabold uppercase tracking-widest text-[#DCEBDD]/60 mb-2">{t("sidebar.supportSettings", "Support & Settings")}</p>}
           <nav className="space-y-1">
             {secondaryLinks.map((item) => {
               const Icon = item.icon;
@@ -102,7 +103,7 @@ const CitizenSidebar = () => {
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold text-red-300 hover:bg-red-500/20 hover:text-red-100 transition"
         >
           <LogOut size={18} />
-          {!collapsed && <span>Sign Out</span>}
+          {!collapsed && <span>{t("sidebar.signOut", "Sign Out")}</span>}
         </button>
       </div>
 

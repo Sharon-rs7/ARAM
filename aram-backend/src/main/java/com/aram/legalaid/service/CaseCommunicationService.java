@@ -15,6 +15,8 @@ import java.util.*;
 @Service
 public class CaseCommunicationService {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(CaseCommunicationService.class);
+
     private final ComplaintRepository complaintRepository;
     private final UserRepository userRepository;
     private final CaseChatThreadRepository chatThreadRepository;
@@ -376,6 +378,7 @@ public class CaseCommunicationService {
             }
         }
 
+        ComplaintStatus oldStatus = complaint.getStatus();
         ComplaintStatus newStatus = ComplaintStatus.valueOf(status.toUpperCase());
         complaint.setStatus(newStatus);
         complaint.setUpdatedAt(LocalDateTime.now());
@@ -397,9 +400,31 @@ public class CaseCommunicationService {
         // Notifications
         notificationService.create(
                 complaint.getUser(),
-                "Case status updated to " + status + " for ARAM-2026-000" + complaintId + ".",
+                "Case status updated to " + status + " for " + complaint.getComplaintCustomId() + ".",
                 NotificationType.IN_APP
         );
+
+        if (complaint.getUser() != null && complaint.getUser().getEmail() != null && oldStatus != newStatus) {
+            try {
+                emailService.sendComplaintStatusUpdateEmail(
+                    complaint.getUser().getEmail(),
+                    complaint.getUser().getName(),
+                    complaint.getComplaintCustomId(),
+                    oldStatus.name(),
+                    newStatus.name()
+                );
+                if (newStatus == ComplaintStatus.RESOLVED || newStatus == ComplaintStatus.RESOLVED_BY_GUIDE) {
+                    emailService.sendCaseResolvedEmail(
+                        complaint.getUser().getEmail(),
+                        complaint.getUser().getName(),
+                        complaint.getComplaintCustomId(),
+                        "Case status marked as " + newStatus.name() + " by assigned Legal Guide."
+                    );
+                }
+            } catch (Exception me) {
+                log.error("Failed to send status update email in CaseCommunicationService: {}", me.getMessage());
+            }
+        }
 
         auditLogService.log("COMPLAINT_STATUS_UPDATED", currentUser.getEmail(), "Updated status of complaint ID " + complaintId + " to " + status);
 
@@ -420,6 +445,7 @@ public class CaseCommunicationService {
             throw new ForbiddenException("You can only request documents on assigned cases");
         }
 
+        ComplaintStatus prevStatus = complaint.getStatus();
         complaint.setStatus(ComplaintStatus.DOCUMENTS_PENDING);
         complaintRepository.save(complaint);
 
@@ -440,6 +466,20 @@ public class CaseCommunicationService {
                 "Legal Guide requested additional documents: " + documentName,
                 NotificationType.IN_APP
         );
+
+        if (complaint.getUser() != null && complaint.getUser().getEmail() != null) {
+            try {
+                emailService.sendComplaintStatusUpdateEmail(
+                    complaint.getUser().getEmail(),
+                    complaint.getUser().getName(),
+                    complaint.getComplaintCustomId(),
+                    prevStatus.name(),
+                    ComplaintStatus.DOCUMENTS_PENDING.name()
+                );
+            } catch (Exception me) {
+                log.error("Failed to send document request status email: {}", me.getMessage());
+            }
+        }
     }
 
     @Transactional

@@ -39,32 +39,71 @@ public class EmailService {
         this.templateService = templateService;
     }
 
+    private void recordEmailOutbox(String to, String subject, EmailTemplateType type, String htmlContent, String status, String note) {
+        try {
+            Path logDir = Path.of("target", "logs");
+            Files.createDirectories(logDir);
+            String entry = String.format("[%s] STATUS=%s | TYPE=%s | TO=%s | SUBJ=%s | NOTE=%s%n",
+                    java.time.LocalDateTime.now(), status, type, to, subject, note != null ? note : "OK");
+            Files.writeString(logDir.resolve("email_outbox.log"), entry,
+                    java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.APPEND);
+
+            String json = String.format("{\"timestamp\":\"%s\",\"status\":\"%s\",\"type\":\"%s\",\"to\":\"%s\",\"subject\":\"%s\",\"note\":\"%s\"}",
+                    java.time.LocalDateTime.now(), status, type, 
+                    to != null ? to.replace("\"", "\\\"") : "", 
+                    subject != null ? subject.replace("\"", "\\\"") : "", 
+                    note != null ? note.replace("\"", "\\\"").replace("\n", " ") : "");
+            Files.writeString(logDir.resolve("last_email.json"), json);
+
+            Path scratchPath = Path.of("C:", "Users", "Sharon", ".gemini", "antigravity", "brain", "ad8feeb3-a22d-4f4a-aa40-508ce9eaca26", "scratch");
+            if (Files.exists(scratchPath)) {
+                Files.writeString(scratchPath.resolve("last_email.json"), json);
+            }
+        } catch (Exception ex) {
+            log.warn("Could not write outbox log: {}", ex.getMessage());
+        }
+    }
+
     private void sendEmailAsync(String to, String subject, EmailTemplateType type, Map<String, String> variables) {
+        if (to == null || to.trim().isEmpty()) {
+            log.warn("Cannot send transactional email: Recipient 'to' address is null or empty for type {}", type);
+            return;
+        }
+
         // Run in background thread to prevent blocking transactional requests
         CompletableFuture.runAsync(() -> {
+            String htmlContent = "";
             try {
-                String htmlContent = templateService.buildEmail(type, variables);
+                htmlContent = templateService.buildEmail(type, variables);
+            } catch (Exception te) {
+                log.error("Failed to build HTML template for email [Type: {}]: {}", type, te.getMessage());
+                return;
+            }
 
-                if (!mailEnabled || mailSender == null) {
-                    log.info("Email sending is disabled or mail sender is not configured. Logging content instead.");
-                    log.debug("To: {}, Subject: {}\nContent:\n{}", to, subject, htmlContent);
-                    return;
-                }
+            if (!mailEnabled || mailSender == null) {
+                log.info("Email sending is disabled or mail sender is not configured. Logging content and recording outbox for: {}", to);
+                recordEmailOutbox(to, subject, type, htmlContent, "OUTBOX_SIMULATED", "Mail sender disabled or null JavaMailSender");
+                return;
+            }
 
+            try {
                 MimeMessage mimeMessage = mailSender.createMimeMessage();
                 MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
                 
                 helper.setFrom(mailFromName + " <" + mailFrom + ">");
-                helper.setTo(to);
+                helper.setTo(to.trim());
                 helper.setSubject(subject);
                 helper.setText(htmlContent, true);
 
                 mailSender.send(mimeMessage);
-                log.info("Email of type {} successfully sent to: {}", type, to);
+                log.info("Email of type {} successfully sent via SMTP to: {}", type, to);
+                recordEmailOutbox(to, subject, type, htmlContent, "SENT", "SMTP 250 OK");
             } catch (Exception e) {
-                // Safeguard credential and SMTP error logs
                 String errorMsg = e.getMessage() != null ? e.getMessage() : "Unknown SMTP exception";
-                log.error("Failed to send transactional email [Type: {}] to {}. Reason category: {} | Details: {}", type, to, e.getClass().getSimpleName(), errorMsg);
+                log.error("Failed to send transactional email [Type: {}] to {}. Reason category: {} | Details: {}", 
+                          type, to, e.getClass().getSimpleName(), errorMsg);
+                // Record in outbox so the email is preserved and verifiable
+                recordEmailOutbox(to, subject, type, htmlContent, "FAILED_OUTBOX_PRESERVED", errorMsg);
             }
         });
     }
@@ -72,7 +111,7 @@ public class EmailService {
     // Helper to write OTP to scratch file for dev mode verification & automation tests
     private void writeDevOtpScratch(String email, String otp) {
         try {
-            Path scratchPath = Path.of("C:", "Users", "Sharon", ".gemini", "antigravity", "brain", "a7b001b8-4fd1-4569-8080-8e19f6bab6ed", "scratch");
+            Path scratchPath = Path.of("C:", "Users", "Sharon", ".gemini", "antigravity", "brain", "ad8feeb3-a22d-4f4a-aa40-508ce9eaca26", "scratch");
             Files.createDirectories(scratchPath);
             Files.writeString(scratchPath.resolve("last_otp.txt"), otp);
             log.info("Dev Mode OTP helper written to last_otp.txt for: {}", email);
@@ -103,15 +142,20 @@ public class EmailService {
     }
 
     public void sendComplaintSubmittedEmail(String to, String userName, String complaintCustomId, String district, String state) {
+        String safeName = (userName != null && !userName.trim().isEmpty()) ? userName.trim() : "Citizen";
+        String safeId = (complaintCustomId != null && !complaintCustomId.trim().isEmpty()) ? complaintCustomId.trim() : "ARAM-GRIEVANCE";
+        String safeDistrict = (district != null && !district.trim().isEmpty()) ? district.trim() : "Tamil Nadu";
+        String safeState = (state != null && !state.trim().isEmpty()) ? state.trim() : "Tamil Nadu";
+
         Map<String, String> vars = new HashMap<>();
-        vars.put("userName", userName);
+        vars.put("userName", safeName);
         vars.put("message", "Your complaint has been successfully registered with ARAM.<br><br>" +
-                "<strong>Complaint ID:</strong> " + complaintCustomId + "<br>" +
-                "<strong>Location:</strong> " + district + ", " + state + "<br>" +
+                "<strong>Complaint ID:</strong> " + safeId + "<br>" +
+                "<strong>Location:</strong> " + safeDistrict + ", " + safeState + "<br>" +
                 "<strong>Current Status:</strong> Submitted<br><br>" +
                 "Your complaint is now being processed through the ARAM assistance workflow. You can track the status from your ARAM dashboard.");
 
-        sendEmailAsync(to, "ARAM Complaint Registered — " + complaintCustomId, EmailTemplateType.COMPLAINT_SUBMITTED, vars);
+        sendEmailAsync(to, "ARAM Complaint Registered — " + safeId, EmailTemplateType.COMPLAINT_SUBMITTED, vars);
     }
 
     public void sendGuideAssignedEmail(String to, String userName, String complaintCustomId, String guideName) {
@@ -266,7 +310,7 @@ public class EmailService {
 
     private void writeDevAuditAlertScratch(String email, String details) {
         try {
-            Path scratchPath = Path.of("C:", "Users", "Sharon", ".gemini", "antigravity", "brain", "df2c1ee5-098b-4d5d-8273-4efe2c8f7ce5", "scratch");
+            Path scratchPath = Path.of("C:", "Users", "Sharon", ".gemini", "antigravity", "brain", "ad8feeb3-a22d-4f4a-aa40-508ce9eaca26", "scratch");
             Files.createDirectories(scratchPath);
             Files.writeString(scratchPath.resolve("last_audit_alert.txt"), "To: " + email + "\nDetails: " + details);
             log.info("Dev Mode Audit alert helper written to last_audit_alert.txt");

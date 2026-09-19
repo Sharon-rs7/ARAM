@@ -8,39 +8,105 @@ def generate_problem_title(text: str, category: str, district: str, language_cod
     lower = (text or "").lower()
     dist = (district or "").strip().title()
     
+    is_ta = (language_code or "en").lower().startswith("ta")
+    is_hi = (language_code or "en").lower().startswith("hi")
+
     # 1. Tenancy / Security Deposit
     if any(k in lower for k in ["deposit", "advance", "security deposit", "vaadagai", "rent advance", "வாடகை முன்பணம்", "டெபாசிட்", "முன்பணம்"]):
         if any(k in lower for k in ["refund", "thara maattanga", "return", "refusing", "திருப்பி", "தரவில்லை", "கொடுக்கவில்லை"]):
+            if is_ta:
+                return f"வாடகை முன்பணம் திரும்பப் பெறுதல் புகார் ({dist})" if dist else "வாடகை முன்பணம் திரும்பப் பெறுதல் புகார்"
+            elif is_hi:
+                return f"सुरक्षा जमा राशि वापसी शिकायत ({dist})" if dist else "सुरक्षा जमा राशि वापसी शिकायत"
             return f"Security Deposit Refund Grievance ({dist})" if dist else "Security Deposit Refund Grievance"
+        if is_ta:
+            return f"வாடகை மற்றும் முன்பணத் தகராறு ({dist})" if dist else "வாடகை மற்றும் முன்பணத் தகராறு"
+        elif is_hi:
+            return f"किराया एवं सुरक्षा जमा विवाद ({dist})" if dist else "किराया एवं सुरक्षा जमा विवाद"
         return f"Tenancy & Security Deposit Dispute ({dist})" if dist else "Tenancy & Security Deposit Dispute"
     
     # 2. Unpaid Salary / Wages / Labour
     if any(k in lower for k in ["salary", "sambalam", "wages", "unpaid salary", "pay", "bonus", "சம்பளம்", "கூலி", "வேலை"]):
         if any(k in lower for k in ["pending", "unpaid", "thara", "not paid", "பாக்கி", "தரவில்லை"]):
+            if is_ta:
+                return f"ஊதிய பாக்கி மற்றும் தொழிலாளர் உரிமை கோரிக்கை ({dist})" if dist else "ஊதிய பாக்கி கோரிக்கை"
+            elif is_hi:
+                return f"बकाया वेतन एवं श्रम अधिकार दावा ({dist})" if dist else "बकाया वेतन दावा"
             return f"Unpaid Salary & Wage Claim ({dist})" if dist else "Unpaid Salary & Wage Claim"
+        if is_ta:
+            return f"தொழிலாளர் மற்றும் வேலைவாய்ப்பு உரிமை தகராறு ({dist})" if dist else "தொழிலாளர் உரிமை தகராறு"
+        elif is_hi:
+            return f"श्रम एवं रोजगार अधिकार विवाद ({dist})" if dist else "श्रम अधिकार विवाद"
         return f"Labour & Employment Rights Dispute ({dist})" if dist else "Labour & Employment Rights Dispute"
     
     # 3. Financial Scam / Cyber Crime / Banking Fraud
     if any(k in lower for k in ["cyber", "otp", "phishing", "scam", "fraud", "hacked", "gpay", "phonepe", "bank account", "மோசடி", "பணம் பறிப்பு", "ஏமாற்று"]):
+        if is_ta:
+            return f"நிதி மோசடி மற்றும் சைபர் குற்றப் புகார் ({dist})" if dist else "நிதி மோசடி புகார்"
+        elif is_hi:
+            return f"वित्तीय साइबर धोखाधड़ी शिकायत ({dist})" if dist else "साइबर धोखाधड़ी शिकायत"
         return f"Financial Cyber Scam & Fraud Dispute ({dist})" if dist else "Financial Cyber Scam Dispute"
         
     # 4. Land / Property / Boundary / Document
     if any(k in lower for k in ["patta", "land", "property", "document", "boundary", "encroachment", "sale deed", "chitta", "பத்திரம்", "பட்டா", "நிலம்", "சொத்து"]):
         if any(k in lower for k in ["document", "pattiram", "registration", "fraud", "misuse", "பத்திரம்", "பதிவு", "போலி"]):
+            if is_ta:
+                return f"சொத்து ஆவண மற்றும் உரிமைப் பதிவு தகராறு ({dist})" if dist else "சொத்து ஆவண தகராறு"
+            elif is_hi:
+                return f"संपत्ति दस्तावेज एवं पंजीकरण विवाद ({dist})" if dist else "संपत्ति दस्तावेज विवाद"
             return f"Property Document & Title Registration Dispute ({dist})" if dist else "Property Document Dispute"
         elif any(k in lower for k in ["boundary", "varamppu", "encroachment", "border", "ஆக்கிரமிப்பு", "எல்லை"]):
+            if is_ta:
+                return f"நில எல்லை மற்றும் ஆக்கிரமிப்பு புகார் ({dist})" if dist else "நில எல்லை ஆக்கிரமிப்பு புகார்"
+            elif is_hi:
+                return f"भूमि सीमा एवं अतिक्रमण शिकायत ({dist})" if dist else "भूमि अतिक्रमण शिकायत"
             return f"Land Boundary & Encroachment Grievance ({dist})" if dist else "Land Boundary Grievance"
+        if is_ta:
+            return f"சொத்து மற்றும் நில உரிமை தகராறு ({dist})" if dist else "நில உரிமை தகராறு"
+        elif is_hi:
+            return f"संपत्ति एवं भूमि स्वामित्व विवाद ({dist})" if dist else "भूमि स्वामित्व विवाद"
         return f"Property & Title Ownership Dispute ({dist})" if dist else "Property & Title Dispute"
         
     # 5. Consumer / Defective Goods
     if any(k in lower for k in ["consumer", "defective", "warranty", "bill", "product", "damaged", "repair", "service center", "பழுது", "நுகர்வோர்"]):
+        if is_ta:
+            return f"பழுதடைந்த பொருள் மற்றும் நுகர்வோர் இழப்பீடு ({dist})" if dist else "நுகர்வோர் புகார்"
+        elif is_hi:
+            return f"दोषपूर्ण उत्पाद एवं उपभोक्ता निवारण ({dist})" if dist else "उपभोक्ता शिकायत"
         return f"Defective Product & Consumer Redressal ({dist})" if dist else "Consumer Redressal Grievance"
         
     # 6. Domestic / Women Safety
     if any(k in lower for k in ["domestic", "violence", "dowry", "harassment", "abuse", "வன்முறை", "வரதட்சணை", "கொடுமை"]):
+        if is_ta:
+            return f"குடும்ப வன்முறை மற்றும் பெண்கள் பாதுகாப்பு மனு ({dist})" if dist else "பெண்கள் பாதுகாப்பு மனு"
+        elif is_hi:
+            return f"घरेलू सुरक्षा एवं महिला कानूनी संरक्षण ({dist})" if dist else "महिला सुरक्षा शिकायत"
         return f"Domestic Safety & Legal Protection ({dist})" if dist else "Domestic Safety Grievance"
         
     # 7. Category based fallback titles
+    if is_ta:
+        cat_titles = {
+            "LABOUR_DISPUTE": f"தொழிலாளர் உரிமை தகராறு ({dist})" if dist else "தொழிலாளர் உரிமை தகராறு",
+            "CONSUMER_COMPLAINT": f"நுகர்வோர் குறைதீர்ப்பு மனு ({dist})" if dist else "நுகர்வோர் குறைதீர்ப்பு மனு",
+            "CYBER_CRIME": f"சைபர் குற்றப் புகார் ({dist})" if dist else "சைபர் குற்றப் புகார்",
+            "PROPERTY_CIVIL_DISPUTE": f"சொத்து மற்றும் உரிமையியல் தகராறு ({dist})" if dist else "சொத்து உரிமையியல் தகராறு",
+            "WOMEN_SAFETY_DOMESTIC_VIOLENCE": f"பெண்கள் பாதுகாப்பு சட்ட உதவி ({dist})" if dist else "பெண்கள் பாதுகாப்பு சட்ட உதவி",
+            "CRIMINAL_COMPLAINT": f"குற்றவியல் புகார் மற்றும் காவல் நடவடிக்கை ({dist})" if dist else "குற்றவியல் புகார்",
+            "GENERAL_LEGAL_AID": f"குடிமக்கள் சட்ட உதவி மனு ({dist})" if dist else "குடிமக்கள் சட்ட உதவி மனு"
+        }
+        return cat_titles.get(category, f"குடிமக்கள் சட்ட உதவி மனு ({dist})" if dist else "குடிமக்கள் சட்ட உதவி மனு")
+    elif is_hi:
+        cat_titles = {
+            "LABOUR_DISPUTE": f"श्रम अधिकार विवाद ({dist})" if dist else "श्रम अधिकार विवाद",
+            "CONSUMER_COMPLAINT": f"उपभोक्ता शिकायत एवं निवारण ({dist})" if dist else "उपभोक्ता शिकायत",
+            "CYBER_CRIME": f"साइबर अपराध शिकायत ({dist})" if dist else "साइबर अपराध शिकायत",
+            "PROPERTY_CIVIL_DISPUTE": f"संपत्ति एवं दीवानी विवाद ({dist})" if dist else "संपत्ति दीवानी विवाद",
+            "WOMEN_SAFETY_DOMESTIC_VIOLENCE": f"महिला सुरक्षा कानूनी सहायता ({dist})" if dist else "महिला सुरक्षा सहायता",
+            "CRIMINAL_COMPLAINT": f"आपराधिक शिकायत एवं पुलिस निवारण ({dist})" if dist else "आपराधिक शिकायत",
+            "GENERAL_LEGAL_AID": f"नागरिक कानूनी सहायता शिकायत ({dist})" if dist else "नागरिक कानूनी सहायता शिकायत"
+        }
+        return cat_titles.get(category, f"नागरिक कानूनी सहायता शिकायत ({dist})" if dist else "नागरिक कानूनी सहायता शिकायत")
+
     cat_titles = {
         "LABOUR_DISPUTE": f"Employment & Labour Rights Dispute ({dist})" if dist else "Labour Rights Dispute",
         "CONSUMER_COMPLAINT": f"Consumer Grievance & Redressal ({dist})" if dist else "Consumer Grievance",

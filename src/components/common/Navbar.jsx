@@ -2,10 +2,12 @@ import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Logo from "@/components/common/Logo";
 import { 
-  Menu, X, Shield, Globe, Award, Sparkles, LogIn, ChevronDown, Check
+  Menu, X, Shield, Globe, Award, Sparkles, LogIn, ChevronDown, Check,
+  Sun, Moon
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
+import { useTheme } from "@/context/ThemeContext";
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -13,7 +15,8 @@ const Navbar = () => {
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const { user } = useAuth();
-  const { language, changeLanguage, availableLanguages } = useLanguage();
+  const { resolvedTheme, setMode } = useTheme();
+  const { language, changeLanguage, availableLanguages, t } = useLanguage();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,11 +27,11 @@ const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { name: "Home", href: "/" },
-    { name: "About", href: "/about" },
-    { name: "Services", href: "/services" },
-    { name: "Track Grievance", href: "/track-complaint" },
-    { name: "Contact", href: "/contact" },
+    { name: t("nav.home", "Home"), href: "/" },
+    { name: t("nav.about", "About"), href: "/about" },
+    { name: t("nav.services", "Services"), href: "/services" },
+    { name: t("nav.trackGrievance", "Track Grievance"), href: "/track-complaint" },
+    { name: t("nav.contact", "Contact"), href: "/contact" },
   ];
 
   return (
@@ -89,17 +92,32 @@ const Navbar = () => {
               )}
             </div>
 
+            {/* Light / Dark Mode Toggle Button */}
+            <button
+              type="button"
+              onClick={() => setMode(resolvedTheme === "dark" ? "LIGHT" : "DARK")}
+              className="p-2 rounded-full border border-[#E6E1D8] bg-[#FFFDF8] text-[#163D32] hover:bg-[#DCEBDD]/40 transition cursor-pointer flex items-center justify-center shadow-2xs"
+              title={resolvedTheme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+              aria-label="Toggle theme"
+            >
+              {resolvedTheme === "dark" ? (
+                <Sun size={15} className="text-[#C58A25]" />
+              ) : (
+                <Moon size={15} className="text-[#163D32]" />
+              )}
+            </button>
+
             {user ? (
               <Link
                 to={user.role === "ADMIN" ? "/admin/dashboard" : user.role === "VOLUNTEER" || user.role === "GUIDE" ? "/guide/dashboard" : "/citizen/dashboard"}
                 className="btn-aram-primary text-xs"
               >
-                Dashboard
+                {t("nav.dashboard", "Dashboard")}
               </Link>
             ) : (
               <Link to="/login" className="btn-aram-primary text-xs flex items-center gap-1.5">
                 <LogIn size={14} />
-                <span>Sign In</span>
+                <span>{t("nav.signIn", "Sign In")}</span>
               </Link>
             )}
           </div>
@@ -122,7 +140,7 @@ const Navbar = () => {
         <div className="md:hidden bg-[#FFFDF8] border-b border-[#E6E1D8] px-4 pt-2 pb-6 space-y-3 shadow-lg">
           {navLinks.map((link) => (
             <Link
-              key={link.name}
+              key={link.href}
               to={link.href}
               onClick={() => setMobileMenuOpen(false)}
               className="block py-2 text-xs font-bold text-[#18332B] uppercase tracking-wider hover:text-[#1F5948]"
@@ -136,7 +154,7 @@ const Navbar = () => {
               onClick={() => setMobileMenuOpen(false)}
               className="btn-aram-primary text-center text-xs"
             >
-              {user ? "Open Dashboard" : "Sign In to ARAM"}
+              {user ? t("nav.dashboard", "Open Dashboard") : t("nav.signIn", "Sign In to ARAM")}
             </Link>
           </div>
         </div>

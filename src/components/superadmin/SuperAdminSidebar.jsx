@@ -28,13 +28,21 @@ const SuperAdminSidebar = () => {
   const [districtJumpOpen, setDistrictJumpOpen] = useState(false);
   const [districtQuery, setDistrictQuery] = useState("");
 
-  const currentTab = searchParams.get("tab") || "districts";
+  const currentTab = searchParams.get("tab") || "analytics";
   const isDashboard = location.pathname === "/superadmin/dashboard" || location.pathname === "/superadmin";
 
   const navItems = [
     {
       group: "Core Governance",
       items: [
+        {
+          id: "analytics",
+          label: "Statewide Analytics",
+          href: "/superadmin/dashboard?tab=analytics",
+          tab: "analytics",
+          icon: Activity,
+          badge: "Live"
+        },
         {
           id: "districts",
           label: "District Grievance Portals",
@@ -111,8 +119,8 @@ const SuperAdminSidebar = () => {
             </div>
           </div>
         ) : (
-          <div className="font-black text-sm text-[#DCEBDD] tracking-wider mx-auto">
-            ARAM
+          <div className="mx-auto">
+            <Logo variant="mark" size="sm" light={true} />
           </div>
         )}
 

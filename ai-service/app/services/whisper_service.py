@@ -1,4 +1,5 @@
 import os
+import re
 import math
 from app.config import settings
 from app.services.deepgram_service import deepgram_service
@@ -67,11 +68,12 @@ class WhisperService:
                     lang = "hi"
                 elif "en" in clean_lang:
                     lang = "en"
-            
+
+            # Language resolution (ta, hi, en, or None for native auto-detect)
             segments, info = self.model.transcribe(
                 audio_path,
                 language=lang,
-                beam_size=1,
+                beam_size=3,
                 vad_filter=True,
                 condition_on_previous_text=False
             )
@@ -84,7 +86,9 @@ class WhisperService:
                     prob = math.exp(segment.avg_logprob)
                     segment_confidences.append(prob)
                 
-            full_transcript = " ".join(text_segments).strip()
+            # Strip any hallucinated Cyrillic, Arabic, or CJK characters
+            cleaned_text = re.sub(r'[\u0400-\u04FF\u0600-\u06FF\u4E00-\u9FFF]+', '', " ".join(text_segments)).strip()
+            full_transcript = re.sub(r'\s+', ' ', cleaned_text).strip()
             
             if not full_transcript:
                 return {
@@ -97,9 +101,12 @@ class WhisperService:
 
             avg_confidence = (sum(segment_confidences) / len(segment_confidences)) if segment_confidences else info.language_probability
             
+            det_base = (info.language or "en").split("-")[0].lower() if hasattr(info, "language") and info.language else "en"
+            det_lang = det_base if det_base in ["ta", "hi", "en"] else "en"
+
             return {
                 "transcript": full_transcript,
-                "detectedLanguage": info.language,
+                "detectedLanguage": det_lang,
                 "duration": round(info.duration, 2) if hasattr(info, "duration") else 0.0,
                 "confidence": round(avg_confidence, 4),
                 "engine": "whisper_local"
@@ -118,14 +125,16 @@ class WhisperService:
         """
         Orchestrates transcription:
         1. Attempts Deepgram Cloud STT (Nova-3 Multilingual)
-        2. Seamlessly falls back to pre-warmed local Faster-Whisper if Deepgram fails for ANY reason
+        2. Seamlessly falls back to pre-warmed local Faster-Whisper if Deepgram fails or detects no speech
         """
         # 1. Primary Engine: Deepgram Cloud STT
         if settings.STT_ENGINE == "deepgram" and deepgram_service.is_available():
             try:
                 res = deepgram_service.transcribe(audio_path, language_code=language_code)
-                if res and res.get("transcript"):
+                transcript = (res.get("transcript") or "").strip()
+                if transcript and transcript != "No audible speech detected." and not transcript.startswith("Audio transcription error"):
                     return res
+                print("[STT FAILOVER] Deepgram produced empty/no speech. Activating local Faster-Whisper standby...")
             except Exception as e:
                 print(f"[STT FAILOVER] Deepgram API failed ({e}). Instantly switching to local Faster-Whisper standby...")
 

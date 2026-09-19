@@ -94,6 +94,18 @@ export const AuthProvider = ({ children }) => {
     clearAuth();
   };
 
+  const updateUser = (newUserData) => {
+    setUser((prev) => {
+      const updated = { ...(prev || {}), ...newUserData };
+      if (localStorage.getItem("user")) {
+        localStorage.setItem("user", JSON.stringify(updated));
+      } else if (sessionStorage.getItem("user")) {
+        sessionStorage.setItem("user", JSON.stringify(updated));
+      }
+      return updated;
+    });
+  };
+
   const isAuthenticated = !!accessToken;
 
   return (
@@ -102,11 +114,13 @@ export const AuthProvider = ({ children }) => {
         user,
         role,
         accessToken,
+        token: accessToken,
         isAuthenticated,
         login,
         logout,
         saveAuth,
         clearAuth,
+        updateUser,
         loading
       }}
     >

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Server, ServerCrash, RefreshCw } from "lucide-react";
+import { API_BUSINESS_URL } from "@/services/api";
 
 export default function BackendStatusCard() {
   const [status, setStatus] = useState("checking"); // checking, online, offline
@@ -11,7 +12,7 @@ export default function BackendStatusCard() {
     setLoading(true);
     const timeStr = new Date().toLocaleTimeString();
     try {
-      const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
+      const baseUrl = API_BUSINESS_URL;
       const res = await axios.get(`${baseUrl}/health`);
       if (res.data && res.data.status === "ok") {
         setStatus("online");

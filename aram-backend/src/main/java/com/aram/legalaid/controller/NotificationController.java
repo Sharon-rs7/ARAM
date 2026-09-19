@@ -24,15 +24,16 @@ public class NotificationController {
 
     @GetMapping("/unread-count")
     public ResponseEntity<Map<String, Long>> unreadCount() {
-        return ResponseEntity.ok(Map.of("count", notificationService.unreadCount()));
+        long cnt = notificationService.unreadCount();
+        return ResponseEntity.ok(Map.of("count", cnt, "unreadCount", cnt));
     }
 
-    @PutMapping("/{id}/read")
+    @RequestMapping(value = "/{id}/read", method = {RequestMethod.PUT, RequestMethod.PATCH})
     public ResponseEntity<NotificationResponse> markAsRead(@PathVariable Long id) {
         return ResponseEntity.ok(notificationService.markAsRead(id));
     }
 
-    @PutMapping("/read-all")
+    @RequestMapping(value = {"/read-all", "/mark-all-read"}, method = {RequestMethod.PUT, RequestMethod.PATCH})
     public ResponseEntity<Map<String, String>> markAllAsRead() {
         notificationService.markAllAsRead();
         return ResponseEntity.ok(Map.of("message", "All notifications marked as read."));

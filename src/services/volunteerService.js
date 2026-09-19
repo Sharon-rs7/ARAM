@@ -100,7 +100,12 @@ export const volunteerService = {
   },
 
   getAnalytics: async () => {
-    const res = await api.get("/helper/analytics");
+    const res = await api.get("/volunteer/my-analytics");
+    return res.data;
+  },
+
+  getMyVolunteerAnalytics: async () => {
+    const res = await api.get("/volunteer/my-analytics");
     return res.data;
   }
 };

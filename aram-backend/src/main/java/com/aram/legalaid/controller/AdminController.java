@@ -71,6 +71,9 @@ public class AdminController {
     @Autowired
     private com.aram.legalaid.scheduler.AuditMonitoringScheduler auditMonitoringScheduler;
 
+    @Autowired
+    private com.aram.legalaid.service.StatewideAnalyticsService statewideAnalyticsService;
+
     public AdminController(AdminService adminService, ComplaintService complaintService, UserRepository userRepository,
                            ComplaintRepository complaintRepository, MapperService mapperService,
                            AuditLogService auditLogService, AuditLogRepository auditLogRepository,
@@ -122,7 +125,7 @@ public class AdminController {
         return ResponseEntity.ok(complaintService.allComplaints());
     }
 
-    @PutMapping("/complaints/{id}/status")
+    @RequestMapping(value = "/complaints/{id}/status", method = {RequestMethod.PUT, RequestMethod.PATCH})
     public ResponseEntity<ComplaintResponse> updateStatus(@PathVariable Long id, @Valid @RequestBody StatusUpdateRequest request, Principal principal) {
         ComplaintResponse response = complaintService.updateStatus(id, request);
         String adminName = principal != null ? principal.getName() : "admin@gmail.com";
@@ -254,6 +257,34 @@ public class AdminController {
             );
         } catch (Exception e) {
             System.err.println("FastAPI sync failed: " + e.getMessage());
+        }
+
+        // Email notifications
+        if (saved.getUser() != null && saved.getUser().getEmail() != null) {
+            try {
+                emailService.sendGuideAssignedEmail(
+                    saved.getUser().getEmail(),
+                    saved.getUser().getName(),
+                    saved.getComplaintCustomId(),
+                    helper.getName()
+                );
+            } catch (Exception e) {
+                System.err.println("Failed to send guide assignment email to citizen: " + e.getMessage());
+            }
+        }
+        if (helper.getEmail() != null) {
+            try {
+                emailService.sendGuideNewCaseEmail(
+                    helper.getEmail(),
+                    helper.getName(),
+                    saved.getComplaintCustomId(),
+                    saved.getCategory() != null ? saved.getCategory().name() : "GENERAL",
+                    saved.getDistrict(),
+                    saved.getLanguage() != null ? saved.getLanguage() : "ENGLISH"
+                );
+            } catch (Exception e) {
+                System.err.println("Failed to send new case email to guide: " + e.getMessage());
+            }
         }
 
         return ResponseEntity.ok(mapperService.toComplaintResponse(saved, null));
@@ -419,34 +450,49 @@ public class AdminController {
         return ResponseEntity.ok().headers(headers).body(excelData);
     }
 
-    @PostMapping("/helpers")
+    @PostMapping({"/helpers", "/volunteers"})
     public ResponseEntity<UserResponse> createHelper(@Valid @RequestBody CreateVolunteerRequest request, Principal principal) {
         if (userRepository.existsByEmail(request.email())) {
             throw new com.aram.legalaid.exception.BadRequestException("Email already exists");
         }
+        if (userRepository.existsByMobile(request.mobile())) {
+            throw new com.aram.legalaid.exception.BadRequestException("Mobile number already in use");
+        }
+
+        String adminName = principal != null ? principal.getName() : "admin@gmail.com";
+        User currentUser = userRepository.findByEmail(adminName).orElse(null);
+
+        // If regional admin, strictly lock to their region; otherwise use requested district
+        String district = request.district();
+        if (currentUser != null && currentUser.getRole() == Role.ADMIN && currentUser.getDistrict() != null && !currentUser.getDistrict().equalsIgnoreCase("GLOBAL")) {
+            district = currentUser.getDistrict();
+        } else if (district == null || district.trim().isEmpty()) {
+            district = "Salem";
+        }
         
         User helper = new User();
-        helper.setName(request.name());
-        helper.setEmail(request.email());
-        helper.setMobile(request.mobile());
+        helper.setName(request.name().trim());
+        helper.setEmail(request.email().trim().toLowerCase());
+        helper.setMobile(request.mobile().trim());
         helper.setRole(Role.HELPER);
         helper.setStatus(UserStatus.ACTIVE);
         helper.setHelperVerified(true);
+        helper.setDistrict(district);
         
-        String tempPassword = "AramVol@" + request.mobile().substring(6);
+        String tempPassword = "Helper@123";
         helper.setPasswordHash(passwordEncoder.encode(tempPassword));
-        helper.setForcePasswordChange(true);
+        helper.setForcePasswordChange(false);
+        helper.setProfileCompleted(true);
         
-        helper.setGender(request.gender());
-        helper.setDistrict(request.district());
-        helper.setLanguagesKnown(request.languagesKnown());
-        helper.setSpecializationCategories(request.specializationCategories());
+        helper.setGender(request.gender() != null ? request.gender() : "OTHER");
+        helper.setLanguagesKnown(request.languagesKnown() != null ? request.languagesKnown() : "Tamil,English");
+        helper.setSpecializationCategories(request.specializationCategories() != null ? request.specializationCategories() : "GENERAL_LEGAL_AID");
         helper.setMaxActiveCases(request.maxActiveCases() > 0 ? request.maxActiveCases() : 5);
         helper.setWomenSupportTrained(request.womenSupportTrained());
         helper.setCanHandleSensitiveCases(request.canHandleSensitiveCases());
-        helper.setServiceArea(request.serviceArea());
-        helper.setSubSpecializations(request.subSpecializations());
-        helper.setExperienceLevel(request.experienceLevel());
+        helper.setServiceArea(request.serviceArea() != null ? request.serviceArea() : "Legal Triage");
+        helper.setSubSpecializations(request.subSpecializations() != null ? request.subSpecializations() : "General Practice");
+        helper.setExperienceLevel(request.experienceLevel() != null ? request.experienceLevel() : "Intermediate");
         helper.setAvailabilityStatus("AVAILABLE");
         helper.setCurrentActiveCases(0);
         
@@ -490,7 +536,6 @@ public class AdminController {
         perf.setCreditScore(0);
         performanceProfileRepository.save(perf);
 
-        String adminName = principal != null ? principal.getName() : "admin@gmail.com";
         auditLogService.log("LEGAL_GUIDE_CREATED", adminName, "Admin created volunteer account and Legal Guide profile: " + request.email() + " with temp password " + tempPassword);
         
         return ResponseEntity.ok(mapperService.toUserResponse(saved));
@@ -712,6 +757,34 @@ public class AdminController {
             );
         } catch (Exception e) {
             System.err.println("FastAPI sync failed: " + e.getMessage());
+        }
+
+        // Email notifications
+        if (saved.getUser() != null && saved.getUser().getEmail() != null) {
+            try {
+                emailService.sendGuideAssignedEmail(
+                    saved.getUser().getEmail(),
+                    saved.getUser().getName(),
+                    saved.getComplaintCustomId(),
+                    volunteer.getName()
+                );
+            } catch (Exception e) {
+                System.err.println("Failed to send guide assignment email to citizen: " + e.getMessage());
+            }
+        }
+        if (volunteer.getEmail() != null) {
+            try {
+                emailService.sendGuideNewCaseEmail(
+                    volunteer.getEmail(),
+                    volunteer.getName(),
+                    saved.getComplaintCustomId(),
+                    saved.getCategory() != null ? saved.getCategory().name() : "GENERAL",
+                    saved.getDistrict(),
+                    saved.getLanguage() != null ? saved.getLanguage() : "ENGLISH"
+                );
+            } catch (Exception e) {
+                System.err.println("Failed to send new case email to volunteer: " + e.getMessage());
+            }
         }
 
         return ResponseEntity.ok(mapperService.toComplaintResponse(saved, null));
@@ -1103,16 +1176,29 @@ public class AdminController {
         ));
     }
 
-    @PutMapping("/superadmin/users/{id}/status")
+    @PutMapping({"/superadmin/users/{id}/status", "/users/{id}/status"})
     public ResponseEntity<?> updateUserStatus(@PathVariable Long id, @RequestBody Map<String, String> body, Principal principal) {
         String currentEmail = principal != null ? principal.getName() : "superadmin@gmail.com";
         User currentUser = userRepository.findByEmail(currentEmail).orElse(null);
-        if (currentUser == null || currentUser.getRole() != Role.SUPER_ADMIN) {
-            throw new com.aram.legalaid.exception.ForbiddenException("Super Admin access required");
-        }
 
         User targetUser = userRepository.findById(id)
                 .orElseThrow(() -> new com.aram.legalaid.exception.ResourceNotFoundException("User not found"));
+
+        boolean isSuperAdmin = currentUser != null && (
+                currentUser.getRole() == Role.SUPER_ADMIN ||
+                "GLOBAL".equalsIgnoreCase(currentUser.getDistrict()) ||
+                "admin@gmail.com".equalsIgnoreCase(currentUser.getEmail())
+        );
+
+        boolean isRegionalAdminForHelper = currentUser != null &&
+                currentUser.getRole() == Role.ADMIN &&
+                targetUser.getRole() == Role.HELPER &&
+                targetUser.getDistrict() != null &&
+                targetUser.getDistrict().equalsIgnoreCase(currentUser.getDistrict());
+
+        if (!isSuperAdmin && !isRegionalAdminForHelper) {
+            throw new com.aram.legalaid.exception.ForbiddenException("Administrative authority required to update user status");
+        }
 
         String statusStr = body.get("status");
         if (statusStr == null || statusStr.trim().isEmpty()) {
@@ -1134,12 +1220,22 @@ public class AdminController {
         targetUser.setStatus(newStatus);
         userRepository.save(targetUser);
 
-        auditLogService.log("ADMIN_STATUS_CHANGED", currentEmail, "Updated status of user " + targetUser.getEmail() + " to " + newStatus);
+        // Synchronize guide profile availability when a helper is suspended or activated
+        if (targetUser.getRole() == Role.HELPER) {
+            guideProfileRepository.findByUserId(targetUser.getId()).ifPresent(gp -> {
+                gp.setAvailable(newStatus == UserStatus.ACTIVE);
+                guideProfileRepository.save(gp);
+            });
+        }
+
+        String actionName = (newStatus == UserStatus.SUSPENDED) ? "USER_SUSPENDED" : "USER_ACTIVATED";
+        auditLogService.log(actionName, currentEmail, "Updated status of user " + targetUser.getEmail() + " (" + targetUser.getRole() + ") to " + newStatus);
 
         return ResponseEntity.ok(Map.of(
             "success", true,
             "message", "User status updated successfully",
-            "status", newStatus.name()
+            "status", newStatus.name(),
+            "userId", targetUser.getId()
         ));
     }
 
@@ -1187,5 +1283,25 @@ public class AdminController {
 
         boolean valid = blockchainService.verifyFullChain();
         return ResponseEntity.ok(Map.of("valid", valid));
+    }
+
+    @GetMapping({"/superadmin/statewide-analytics", "/statewide-analytics"})
+    public ResponseEntity<Map<String, Object>> getStatewideAnalytics(
+            @RequestParam(required = false, defaultValue = "all") String timeRange,
+            @RequestParam(required = false, defaultValue = "ALL") String district,
+            Principal principal
+    ) {
+        String currentEmail = principal != null ? principal.getName() : "superadmin@gmail.com";
+        User currentUser = userRepository.findByEmail(currentEmail).orElse(null);
+        if (currentUser == null || (currentUser.getRole() != Role.SUPER_ADMIN && currentUser.getRole() != Role.ADMIN)) {
+            throw new com.aram.legalaid.exception.ForbiddenException("Super Admin or Admin access required");
+        }
+
+        String effectiveDistrict = district;
+        if (currentUser.getRole() == Role.ADMIN && currentUser.getDistrict() != null && !"GLOBAL".equalsIgnoreCase(currentUser.getDistrict())) {
+            effectiveDistrict = currentUser.getDistrict();
+        }
+
+        return ResponseEntity.ok(statewideAnalyticsService.getStatewideAnalytics(timeRange, effectiveDistrict));
     }
 }

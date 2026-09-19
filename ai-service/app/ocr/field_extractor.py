@@ -1,102 +1,135 @@
 import re
+from typing import Dict, Any, List
 
-def extract_fields(ocr_text: str, document_type: str) -> dict:
-    fields = {}
+def extract_document_fields(ocr_text: str, doc_type: str = "General Supporting Document") -> Dict[str, Any]:
     if not ocr_text:
-        return fields
+        return {
+            "legibilityScore": 0,
+            "legibilityGrade": "Unreadable",
+            "extractedFields": {},
+            "detectedParties": [],
+            "detectedDates": [],
+            "detectedReferenceNumbers": [],
+            "sealOrSignatureDetected": False,
+            "caseRelevance": "Unknown",
+            "verificationStatus": "NEEDS_HUMAN_CONFIRMATION",
+            "disclaimer": "OCR extracted data is for administrative triage only and does not constitute statutory legal proof."
+        }
 
-    lower_text = ocr_text.lower()
+    # 1. Date Detection
+    date_patterns = [
+        r'\b\d{1,2}[/-]\d{1,2}[/-]\d{2,4}\b',
+        r'\b\d{1,2}\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*[\s,]+\d{2,4}\b',
+        r'\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2}[\s,]+\d{2,4}\b'
+    ]
+    detected_dates = []
+    for pat in date_patterns:
+        matches = re.findall(pat, ocr_text, re.IGNORECASE)
+        for m in matches:
+            clean_d = m.strip()
+            if clean_d not in detected_dates:
+                detected_dates.append(clean_d)
+
+    # 2. Reference / Registration Numbers
+    ref_patterns = [
+        r'\b(?:FIR|F\.I\.R|Crime|Cr)\s*(?:No\.?|Number)?\s*[:#-]?\s*([A-Za-z0-9/_-]+)',
+        r'\b(?:Doc|Deed|Sale Deed)\s*(?:No\.?|Number)?\s*[:#-]?\s*([A-Za-z0-9/_-]+)',
+        r'\b(?:Survey|Sy|S\.No)\s*(?:No\.?|Number)?\s*[:#-]?\s*([A-Za-z0-9/_-]+)',
+        r'\b(?:Patta|Chitta)\s*(?:No\.?|Number)?\s*[:#-]?\s*([A-Za-z0-9/_-]+)',
+        r'\b(?:Bill|Invoice|Receipt)\s*(?:No\.?|Number)?\s*[:#-]?\s*([A-Za-z0-9/_-]+)',
+        r'\b(?:A/C|Account|Acc)\s*(?:No\.?|Number)?\s*[:#-]?\s*([0-9]{4,16})',
+        r'\b(?:GSTIN|GST)\s*[:#-]?\s*([0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1})'
+    ]
+    detected_refs = []
+    for pat in ref_patterns:
+        matches = re.findall(pat, ocr_text, re.IGNORECASE)
+        for m in matches:
+            clean_ref = m.strip()
+            if len(clean_ref) >= 3 and clean_ref not in detected_refs:
+                detected_refs.append(clean_ref)
+
+    # 3. Party / Individual Names
+    party_patterns = [
+        r'\b(?:S/o|D/o|W/o|Mr\.|Mrs\.|Ms\.|Shri|Smt\.|Thiru|Tmt\.)\s+([A-Za-z\s]{3,30})',
+        r'\b(?:Petitioner|Complainant|Applicant|Accused|Respondent)\s*[:#-]?\s*([A-Za-z\s]{3,30})',
+        r'\b(?:Tenant|Landlord|Purchaser|Vendor)\s*[:#-]?\s*([A-Za-z\s]{3,30})'
+    ]
+    detected_parties = []
+    for pat in party_patterns:
+        matches = re.findall(pat, ocr_text, re.IGNORECASE)
+        for m in matches:
+            clean_name = m.strip().title()
+            if len(clean_name) >= 3 and clean_name not in detected_parties:
+                detected_parties.append(clean_name)
+
+    # 4. Seal / Signature Detection Indicators
+    seal_keywords = ["seal", "signature", "signed", "sub-registrar", "station officer", "authorized signatory", "stamped"]
+    seal_detected = any(kw in ocr_text.lower() for kw in seal_keywords)
+
+    # 5. Legibility Score Calculation (0-100)
+    # Based on character count, alphanumeric ratio, word length sanity
+    words = ocr_text.split()
+    total_words = len(words)
+    alphanumeric_chars = sum(1 for c in ocr_text if c.isalnum())
+    total_chars = max(1, len(ocr_text))
+    alpha_ratio = alphanumeric_chars / total_chars
     
-    # 1. Salary Slip
-    if document_type == "Salary Slip":
-        # Extract Employer Name
-        emp_match = re.search(r"\b(company|employer|firm|solutions|pvt|ltd|corp):\s*([a-zA-Z\s]+)", ocr_text, re.IGNORECASE)
-        fields["employerName"] = emp_match.group(2).strip() if emp_match else "Aram Solutions Private Limited"
-        
-        # Extract Gross / Net Salary
-        sal_match = re.search(r"\b(salary|net pay|earnings|net salary|gross salary|rs\.?)\s*[:\.]?\s*(\d{4,6})\b", lower_text)
-        fields["salaryAmount"] = int(sal_match.group(2)) if sal_match else 45000
-        
-        # Employee Name
-        name_match = re.search(r"\b(name|employee|emp name):\s*([a-zA-Z\s\.]+)", ocr_text, re.IGNORECASE)
-        fields["employeeName"] = name_match.group(2).strip().split("\n")[0] if name_match else "Rajesh Kumar"
-        
-        # Month
-        month_match = re.search(r"\b(month|for the month of|period):\s*([a-zA-Z0-9\s]+)", ocr_text, re.IGNORECASE)
-        fields["salaryMonth"] = month_match.group(2).strip().split("\n")[0] if month_match else "June 2026"
+    score = 50
+    if total_words > 10:
+        score += 20
+    if total_words > 30:
+        score += 10
+    if alpha_ratio > 0.65:
+        score += 10
+    if detected_dates:
+        score += 5
+    if detected_refs:
+        score += 5
+    score = min(98, max(20, score))
 
-    # 2. Bank Statement
-    elif document_type == "Bank Statement":
-        # Bank Name
-        bank_match = re.search(r"\b(bank|state bank|hdfc|icici|axis|sbi)\b", lower_text)
-        fields["bankName"] = bank_match.group(0).upper() if bank_match else "HDFC BANK"
-        
-        # Account Holder Name
-        name_match = re.search(r"\b(name|customer|account holder):\s*([a-zA-Z\s]+)", ocr_text, re.IGNORECASE)
-        fields["accountHolderName"] = name_match.group(2).strip().split("\n")[0] if name_match else "Ramesh Babu"
-        
-        # Last balance / amount
-        bal_match = re.search(r"\b(balance|net worth|deposit|withdrawal|closing):\s*(\d{4,7})\b", lower_text)
-        fields["accountBalance"] = int(bal_match.group(2)) if bal_match else 25000
+    if score >= 75:
+        grade = "High Quality / Clear"
+    elif score >= 50:
+        grade = "Acceptable / Legible"
+    else:
+        grade = "Low / Faint Scan"
 
-    # 3. Rent Agreement
-    elif document_type == "Rent Agreement":
-        # Landlord
-        owner_match = re.search(r"\b(landlord|owner|lessor):\s*([a-zA-Z\s]+)", ocr_text, re.IGNORECASE)
-        fields["landlordName"] = owner_match.group(2).strip().split("\n")[0] if owner_match else "Kumar"
-        
-        # Tenant
-        tenant_match = re.search(r"\b(tenant|lessee):\s*([a-zA-Z\s]+)", ocr_text, re.IGNORECASE)
-        fields["tenantName"] = tenant_match.group(2).strip().split("\n")[0] if tenant_match else "Vignesh"
-        
-        # Rent
-        rent_match = re.search(r"\b(rent|monthly rent|rent amount|rs\.?)\s*[:\.]?\s*(\d{4,5})\b", lower_text)
-        fields["monthlyRent"] = int(rent_match.group(2)) if rent_match else 12000
-        
-        # Address
-        addr_match = re.search(r"\b(address|premises|located at):\s*([a-zA-Z0-9\s,\.-]+)", ocr_text, re.IGNORECASE)
-        fields["propertyAddress"] = addr_match.group(2).strip().split("\n")[0] if addr_match else "12, Anna Nagar, Coimbatore"
+    # 6. Case Relevance Status
+    relevant_doc_types = [
+        "Police Complaint / FIR Copy", "Rent Agreement", "Property Document", 
+        "Salary Slip", "Bank Statement", "Consumer Bill / Invoice", "Medical Report"
+    ]
+    if doc_type in relevant_doc_types or detected_refs:
+        case_relevance = "Relevant Evidence"
+    else:
+        case_relevance = "Supporting Context"
 
-    # 4. Medical Report
-    elif document_type == "Medical Report":
-        # Patient Name
-        name_match = re.search(r"\b(patient|patient name|name):\s*([a-zA-Z\s]+)", ocr_text, re.IGNORECASE)
-        fields["patientName"] = name_match.group(2).strip().split("\n")[0] if name_match else "Ramesh Babu"
-        
-        # Hospital Name
-        hosp_match = re.search(r"\b(hospital|clinic|center|healthcare):\s*([a-zA-Z\s]+)", ocr_text, re.IGNORECASE)
-        fields["hospitalName"] = hosp_match.group(2).strip().split("\n")[0] if hosp_match else "KG Hospital"
-        
-        # Date
-        date_match = re.search(r"\b(date|dated):\s*([a-zA-Z0-9\s-\./]+)", ocr_text, re.IGNORECASE)
-        fields["reportDate"] = date_match.group(2).strip().split("\n")[0] if date_match else "12-05-2026"
+    return {
+        "legibilityScore": score,
+        "legibilityGrade": grade,
+        "documentType": doc_type,
+        "extractedFields": {
+            "dates": detected_dates[:3],
+            "referenceNumbers": detected_refs[:3],
+            "parties": detected_parties[:3],
+            "sealOrSignatureIndicator": seal_detected
+        },
+        "detectedParties": detected_parties[:3],
+        "detectedDates": detected_dates[:3],
+        "detectedReferenceNumbers": detected_refs[:3],
+        "sealOrSignatureDetected": seal_detected,
+        "caseRelevance": case_relevance,
+        "verificationStatus": "NEEDS_HUMAN_CONFIRMATION",
+        "statutoryDisclaimer": "Administrative OCR inspection only. Legal authenticity must be confirmed by the assigned Legal Guide."
+    }
 
-    # 5. Police Complaint / FIR Copy
-    elif document_type == "Police Complaint / FIR Copy":
-        # FIR / Complaint Number
-        fir_match = re.search(r"\b(fir number|fir no|complaint no|complaint number):\s*([a-zA-Z0-9/-]+)", ocr_text, re.IGNORECASE)
-        fields["firNumber"] = fir_match.group(2).strip() if fir_match else "2026-1045"
-        
-        # Police Station
-        station_match = re.search(r"\b(police station|ps|station):\s*([a-zA-Z0-9\s]+)", ocr_text, re.IGNORECASE)
-        fields["policeStation"] = station_match.group(2).strip().split("\n")[0] if station_match else "E-3 Kovilpalayam"
-        
-        # Date
-        date_match = re.search(r"\b(date|date of complaint):\s*([a-zA-Z0-9\s-\./]+)", ocr_text, re.IGNORECASE)
-        fields["incidentDate"] = date_match.group(2).strip().split("\n")[0] if date_match else "10-06-2026"
+def extract_fields(ocr_text: str, doc_type: str = "General Supporting Document") -> Dict[str, Any]:
+    res = extract_document_fields(ocr_text, doc_type)
+    return {
+        "dates": res.get("detectedDates", []),
+        "referenceNumbers": res.get("detectedReferenceNumbers", []),
+        "parties": res.get("detectedParties", []),
+        "sealDetected": res.get("sealOrSignatureDetected", False),
+        "legibilityScore": res.get("legibilityScore", 70)
+    }
 
-    # 6. Aadhaar / ID Proof
-    elif document_type == "Aadhaar / ID Proof":
-        # Masked Aadhaar number
-        number_match = re.search(r"\b\d{4}[\s-]?\d{4}[\s-]?\d{4}\b", ocr_text)
-        if number_match:
-            raw_num = number_match.group(0)
-            fields["maskedIdNumber"] = f"XXXX-XXXX-{raw_num[-4:]}"
-        else:
-            fields["maskedIdNumber"] = "XXXX-XXXX-1092"
-            
-        # Name
-        name_match = re.search(r"\b(name|holder name):\s*([a-zA-Z\s]+)", ocr_text, re.IGNORECASE)
-        fields["idHolderName"] = name_match.group(2).strip().split("\n")[0] if name_match else "Rajesh Kumar"
-
-    return fields

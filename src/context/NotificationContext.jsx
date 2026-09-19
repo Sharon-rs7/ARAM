@@ -5,8 +5,75 @@ import { toast } from "sonner";
 
 const NotificationContext = createContext(null);
 
+const formatRelativeTime = (isoStr) => {
+  if (!isoStr) return "Just now";
+  try {
+    const date = new Date(isoStr);
+    if (isNaN(date.getTime())) return "Just now";
+    const now = new Date();
+    const diffSecs = Math.floor((now - date) / 1000);
+    if (diffSecs < 45) return "Just now";
+    const diffMins = Math.floor(diffSecs / 60);
+    if (diffMins < 60) return `${diffMins}m ago`;
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours}h ago`;
+    const diffDays = Math.floor(diffHours / 24);
+    if (diffDays === 1) return "Yesterday";
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return date.toLocaleDateString("en-IN", { month: "short", day: "numeric" });
+  } catch {
+    return "Just now";
+  }
+};
+
+const normalizeNotification = (raw) => {
+  const createdAt = raw.createdAt || raw.sentAt || new Date().toISOString();
+  let complaintId = raw.complaintId || null;
+  if (!complaintId && raw.message) {
+    const numMatch = raw.message.match(/complaint ID\s*(\d+)/i) ||
+                     raw.message.match(/case ARAM-\d+-0*(\d+)/i) ||
+                     raw.message.match(/ARAM-2026-0*(\d+)/i) ||
+                     raw.message.match(/ARAM-(?:[0-9]+-[A-Z]+-[A-Z]+-0*(\d+))/i) ||
+                     raw.message.match(/ARAM-0*(\d+)/i);
+    if (numMatch && numMatch[1]) {
+      const parsedNum = parseInt(numMatch[1], 10);
+      if (!isNaN(parsedNum)) complaintId = parsedNum;
+    }
+  }
+
+  let title = raw.title;
+  if (!title) {
+    const msg = (raw.message || "").toLowerCase();
+    if (msg.includes("acknowledged")) title = "Guide Acknowledged Case";
+    else if (msg.includes("assigned")) title = "Legal Guide Assigned";
+    else if (msg.includes("new message") || msg.includes("replied in case")) title = "New Message in Case";
+    else if (msg.includes("submitted successfully")) title = "Complaint Registered";
+    else if (msg.includes("requested additional documents")) title = "Document Request";
+    else if (msg.includes("document")) title = "Document Verification";
+    else if (msg.includes("status changed")) title = "Case Status Update";
+    else if (msg.includes("level")) title = "Performance Level Update";
+    else title = raw.type ? raw.type.replace(/_/g, " ") : "Legal Aid Alert";
+  }
+
+  const isRead = Boolean(raw.read || raw.readFlag);
+
+  return {
+    id: raw.id || raw.notificationId || `notif-${Date.now()}-${Math.random()}`,
+    title,
+    message: raw.message || "New update regarding your case.",
+    type: raw.type || "IN_APP",
+    status: raw.status || "SENT",
+    read: isRead,
+    readFlag: isRead,
+    createdAt,
+    time: formatRelativeTime(createdAt),
+    complaintId
+  };
+};
+
 export const NotificationProvider = ({ children }) => {
-  const { user, token } = useAuth();
+  const { user, accessToken, token: legacyToken } = useAuth();
+  const token = accessToken || legacyToken || localStorage.getItem("accessToken") || sessionStorage.getItem("accessToken");
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [isConnected, setIsConnected] = useState(false);
@@ -18,9 +85,9 @@ export const NotificationProvider = ({ children }) => {
     if (!token) return;
     try {
       const data = await notificationService.getNotifications();
-      const list = Array.isArray(data) ? data : [];
+      const list = Array.isArray(data) ? data.map(normalizeNotification) : [];
       setNotifications(list);
-      const unread = list.filter((n) => !n.read && !n.readFlag).length;
+      const unread = list.filter((n) => !n.read).length;
       setUnreadCount(unread);
     } catch (err) {
       console.warn("[NOTIFICATIONS] Failed to fetch notifications:", err);
@@ -84,8 +151,16 @@ export const NotificationProvider = ({ children }) => {
         const cleanToken = token.startsWith("Bearer ") ? token.substring(7) : token;
         const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
         const host = window.location.hostname || "localhost";
-        // Connect to Spring Boot backend port 8082
-        const wsUrl = `${protocol}//${host}:8082/ws/updates?token=${encodeURIComponent(cleanToken)}`;
+        
+        let wsEndpoint;
+        if (import.meta.env.VITE_WS_URL) {
+          wsEndpoint = `${import.meta.env.VITE_WS_URL}/ws/updates`;
+        } else if (host === "localhost" || host === "127.0.0.1") {
+          wsEndpoint = `${protocol}//${host}:8082/ws/updates`;
+        } else {
+          wsEndpoint = `${protocol}//${window.location.host}/ws/updates`;
+        }
+        const wsUrl = `${wsEndpoint}?token=${encodeURIComponent(cleanToken)}`;
 
         console.log("[WS] Connecting to notification stream...");
         const ws = new WebSocket(wsUrl);
@@ -103,16 +178,15 @@ export const NotificationProvider = ({ children }) => {
             const data = JSON.parse(event.data);
             console.log("[WS NOTIFICATION RECEIVED]", data);
 
-            const newNotif = {
+            const newNotif = normalizeNotification({
               id: data.notificationId || `ws-${Date.now()}`,
-              title: data.type ? data.type.replace(/_/g, " ") : "Legal Aid Alert",
+              type: data.type || "IN_APP",
               message: data.message || "New update regarding your case.",
               createdAt: new Date().toISOString(),
-              time: "Just now",
               read: false,
               readFlag: false,
               complaintId: data.complaintId || null
-            };
+            });
 
             setNotifications((prev) => [newNotif, ...prev]);
             setUnreadCount((prev) => prev + 1);
@@ -145,8 +219,8 @@ export const NotificationProvider = ({ children }) => {
 
     connectWebSocket();
 
-    // Fallback polling every 30 seconds
-    const pollInterval = setInterval(fetchNotifications, 30000);
+    // Fallback polling every 6 seconds to ensure instant UI updates
+    const pollInterval = setInterval(fetchNotifications, 6000);
 
     return () => {
       isUnmounted = true;

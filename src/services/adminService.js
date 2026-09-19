@@ -175,6 +175,25 @@ export const adminService = {
   deleteAuthorityOffice: async (id) => {
     const res = await api.delete(`/admin/authority-offices/${id}`);
     return res.data;
+  },
+
+  getStatewideAnalytics: async (timeRange = "all", district = "ALL") => {
+    const res = await api.get("/admin/superadmin/statewide-analytics", {
+      params: { timeRange, district }
+    });
+    return res.data;
+  },
+
+  getAiTelemetry: async () => {
+    try {
+      const res = await fetch("http://127.0.0.1:8000/telemetry/stats");
+      if (res.ok) {
+        return await res.json();
+      }
+    } catch (e) {
+      console.warn("Direct AI telemetry fetch error:", e);
+    }
+    return null;
   }
 };
 export default adminService;

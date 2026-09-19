@@ -1,15 +1,15 @@
 import api from "@/services/api";
 
 export const speechService = {
-  transcribeAudio: async (audioBlob, selectedLanguage, preferredOutputLanguage) => {
+  transcribeAudio: async (audioBlob, selectedLanguage = "auto", preferredOutputLanguage) => {
     const formData = new FormData();
-    const ext = audioBlob.type.includes("webm") ? "webm" :
-                audioBlob.type.includes("ogg") ? "ogg" :
-                audioBlob.type.includes("wav") ? "wav" : "webm";
+    const ext = audioBlob.type?.includes("webm") ? "webm" :
+                audioBlob.type?.includes("ogg") ? "ogg" :
+                audioBlob.type?.includes("wav") ? "wav" : "webm";
     formData.append("file", audioBlob, `recording.${ext}`);
-    if (selectedLanguage) {
-      formData.append("selectedLanguage", selectedLanguage);
-    }
+    const lang = selectedLanguage || "auto";
+    formData.append("selectedLanguage", lang);
+    formData.append("language", lang);
     if (preferredOutputLanguage) {
       formData.append("preferredOutputLanguage", preferredOutputLanguage);
     }

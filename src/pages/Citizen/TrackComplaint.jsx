@@ -4,8 +4,10 @@ import { Search, ShieldCheck, Clock, CheckCircle2, AlertCircle, FileText, ArrowR
 import { complaintService } from "@/services/complaintService";
 import { toast } from "sonner";
 import Button from "@/components/common/Button";
+import { useLanguage } from "@/context/LanguageContext";
 
 const TrackComplaint = () => {
+  const { t } = useLanguage();
   const [complaintId, setComplaintId] = useState("");
   const [loading, setLoading] = useState(false);
   const [caseData, setCaseData] = useState(null);
@@ -35,10 +37,26 @@ const TrackComplaint = () => {
   };
 
   const steps = [
-    { title: "Grievance Filed", desc: "Submitted securely to ARAM official registry", done: true },
-    { title: "AI Triage & Categorization", desc: "Applicable legal sections and checklists identified", done: !!caseData },
-    { title: "Legal Guide Assignment", desc: "Verified legal guide assigned for assistance", done: caseData?.assignedHelperName || caseData?.status === "IN_PROGRESS" || caseData?.status === "RESOLVED" },
-    { title: "Authority Resolution", desc: "Taluk / District legal action completed", done: caseData?.status === "RESOLVED" }
+    { 
+      title: t("trackComplaint.step1Title", "Grievance Filed"), 
+      desc: t("trackComplaint.step1Desc", "Submitted securely to ARAM official registry"), 
+      done: true 
+    },
+    { 
+      title: t("trackComplaint.step2Title", "AI Triage & Categorization"), 
+      desc: t("trackComplaint.step2Desc", "Applicable legal sections and checklists identified"), 
+      done: !!caseData 
+    },
+    { 
+      title: t("trackComplaint.step3Title", "Legal Guide Assignment"), 
+      desc: t("trackComplaint.step3Desc", "Verified legal guide assigned for assistance"), 
+      done: caseData?.assignedHelperName || caseData?.status === "IN_PROGRESS" || caseData?.status === "RESOLVED" 
+    },
+    { 
+      title: t("trackComplaint.step4Title", "Authority Resolution"), 
+      desc: t("trackComplaint.step4Desc", "Taluk / District legal action completed"), 
+      done: caseData?.status === "RESOLVED" 
+    }
   ];
 
   return (
@@ -47,10 +65,10 @@ const TrackComplaint = () => {
         
         <div className="text-center space-y-2">
           <h1 className="text-2xl sm:text-3xl font-extrabold text-[#18332B] tracking-tight">
-            Track Grievance Milestone Status
+            {t("trackComplaint.title", "Track Grievance Milestone Status")}
           </h1>
           <p className="text-xs text-[#65736D] max-w-md mx-auto">
-            Enter your ARAM case reference ID to inspect official review progress, assigned guide, and next action plan.
+            {t("trackComplaint.subtitle", "Enter your ARAM case reference ID to inspect official review progress, assigned guide, and next action plan.")}
           </p>
         </div>
 
@@ -61,11 +79,11 @@ const TrackComplaint = () => {
             type="text"
             value={complaintId}
             onChange={(e) => setComplaintId(e.target.value)}
-            placeholder="Enter Case ID (e.g., ARAM-2026-000001 or 1)"
+            placeholder={t("trackComplaint.inputPlaceholder", "Enter Case ID (e.g., ARAM-2026-000001 or 1)")}
             className="flex-1 bg-transparent text-xs sm:text-sm text-[#18332B] placeholder-[#8B9690] focus:outline-none"
           />
           <Button variant="primary" type="submit" loading={loading}>
-            Track Status
+            {loading ? t("trackComplaint.trackingBtn", "Searching...") : t("trackComplaint.trackBtn", "Track Status")}
           </Button>
         </form>
 

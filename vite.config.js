@@ -11,6 +11,40 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  server: {
+    host: '0.0.0.0',
+    port: 5173,
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:8082',
+        changeOrigin: true,
+        headers: {
+          Origin: 'http://localhost:5173',
+        },
+        configure: (proxy) => {
+          proxy.on('error', (_err, _req, _res) => {});
+        },
+      },
+      '/ws': {
+        target: 'http://127.0.0.1:8082',
+        ws: true,
+        changeOrigin: true,
+        headers: {
+          Origin: 'http://localhost:5173',
+        },
+        configure: (proxy) => {
+          proxy.on('error', (_err, _req, _res) => {});
+          proxy.on('proxyReqWs', (_proxyReq, _req, socket) => {
+            socket.on('error', () => {});
+          });
+        },
+      },
+      '/telemetry': {
+        target: 'http://127.0.0.1:8000',
+        changeOrigin: true,
+      },
+    },
+  },
   test: {
     globals: true,
     environment: 'jsdom',

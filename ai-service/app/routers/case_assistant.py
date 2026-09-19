@@ -10,6 +10,7 @@ from rag.retrieval.retriever import legal_retriever
 from rag.retrieval.context_builder import build_grounded_context as build_rag_context_block
 from llm.llm_router import llm_router
 from app.safety_filter import DISCLAIMER
+from app.services.telemetry_service import telemetry_service
 
 router = APIRouter()
 
@@ -74,6 +75,7 @@ def case_assistant_endpoint(
         required_docs = (mongo_ctx.get("requiredEvidence") if mongo_ctx else []) or []
         
         # 2. Targeted RAG Retrieval using combined case context
+        rag_start = time.time()
         combined_rag_query = f"{category}: {case_summary} — {query_msg}"
         retrieval_res = legal_retriever.retrieve(
             query=combined_rag_query,
@@ -82,6 +84,18 @@ def case_assistant_endpoint(
             top_k=5,
             threshold=0.40,
             language_override=request.language
+        )
+        rag_latency = int((time.time() - rag_start) * 1000)
+        is_grounded = bool(retrieval_res and len(retrieval_res) > 0)
+        telemetry_service.record_event(
+            op_type="RAG",
+            latency_ms=rag_latency,
+            success=is_grounded,
+            details={
+                "status": "GROUNDED" if is_grounded else "FALLBACK",
+                "category": category,
+                "matches": len(retrieval_res) if retrieval_res else 0
+            }
         )
 
         # 3. Formulate Answer based on question type

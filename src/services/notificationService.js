@@ -1,4 +1,4 @@
-﻿import api from "@/services/api";
+import api from "@/services/api";
 
 export const notificationService = {
   getNotifications: async () => {
@@ -13,19 +13,38 @@ export const notificationService = {
   getUnreadCount: async () => {
     try {
       const res = await api.get("/notifications/unread-count");
-      return res.data?.unreadCount || 0;
+      return res.data?.count ?? res.data?.unreadCount ?? 0;
     } catch {
       return 0;
     }
   },
 
   markAsRead: async (id) => {
-    const res = await api.patch(`/notifications/${id}/read`);
-    return res.data;
+    try {
+      const res = await api.put(`/notifications/${id}/read`);
+      return res.data;
+    } catch {
+      const res = await api.patch(`/notifications/${id}/read`);
+      return res.data;
+    }
   },
 
   markAllAsRead: async () => {
-    const res = await api.patch("/notifications/mark-all-read");
-    return res.data;
+    try {
+      const res = await api.put("/notifications/read-all");
+      return res.data;
+    } catch {
+      const res = await api.patch("/notifications/mark-all-read");
+      return res.data;
+    }
+  },
+
+  clearAll: async () => {
+    try {
+      const res = await api.delete("/notifications");
+      return res.data;
+    } catch {
+      return { message: "Cleared" };
+    }
   }
 };

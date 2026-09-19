@@ -95,16 +95,20 @@ const VoiceRecorder = ({ onTranscriptReady, currentLanguage = "en-IN" }) => {
                       audioBlob.type.includes("ogg") ? "ogg" :
                       audioBlob.type.includes("wav") ? "wav" : "webm";
           formData.append("file", audioBlob, `recording.${ext}`);
-          formData.append("language", currentLanguage);
+          const lang = currentLanguage || "auto";
+          formData.append("language", lang);
+          formData.append("selectedLanguage", lang);
 
           const res = await api.post("/speech/transcribe", formData, {
             headers: { "Content-Type": "multipart/form-data" }
           });
 
-          if (res.data?.transcript) {
-            setTranscript(res.data.transcript);
+          const text = (res.data?.transcript || res.data?.text || "").trim();
+          if (text) {
+            setTranscript(text);
             toast.dismiss();
-            toast.success("Transcription complete!");
+            const det = res.data?.detectedLanguage ? ` (${res.data.detectedLanguage})` : "";
+            toast.success(`Transcription complete${det}!`);
           } else {
             throw new Error("Empty transcript returned");
           }

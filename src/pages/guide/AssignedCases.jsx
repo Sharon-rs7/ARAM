@@ -154,7 +154,7 @@ const AssignedCases = () => {
                             View
                           </button>
                           <button
-                            onClick={() => navigate(`/guide/case-review/${item.id}`)}
+                            onClick={() => navigate(`/guide/complaint/${item.id}`)}
                             className="flex items-center gap-1 rounded-xl bg-[#1F5948] px-3 py-1.5 text-white hover:bg-[#163D32] transition cursor-pointer font-bold text-[10px]"
                           >
                             <CheckCircle2 size={12} />

@@ -8,7 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 
 const DashboardLayout = ({ children, role }) => {
   const { user } = useAuth();
-  const isSuperAdmin = role === "superadmin" || user?.role === "SUPER_ADMIN" || user?.district === "GLOBAL" || user?.email === "superadmin@gmail.com";
+  const isSuperAdmin = role === "superadmin" || (!role && user?.role === "SUPER_ADMIN" && (user?.district === "GLOBAL" || user?.email === "superadmin@gmail.com"));
   const currentRole = role || (
     isSuperAdmin
       ? "superadmin"

@@ -11,7 +11,7 @@ CASE_INDICATORS = [
         "LABOUR_DISPUTE",
         [
             r"\b(salary|sambalam|wages|unpaid|pending salary|velai panam|employment|employer|manager|office|work panren|working in|company)\b",
-            r"\b(not paid|credit aagala|kudukala|tharala|balance|owner|withheld|original documents|certificates|deduction|arrears)\b"
+            r"\b(not paid|credit aagala|kudukala|tharala|varala|varale|kidaikala|balance|owner|withheld|original documents|certificates|deduction|arrears)\b"
         ]
     ),
     (

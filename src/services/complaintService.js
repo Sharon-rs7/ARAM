@@ -34,6 +34,10 @@ export const complaintService = {
     return res.data || [];
   },
 
+  myComplaints: async () => {
+    return complaintService.getMyComplaints();
+  },
+
   getComplaintById: async (id) => {
     const res = await api.get(`/complaints/${id}`);
     return res.data;

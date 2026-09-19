@@ -2,16 +2,20 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { 
   Bell, Search, User, LogOut, Shield, ChevronDown, 
-  HelpCircle, Settings, CheckCircle2, AlertTriangle, FileText
+  HelpCircle, Settings, CheckCircle2, AlertTriangle, FileText,
+  Sun, Moon
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { useNotifications } from "@/context/NotificationContext";
+import { useTheme } from "@/context/ThemeContext";
+import Avatar from "@/components/common/Avatar";
 
 const Topbar = ({ onToggleSidebar, role = "citizen" }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const { language, changeLanguage, availableLanguages } = useLanguage();
+  const { resolvedTheme, setMode } = useTheme();
+  const { language, changeLanguage, availableLanguages, t } = useLanguage();
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
   
   const [profileDropdown, setProfileDropdown] = useState(false);
@@ -21,8 +25,22 @@ const Topbar = ({ onToggleSidebar, role = "citizen" }) => {
   const handleSearch = (e) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
-    navigate(`/citizen/chatbot?q=${encodeURIComponent(searchQuery)}`);
+    if (user?.role === "SUPER_ADMIN") {
+      navigate(`/superadmin/dashboard?tab=complaints&search=${encodeURIComponent(searchQuery)}`);
+    } else if (user?.role === "ADMIN") {
+      navigate(`/admin/complaints?search=${encodeURIComponent(searchQuery)}`);
+    } else if (user?.role === "LEGAL_GUIDE" || user?.role === "VOLUNTEER") {
+      navigate(`/volunteer/dashboard?search=${encodeURIComponent(searchQuery)}`);
+    } else {
+      navigate(`/citizen/chatbot?q=${encodeURIComponent(searchQuery)}`);
+    }
   };
+
+  const searchPlaceholder = user?.role === "SUPER_ADMIN" || user?.role === "ADMIN"
+    ? t("topbar.searchAdmin", "Search grievances across all 38 districts (ID, citizen, keyword)...")
+    : user?.role === "LEGAL_GUIDE" || user?.role === "VOLUNTEER"
+    ? t("topbar.searchGuide", "Search assigned cases or legal topics...")
+    : t("topbar.searchCitizen", "Ask ARAM AI legal questions (e.g., land title, RTI, 498A)...");
 
   return (
     <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-[#DDE2DF] bg-[#FFFDF8]/95 px-4 backdrop-blur-md sm:px-6">
@@ -35,7 +53,7 @@ const Topbar = ({ onToggleSidebar, role = "citizen" }) => {
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Ask ARAM AI legal questions (e.g., land title, RTI, 498A)..."
+            placeholder={searchPlaceholder}
             className="w-full h-10 rounded-full border border-[#DDE2DF] bg-white pl-10 pr-4 text-xs font-medium text-[#18332B] placeholder-[#8B9690] focus:border-[#163D32] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#DCEBDD]/50 transition shadow-2xs"
           />
         </form>
@@ -45,19 +63,34 @@ const Topbar = ({ onToggleSidebar, role = "citizen" }) => {
       <div className="flex items-center gap-3 ml-4">
         
         {/* Language selector pill */}
-        <div className="hidden sm:flex items-center bg-[#F7F1E6] rounded-full p-1 border border-[#E6E1D8]">
+        <div className="flex items-center bg-[#F7F1E6] rounded-full p-1 border border-[#E6E1D8]">
           {availableLanguages.map((l) => (
             <button
               key={l.code}
               onClick={() => changeLanguage(l.code)}
-              className={`px-3 py-1 text-[11px] font-bold rounded-full transition ${
+              className={`px-2 sm:px-3 py-1 text-[11px] font-bold rounded-full transition cursor-pointer ${
                 language === l.code ? "bg-[#163D32] text-white shadow-sm" : "text-[#65736D] hover:text-[#18332B]"
               }`}
             >
-              {l.label}
+              {l.nativeLabel || l.label}
             </button>
           ))}
         </div>
+
+        {/* Light & Dark Mode Toggle Icon */}
+        <button
+          type="button"
+          onClick={() => setMode(resolvedTheme === "dark" ? "LIGHT" : "DARK")}
+          className="p-2 rounded-full text-[#163D32] hover:bg-[#DCEBDD]/40 transition cursor-pointer border border-[#E6E1D8] bg-[#F7F1E6]/70 flex items-center justify-center shadow-2xs"
+          title={resolvedTheme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+          aria-label="Toggle light/dark theme"
+        >
+          {resolvedTheme === "dark" ? (
+            <Sun size={17} className="text-[#C58A25]" />
+          ) : (
+            <Moon size={17} className="text-[#163D32]" />
+          )}
+        </button>
 
         {/* Notifications Popover */}
         <div className="relative">
@@ -159,9 +192,13 @@ const Topbar = ({ onToggleSidebar, role = "citizen" }) => {
             onClick={() => setProfileDropdown(!profileDropdown)}
             className="flex items-center gap-2 rounded-full p-1.5 pr-3 hover:bg-[#DCEBDD]/30 transition"
           >
-            <div className="h-8 w-8 rounded-full bg-[#163D32] text-white flex items-center justify-center font-bold text-xs">
-              {user?.name ? user.name[0].toUpperCase() : "U"}
-            </div>
+            <Avatar
+              src={user?.avatarUrl}
+              name={user?.name}
+              role={user?.role}
+              size="sm"
+              showRoleBadge={true}
+            />
             <div className="hidden text-left sm:block">
               <p className="text-xs font-bold text-[#18332B] leading-none">{user?.name || "Citizen"}</p>
               <p className="text-[10px] text-[#65736D] font-medium mt-0.5">{user?.role || "CITIZEN"}</p>
@@ -176,14 +213,14 @@ const Topbar = ({ onToggleSidebar, role = "citizen" }) => {
                 onClick={() => setProfileDropdown(false)}
                 className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-[#18332B] hover:bg-[#DCEBDD]/40"
               >
-                <User size={14} /> Profile & Settings
+                <User size={14} /> {t("sidebar.profileSettings", "Profile & Settings")}
               </Link>
               <Link
                 to="/citizen/help"
                 onClick={() => setProfileDropdown(false)}
                 className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-[#18332B] hover:bg-[#DCEBDD]/40"
               >
-                <HelpCircle size={14} /> Help & Legal Aid
+                <HelpCircle size={14} /> {t("sidebar.helpRights", "Help & Legal Aid")}
               </Link>
               <div className="my-1 border-t border-[#E6E1D8]" />
               <button
@@ -191,9 +228,9 @@ const Topbar = ({ onToggleSidebar, role = "citizen" }) => {
                   setProfileDropdown(false);
                   logout();
                 }}
-                className="w-full text-left flex items-center gap-2 px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50"
+                className="w-full text-left flex items-center gap-2 px-4 py-2 text-xs font-bold text-red-600 hover:bg-red-50 cursor-pointer"
               >
-                <LogOut size={14} /> Sign Out
+                <LogOut size={14} /> {t("sidebar.signOut", "Sign Out")}
               </button>
             </div>
           )}

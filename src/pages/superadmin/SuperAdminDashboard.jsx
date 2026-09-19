@@ -3,6 +3,8 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import DashboardLayout from "@/components/common/DashboardLayout";
 import { adminService } from "@/services/adminService";
 import { regionalAdminService } from "@/services/regionalAdminService";
+import { API_BUSINESS_URL } from "@/services/api";
+import Avatar from "@/components/common/Avatar";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { 
@@ -13,6 +15,7 @@ import {
   Search, Filter, Plus, Send, Eye, ShieldCheck, Download, AlertTriangle,
   Award, Briefcase, ChevronRight, Lock, Layers
 } from "lucide-react";
+import StatewideAnalyticsView from "@/components/superadmin/StatewideAnalyticsView";
 
 export const TN_DISTRICTS = [
   "Ariyalur", "Chengalpattu", "Chennai", "Coimbatore", "Cuddalore", 
@@ -31,13 +34,28 @@ export default function SuperAdminDashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   const urlTab = searchParams.get("tab");
-  const [activeTab, setActiveTabState] = useState(urlTab || "districts");
+  const [activeTab, setActiveTabState] = useState(urlTab || "analytics");
 
   useEffect(() => {
     if (urlTab && urlTab !== activeTab) {
       setActiveTabState(urlTab);
     }
   }, [urlTab]);
+
+  useEffect(() => {
+    const searchParam = searchParams.get("search");
+    if (searchParam !== null && searchParam !== undefined) {
+      setComplaintSearch(searchParam);
+    }
+    const statusParam = searchParams.get("status");
+    if (statusParam) {
+      setComplaintStatusFilter(statusParam);
+    }
+    const districtParam = searchParams.get("district");
+    if (districtParam) {
+      setComplaintDistrictFilter(districtParam);
+    }
+  }, [searchParams]);
 
   const setActiveTab = (tabId) => {
     setActiveTabState(tabId);
@@ -63,12 +81,14 @@ export default function SuperAdminDashboard() {
 
   const [citizenSearch, setCitizenSearch] = useState("");
   const [citizenDistrictFilter, setCitizenDistrictFilter] = useState("ALL");
+  const [citizenStatusFilter, setCitizenStatusFilter] = useState("ALL");
 
   const [guideSearch, setGuideSearch] = useState("");
   const [guideDistrictFilter, setGuideDistrictFilter] = useState("ALL");
   const [guideStatusFilter, setGuideStatusFilter] = useState("ALL");
 
   const [adminSearch, setAdminSearch] = useState("");
+  const [adminStatusFilter, setAdminStatusFilter] = useState("ALL");
 
   // Modals & Action States
   const [selectedComplaint, setSelectedComplaint] = useState(null);
@@ -242,9 +262,12 @@ export default function SuperAdminDashboard() {
       if (citizenDistrictFilter !== "ALL" && (!u.district || u.district.toLowerCase() !== citizenDistrictFilter.toLowerCase())) {
         return false;
       }
+      if (citizenStatusFilter !== "ALL" && u.status !== citizenStatusFilter) {
+        return false;
+      }
       return true;
     });
-  }, [users, citizenSearch, citizenDistrictFilter]);
+  }, [users, citizenSearch, citizenDistrictFilter, citizenStatusFilter]);
 
   // Filtered Guides
   const filteredGuides = useMemo(() => {
@@ -276,6 +299,11 @@ export default function SuperAdminDashboard() {
         status: found ? found.status : "UNASSIGNED"
       };
     }).filter(item => {
+      if (adminStatusFilter !== "ALL") {
+        if (adminStatusFilter === "ACTIVE" && item.status !== "ACTIVE") return false;
+        if (adminStatusFilter === "SUSPENDED" && item.status !== "SUSPENDED") return false;
+        if (adminStatusFilter === "UNASSIGNED" && item.status !== "UNASSIGNED") return false;
+      }
       const search = adminSearch.toLowerCase().trim();
       if (!search) return true;
       const distMatch = item.district.toLowerCase().includes(search);
@@ -283,7 +311,7 @@ export default function SuperAdminDashboard() {
       const emailMatch = item.admin && item.admin.email.toLowerCase().includes(search);
       return distMatch || nameMatch || emailMatch;
     });
-  }, [users, adminSearch]);
+  }, [users, adminSearch, adminStatusFilter]);
 
   // Action Handlers
   const handleToggleUserStatus = async (userId, currentStatus) => {
@@ -582,6 +610,7 @@ export default function SuperAdminDashboard() {
         <div className="bg-[#FFFDF8] dark:bg-[#11201B] p-4 sm:p-5 rounded-2xl border border-[#E6E1D8] dark:border-emerald-800/50 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[#DCEBDD] dark:bg-emerald-950/80 text-[#163D32] dark:text-emerald-300 flex items-center justify-center shrink-0 border border-[#163D32]/20 dark:border-emerald-700/50 shadow-xs">
+              {activeTab === "analytics" && <Activity size={20} />}
               {activeTab === "districts" && <MapPin size={20} />}
               {activeTab === "complaints" && <FileText size={20} />}
               {activeTab === "citizens" && <Users size={20} />}
@@ -592,6 +621,7 @@ export default function SuperAdminDashboard() {
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#163D32] text-white">
+                  {activeTab === "analytics" && "Executive Command"}
                   {activeTab === "districts" && "District Network"}
                   {activeTab === "complaints" && "Grievance Redressal"}
                   {activeTab === "citizens" && "Directory"}
@@ -604,6 +634,7 @@ export default function SuperAdminDashboard() {
                 </span>
               </div>
               <h2 className="text-base sm:text-lg font-black text-[#18332B] dark:text-white mt-0.5">
+                {activeTab === "analytics" && "Tamil Nadu Legal Aid Command & Statewide Intelligence"}
                 {activeTab === "districts" && "Tamil Nadu District Grievance Redressal Network"}
                 {activeTab === "complaints" && "Statewide Grievance Redressal Queue"}
                 {activeTab === "citizens" && "Tamil Nadu Citizen Registry & Profiles"}
@@ -617,6 +648,7 @@ export default function SuperAdminDashboard() {
           {/* Quick Module Switcher */}
           <div className="flex flex-wrap items-center gap-1.5 bg-[#F7F1E6]/70 dark:bg-[#182C26] p-1.5 rounded-xl border border-[#E6E1D8] dark:border-emerald-800/40 text-xs font-bold">
             {[
+              { id: "analytics", label: "Statewide Analytics", icon: Activity },
               { id: "districts", label: "District Portals", icon: MapPin },
               { id: "complaints", label: "Grievances", icon: FileText, count: complaints.length },
               { id: "citizens", label: "Citizens", icon: Users, count: stats.totalCitizens },
@@ -652,6 +684,23 @@ export default function SuperAdminDashboard() {
             })}
           </div>
         </div>
+
+        {/* ========================================================================= */}
+        {/* TAB 0: STATEWIDE COMMAND & ANALYTICS */}
+        {/* ========================================================================= */}
+        {activeTab === "analytics" && (
+          <StatewideAnalyticsView
+            onNavigateToComplaints={(statusCode) => {
+              if (statusCode === "CRITICAL") {
+                setComplaintPriorityFilter("CRITICAL");
+                setComplaintStatusFilter("ALL");
+              } else {
+                setComplaintStatusFilter(statusCode);
+              }
+              setActiveTab("complaints");
+            }}
+          />
+        )}
 
         {/* ========================================================================= */}
         {/* TAB 1: DISTRICT PORTALS */}
@@ -1020,8 +1069,18 @@ export default function SuperAdminDashboard() {
                   ))}
                 </select>
 
+                <select
+                  value={citizenStatusFilter}
+                  onChange={(e) => setCitizenStatusFilter(e.target.value)}
+                  className="h-9.5 rounded-xl border border-slate-200 dark:border-emerald-800/60 bg-white dark:bg-[#182C26] px-3 text-xs text-slate-800 dark:text-white font-medium outline-none focus:border-[#163D32]"
+                >
+                  <option value="ALL">All Statuses</option>
+                  <option value="ACTIVE">Active Only</option>
+                  <option value="SUSPENDED">Suspended Only</option>
+                </select>
+
                 <a
-                  href="http://localhost:8082/api/admin/users/export?role=CITIZEN"
+                  href={`${API_BUSINESS_URL}/admin/users/export?role=CITIZEN`}
                   target="_blank"
                   rel="noreferrer"
                   className="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-[#182C26] hover:bg-slate-200 text-slate-700 dark:text-emerald-200 text-xs font-bold transition flex items-center gap-1.5 border border-slate-200 dark:border-emerald-800"
@@ -1051,9 +1110,12 @@ export default function SuperAdminDashboard() {
                       <tr key={c.id} className="hover:bg-[#F7F1E6]/40 dark:hover:bg-[#182C26]/60 transition">
                         <td className="py-3.5 px-4 font-bold text-[#18332B] dark:text-white">
                           <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-full bg-[#DCEBDD] text-[#163D32] font-black flex items-center justify-center text-xs">
-                              {c.name?.charAt(0) || "C"}
-                            </div>
+                            <Avatar
+                              name={c.name}
+                              role="CITIZEN"
+                              size="sm"
+                              showRoleBadge={false}
+                            />
                             <div>
                               <span>{c.name}</span>
                               <span className="text-[10px] text-slate-400 dark:text-emerald-400/50 block font-normal">ID #{c.id}</span>
@@ -1175,11 +1237,16 @@ export default function SuperAdminDashboard() {
                     {filteredGuides.map((g) => (
                       <tr key={g.id} className="hover:bg-[#F7F1E6]/40 dark:hover:bg-[#182C26]/60 transition">
                         <td className="py-3.5 px-4">
-                          <div className="font-bold text-[#18332B] dark:text-white flex items-center gap-1.5">
-                            <span>{g.name}</span>
-                            {g.helperVerified && <CheckCircle2 size={13} className="text-emerald-600 dark:text-emerald-400" />}
+                          <div className="flex items-center gap-2.5">
+                            <Avatar name={g.name} role="GUIDE" size="sm" showRoleBadge />
+                            <div>
+                              <div className="font-bold text-[#18332B] dark:text-white flex items-center gap-1.5">
+                                <span>{g.name}</span>
+                                {g.helperVerified && <CheckCircle2 size={13} className="text-emerald-600 dark:text-emerald-400" />}
+                              </div>
+                              <span className="text-[10px] text-slate-400 dark:text-emerald-400/60 font-mono block">{g.email}</span>
+                            </div>
                           </div>
-                          <span className="text-[10px] text-slate-400 dark:text-emerald-400/60 font-mono block">{g.email}</span>
                         </td>
                         <td className="py-3.5 px-4 font-bold text-[#163D32] dark:text-emerald-300">
                           {g.district || "Statewide"}
@@ -1287,6 +1354,17 @@ export default function SuperAdminDashboard() {
                   />
                 </div>
 
+                <select
+                  value={adminStatusFilter}
+                  onChange={(e) => setAdminStatusFilter(e.target.value)}
+                  className="h-9.5 rounded-xl border border-slate-200 dark:border-emerald-800/60 bg-white dark:bg-[#182C26] px-3 text-xs text-slate-800 dark:text-white font-medium outline-none focus:border-[#163D32]"
+                >
+                  <option value="ALL">All Statuses</option>
+                  <option value="ACTIVE">Active Admin</option>
+                  <option value="SUSPENDED">Suspended</option>
+                  <option value="UNASSIGNED">Unassigned District</option>
+                </select>
+
                 <button
                   onClick={() => setShowCreateAdminModal(true)}
                   className="px-3.5 py-2 rounded-xl bg-[#163D32] hover:bg-[#1F5948] text-white text-xs font-bold transition flex items-center gap-1.5 shadow-xs cursor-pointer"
@@ -1323,12 +1401,15 @@ export default function SuperAdminDashboard() {
                           </td>
                           <td className="py-3.5 px-4">
                             {hasAdmin ? (
-                              <div>
-                                <span className="font-bold text-[#18332B] dark:text-white flex items-center gap-1.5">
-                                  <span>{admin.name}</span>
-                                  <ShieldCheck size={13} className="text-emerald-600 dark:text-emerald-400" />
-                                </span>
-                                <span className="text-[10px] text-slate-400 dark:text-emerald-400/60 font-mono block">{admin.email}</span>
+                              <div className="flex items-center gap-2.5">
+                                <Avatar name={admin.name} role="ADMIN" size="sm" showRoleBadge />
+                                <div>
+                                  <span className="font-bold text-[#18332B] dark:text-white flex items-center gap-1.5">
+                                    <span>{admin.name}</span>
+                                    <ShieldCheck size={13} className="text-emerald-600 dark:text-emerald-400" />
+                                  </span>
+                                  <span className="text-[10px] text-slate-400 dark:text-emerald-400/60 font-mono block">{admin.email}</span>
+                                </div>
                               </div>
                             ) : (
                               <span className="text-amber-600 dark:text-amber-400 font-bold text-[11px] flex items-center gap-1">
@@ -1562,7 +1643,7 @@ export default function SuperAdminDashboard() {
                 </p>
                 <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-emerald-900/40 text-xs">
                   <span className="text-[#65736D] dark:text-emerald-300/70 font-bold">Matching Accuracy</span>
-                  <span className="font-black text-[#163D32] dark:text-emerald-400">98.4% Optimal</span>
+                  <span className="font-black text-[#163D32] dark:text-emerald-400">Verified AI Triage</span>
                 </div>
               </div>
             </div>

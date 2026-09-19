@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import DashboardLayout from "@/components/common/DashboardLayout";
 import { 
   ArrowLeft, FileText, Sparkles, User, Globe, AlertTriangle, 
@@ -7,12 +7,14 @@ import {
   Search, Filter
 } from "lucide-react";
 import { adminService } from "@/services/adminService";
+import { complaintService } from "@/services/complaintService";
 import { toast } from "sonner";
 
 const CaseReview = () => {
   const navigate = useNavigate();
+  const { id } = useParams();
   const [searchParams] = useSearchParams();
-  const complaintId = searchParams.get("id");
+  const complaintId = id || searchParams.get("id");
 
   const [loading, setLoading] = useState(true);
   const [complaint, setComplaint] = useState(null);
@@ -36,16 +38,22 @@ const CaseReview = () => {
   useEffect(() => {
     const loadReviewData = async () => {
       if (!complaintId) {
-        toast.error("No case ID provided for review.");
         setLoading(false);
         return;
       }
       
       try {
         setLoading(true);
-        // 1. Fetch case details
-        const list = await adminService.getComplaints();
-        const found = list.find(c => String(c.id) === String(complaintId));
+        // 1. Fetch case details directly
+        let found = null;
+        try {
+          found = await complaintService.getComplaintById(complaintId);
+        } catch (cErr) {
+          console.warn("Direct complaint fetch failed, trying admin list:", cErr);
+          const list = await adminService.getComplaints().catch(() => []);
+          found = list.find(c => String(c.id) === String(complaintId) || String(c.rawId) === String(complaintId));
+        }
+
         if (found) {
           setComplaint(found);
         } else {
@@ -147,8 +155,29 @@ const CaseReview = () => {
     return nameMatch;
   });
 
-  const textOriginal = complaint?.description || "நிலம் பிரச்சனை மற்றும் அச்சுறுத்தல் உள்ளது. அண்டை வீட்டார் ஆக்கிரமித்துள்ளனர்.";
-  const textEnglish = "There is a property boundary dispute and threat. The neighbors have encroached my land.";
+  if (!complaintId) {
+    return (
+      <DashboardLayout>
+        <div className="flex h-[60vh] items-center justify-center">
+          <div className="text-center max-w-md p-6 bg-white border border-slate-200 rounded-3xl shadow-sm space-y-4">
+            <AlertCircle className="text-amber-500 mx-auto" size={40} />
+            <h2 className="text-lg font-bold text-slate-800">No Case Selected</h2>
+            <p className="text-slate-500 text-sm">Please select a case from the dashboard to review and allocate a legal guide.</p>
+            <button
+              onClick={() => navigate(-1)}
+              className="inline-flex items-center gap-2 rounded-xl bg-[#163D32] px-5 py-2.5 text-xs font-bold text-white hover:bg-[#1F5948] transition mx-auto cursor-pointer"
+            >
+              <ArrowLeft size={14} /> Go Back
+            </button>
+          </div>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  const textOriginal = complaint?.description || "No complaint description provided.";
+  const textEnglish = complaint?.translatedDescription || complaint?.description || textOriginal;
+  const trackingLabel = complaint?.trackingNumber || (complaint?.id ? `ARAM-${complaint.id}` : `Case #${complaintId}`);
 
   return (
     <DashboardLayout>
@@ -158,8 +187,8 @@ const CaseReview = () => {
         <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-5">
           <div className="space-y-1">
             <div className="flex items-center gap-3">
-              <h1 className="text-xl font-mono font-bold text-slate-450">
-                ARAM-{complaint?.id}
+              <h1 className="text-xl font-mono font-bold text-slate-800">
+                {trackingLabel}
               </h1>
               <span className={`px-2 py-0.5 rounded-full text-[9px] font-extrabold tracking-wider ${
                 complaint?.priority === "HIGH" || complaint?.priority === "CRITICAL" ? "bg-red-500 text-white" : "bg-amber-500 text-white"
@@ -167,14 +196,14 @@ const CaseReview = () => {
                 {complaint?.priority || "HIGH"}
               </span>
             </div>
-            <p className="text-[10px] text-slate-505 font-semibold">
-              Submitted recently
+            <p className="text-[10px] text-slate-500 font-semibold">
+              Submitted {complaint?.createdAt ? new Date(complaint.createdAt).toLocaleDateString() : "recently"}
             </p>
           </div>
           
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center gap-1 text-xs font-bold text-slate-500 border border-slate-205 hover:bg-slate-50 px-4 py-2 rounded-xl transition cursor-pointer"
+            className="flex items-center gap-1 text-xs font-bold text-slate-500 border border-slate-200 hover:bg-slate-50 px-4 py-2 rounded-xl transition cursor-pointer"
           >
             <ArrowLeft size={14} /> Back
           </button>
@@ -193,7 +222,7 @@ const CaseReview = () => {
                     Citizen Complaint
                   </h3>
                   <span className="text-[10px] text-slate-400 font-medium block mt-1">
-                    Original language: {complaint?.language === "ta-IN" ? "Tamil" : "English"}
+                    Original language: {complaint?.language === "ta-IN" || complaint?.language === "ta" ? "Tamil" : (complaint?.language || "English")}
                   </span>
                 </div>
 
@@ -233,7 +262,7 @@ const CaseReview = () => {
                   AI Summary
                 </h4>
                 <p className="text-xs leading-relaxed text-slate-655 dark:text-slate-400 font-medium">
-                  The citizen reports a boundary encroachment issue in {complaint?.location || "Coimbatore"}. AI triage has flagged potential physical violence threats and recommended assigning a Senior Guide.
+                  {complaint?.summary || complaint?.aiSummary || (complaint?.location ? `The citizen reports an issue in ${complaint.location || complaint.district}. AI triage has registered this grievance.` : (complaint?.description || "Awaiting AI grievance summary."))}
                 </p>
               </div>
 
@@ -251,8 +280,10 @@ const CaseReview = () => {
                     ))
                   ) : (
                     <>
-                      <span className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 text-[10px] font-bold">Property Dispute</span>
-                      <span className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 text-[10px] font-bold">Threat / Intimidation</span>
+                      <span className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-900 text-slate-700 dark:text-slate-300 text-[10px] font-bold">{complaint?.category ? String(complaint.category).replace(/_/g, " ") : "Legal Assistance"}</span>
+                      {complaint?.priority && (
+                        <span className="px-3 py-1 rounded-full bg-red-50 text-red-700 border border-red-100 text-[10px] font-bold">{complaint.priority} Priority</span>
+                      )}
                     </>
                   )}
                 </div>
@@ -263,12 +294,18 @@ const CaseReview = () => {
                 <h4 className="text-[10px] font-extrabold text-slate-450 uppercase tracking-widest">
                   Evidence
                 </h4>
-                <div className="p-3 bg-indigo-50/10 dark:bg-slate-950/20 rounded-xl border border-indigo-100/50 dark:border-slate-850/40 flex items-center justify-between text-xs max-w-sm">
-                  <div className="flex items-center gap-2">
-                    <FileText size={16} className="text-indigo-500" />
-                    <span className="font-semibold text-slate-700 dark:text-slate-300 truncate font-mono">deed_document.pdf</span>
+                {complaint?.evidenceFile || complaint?.documents?.[0]?.name ? (
+                  <div className="p-3 bg-indigo-50/10 dark:bg-slate-950/20 rounded-xl border border-indigo-100/50 dark:border-slate-850/40 flex items-center justify-between text-xs max-w-sm">
+                    <div className="flex items-center gap-2">
+                      <FileText size={16} className="text-indigo-500" />
+                      <span className="font-semibold text-slate-700 dark:text-slate-300 truncate font-mono">
+                        {complaint?.evidenceFile || complaint?.documents?.[0]?.name}
+                      </span>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <p className="text-xs text-slate-400 italic font-medium">No attached evidence files.</p>
+                )}
               </div>
 
             </div>

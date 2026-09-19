@@ -3,8 +3,10 @@ import { Upload, FileText, CheckCircle2, AlertCircle, Loader2, ShieldCheck, Eye 
 import { documentService } from "@/services/documentService";
 import { toast } from "sonner";
 import Button from "@/components/common/Button";
+import { useLanguage } from "@/context/LanguageContext";
 
 const DocumentVerificationPanel = () => {
+  const { t } = useLanguage();
   const [file, setFile] = useState(null);
   const [documentType, setDocumentType] = useState("DEED");
   const [analyzing, setAnalyzing] = useState(false);
@@ -19,7 +21,7 @@ const DocumentVerificationPanel = () => {
 
   const handleAnalyze = async () => {
     if (!file) {
-      toast.error("Please select a document file to verify.");
+      toast.error(t("evidenceVault.selectFileError", "Please select a document file to verify."));
       return;
     }
 
@@ -47,9 +49,9 @@ const DocumentVerificationPanel = () => {
   return (
     <div className="rounded-3xl bg-[#FFFDF8] border border-[#E6E1D8] p-6 sm:p-8 shadow-sm space-y-6">
       <div className="border-b border-[#E6E1D8] pb-4">
-        <h3 className="text-base font-extrabold text-[#18332B]">OCR Document Legal Readiness Analyzer</h3>
+        <h3 className="text-base font-extrabold text-[#18332B]">{t("evidenceVault.analyzerTitle", "OCR Document Legal Readiness Analyzer")}</h3>
         <p className="text-xs text-[#65736D] mt-0.5">
-          Verify registration numbers, survey boundaries, and statutory stamp seals before formal submission.
+          {t("evidenceVault.analyzerSubtitle", "Verify registration numbers, survey boundaries, and statutory stamp seals before formal submission.")}
         </p>
       </div>
 
@@ -64,9 +66,9 @@ const DocumentVerificationPanel = () => {
         <Upload className="mx-auto text-[#163D32]" size={32} />
         <div>
           <p className="text-xs font-bold text-[#18332B]">
-            {file ? file.name : "Click to select or drag & drop document (PDF, PNG, JPG)"}
+            {file ? file.name : t("evidenceVault.uploadBoxTitle", "Click to select or drag & drop document (PDF, PNG, JPG)")}
           </p>
-          <p className="text-[10px] text-[#8B9690] mt-0.5">Encrypted with SHA-256 and PII sanitization</p>
+          <p className="text-[10px] text-[#8B9690] mt-0.5">{t("evidenceVault.uploadBoxSubtitle", "PDF, JPG, JPEG, PNG (Max 15MB)")} • Encrypted SHA-256</p>
         </div>
       </div>
 
@@ -89,7 +91,7 @@ const DocumentVerificationPanel = () => {
           disabled={!file}
           className="flex-1"
         >
-          Verify Document Readiness
+          {analyzing ? t("evidenceVault.verifyingBtn", "Analyzing Document OCR...") : t("evidenceVault.verifyBtn", "Verify Document Readiness")}
         </Button>
       </div>
 
@@ -98,10 +100,10 @@ const DocumentVerificationPanel = () => {
         <div className="p-6 rounded-2xl bg-[#DCEBDD]/30 border border-[#DCEBDD] space-y-4">
           <div className="flex items-center justify-between">
             <span className="text-xs font-extrabold uppercase tracking-wider text-[#163D32] flex items-center gap-1.5">
-              <ShieldCheck size={16} /> Legal Readiness Verified
+              <ShieldCheck size={16} /> {t("evidenceVault.readinessScore", "Legal Readiness Verified")}
             </span>
             <span className="px-3 py-1 rounded-full text-xs font-black bg-[#163D32] text-white">
-              {analysisResult.readinessScore || 90}% Ready
+              {analysisResult.readinessScore || 90}%
             </span>
           </div>
 

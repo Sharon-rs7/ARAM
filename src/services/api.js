@@ -7,8 +7,20 @@ import { notificationService } from "@/services/notificationService.js";
 import { adminService } from "@/services/adminService.js";
 import { normalizeRole } from "@/utils/roleLabels";
 
-export const API_BUSINESS_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8082/api";
-export const API_AUTH_URL = import.meta.env.VITE_AUTH_SERVICE_BASE_URL || "http://localhost:8082/api";
+const resolveApiUrl = (envVar) => {
+  if (typeof window !== "undefined") {
+    // If envVar is not provided or points to localhost/127.0.0.1, always use relative /api
+    // so Vite dev server proxy routes to the backend seamlessly on both desktop and mobile devices.
+    if (!envVar || envVar.includes("localhost") || envVar.includes("127.0.0.1") || envVar.startsWith("/")) {
+      return "/api";
+    }
+    return envVar;
+  }
+  return envVar || "/api";
+};
+
+export const API_BUSINESS_URL = resolveApiUrl(import.meta.env.VITE_API_BASE_URL);
+export const API_AUTH_URL = resolveApiUrl(import.meta.env.VITE_AUTH_SERVICE_BASE_URL);
 export const API_BASE_URL = API_BUSINESS_URL;
 export const USE_MOCKS = import.meta.env.VITE_USE_MOCKS === "true";
 

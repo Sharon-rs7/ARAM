@@ -1,4 +1,5 @@
 import os
+import re
 import json
 import urllib.request
 import urllib.parse
@@ -161,6 +162,53 @@ class DeepgramSTTService:
                     "confidence": 0.0,
                     "engine": "deepgram"
                 }
+
+            # Extract base language code (e.g. 'ta-IN' -> 'ta', 'en-US' -> 'en')
+            base_lang = (detected_lang or "").split("-")[0].lower()
+            has_cyrillic = bool(re.search(r'[\u0400-\u04FF]', transcript))
+            is_foreign = (base_lang not in ["ta", "hi", "en"]) or has_cyrillic
+
+            if is_foreign and "detect_language" in params:
+                # First try Tamil if not English, otherwise English
+                fallback_lang = "ta" if base_lang in ["id", "ms"] else "en"
+                retry_params = {
+                    "model": settings.DEEPGRAM_MODEL or "nova-3",
+                    "smart_format": "true",
+                    "punctuate": "true",
+                    "numerals": "true",
+                    "language": fallback_lang
+                }
+                retry_query = urllib.parse.urlencode(retry_params)
+                retry_url = f"{self.base_url}?{retry_query}"
+                retry_req = urllib.request.Request(retry_url, data=audio_bytes, headers=headers, method="POST")
+                try:
+                    with urllib.request.urlopen(retry_req, timeout=10) as r_resp:
+                        r_data = json.loads(r_resp.read().decode("utf-8"))
+                    r_ch = r_data.get("results", {}).get("channels", [{}])[0]
+                    r_alts = r_ch.get("alternatives", [])
+                    if r_alts and (r_alts[0].get("transcript") or "").strip():
+                        transcript = r_alts[0].get("transcript").strip()
+                        confidence = float(r_alts[0].get("confidence") or confidence)
+                        detected_lang = fallback_lang
+                except Exception as retry_e:
+                    print(f"[DEEPGRAM RETRY] Fallback to '{fallback_lang}' transcription error: {retry_e}")
+
+            # Strip any remaining hallucinated Cyrillic, Arabic or CJK characters
+            transcript = re.sub(r'[\u0400-\u04FF\u0600-\u06FF\u4E00-\u9FFF]+', '', transcript).strip()
+            if not transcript:
+                return {
+                    "transcript": "No audible speech detected.",
+                    "detectedLanguage": "Unknown",
+                    "duration": float(metadata.get("duration", 0.0)),
+                    "confidence": 0.0,
+                    "engine": "deepgram"
+                }
+
+            base_detected = (detected_lang or "").split("-")[0].lower()
+            if base_detected not in ["ta", "hi", "en"]:
+                detected_lang = "en"
+            else:
+                detected_lang = base_detected
 
             return {
                 "transcript": transcript,

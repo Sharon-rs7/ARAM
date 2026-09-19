@@ -51,6 +51,9 @@ from app.document_recommender import recommend_documents
 from app.chatbot_engine import ask_chatbot_engine
 from app.ocr_engine import extract_ocr_text
 from app.document_verifier import verify_document_service
+from app.ocr.document_classifier import document_classifier
+from app.ocr.field_extractor import extract_document_fields
+from app.services.telemetry_service import telemetry_service
 from app.mongo_logger import log_ai_action, mongo_manager
 from app.speech_to_text import transcribe_audio
 
@@ -63,6 +66,7 @@ from app.routers.rank import router as rank_router
 from app.routers.ocr import router as ocr_router
 from app.routers.sync import router as sync_router
 from app.routers.case_assistant import router as case_assistant_router
+from app.routers.telemetry import router as telemetry_router
 
 app = FastAPI(title="ARAM AI Service")
 
@@ -75,6 +79,7 @@ app.include_router(rank_router)
 app.include_router(ocr_router)
 app.include_router(sync_router)
 app.include_router(case_assistant_router)
+app.include_router(telemetry_router)
 
 @app.on_event("startup")
 def startup_event():
@@ -202,6 +207,8 @@ def chat_ask(
 
 @app.post("/documents/ocr")
 def documents_ocr(file: UploadFile = File(...)):
+    import time
+    start_time = time.time()
     temp_dir = tempfile.gettempdir()
     temp_file_path = os.path.join(temp_dir, f"ocr_{uuid_filename(file.filename)}")
     
@@ -209,10 +216,57 @@ def documents_ocr(file: UploadFile = File(...)):
         with open(temp_file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
             
-        res = extract_ocr_text(temp_file_path)
+        ocr_res = extract_ocr_text(temp_file_path)
+        raw_text = ocr_res.get("rawText", "")
+        
+        # Classify document type
+        doc_res = document_classifier.classify(raw_text)
+        doc_type = doc_res.get("documentType", "General Supporting Document")
+        
+        # Extract structured fields (dates, reference numbers, parties)
+        field_res = extract_document_fields(raw_text, doc_type)
+        
+        latency_ms = int((time.time() - start_time) * 1000)
+        
+        telemetry_service.record_event(
+            op_type="OCR",
+            latency_ms=latency_ms,
+            success=True,
+            details={
+                "documentType": doc_type,
+                "legibilityScore": field_res.get("legibilityScore", 70),
+                "datesFound": len(field_res.get("detectedDates", [])),
+                "refsFound": len(field_res.get("detectedReferenceNumbers", []))
+            }
+        )
+        
+        res = {
+            **ocr_res,
+            "extractedText": raw_text,
+            "documentType": doc_type,
+            "docTypeConfidence": doc_res.get("confidence", 0.8),
+            "legibilityScore": field_res.get("legibilityScore", 70),
+            "legibilityGrade": field_res.get("legibilityGrade", "Acceptable"),
+            "detectedDates": field_res.get("detectedDates", []),
+            "detectedReferenceNumbers": field_res.get("detectedReferenceNumbers", []),
+            "detectedParties": field_res.get("detectedParties", []),
+            "sealOrSignatureDetected": field_res.get("sealOrSignatureDetected", False),
+            "caseRelevance": field_res.get("caseRelevance", "Relevant Evidence"),
+            "verificationStatus": field_res.get("verificationStatus", "NEEDS_HUMAN_CONFIRMATION"),
+            "statutoryDisclaimer": field_res.get("statutoryDisclaimer", ""),
+            "fields": field_res
+        }
+        
         log_ai_action("document_ocr_logs", res)
         return res
     except Exception as e:
+        latency_ms = int((time.time() - start_time) * 1000)
+        telemetry_service.record_event(
+            op_type="OCR",
+            latency_ms=latency_ms,
+            success=False,
+            details={"error": str(e)}
+        )
         raise HTTPException(status_code=500, detail=str(e))
     finally:
         if os.path.exists(temp_file_path):

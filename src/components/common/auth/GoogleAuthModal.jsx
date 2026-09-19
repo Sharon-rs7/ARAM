@@ -4,8 +4,9 @@ import { authService } from '@/services/authService';
 import { useAuth } from '@/context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
+import Avatar from '@/components/common/Avatar';
 
-export const GoogleAuthModal = ({ isOpen, onClose }) => {
+export const GoogleAuthModal = ({ isOpen, onClose, defaultRole = 'CITIZEN', defaultDistrict = 'Coimbatore' }) => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -16,26 +17,48 @@ export const GoogleAuthModal = ({ isOpen, onClose }) => {
   const [customName, setCustomName] = useState('');
   const [error, setError] = useState('');
 
+  // Verified live seeded platform accounts matching actual database records
   const PRESET_GOOGLE_ACCOUNTS = [
     {
       name: 'Rajesh Kumar',
-      email: 'citizen.rajesh@gmail.com',
+      email: 'citizen@gmail.com',
       avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=RajeshKumar',
+      role: 'CITIZEN',
       badge: 'Verified Citizen'
     },
     {
-      name: 'Priya Selvam',
-      email: 'priya.selvam.tn@gmail.com',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=PriyaSelvam',
-      badge: 'Verified Citizen'
+      name: 'Sharon Mary',
+      email: 'volunteer@gmail.com',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=SharonMary',
+      role: 'GUIDE',
+      badge: 'Legal Guide'
     },
     {
-      name: 'Karthik Subramanian',
-      email: 'karthik.subramanian@gmail.com',
-      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Karthik',
-      badge: 'Verified Citizen'
+      name: 'Chennai Admin',
+      email: 'chennai.admin@gmail.com',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=ChennaiAdmin',
+      role: 'ADMIN',
+      badge: 'Regional Admin'
+    },
+    {
+      name: 'State Administrator',
+      email: 'admin@gmail.com',
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=AdminUser',
+      role: 'ADMIN',
+      badge: 'State Administrator'
     }
   ];
+
+  // Close modal on Escape key press
+  React.useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -45,25 +68,28 @@ export const GoogleAuthModal = ({ isOpen, onClose }) => {
     try {
       const email = accountData.email.trim().toLowerCase();
       const name = accountData.name || email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-      const avatarUrl = accountData.avatar || ('https://api.dicebear.com/7.x/bottts/svg?seed=' + email);
+      const avatarUrl = accountData.avatar || ('https://api.dicebear.com/7.x/bottts/svg?seed=' + encodeURIComponent(email));
+      const safeId = 'google_' + email.replace(/[^a-zA-Z0-9]/g, '_') + '_' + Date.now().toString(36);
 
       const res = await authService.loginWithGoogle({
         email: email,
         name: name,
         avatarUrl: avatarUrl,
-        googleId: 'google_' + btoa(email).substring(0, 12)
+        googleId: safeId,
+        role: accountData.role || defaultRole,
+        district: defaultDistrict
       });
 
       login(res);
       toast.success('Welcome to ARAM, ' + name + '! Signed in via Google.');
       onClose();
 
-      const role = String(res?.user?.role || res?.role || '').toUpperCase();
-      if (role === 'SUPER_ADMIN') {
+      const userRole = String(res?.user?.role || res?.role || '').toUpperCase();
+      if (userRole === 'SUPER_ADMIN') {
         navigate('/superadmin/dashboard');
-      } else if (role === 'ADMIN') {
+      } else if (userRole === 'ADMIN') {
         navigate('/admin/dashboard');
-      } else if (role === 'VOLUNTEER' || role === 'GUIDE' || role === 'HELPER') {
+      } else if (userRole === 'VOLUNTEER' || userRole === 'GUIDE' || userRole === 'HELPER') {
         navigate('/guide/dashboard');
       } else {
         navigate('/citizen/dashboard');
@@ -80,19 +106,25 @@ export const GoogleAuthModal = ({ isOpen, onClose }) => {
 
   const handleCustomSubmit = (e) => {
     e.preventDefault();
-    if (!customEmail.trim() || !customEmail.includes('@')) {
-      setError('Please enter a valid Google Account email.');
+    const cleanEmail = customEmail.trim().toLowerCase();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!cleanEmail || !emailRegex.test(cleanEmail)) {
+      setError('Please enter a valid Google Account email address.');
       return;
     }
     handlePerformGoogleAuth({
-      email: customEmail.trim(),
+      email: cleanEmail,
       name: customName.trim(),
-      avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=' + customEmail.trim().toLowerCase()
+      avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=' + encodeURIComponent(cleanEmail),
+      role: defaultRole
     });
   };
 
   return (
-    <div className='fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200'>
+    <div 
+      className='fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200 select-none'
+      onClick={onClose}
+    >
       <div 
         className='w-full max-w-md bg-white dark:bg-[#11201B] rounded-3xl shadow-2xl border border-slate-200 dark:border-emerald-500/20 overflow-hidden transform transition-all'
         onClick={(e) => e.stopPropagation()}
@@ -179,10 +211,12 @@ export const GoogleAuthModal = ({ isOpen, onClose }) => {
                   className='w-full flex items-center justify-between p-3 rounded-2xl border border-slate-200 dark:border-emerald-900/40 hover:border-emerald-500/60 dark:hover:border-emerald-500/60 bg-slate-50/50 dark:bg-[#142620]/60 hover:bg-emerald-50/30 dark:hover:bg-[#16332A] transition group text-left cursor-pointer'
                 >
                   <div className='flex items-center gap-3'>
-                    <img 
-                      src={acc.avatar} 
-                      alt={acc.name} 
-                      className='w-10 h-10 rounded-full border border-slate-200 dark:border-emerald-700/50 bg-white dark:bg-slate-800 p-0.5' 
+                    <Avatar
+                      src={acc.avatar}
+                      name={acc.name}
+                      role={acc.role}
+                      size="md"
+                      showRoleBadge={true}
                     />
                     <div>
                       <div className='text-xs font-bold text-slate-800 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition'>
