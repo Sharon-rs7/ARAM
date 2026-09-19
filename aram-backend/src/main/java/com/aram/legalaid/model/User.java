@@ -124,6 +124,12 @@ public class User {
     @Column(name = "email_verified", nullable = false)
     private boolean emailVerified = false;
 
+    @Column(name = "mobile_verified", nullable = false)
+    private boolean mobileVerified = true;
+
+    @Column(name = "whatsapp_opt_in", nullable = false)
+    private boolean whatsappOptIn = true;
+
     @Column(name = "profile_completion_percentage", nullable = false)
     private int profileCompletionPercentage = 0;
 
@@ -258,6 +264,12 @@ public class User {
 
     public boolean isEmailVerified() { return emailVerified; }
     public void setEmailVerified(boolean emailVerified) { this.emailVerified = emailVerified; }
+
+    public boolean isMobileVerified() { return mobileVerified; }
+    public void setMobileVerified(boolean mobileVerified) { this.mobileVerified = mobileVerified; }
+
+    public boolean isWhatsappOptIn() { return whatsappOptIn; }
+    public void setWhatsappOptIn(boolean whatsappOptIn) { this.whatsappOptIn = whatsappOptIn; }
 
     public int getProfileCompletionPercentage() { return profileCompletionPercentage; }
     public void setProfileCompletionPercentage(int profileCompletionPercentage) { this.profileCompletionPercentage = profileCompletionPercentage; }

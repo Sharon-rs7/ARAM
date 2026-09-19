@@ -22,7 +22,8 @@ import {
   ExternalLink,
   PhoneCall,
   CheckCircle2,
-  AlertTriangle
+  AlertTriangle,
+  MessageCircle
 } from "lucide-react";
 import { complaintService } from "@/services/complaintService";
 import { toast } from "sonner";
@@ -665,6 +666,37 @@ const ComplaintDetails = () => {
     }
   };
 
+  const [pdfLoading, setPdfLoading] = useState(false);
+  const [waLoading, setWaLoading] = useState(false);
+
+  const handleDownloadStatusPdf = async () => {
+    if (!complaint?.id) return;
+    setPdfLoading(true);
+    try {
+      await complaintService.downloadStatusPdf(complaint.id, complaint.complaintCustomId);
+      toast.success("Official ARAM Status Report PDF downloaded successfully.");
+    } catch (err) {
+      console.error("Failed to download PDF:", err);
+      toast.error(err?.response?.data?.message || "Failed to download status PDF.");
+    } finally {
+      setPdfLoading(false);
+    }
+  };
+
+  const handleSendWhatsAppPdf = async () => {
+    if (!complaint?.id) return;
+    setWaLoading(true);
+    try {
+      const res = await complaintService.sendWhatsappPdf(complaint.id);
+      toast.success(res?.message || "Official Status Report PDF sent to your WhatsApp number!");
+    } catch (err) {
+      console.error("Failed to dispatch WhatsApp PDF:", err);
+      toast.error(err?.response?.data?.message || "Failed to dispatch WhatsApp document.");
+    } finally {
+      setWaLoading(false);
+    }
+  };
+
   const handleWhatsAppShare = () => {
     const formattedId = `ARAM-2026-${String(complaint.id).replace("cmp-", "").padStart(6, "0")}`;
     const text = `My ARAM complaint ID is ${formattedId} and its status is ${status}. You can check updates on the ARAM tracking portal.`;
@@ -900,18 +932,31 @@ const ComplaintDetails = () => {
               ID: <strong className="text-[#163D32]">{complaint.complaintCustomId || formattedRefId}</strong> • Jurisdiction: <strong className="text-[#163D32]">{complaint.district || "Coimbatore"}</strong> • Status: <span className="font-bold text-[#1F5948] bg-[#DCEBDD] px-2 py-0.5 rounded-full">{status}</span>
             </p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
-              onClick={() => window.print()}
-              className="flex items-center gap-1.5 text-xs font-bold text-white transition bg-[#163D32] hover:bg-[#1F5948] px-4 py-2.5 rounded-xl border border-[#163D32] cursor-pointer shadow-sm"
+              type="button"
+              onClick={handleDownloadStatusPdf}
+              disabled={pdfLoading}
+              className="flex items-center gap-1.5 text-xs font-bold text-white transition bg-[#0D3B2E] hover:bg-[#165340] px-3.5 py-2.5 rounded-xl border border-[#0D3B2E] cursor-pointer shadow-sm disabled:opacity-50"
             >
-              <FileText size={14} /> Official Petition (PDF) ⚖️
+              <Download size={14} />
+              <span>{pdfLoading ? "Generating..." : "Download Status PDF"}</span>
             </button>
             <button
-              onClick={handleWhatsAppShare}
-              className="flex items-center gap-1.5 text-xs font-bold text-emerald-800 transition bg-emerald-50 hover:bg-emerald-100 px-3.5 py-2.5 rounded-xl border border-emerald-200 cursor-pointer"
+              type="button"
+              onClick={handleSendWhatsAppPdf}
+              disabled={waLoading}
+              className="flex items-center gap-1.5 text-xs font-bold text-[#0F6B38] transition bg-[#E8F8EE] hover:bg-[#D5F2DF] px-3.5 py-2.5 rounded-xl border border-[#25D366]/50 cursor-pointer disabled:opacity-50"
             >
-              Share via WhatsApp
+              <MessageCircle size={14} className="text-[#25D366]" />
+              <span>{waLoading ? "Sending..." : "Send to WhatsApp"}</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => window.print()}
+              className="flex items-center gap-1.5 text-xs font-bold text-[#4A5D54] transition bg-white hover:bg-slate-50 px-3 py-2.5 rounded-xl border border-[#DDE2DF] cursor-pointer"
+            >
+              <FileText size={14} /> Print Petition
             </button>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import DashboardLayout from "@/components/common/DashboardLayout";
-import { Search, ShieldCheck, Clock, CheckCircle2, AlertCircle, FileText, ArrowRight } from "lucide-react";
+import { Search, ShieldCheck, Clock, CheckCircle2, AlertCircle, FileText, ArrowRight, Download, MessageCircle } from "lucide-react";
 import { complaintService } from "@/services/complaintService";
 import { toast } from "sonner";
 import Button from "@/components/common/Button";
@@ -12,6 +12,8 @@ const TrackComplaint = () => {
   const [loading, setLoading] = useState(false);
   const [caseData, setCaseData] = useState(null);
   const [searched, setSearched] = useState(false);
+  const [pdfLoading, setPdfLoading] = useState(false);
+  const [waLoading, setWaLoading] = useState(false);
 
   const handleTrack = async (e) => {
     e.preventDefault();
@@ -33,6 +35,34 @@ const TrackComplaint = () => {
       toast.error("No record found matching this Case ID.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!caseData?.id) return;
+    setPdfLoading(true);
+    try {
+      await complaintService.downloadStatusPdf(caseData.id, caseData.complaintCustomId);
+      toast.success("Official ARAM Status Report PDF downloaded successfully.");
+    } catch (err) {
+      console.error("Failed to download PDF:", err);
+      toast.error(err?.response?.data?.message || "Failed to download status PDF.");
+    } finally {
+      setPdfLoading(false);
+    }
+  };
+
+  const handleSendWhatsAppPdf = async () => {
+    if (!caseData?.id) return;
+    setWaLoading(true);
+    try {
+      const res = await complaintService.sendWhatsappPdf(caseData.id);
+      toast.success(res?.message || "Status PDF dispatched to registered WhatsApp number!");
+    } catch (err) {
+      console.error("Failed to dispatch WhatsApp PDF:", err);
+      toast.error(err?.response?.data?.message || "Failed to send PDF to WhatsApp.");
+    } finally {
+      setWaLoading(false);
     }
   };
 
@@ -139,6 +169,29 @@ const TrackComplaint = () => {
                     <span className="text-[10px] text-[#65736D]">Direct Chat Available in Dashboard</span>
                   </div>
                 )}
+
+                {/* Official PDF & WhatsApp Actions */}
+                <div className="pt-4 border-t border-[#E6E1D8] flex flex-wrap items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={handleDownloadPdf}
+                    disabled={pdfLoading}
+                    className="flex-1 min-w-[200px] flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-[#0D3B2E] hover:bg-[#165340] text-white font-bold text-xs shadow-sm transition cursor-pointer disabled:opacity-50"
+                  >
+                    <Download size={15} />
+                    <span>{pdfLoading ? "Generating Official PDF..." : "Download Status PDF"}</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleSendWhatsAppPdf}
+                    disabled={waLoading}
+                    className="flex-1 min-w-[200px] flex items-center justify-center gap-2 px-4 py-3 rounded-2xl bg-[#E8F8EE] hover:bg-[#D5F2DF] border border-[#25D366]/50 text-[#0F6B38] font-bold text-xs shadow-2xs transition cursor-pointer disabled:opacity-50"
+                  >
+                    <MessageCircle size={15} className="text-[#25D366]" />
+                    <span>{waLoading ? "Dispatching to WhatsApp..." : "Send PDF to WhatsApp"}</span>
+                  </button>
+                </div>
 
               </div>
             ) : null}

@@ -60,11 +60,16 @@ const Profile = () => {
     toast.success(nextVal ? "SMS milestone notifications enabled." : "SMS milestone notifications disabled.");
   };
 
-  const handleToggleWhatsApp = () => {
+  const handleToggleWhatsApp = async () => {
     const nextVal = !notifyWhatsApp;
     setNotifyWhatsApp(nextVal);
     localStorage.setItem("aram_pref_wa", String(nextVal));
-    toast.success(nextVal ? "WhatsApp real-time case updates enabled." : "WhatsApp case updates disabled.");
+    try {
+      await userService.updateProfile({ whatsappOptIn: nextVal });
+      toast.success(nextVal ? "WhatsApp real-time case updates enabled." : "WhatsApp case updates disabled.");
+    } catch (err) {
+      toast.success(nextVal ? "WhatsApp real-time case updates enabled." : "WhatsApp case updates disabled.");
+    }
   };
 
   // Fetch real profile from backend /api/users/me and complaints from /api/complaints/my

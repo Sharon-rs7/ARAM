@@ -75,6 +75,8 @@ public class UserService {
         if (request.voiceAssistanceEnabled() != null) user.setVoiceAssistanceEnabled(request.voiceAssistanceEnabled());
         if (request.simpleModeEnabled() != null) user.setSimpleModeEnabled(request.simpleModeEnabled());
         if (request.speechRatePreference() != null) user.setSpeechRatePreference(request.speechRatePreference());
+        if (request.whatsappOptIn() != null) user.setWhatsappOptIn(request.whatsappOptIn());
+        if (request.mobileVerified() != null) user.setMobileVerified(request.mobileVerified());
         return userRepository.save(user);
     }
 

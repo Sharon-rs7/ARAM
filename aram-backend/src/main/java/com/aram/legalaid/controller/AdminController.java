@@ -74,6 +74,9 @@ public class AdminController {
     @Autowired
     private com.aram.legalaid.service.StatewideAnalyticsService statewideAnalyticsService;
 
+    @Autowired
+    private com.aram.legalaid.service.CommunicationGateway communicationGateway;
+
     public AdminController(AdminService adminService, ComplaintService complaintService, UserRepository userRepository,
                            ComplaintRepository complaintRepository, MapperService mapperService,
                            AuditLogService auditLogService, AuditLogRepository auditLogRepository,
@@ -271,6 +274,12 @@ public class AdminController {
             } catch (Exception e) {
                 System.err.println("Failed to send guide assignment email to citizen: " + e.getMessage());
             }
+        }
+
+        try {
+            communicationGateway.notifyGuideAssigned(saved, saved.getUser(), helper);
+        } catch (Exception e) {
+            System.err.println("Communication gateway guide assignment dispatch error: " + e.getMessage());
         }
         if (helper.getEmail() != null) {
             try {

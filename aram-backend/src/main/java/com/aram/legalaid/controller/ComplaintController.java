@@ -64,4 +64,18 @@ public class ComplaintController {
         String description = payload.getOrDefault("description", "");
         return ResponseEntity.ok(complaintService.checkSimilarity(title, description));
     }
+
+    @GetMapping("/{id}/status-pdf")
+    public ResponseEntity<byte[]> downloadStatusPdf(@PathVariable Long id) {
+        byte[] pdf = complaintService.generateStatusPdf(id);
+        return ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"ARAM_Complaint_" + id + "_Status.pdf\"")
+                .contentType(org.springframework.http.MediaType.APPLICATION_PDF)
+                .body(pdf);
+    }
+
+    @PostMapping("/{id}/send-whatsapp-pdf")
+    public ResponseEntity<java.util.Map<String, Object>> sendWhatsappPdf(@PathVariable Long id) {
+        return ResponseEntity.ok(complaintService.sendWhatsappPdf(id));
+    }
 }

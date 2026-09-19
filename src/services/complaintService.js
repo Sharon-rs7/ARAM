@@ -120,5 +120,25 @@ export const complaintService = {
   getReport: async (id) => {
     const res = await api.get(`/complaints/${id}/report`, { responseType: "blob" });
     return res.data;
+  },
+
+  downloadStatusPdf: async (id, customId) => {
+    const res = await api.get(`/complaints/${id}/status-pdf`, { responseType: "blob" });
+    const blob = new Blob([res.data], { type: "application/pdf" });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    const safeName = customId ? `ARAM_${customId}_Status.pdf` : `ARAM_Complaint_${id}_Status.pdf`;
+    link.setAttribute("download", safeName);
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+    return true;
+  },
+
+  sendWhatsappPdf: async (id) => {
+    const res = await api.post(`/complaints/${id}/send-whatsapp-pdf`);
+    return res.data;
   }
 };

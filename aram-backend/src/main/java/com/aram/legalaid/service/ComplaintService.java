@@ -31,11 +31,15 @@ public class ComplaintService {
     private final UserRepository userRepository;
     private final JobService jobService;
     private final RedisNotificationPublisher redisNotificationPublisher;
+    private final CommunicationGateway communicationGateway;
+    private final ComplaintPdfService complaintPdfService;
+    private final WhatsAppService whatsAppService;
 
     public ComplaintService(ComplaintRepository complaintRepository, AIResultRepository aiResultRepository, UserService userService,
                             AIAnalysisService aiAnalysisService, NotificationService notificationService, MapperService mapperService,
                             BlockchainService blockchainService, AIClientService aiClientService, ProfileCompletionService profileCompletionService,
-                            EmailService emailService, UserRepository userRepository, JobService jobService, RedisNotificationPublisher redisNotificationPublisher) {
+                            EmailService emailService, UserRepository userRepository, JobService jobService, RedisNotificationPublisher redisNotificationPublisher,
+                            CommunicationGateway communicationGateway, ComplaintPdfService complaintPdfService, WhatsAppService whatsAppService) {
         this.complaintRepository = complaintRepository;
         this.aiResultRepository = aiResultRepository;
         this.userService = userService;
@@ -49,6 +53,9 @@ public class ComplaintService {
         this.userRepository = userRepository;
         this.jobService = jobService;
         this.redisNotificationPublisher = redisNotificationPublisher;
+        this.communicationGateway = communicationGateway;
+        this.complaintPdfService = complaintPdfService;
+        this.whatsAppService = whatsAppService;
     }
 
     @Transactional
@@ -153,6 +160,12 @@ public class ComplaintService {
             emailService.sendComplaintSubmittedEmail(user.getEmail(), user.getName(), savedComplaint.getComplaintCustomId(), savedComplaint.getDistrict(), citizenState);
         } catch (Exception e) {
             System.err.println("Failed to send complaint submission email: " + e.getMessage());
+        }
+
+        try {
+            communicationGateway.notifyComplaintSubmitted(savedComplaint, user);
+        } catch (Exception e) {
+            System.err.println("Failed to dispatch communication gateway submission: " + e.getMessage());
         }
 
         // Asynchronously queue AI Analysis using the existing Redis queue
@@ -353,6 +366,20 @@ public class ComplaintService {
             }
         }
 
+        if (saved.getUser() != null && oldStatus != request.status()) {
+            try {
+                communicationGateway.notifyStatusUpdated(
+                    saved,
+                    saved.getUser(),
+                    oldStatus,
+                    request.status(),
+                    request.note()
+                );
+            } catch (Exception cgEx) {
+                System.err.println("Communication gateway status update error: " + cgEx.getMessage());
+            }
+        }
+
         return mapperService.toComplaintResponse(saved, aiResultRepository.findByComplaint(saved).orElse(null));
     }
 
@@ -410,6 +437,68 @@ public class ComplaintService {
             "message", "Complaint copy sent to " + recipientEmail,
             "email", recipientEmail
         );
+    }
+
+    @Transactional(readOnly = true)
+    public byte[] generateStatusPdf(Long id) {
+        Complaint complaint = findComplaint(id);
+        User currentUser = userService.currentUser();
+        
+        if (!currentUser.getId().equals(complaint.getUser().getId()) 
+                && currentUser.getRole() != Role.ADMIN 
+                && currentUser.getRole() != Role.SUPER_ADMIN
+                && (currentUser.getRole() != Role.HELPER || complaint.getAssignedHelper() == null || !complaint.getAssignedHelper().getId().equals(currentUser.getId()))) {
+            throw new ForbiddenException("You can only download status PDFs for your own cases.");
+        }
+        return complaintPdfService.generateComplaintStatusPdf(complaint, complaint.getUser());
+    }
+
+    @Transactional(readOnly = true)
+    public java.util.Map<String, Object> sendWhatsappPdf(Long id) {
+        Complaint complaint = findComplaint(id);
+        User currentUser = userService.currentUser();
+
+        if (!currentUser.getId().equals(complaint.getUser().getId()) 
+                && currentUser.getRole() != Role.ADMIN 
+                && currentUser.getRole() != Role.SUPER_ADMIN) {
+            throw new ForbiddenException("You can only request WhatsApp status reports for your own cases.");
+        }
+
+        User citizen = complaint.getUser();
+        if (citizen.getMobile() == null || citizen.getMobile().trim().isEmpty()) {
+            throw new com.aram.legalaid.exception.BadRequestException("No registered mobile number found for this account. Please update your profile with a valid mobile number.");
+        }
+
+        byte[] pdfBytes = complaintPdfService.generateComplaintStatusPdf(complaint, citizen);
+        String caseId = (complaint.getComplaintCustomId() != null && !complaint.getComplaintCustomId().isBlank())
+                ? complaint.getComplaintCustomId()
+                : "ARAM-2026-" + String.format("%06d", complaint.getId());
+        String filename = "ARAM_" + caseId.replace("-", "_") + "_Status.pdf";
+        String caption = "📄 ARAM Civic Legal Aid — Official Status Report for Case " + caseId;
+
+        boolean dispatched = whatsAppService.sendDocumentMessage(citizen.getMobile(), pdfBytes, filename, caption);
+
+        // Also send a friendly confirmation text
+        String confirmMsg = String.format(
+                "📋 *ARAM Case Status Document Sent*\n\n" +
+                "Vanakkam %s,\n" +
+                "Your requested official case report for *%s* has been delivered above.\n" +
+                "Current Status: *%s*\n\n" +
+                "For live updates, visit: https://ouraram.in/track-complaint",
+                citizen.getName(), caseId,
+                complaint.getStatus() != null ? complaint.getStatus().name().replace("_", " ") : "SUBMITTED"
+        );
+        whatsAppService.sendTextMessage(citizen.getMobile(), confirmMsg);
+
+        java.util.Map<String, Object> res = new java.util.HashMap<>();
+        res.put("success", dispatched);
+        res.put("caseId", caseId);
+        res.put("mobile", citizen.getMobile());
+        res.put("isSandbox", whatsAppService.isSandboxMode());
+        res.put("message", whatsAppService.isSandboxMode()
+                ? "Status PDF generated and logged to WhatsApp sandbox outbox (Target: +91" + citizen.getMobile() + ")"
+                : "Official Status PDF successfully sent to your registered WhatsApp number (+91 " + citizen.getMobile() + ")");
+        return res;
     }
 
     private void validateLanguage(String language) {

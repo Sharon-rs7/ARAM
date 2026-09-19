@@ -31,5 +31,7 @@ public record UserUpdateRequest(
         com.aram.legalaid.enums.UserStatus status,
         Boolean voiceAssistanceEnabled,
         Boolean simpleModeEnabled,
-        Double speechRatePreference
+        Double speechRatePreference,
+        Boolean whatsappOptIn,
+        Boolean mobileVerified
 ) {}
