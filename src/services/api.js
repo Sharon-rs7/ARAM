@@ -10,6 +10,10 @@ import { normalizeRole } from "@/utils/roleLabels";
 const resolveApiUrl = (envVar) => {
   if (envVar) return envVar;
   if (typeof window !== "undefined" && window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1") {
+    // If accessed via local network IP (e.g. mobile phone on Wi-Fi), route to backend on port 8082
+    if (/^(\d{1,3}\.){3}\d{1,3}$/.test(window.location.hostname)) {
+      return `http://${window.location.hostname}:8082/api`;
+    }
     return `${window.location.origin}/api`;
   }
   return "http://localhost:8082/api";
