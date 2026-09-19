@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, Sparkles, Mic, FileText, Users, Scale, ShieldCheck, HeartHandshake } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { 
+  Leaf, ArrowRight, MessageSquare, FileText, Compass, 
+  Mic, Keyboard, FileUp, Users, Scale 
+} from "lucide-react";
 import { speechService } from "@/services/speechService";
 import { useLanguage } from "@/context/LanguageContext";
 import { toast } from "sonner";
-import Button from "@/components/common/Button";
 
 const Hero = () => {
   const navigate = useNavigate();
@@ -59,132 +61,132 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative pt-28 pb-16 sm:pt-36 sm:pb-24 lg:pt-40 lg:pb-28 overflow-hidden bg-[#F7F1E6]">
-      {/* Background radial glows */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] sm:w-[600px] h-[340px] sm:h-[600px] bg-[#DCEBDD]/60 rounded-full blur-3xl pointer-events-none -z-0" />
+    <section className="relative pt-28 pb-10 sm:pt-36 sm:pb-14 lg:pt-36 lg:pb-12 overflow-hidden bg-[#FEFDFA]">
+      {/* Soft ambient radial glow */}
+      <div className="absolute top-1/4 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[340px] sm:w-[650px] h-[340px] sm:h-[650px] bg-[#E7F1E4]/70 rounded-full blur-3xl pointer-events-none -z-0" />
+      <div className="absolute top-1/3 right-10 w-[300px] h-[300px] bg-[#FBEED7]/40 rounded-full blur-3xl pointer-events-none -z-0" />
 
-      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 text-center space-y-5 sm:space-y-6">
-        
-        {/* Civic Eyebrow Badge */}
-        <div className="inline-flex items-center gap-2 rounded-full bg-[#DCEBDD] border border-[#B8D7BC] px-3.5 py-1.5 text-[11px] sm:text-xs font-black text-[#163D32] shadow-2xs">
-          <Scale size={14} className="text-[#163D32]" />
-          <span>{t("hero.eyebrow", "Accessible Justice for Every Citizen")}</span>
-        </div>
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 items-center">
+          
+          {/* Left Column: Civic Messaging & Actions */}
+          <div className="lg:col-span-7 space-y-5 text-left">
+            
+            {/* Civic Eyebrow Badge */}
+            <div className="inline-flex items-center gap-2 rounded-full bg-[#E5F0E6] border border-[#CDE3CF] px-3.5 py-1.5 text-xs font-bold text-[#167957] shadow-2xs">
+              <Leaf size={14} className="text-[#167957]" />
+              <span>{t("hero.eyebrow", "Accessible Justice for Every Citizen")}</span>
+            </div>
 
-        {/* Main Heading */}
-        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black text-[#163D32] tracking-tight leading-[1.15]">
-          {t("hero.title1", "Your Rights. Our Support.")} <br className="hidden sm:inline" />
-          <span className="text-[#1F5948]">{t("hero.title2", "A Fairer Tomorrow.")}</span>
-        </h1>
+            {/* Main Heading */}
+            <h1 className="text-4xl sm:text-5xl lg:text-[54px] font-black text-[#163D32] tracking-tight leading-[1.12]">
+              {t("hero.title1", "Your Rights. Our Support.")} <br />
+              <span className="text-[#12805A]">{t("hero.title2", "A Fairer Tomorrow.")}</span>
+            </h1>
 
-        {/* Grounded Subtitle */}
-        <p className="max-w-2xl mx-auto text-xs sm:text-sm md:text-base text-[#65736D] leading-relaxed">
-          {t("hero.subtitle", "ARAM AI bridges the justice gap by translating complex Indian laws, penal codes, and government schemes into clear, actionable steps in Tamil, English, and Hindi.")}
-        </p>
+            {/* Grounded Subtitle */}
+            <p className="text-sm sm:text-base text-[#4A5D54] leading-relaxed max-w-xl">
+              ARAM AI helps citizens understand legal information, identify <strong className="text-[#163D32] font-semibold">the right authorities</strong>, organize supporting evidence, and connect with verified <strong className="text-[#163D32] font-semibold">legal guides</strong> — in Tamil, English, and Hindi.
+            </p>
 
-        {/* Trilingual Direct Switcher Pills (User Request: Choose language right on Home page) */}
-        <div className="pt-1 flex items-center justify-center gap-2">
-          <span className="text-[11px] font-bold text-[#65736D] uppercase tracking-wider hidden sm:inline">
-            Language / மொழி:
-          </span>
-          <div className="inline-flex items-center p-1 rounded-2xl bg-[#FFFDF8] border border-[#E6E1D8] shadow-2xs">
-            {availableLanguages.map((l) => (
+            {/* Primary Action Buttons Row 1 */}
+            <div className="flex flex-wrap items-center gap-3 pt-1">
+              {/* Primary CTA: Ask ARAM AI */}
               <button
-                key={l.code}
                 type="button"
-                onClick={() => changeLanguage(l.code)}
-                className={`px-3 py-1.5 text-xs font-bold rounded-xl transition cursor-pointer flex items-center gap-1.5 ${
-                  language === l.code
-                    ? "bg-[#163D32] text-white shadow-xs"
-                    : "text-[#18332B] hover:bg-[#DCEBDD]/40"
+                onClick={() => navigate("/citizen/chatbot")}
+                className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl bg-[#0D3B2E] hover:bg-[#165340] text-white font-bold text-sm shadow-md transition cursor-pointer min-h-[46px]"
+              >
+                <MessageSquare size={16} />
+                <span>{t("hero.askAi", "Ask ARAM AI")}</span>
+                <ArrowRight size={15} />
+              </button>
+
+              {/* Secondary CTA: File a Grievance */}
+              <button
+                type="button"
+                onClick={() => navigate("/citizen/submit-complaint")}
+                className="flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-[#FFFDF8] border border-[#DDE2DF] hover:border-[#12805A]/40 text-[#12805A] hover:bg-[#DCEBDD]/30 font-bold text-sm shadow-2xs transition cursor-pointer min-h-[46px]"
+              >
+                <FileText size={16} className="text-[#12805A]" />
+                <span>{t("hero.fileGrievance", "File a Grievance")}</span>
+              </button>
+
+              {/* Tertiary CTA: Track My Case */}
+              <button
+                type="button"
+                onClick={() => navigate("/track-complaint")}
+                className="flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-[#FFFDF8] border border-[#DDE2DF] hover:border-[#12805A]/40 text-[#12805A] hover:bg-[#DCEBDD]/30 font-bold text-sm shadow-2xs transition cursor-pointer min-h-[46px]"
+              >
+                <Compass size={16} className="text-[#12805A]" />
+                <span>{t("hero.trackCase", "Track My Case")}</span>
+              </button>
+            </div>
+
+            {/* Secondary Quick Action Pills Row 2 */}
+            <div className="pt-2 flex flex-wrap items-center gap-2.5">
+              <button
+                type="button"
+                onClick={handleVoice}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl border font-bold text-xs transition shadow-2xs cursor-pointer min-h-[40px] ${
+                  isRecording
+                    ? "bg-red-600 text-white border-red-700 animate-pulse"
+                    : "bg-[#FFFDF8] border-[#DDE2DF] text-[#163D32] hover:bg-[#DCEBDD]/40"
                 }`}
               >
-                <span>{l.nativeLabel}</span>
-                <span className="text-[10px] opacity-75 hidden xs:inline">({l.label})</span>
+                <Mic size={15} className={isRecording ? "text-white" : "text-[#12805A]"} />
+                <span>{isRecording ? t("hero.listening", "Listening...") : "Speak"}</span>
               </button>
-            ))}
+
+              <button
+                type="button"
+                onClick={() => navigate("/citizen/chatbot")}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[#FFFDF8] border border-[#DDE2DF] text-[#163D32] hover:bg-[#DCEBDD]/40 font-bold text-xs transition shadow-2xs cursor-pointer min-h-[40px]"
+              >
+                <Keyboard size={15} className="text-[#12805A]" />
+                <span>Type</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => navigate("/citizen/documents")}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[#FFFDF8] border border-[#DDE2DF] text-[#163D32] hover:bg-[#DCEBDD]/40 font-bold text-xs transition shadow-2xs cursor-pointer min-h-[40px]"
+              >
+                <FileUp size={15} className="text-[#12805A]" />
+                <span>Upload</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => navigate("/citizen/submit-complaint")}
+                className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[#FFFDF8] border border-[#DDE2DF] text-[#163D32] hover:bg-[#DCEBDD]/40 font-bold text-xs transition shadow-2xs cursor-pointer min-h-[40px]"
+              >
+                <Users size={15} className="text-[#12805A]" />
+                <span>Connect</span>
+              </button>
+            </div>
+
           </div>
-        </div>
 
-        {/* Primary CTA Area: 3 Clear Actions */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 pt-2 max-w-xl mx-auto">
-          {/* Primary CTA: Ask ARAM AI */}
-          <button
-            type="button"
-            onClick={() => navigate("/citizen/chatbot")}
-            className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-[#163D32] text-white font-bold text-sm hover:bg-[#1F5948] transition shadow-sm cursor-pointer min-h-[46px]"
-          >
-            <Sparkles size={17} className="text-[#DCEBDD]" />
-            <span>{t("hero.askAi", "Ask ARAM AI")}</span>
-          </button>
+          {/* Right Column: CM Vijay Civic Showcase Visual */}
+          <div className="lg:col-span-5 flex items-center justify-center relative mt-6 lg:mt-0">
+            <div className="relative w-full max-w-[560px] group">
+              {/* Soft ambient blur behind leader artwork */}
+              <div className="absolute inset-0 bg-gradient-to-tr from-[#DCEBDD]/70 via-[#E8C978]/25 to-transparent rounded-3xl blur-2xl -z-10" />
 
-          {/* Secondary CTA: File a Grievance */}
-          <button
-            type="button"
-            onClick={() => navigate("/citizen/submit-complaint")}
-            className="flex-1 flex items-center justify-center gap-2 px-5 py-3.5 rounded-2xl bg-[#FFFDF8] border border-[#163D32]/30 text-[#163D32] font-bold text-sm hover:bg-[#DCEBDD]/40 transition shadow-2xs cursor-pointer min-h-[46px]"
-          >
-            <ShieldCheck size={17} />
-            <span>{t("hero.fileGrievance", "File a Grievance")}</span>
-          </button>
-
-          {/* Tertiary CTA: Track My Case */}
-          <button
-            type="button"
-            onClick={() => navigate("/track-complaint")}
-            className="flex-1 flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl bg-[#FFFDF8] border border-[#E6E1D8] text-[#18332B] font-bold text-sm hover:bg-[#DCEBDD]/40 transition shadow-2xs cursor-pointer min-h-[46px]"
-          >
-            <ArrowRight size={16} className="text-[#65736D]" />
-            <span>{t("hero.trackCase", "Track My Case")}</span>
-          </button>
-        </div>
-
-        {/* Secondary Quick Action Bar */}
-        <div className="pt-2">
-          <div className="inline-flex items-center justify-center gap-2 text-[11px] font-bold uppercase tracking-wider text-[#65736D] mb-2.5">
-            <span>Quick Grievance Inputs</span>
+              <img
+                src="/assets/cm_vijay_hero@2x.png"
+                alt="Hon'ble Chief Minister Thalapathy Vijay - ARAM Civic Legal Aid & Justice"
+                className="w-full h-auto object-contain rounded-3xl transition-transform duration-300 group-hover:scale-[1.01]"
+                loading="eager"
+              />
+            </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 max-w-2xl mx-auto">
-            {/* Voice Input */}
-            <button
-              type="button"
-              onClick={handleVoice}
-              className={`flex items-center justify-center gap-2 p-3 rounded-2xl font-bold text-xs transition shadow-2xs cursor-pointer min-h-[42px] ${
-                isRecording
-                  ? "bg-red-600 text-white animate-pulse"
-                  : "bg-[#B96845] hover:bg-[#9E5333] text-white"
-              }`}
-            >
-              <Mic size={15} />
-              <span>{isRecording ? t("hero.listening", "Listening... Click to Finish") : t("hero.speakProblem", "Speak Problem")}</span>
-            </button>
 
-            {/* Document Verification */}
-            <button
-              type="button"
-              onClick={() => navigate("/citizen/documents")}
-              className="flex items-center justify-center gap-2 p-3 rounded-2xl bg-[#FFFDF8] border border-[#E6E1D8] text-[#18332B] font-bold text-xs hover:bg-[#DCEBDD]/40 transition shadow-2xs cursor-pointer min-h-[42px]"
-            >
-              <FileText size={15} className="text-[#163D32]" />
-              <span>{t("hero.uploadDoc", "Upload Document")}</span>
-            </button>
-
-            {/* Connect Guide */}
-            <button
-              type="button"
-              onClick={() => navigate("/citizen/submit-complaint")}
-              className="flex items-center justify-center gap-2 p-3 rounded-2xl bg-[#FFFDF8] border border-[#E6E1D8] text-[#18332B] font-bold text-xs hover:bg-[#DCEBDD]/40 transition shadow-2xs cursor-pointer min-h-[42px]"
-            >
-              <Users size={15} className="text-[#1F5948]" />
-              <span>{t("hero.connectGuide", "Connect Guide")}</span>
-            </button>
-          </div>
         </div>
-
       </div>
     </section>
   );
 };
 
 export default Hero;
-

@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import Logo from "@/components/common/Logo";
 import { 
   Menu, X, Shield, Globe, Award, Sparkles, LogIn, ChevronDown, Check,
-  Sun, Moon
+  Sun, Moon, Search, User
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
@@ -37,8 +37,8 @@ const Navbar = () => {
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       scrolled 
-        ? "bg-[#FFFDF8]/95 backdrop-blur-md shadow-sm border-b border-[#E6E1D8]" 
-        : "bg-transparent"
+        ? "bg-[#FEFDFA]/95 backdrop-blur-md shadow-xs border-b border-[#E6E1D8]" 
+        : "bg-[#FEFDFA]/80 backdrop-blur-xs"
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
@@ -61,17 +61,26 @@ const Navbar = () => {
           </div>
 
           {/* Language & Actions */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-3.5">
+            {/* Search Button */}
+            <Link
+              to="/citizen/chatbot"
+              className="p-2 rounded-full text-[#163D32] hover:bg-[#DCEBDD]/40 transition cursor-pointer"
+              title="Search legal aid topics"
+              aria-label="Search"
+            >
+              <Search size={18} />
+            </Link>
+
             {/* Language dropdown */}
             <div className="relative">
               <button
                 type="button"
                 onClick={() => setLangMenuOpen(!langMenuOpen)}
-                className="flex items-center gap-2 px-3.5 py-2 rounded-full border border-[#E6E1D8] bg-[#FFFDF8] text-xs font-bold text-[#18332B] hover:bg-[#DCEBDD]/40 transition shadow-2xs cursor-pointer min-h-[38px]"
+                className="flex items-center gap-2 px-3.5 py-2 rounded-full border border-[#DDE2DF] bg-[#FFFDF8] text-xs font-bold text-[#18332B] hover:bg-[#DCEBDD]/40 transition shadow-2xs cursor-pointer min-h-[38px]"
                 aria-label="Select platform language"
               >
-                <Globe size={15} className="text-[#163D32]" />
-                <span>{availableLanguages.find(l => l.code === language)?.nativeLabel || "English"}</span>
+                <span>{availableLanguages.find(l => l.code === language)?.label || "English"}</span>
                 <ChevronDown size={13} className={`transition-transform duration-200 ${langMenuOpen ? "rotate-180" : ""}`} />
               </button>
 
@@ -106,7 +115,7 @@ const Navbar = () => {
             <button
               type="button"
               onClick={() => setMode(resolvedTheme === "dark" ? "LIGHT" : "DARK")}
-              className="p-2.5 rounded-full border border-[#E6E1D8] bg-[#FFFDF8] text-[#163D32] hover:bg-[#DCEBDD]/40 transition cursor-pointer flex items-center justify-center shadow-2xs min-h-[38px] min-w-[38px]"
+              className="p-2.5 rounded-full border border-[#DDE2DF] bg-[#FFFDF8] text-[#163D32] hover:bg-[#DCEBDD]/40 transition cursor-pointer flex items-center justify-center shadow-2xs min-h-[38px] min-w-[38px]"
               title={resolvedTheme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
               aria-label="Toggle theme"
             >
@@ -120,14 +129,18 @@ const Navbar = () => {
             {user ? (
               <Link
                 to={user.role === "ADMIN" ? "/admin/dashboard" : user.role === "VOLUNTEER" || user.role === "GUIDE" ? "/guide/dashboard" : "/citizen/dashboard"}
-                className="btn-aram-primary text-xs py-2 px-4 shadow-sm"
+                className="px-5 py-2.5 rounded-full bg-[#0D3B2E] hover:bg-[#165340] text-white font-bold text-xs flex items-center gap-2 shadow-sm transition"
               >
-                {t("nav.dashboard", "Dashboard")}
+                <span>{t("nav.dashboard", "Dashboard")}</span>
+                <User size={15} />
               </Link>
             ) : (
-              <Link to="/login" className="btn-aram-primary text-xs flex items-center gap-2 py-2 px-4 shadow-sm">
-                <LogIn size={15} />
+              <Link
+                to="/login"
+                className="px-5 py-2.5 rounded-full bg-[#0D3B2E] hover:bg-[#165340] text-white font-bold text-xs flex items-center gap-2 shadow-sm transition"
+              >
                 <span>{t("nav.signIn", "Sign In")}</span>
+                <User size={15} />
               </Link>
             )}
           </div>
