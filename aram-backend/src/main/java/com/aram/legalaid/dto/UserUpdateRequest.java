@@ -11,7 +11,7 @@ public record UserUpdateRequest(
         @Email(message = "Invalid email address")
         String email,
 
-        @Pattern(regexp = "^[6-9][0-9]{9}$", message = "Mobile number must be a valid 10 digit Indian number")
+        @Pattern(regexp = "^$|^[6-9][0-9]{9}$", message = "Mobile number must be a valid 10 digit Indian number")
         String mobile,
 
         @Size(max = 500, message = "Bio must be less than 500 characters")

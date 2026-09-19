@@ -62,9 +62,14 @@ public class UserService {
             if (userRepository.existsByEmail(request.email())) throw new BadRequestException("Email already exists");
             user.setEmail(request.email());
         }
-        if (request.mobile() != null && !request.mobile().equals(user.getMobile())) {
-            if (userRepository.existsByMobile(request.mobile())) throw new BadRequestException("Mobile number already exists");
-            user.setMobile(request.mobile());
+        if (request.mobile() != null) {
+            String trimmedMobile = request.mobile().trim();
+            if (!trimmedMobile.isEmpty() && !trimmedMobile.equals(user.getMobile())) {
+                if (userRepository.existsByMobile(trimmedMobile)) throw new BadRequestException("Mobile number already exists");
+                user.setMobile(trimmedMobile);
+            } else if (trimmedMobile.isEmpty() && user.getMobile() != null) {
+                user.setMobile(null);
+            }
         }
         if (request.bio() != null) user.setBio(request.bio());
         if (request.district() != null) user.setDistrict(request.district());

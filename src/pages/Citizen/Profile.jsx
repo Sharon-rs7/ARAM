@@ -74,11 +74,13 @@ const Profile = () => {
 
   // Fetch real profile from backend /api/users/me and complaints from /api/complaints/my
   useEffect(() => {
+    let isMounted = true;
+
     const loadProfileAndActivity = async () => {
       setLoading(true);
       try {
         const userData = await userService.getMe();
-        if (userData) {
+        if (userData && isMounted) {
           setProfile({
             id: userData.id,
             name: userData.name || authUser?.name || "",
@@ -91,20 +93,10 @@ const Profile = () => {
             idNumber: userData.mobile ? `XXXX-XXXX-${userData.mobile.slice(-4)}` : "XXXX-XXXX-8921",
             isVerified: true
           });
-
-          // Sync into AuthContext if out of sync
-          if (updateUser) {
-            updateUser({
-              name: userData.name,
-              email: userData.email,
-              mobile: userData.mobile,
-              district: userData.district
-            });
-          }
         }
       } catch (err) {
         console.warn("Failed to load /api/users/me, falling back to session user:", err);
-        if (authUser) {
+        if (authUser && isMounted) {
           setProfile({
             id: authUser.id,
             name: authUser.name || "",
@@ -123,24 +115,35 @@ const Profile = () => {
       // Load citizen's real complaints to reflect assignment status
       try {
         const complaintList = await complaintService.myComplaints();
-        setComplaints(Array.isArray(complaintList) ? complaintList : []);
+        if (isMounted) {
+          setComplaints(Array.isArray(complaintList) ? complaintList : []);
+        }
       } catch (cErr) {
         console.warn("Failed to load user complaints in profile:", cErr);
-        setComplaints([]);
+        if (isMounted) {
+          setComplaints([]);
+        }
       } finally {
-        setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
     loadProfileAndActivity();
-  }, [authUser]);
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   // Calculate Profile Completeness Percentage
   const calculateCompleteness = () => {
     let score = 0;
     if (profile.name?.trim()) score += 25;
     if (profile.email?.trim()) score += 25;
-    if (profile.mobile?.trim() && /^[6-9][0-9]{9}$/.test(profile.mobile.trim())) score += 25;
+    const cleanMob = (profile.mobile || "").replace(/\D/g, "");
+    if (cleanMob && /^[6-9][0-9]{9}$/.test(cleanMob)) score += 25;
     if (profile.district?.trim()) score += 25;
     return score;
   };
@@ -149,13 +152,16 @@ const Profile = () => {
   const isProfileComplete = completeness === 100;
 
   // Handle Save
-  const handleSave = async () => {
-    if (!profile.name?.trim()) {
-      toast.error("Full Name cannot be empty.");
+  const handleSave = async (e) => {
+    if (e) e.preventDefault();
+
+    if (!profile.name?.trim() || profile.name.trim().length < 2) {
+      toast.error("Full Name must be at least 2 characters.");
       return;
     }
 
-    if (!profile.mobile?.trim() || !/^[6-9][0-9]{9}$/.test(profile.mobile.trim())) {
+    const cleanMobile = (profile.mobile || "").replace(/\D/g, "");
+    if (!cleanMobile || !/^[6-9][0-9]{9}$/.test(cleanMobile)) {
       toast.error("Please enter a valid 10-digit Indian mobile number starting with 6-9.");
       return;
     }
@@ -171,7 +177,7 @@ const Profile = () => {
     try {
       const payload = {
         name: profile.name.trim(),
-        mobile: profile.mobile.trim(),
+        mobile: cleanMobile,
         district: profile.district.trim(),
         address: profile.address?.trim() || "",
         preferredLanguage: profile.preferredLanguage || "Tamil & English"
@@ -179,6 +185,16 @@ const Profile = () => {
 
       const updated = await userService.updateMe(payload);
       
+      // Update local state immediately with updated response
+      setProfile((prev) => ({
+        ...prev,
+        name: updated?.name || payload.name,
+        mobile: updated?.mobile || payload.mobile,
+        district: updated?.district || payload.district,
+        address: updated?.address || payload.address,
+        idNumber: cleanMobile ? `XXXX-XXXX-${cleanMobile.slice(-4)}` : prev.idNumber
+      }));
+
       // Synchronize in AuthContext and localStorage
       if (updateUser) {
         updateUser(updated || payload);
@@ -186,7 +202,7 @@ const Profile = () => {
 
       setIsEditing(false);
       toast.dismiss(toastId);
-      toast.success("Citizen identity and jurisdiction updated successfully!");
+      toast.success("Citizen profile and jurisdiction updated successfully in database!");
     } catch (err) {
       toast.dismiss(toastId);
       const msg = err.response?.data?.message || err.message || "Failed to update profile";
@@ -333,10 +349,15 @@ const Profile = () => {
           </div>
 
           {/* 2. Personal & Contact Details Form */}
-          <div className="space-y-4 pt-2">
-            <h3 className="text-xs font-black text-[#163D32] uppercase tracking-wider">
-              Statutory Contact & Regional Jurisdiction
-            </h3>
+          <form onSubmit={handleSave} className="space-y-4 pt-2">
+            <div className="flex items-center justify-between border-b border-[#E6E1D8]/60 pb-2">
+              <h3 className="text-xs font-black text-[#163D32] uppercase tracking-wider">
+                Statutory Contact & Regional Jurisdiction
+              </h3>
+              <span className="text-[10px] text-[#1F5948] font-bold bg-[#DCEBDD] px-2 py-0.5 rounded-full">
+                Directly Editable
+              </span>
+            </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
               
@@ -349,10 +370,9 @@ const Profile = () => {
                   <input
                     type="text"
                     value={profile.name}
-                    disabled={!isEditing}
                     onChange={(e) => setProfile({ ...profile, name: e.target.value })}
                     placeholder="e.g. Anandha Kumar"
-                    className="w-full h-11 pl-10 pr-3 rounded-xl border border-[#DDE2DF] bg-white text-[#18332B] font-semibold outline-none focus:border-[#163D32] focus:ring-2 focus:ring-[#DCEBDD] disabled:bg-[#F7F1E6]/70 disabled:cursor-not-allowed shadow-2xs"
+                    className="w-full h-11 pl-10 pr-3 rounded-xl border border-[#DDE2DF] bg-white text-[#18332B] font-semibold outline-none focus:border-[#163D32] focus:ring-2 focus:ring-[#DCEBDD] shadow-2xs"
                   />
                   <User size={15} className="absolute left-3.5 top-3.5 text-[#65736D]" />
                 </div>
@@ -386,10 +406,9 @@ const Profile = () => {
                     type="tel"
                     maxLength={10}
                     value={profile.mobile}
-                    disabled={!isEditing}
                     onChange={(e) => setProfile({ ...profile, mobile: e.target.value.replace(/\D/g, "") })}
                     placeholder="10 digit number (e.g. 9876543210)"
-                    className="w-full h-11 pl-10 pr-3 rounded-xl border border-[#DDE2DF] bg-white text-[#18332B] font-semibold font-mono outline-none focus:border-[#163D32] focus:ring-2 focus:ring-[#DCEBDD] disabled:bg-[#F7F1E6]/70 disabled:cursor-not-allowed shadow-2xs"
+                    className="w-full h-11 pl-10 pr-3 rounded-xl border border-[#DDE2DF] bg-white text-[#18332B] font-semibold font-mono outline-none focus:border-[#163D32] focus:ring-2 focus:ring-[#DCEBDD] shadow-2xs"
                   />
                   <Phone size={15} className="absolute left-3.5 top-3.5 text-[#65736D]" />
                 </div>
@@ -405,9 +424,8 @@ const Profile = () => {
                 <div className="relative">
                   <select
                     value={profile.district}
-                    disabled={!isEditing}
                     onChange={(e) => setProfile({ ...profile, district: e.target.value })}
-                    className="w-full h-11 pl-10 pr-4 rounded-xl border border-[#DDE2DF] bg-white text-[#18332B] font-semibold outline-none focus:border-[#163D32] focus:ring-2 focus:ring-[#DCEBDD] disabled:bg-[#F7F1E6]/70 disabled:cursor-not-allowed shadow-2xs cursor-pointer appearance-none"
+                    className="w-full h-11 pl-10 pr-4 rounded-xl border border-[#DDE2DF] bg-white text-[#18332B] font-semibold outline-none focus:border-[#163D32] focus:ring-2 focus:ring-[#DCEBDD] shadow-2xs cursor-pointer"
                   >
                     <option value="">Select District</option>
                     {TN_DISTRICTS.map((dist) => (
@@ -430,17 +448,33 @@ const Profile = () => {
                   <input
                     type="text"
                     value={profile.address}
-                    disabled={!isEditing}
                     onChange={(e) => setProfile({ ...profile, address: e.target.value })}
                     placeholder="e.g. 14B, Gandhi Nagar, Main Road, Chennai - 600002"
-                    className="w-full h-11 pl-10 pr-3 rounded-xl border border-[#DDE2DF] bg-white text-[#18332B] font-medium outline-none focus:border-[#163D32] focus:ring-2 focus:ring-[#DCEBDD] disabled:bg-[#F7F1E6]/70 disabled:cursor-not-allowed shadow-2xs"
+                    className="w-full h-11 pl-10 pr-3 rounded-xl border border-[#DDE2DF] bg-white text-[#18332B] font-medium outline-none focus:border-[#163D32] focus:ring-2 focus:ring-[#DCEBDD] shadow-2xs"
                   />
                   <Building size={15} className="absolute left-3.5 top-3.5 text-[#65736D]" />
                 </div>
               </div>
 
             </div>
-          </div>
+
+            {/* In-Form Prominent Save Button */}
+            <div className="pt-3 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-[#E6E1D8] mt-4">
+              <div className="text-[11px] text-[#65736D] flex items-center gap-1.5 self-start sm:self-auto">
+                <ShieldCheck size={14} className="text-[#1F5948] shrink-0" />
+                <span>Statutory updates are cryptographically synced to your district legal desk.</span>
+              </div>
+
+              <button
+                type="submit"
+                disabled={saving}
+                className="w-full sm:w-auto px-7 py-3 rounded-full bg-[#163D32] hover:bg-[#1F5948] text-white text-xs font-bold shadow-md hover:shadow-lg transition cursor-pointer flex items-center justify-center gap-2 min-h-[44px] disabled:opacity-50"
+              >
+                <Save size={15} />
+                <span>{saving ? "Saving Changes..." : "Save Profile & District Changes"}</span>
+              </button>
+            </div>
+          </form>
 
           {/* 3. Statutory Anti-Fraud Identity Proof Card */}
           <div className="p-4 sm:p-5 rounded-2xl bg-[#F7F1E6] border border-[#E6E1D8] space-y-3">

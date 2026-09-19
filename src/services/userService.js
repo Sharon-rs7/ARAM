@@ -1,4 +1,4 @@
-﻿import api from "@/services/api";
+import api from "@/services/api";
 
 export const userService = {
   getMe: async () => {
@@ -7,6 +7,11 @@ export const userService = {
   },
 
   updateMe: async (payload) => {
+    const res = await api.put("/users/me", payload);
+    return res.data;
+  },
+
+  updateProfile: async (payload) => {
     const res = await api.put("/users/me", payload);
     return res.data;
   },

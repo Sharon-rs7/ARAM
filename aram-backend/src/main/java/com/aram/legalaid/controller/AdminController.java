@@ -158,6 +158,19 @@ public class AdminController {
         if (request.preferredLanguage() != null) { user.setPreferredLanguage(request.preferredLanguage()); details.append("preferredLanguage "); }
         if (request.gender() != null) { user.setGender(request.gender()); details.append("gender "); }
         if (request.specialization() != null) { user.setSpecialization(request.specialization()); details.append("specialization "); }
+        if (request.mobile() != null) {
+            String trimmedMobile = request.mobile().trim();
+            if (!trimmedMobile.isEmpty() && !trimmedMobile.equals(user.getMobile())) {
+                if (userRepository.existsByMobile(trimmedMobile)) {
+                    throw new com.aram.legalaid.exception.BadRequestException("Mobile number already exists");
+                }
+                user.setMobile(trimmedMobile);
+                details.append("mobile ");
+            } else if (trimmedMobile.isEmpty() && user.getMobile() != null) {
+                user.setMobile(null);
+                details.append("cleared_mobile ");
+            }
+        }
         if (request.status() != null) { user.setStatus(request.status()); details.append("status=").append(request.status()).append(" "); }
         
         User saved = userRepository.save(user);
