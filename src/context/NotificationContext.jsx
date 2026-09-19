@@ -201,20 +201,23 @@ export const NotificationProvider = ({ children }) => {
           }
         };
 
-        ws.onclose = () => {
+        let retryCount = 0;
+        ws.onclose = (event) => {
           if (isUnmounted) return;
-          console.log("[WS CLOSED] Reconnecting in 5s...");
           setIsConnected(false);
-          reconnectTimeoutRef.current = setTimeout(connectWebSocket, 5000);
+          // If closed cleanly or authentication failed, don't spam reconnect
+          if (event.code === 1008 || event.code === 4401 || retryCount > 5) {
+            return;
+          }
+          retryCount++;
+          const delay = Math.min(30000, 5000 * Math.pow(1.5, retryCount));
+          reconnectTimeoutRef.current = setTimeout(connectWebSocket, delay);
         };
 
-        ws.onerror = (err) => {
-          console.warn("[WS ERROR]", err);
-          ws.close();
+        ws.onerror = () => {
+          try { ws.close(); } catch (_) {}
         };
-      } catch (err) {
-        console.warn("[WS INIT ERROR]", err);
-      }
+      } catch (_) {}
     };
 
     connectWebSocket();
