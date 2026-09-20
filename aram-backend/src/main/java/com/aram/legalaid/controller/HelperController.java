@@ -81,7 +81,7 @@ public class HelperController {
         return ResponseEntity.ok(toResponse(complaint));
     }
 
-    @PutMapping("/cases/{id}/status")
+    @RequestMapping(value = "/cases/{id}/status", method = {RequestMethod.PUT, RequestMethod.PATCH})
     public ResponseEntity<ComplaintResponse> updateStatus(@PathVariable Long id, @Valid @RequestBody StatusUpdateRequest request) {
         requireHelper();
         caseDetails(id);

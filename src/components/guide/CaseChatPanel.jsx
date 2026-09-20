@@ -151,66 +151,78 @@ export default function CaseChatPanel({ complaintId, userRole }) {
     }
   };
 
-  // WebSocket setup with exponential backoff reconnect and REST resync
+  // WebSocket setup with exponential backoff reconnect and REST resync + polling fallback
   useEffect(() => {
     fetchMessages();
 
     let socket = null;
     let reconnectTimeout = null;
     let currentDelay = 1000;
+    let isDisposed = false;
 
     const connect = () => {
       const token = localStorage.getItem("accessToken");
-      if (!token) return;
+      if (!token || isDisposed) return;
 
       const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-      const host = window.location.hostname || "localhost";
       let wsEndpoint;
       if (import.meta.env.VITE_WS_URL) {
         wsEndpoint = `${import.meta.env.VITE_WS_URL}/ws/updates`;
-      } else if (host === "localhost" || host === "127.0.0.1") {
-        wsEndpoint = `${wsProtocol}//${host}:8082/ws/updates`;
       } else {
         wsEndpoint = `${wsProtocol}//${window.location.host}/ws/updates`;
       }
       const wsUrl = `${wsEndpoint}?token=${token}`;
 
-      socket = new WebSocket(wsUrl);
+      try {
+        socket = new WebSocket(wsUrl);
 
-      socket.onopen = () => {
-        console.log("[Chat WS] Connected successfully. Performing REST resync...");
-        currentDelay = 1000; // Reset backoff delay
-        fetchMessages(); // REST resync on reconnect
-      };
+        socket.onopen = () => {
+          console.log("[Chat WS] Connected successfully. Performing REST resync...");
+          currentDelay = 1000;
+          fetchMessages();
+        };
 
-      socket.onmessage = (event) => {
-        try {
-          const data = JSON.parse(event.data);
-          if (data && data.complaintId && String(data.complaintId) === String(complaintId)) {
-            console.log("[Chat WS] Real-time notification received. Resyncing chat...");
-            fetchMessages(); // Refresh messages cleanly
+        socket.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            if (data && (!data.complaintId || String(data.complaintId) === String(complaintId))) {
+              console.log("[Chat WS] Real-time notification received. Resyncing chat...");
+              fetchMessages();
+            }
+          } catch (e) {
+            console.error("[Chat WS] Error parsing message", e);
           }
-        } catch (e) {
-          console.error("[Chat WS] Error parsing message", e);
-        }
-      };
+        };
 
-      socket.onclose = (event) => {
-        console.warn(`[Chat WS] Connection closed (code: ${event.code}). Retrying in ${currentDelay}ms...`);
-        reconnectTimeout = setTimeout(() => {
-          currentDelay = Math.min(currentDelay * 2, 30000); // Exponential backoff up to 30s
-          connect();
-        }, currentDelay);
-      };
+        socket.onclose = (event) => {
+          if (isDisposed) return;
+          console.warn(`[Chat WS] Connection closed (code: ${event.code}). Retrying in ${currentDelay}ms...`);
+          reconnectTimeout = setTimeout(() => {
+            currentDelay = Math.min(currentDelay * 2, 30000);
+            connect();
+          }, currentDelay);
+        };
 
-      socket.onerror = (error) => {
-        console.error("[Chat WS] Socket error:", error);
-      };
+        socket.onerror = (error) => {
+          console.error("[Chat WS] Socket error:", error);
+        };
+      } catch (err) {
+        console.warn("[Chat WS] WebSocket initiation error:", err);
+      }
     };
 
     connect();
 
+    // 4-second polling fallback so chat updates reliably even if WS is dropped
+    const pollInterval = setInterval(() => {
+      if (!isDisposed) {
+        fetchMessages();
+      }
+    }, 4000);
+
     return () => {
+      isDisposed = true;
+      clearInterval(pollInterval);
       if (socket) {
         socket.onclose = null;
         socket.close();

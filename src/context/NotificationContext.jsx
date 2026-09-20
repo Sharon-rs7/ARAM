@@ -150,13 +150,9 @@ export const NotificationProvider = ({ children }) => {
       try {
         const cleanToken = token.startsWith("Bearer ") ? token.substring(7) : token;
         const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
-        const host = window.location.hostname || "localhost";
-        
         let wsEndpoint;
         if (import.meta.env.VITE_WS_URL) {
           wsEndpoint = `${import.meta.env.VITE_WS_URL}/ws/updates`;
-        } else if (host === "localhost" || host === "127.0.0.1") {
-          wsEndpoint = `${protocol}//${host}:8082/ws/updates`;
         } else {
           wsEndpoint = `${protocol}//${window.location.host}/ws/updates`;
         }

@@ -32,8 +32,13 @@ export const volunteerService = {
   },
 
   updateCaseStatus: async (id, status, notes) => {
-    const res = await api.patch(`/helper/cases/${id}/status`, { status, notes });
-    return res.data;
+    try {
+      const res = await api.put(`/helper/cases/${id}/status`, { status, note: notes, notes });
+      return res.data;
+    } catch (e) {
+      const res = await api.patch(`/helper/cases/${id}/status`, { status, note: notes, notes });
+      return res.data;
+    }
   },
 
   updateActionPlan: async (id, actionPlan) => {

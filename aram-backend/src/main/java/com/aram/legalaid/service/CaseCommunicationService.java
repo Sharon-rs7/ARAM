@@ -261,6 +261,20 @@ public class CaseCommunicationService {
         );
     }
 
+    private CaseChatThread getOrCreateChatThread(Complaint complaint) {
+        return chatThreadRepository.findByComplaintId(complaint.getId())
+                .orElseGet(() -> {
+                    CaseChatThread t = new CaseChatThread();
+                    t.setComplaintId(complaint.getId());
+                    t.setPublicUserId(complaint.getUser() != null ? complaint.getUser().getId() : null);
+                    t.setLegalGuideId(complaint.getAssignedHelper() != null ? complaint.getAssignedHelper().getId() : null);
+                    t.setStatus("OPEN");
+                    t.setCreatedAt(LocalDateTime.now());
+                    t.setUpdatedAt(LocalDateTime.now());
+                    return chatThreadRepository.save(t);
+                });
+    }
+
     public List<CaseMessage> getChatMessages(Long complaintId) {
         User currentUser = userService.currentUser();
         Complaint complaint = complaintRepository.findById(complaintId)
@@ -275,9 +289,7 @@ public class CaseCommunicationService {
             }
         }
 
-        CaseChatThread thread = chatThreadRepository.findByComplaintId(complaintId)
-                .orElseThrow(() -> new ResourceNotFoundException("Chat thread not found for this complaint"));
-
+        CaseChatThread thread = getOrCreateChatThread(complaint);
         return messageRepository.findByThreadIdOrderByCreatedAtAsc(thread.getId());
     }
 
@@ -295,8 +307,7 @@ public class CaseCommunicationService {
             }
         }
 
-        CaseChatThread thread = chatThreadRepository.findByComplaintId(complaintId)
-                .orElseThrow(() -> new ResourceNotFoundException("Chat thread not found. Guides must be assigned first."));
+        CaseChatThread thread = getOrCreateChatThread(complaint);
 
         CaseMessage msg = new CaseMessage();
         msg.setThreadId(thread.getId());
@@ -325,6 +336,22 @@ public class CaseCommunicationService {
                     "Legal Guide sent a new message in ARAM-2026-000" + complaintId + ".",
                     NotificationType.IN_APP
             );
+        }
+
+        try {
+            Map<String, Object> extra = new HashMap<>();
+            extra.put("messageId", saved.getId());
+            extra.put("senderId", currentUser.getId());
+            extra.put("senderRole", currentUser.getRole().name());
+            extra.put("messageText", saved.getMessageText());
+            extra.put("complaintId", complaintId);
+            extra.put("messageType", saved.getMessageType());
+            Long recipientId = currentUser.getRole() == Role.CITIZEN
+                    ? (complaint.getAssignedHelper() != null ? complaint.getAssignedHelper().getId() : null)
+                    : (complaint.getUser() != null ? complaint.getUser().getId() : null);
+            redisNotificationPublisher.publishNotification("NEW_CHAT_MESSAGE", complaintId, recipientId, saved.getMessageText(), extra);
+        } catch (Exception e) {
+            log.warn("Failed to publish chat event to redis: {}", e.getMessage());
         }
 
         return saved;
