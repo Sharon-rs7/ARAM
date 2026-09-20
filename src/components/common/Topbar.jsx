@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { 
   Bell, Search, User, LogOut, Shield, ChevronDown, 
   HelpCircle, Settings, CheckCircle2, AlertTriangle, FileText,
-  Sun, Moon
+  Sun, Moon, Menu
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
@@ -43,24 +43,35 @@ const Topbar = ({ onToggleSidebar, role = "citizen" }) => {
     : t("topbar.searchCitizen", "Ask ARAM AI legal questions (e.g., land title, RTI, 498A)...");
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-[#DDE2DF] bg-[#FFFDF8]/95 px-4 backdrop-blur-md sm:px-6">
+    <header className="sticky top-0 z-30 flex h-16 w-full items-center justify-between border-b border-[#DDE2DF] bg-[#FFFDF8]/95 px-3 backdrop-blur-md sm:px-6">
       
-      {/* Search Input */}
-      <div className="flex flex-1 items-center max-w-lg">
-        <form onSubmit={handleSearch} className="relative w-full">
+      {/* Left Area: Mobile Hamburger & Search Input */}
+      <div className="flex flex-1 items-center gap-2 max-w-lg min-w-0">
+        {/* Mobile Hamburger Toggle Button */}
+        <button
+          type="button"
+          onClick={onToggleSidebar}
+          className="p-2 -ml-1 text-[#163D32] hover:bg-[#DCEBDD]/50 active:scale-95 rounded-xl transition cursor-pointer lg:hidden flex items-center justify-center shrink-0 border border-[#E6E1D8]/70 bg-[#F7F1E6]/60 shadow-2xs"
+          aria-label="Open mobile menu"
+          title="Open navigation menu"
+        >
+          <Menu size={20} />
+        </button>
+
+        <form onSubmit={handleSearch} className="relative w-full min-w-0">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#65736D]" size={15} />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={searchPlaceholder}
-            className="w-full h-10 rounded-full border border-[#DDE2DF] bg-white pl-10 pr-4 text-xs font-medium text-[#18332B] placeholder-[#8B9690] focus:border-[#163D32] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#DCEBDD]/50 transition shadow-2xs"
+            className="w-full h-10 rounded-full border border-[#DDE2DF] bg-white pl-9 sm:pl-10 pr-3 sm:pr-4 text-xs font-medium text-[#18332B] placeholder-[#8B9690] focus:border-[#163D32] focus:bg-white focus:outline-none focus:ring-4 focus:ring-[#DCEBDD]/50 transition shadow-2xs"
           />
         </form>
       </div>
 
       {/* Right side controls */}
-      <div className="flex items-center gap-3 ml-4">
+      <div className="flex items-center gap-1.5 sm:gap-3 ml-2 sm:ml-4 shrink-0">
         
         {/* Language selector pill */}
         <div className="flex items-center bg-[#F7F1E6] rounded-full p-1 border border-[#E6E1D8]">

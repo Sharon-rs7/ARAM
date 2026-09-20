@@ -397,6 +397,20 @@ const Chatbot = () => {
     }
 
     // 2. MediaRecorder for server-side AI model audio transcription
+    if (!navigator?.mediaDevices?.getUserMedia) {
+      if (!window.isSecureContext) {
+        toast.error("Microphone requires HTTPS on mobile! Please open the secure HTTPS link.", {
+          duration: 8000
+        });
+        return;
+      }
+      if (!recognitionRef.current) {
+        toast.error("Microphone access is not supported or was blocked on this device.");
+        return;
+      }
+      return;
+    }
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       audioStreamRef.current = stream;

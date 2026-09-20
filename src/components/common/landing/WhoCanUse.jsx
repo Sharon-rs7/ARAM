@@ -10,28 +10,28 @@ const WhoCanUse = () => {
       icon: User,
       title: t("whoCanUse.u1Title", "Citizens"),
       desc: t("whoCanUse.u1Desc", "Explain grievances in your preferred language, understand statutory rights, organize evidence, and track case progress from home."),
-      tag: "Public Access",
+      tag: t("whoCanUse.tagPublic", "Public Access"),
       color: "bg-[#DCEBDD] text-[#163D32]"
     },
     {
       icon: Users,
       title: t("whoCanUse.u2Title", "Legal Guides & Volunteers"),
       desc: t("whoCanUse.u2Desc", "Authorized paralegals and legal volunteers who review AI triage, assist citizens with petition drafting, and provide field guidance."),
-      tag: "Case Assistance",
+      tag: t("whoCanUse.tagAssistance", "Case Assistance"),
       color: "bg-[#F6D8C8] text-[#8C3B1E]"
     },
     {
       icon: Landmark,
       title: t("whoCanUse.u3Title", "Government Officials"),
       desc: t("whoCanUse.u3Desc", "District department officers and DLSA representatives who receive structured petitions with verified evidence for statutory resolution."),
-      tag: "Authority Triage",
+      tag: t("whoCanUse.tagAuthority", "Authority Triage"),
       color: "bg-[#E8C978]/40 text-[#7A5A0A]"
     },
     {
       icon: ShieldCheck,
       title: t("whoCanUse.u4Title", "Platform Administrators"),
       desc: t("whoCanUse.u4Desc", "Supervisors monitoring district-wide grievance resolution, audit trails, system performance, and legal service quality."),
-      tag: "Governance",
+      tag: t("whoCanUse.tagGovernance", "Governance"),
       color: "bg-[#E7E1F2] text-[#4F3F73]"
     }
   ];
@@ -43,7 +43,7 @@ const WhoCanUse = () => {
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16 space-y-2">
           <span className="text-xs font-black uppercase tracking-widest text-[#1F5948] bg-[#DCEBDD] px-3.5 py-1.5 rounded-full inline-block shadow-2xs">
-            Stakeholder Ecosystem
+            {t("whoCanUse.tag", "Stakeholder Ecosystem")}
           </span>
           <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-[#163D32] tracking-tight">
             {t("whoCanUse.title", "Who Can Use ARAM")}

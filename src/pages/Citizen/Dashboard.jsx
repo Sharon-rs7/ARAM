@@ -4,7 +4,7 @@ import DashboardLayout from "@/components/common/DashboardLayout";
 import { 
   MessageSquare, PlusCircle, Clock, ShieldCheck, 
   Mic, ArrowRight, FileText, CheckCircle2, ChevronRight,
-  HelpCircle, AlertCircle, Sparkles, Building2, User
+  HelpCircle, AlertCircle, Sparkles, Building2, User, Scale
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
@@ -12,6 +12,7 @@ import { complaintService } from "@/services/complaintService";
 import { speechService } from "@/services/speechService";
 import { toast } from "sonner";
 import Button from "@/components/common/Button";
+import Section12EligibilityModal from "@/components/citizen/Section12EligibilityModal";
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -22,6 +23,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
+  const [showSec12Modal, setShowSec12Modal] = useState(false);
 
   useEffect(() => {
     const fetchComplaints = async () => {
@@ -42,6 +44,17 @@ const Dashboard = () => {
     if (isRecording) {
       if (mediaRecorder) mediaRecorder.stop();
       setIsRecording(false);
+      return;
+    }
+
+    if (!navigator?.mediaDevices?.getUserMedia) {
+      if (!window.isSecureContext) {
+        toast.error("Microphone requires HTTPS on mobile! Please use the secure HTTPS link.", {
+          duration: 8000
+        });
+      } else {
+        toast.error("Audio recording is not supported on this browser.");
+      }
       return;
     }
 
@@ -180,6 +193,37 @@ const Dashboard = () => {
           </Link>
         </div>
 
+        {/* Civic Legal Aid Eligibility Strip */}
+        <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-emerald-50 via-[#FAF8F2] to-emerald-50 border border-emerald-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-2xs">
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-[#163D32] text-white flex items-center justify-center shrink-0 shadow-xs">
+              <Scale size={20} className="text-amber-300" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-xs sm:text-sm font-black text-[#163D32]">
+                  {t("civicFeatures.sec12Title", "NALSA Section 12 Legal Aid Eligibility")}
+                </h3>
+                <span className="text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full border border-emerald-200">
+                  Govt. Funded
+                </span>
+              </div>
+              <p className="text-[11px] text-[#65736D] mt-0.5">
+                Check if you qualify for 100% free legal defense counsel & DLSA court advocate.
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setShowSec12Modal(true)}
+            className="self-start sm:self-auto px-4 py-2 rounded-xl bg-[#163D32] hover:bg-[#1F5948] text-white text-xs font-bold transition shadow-xs cursor-pointer flex items-center gap-1.5 shrink-0"
+          >
+            <span>{t("civicFeatures.btnCheckSec12", "Check Free Legal Aid Eligibility")}</span>
+            <ArrowRight size={14} />
+          </button>
+        </div>
+
         {/* Legal Aid Topic Cards */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
@@ -262,6 +306,13 @@ const Dashboard = () => {
             </div>
           )}
         </div>
+
+        {/* Section 12 Free Legal Aid Eligibility Modal */}
+        <Section12EligibilityModal
+          isOpen={showSec12Modal}
+          onClose={() => setShowSec12Modal(false)}
+          district={user?.district || "Salem District"}
+        />
 
       </div>
     </DashboardLayout>

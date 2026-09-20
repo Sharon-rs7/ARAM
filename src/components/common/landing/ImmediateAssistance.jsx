@@ -12,7 +12,7 @@ const ImmediateAssistance = () => {
       title: t("immediateHelp.emergency", "Emergency Services"),
       desc: t("immediateHelp.emergencySub", "Police, Fire & Ambulance (24x7)"),
       icon: ShieldAlert,
-      badge: "National Emergency",
+      badge: t("immediateHelp.badgeEmergency", "National Emergency"),
       badgeColor: "bg-red-100 text-red-800 border-red-200"
     },
     {
@@ -21,7 +21,7 @@ const ImmediateAssistance = () => {
       title: t("immediateHelp.women", "Women Helpline"),
       desc: t("immediateHelp.womenSub", "Safety & Domestic Violence (24x7)"),
       icon: HeartHandshake,
-      badge: "Women Safety",
+      badge: t("immediateHelp.badgeWomen", "Women Safety"),
       badgeColor: "bg-rose-100 text-rose-800 border-rose-200"
     },
     {
@@ -30,7 +30,7 @@ const ImmediateAssistance = () => {
       title: t("immediateHelp.cyber", "Cyber Crime Helpline"),
       desc: t("immediateHelp.cyberSub", "National Financial Fraud Reporting"),
       icon: Shield,
-      badge: "Cyber Fraud",
+      badge: t("immediateHelp.badgeCyber", "Cyber Fraud"),
       badgeColor: "bg-amber-100 text-amber-800 border-amber-200"
     },
     {
@@ -39,7 +39,7 @@ const ImmediateAssistance = () => {
       title: t("immediateHelp.legalAid", "NALSA Legal Aid"),
       desc: t("immediateHelp.legalAidSub", "Free Legal Aid & DLSA Services"),
       icon: PhoneCall,
-      badge: "Free Legal Aid",
+      badge: t("immediateHelp.badgeLegalAid", "Free Legal Aid"),
       badgeColor: "bg-emerald-100 text-emerald-800 border-emerald-200"
     }
   ];
@@ -67,12 +67,13 @@ const ImmediateAssistance = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {helplines.map((item, idx) => {
             const Icon = item.icon;
+            const tapText = t("immediateHelp.tapToCall", "Tap to Call {number}").replace("{number}", item.number);
             return (
               <a
                 key={idx}
                 href={item.tel}
                 className="p-6 sm:p-7 rounded-3xl bg-[#FFFDF8] border border-[#E6E1D8] hover:border-[#163D32]/40 hover:shadow-md transition duration-200 flex flex-col justify-between space-y-4 group cursor-pointer"
-                title={`Call ${item.number}`}
+                title={tapText}
               >
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -100,7 +101,7 @@ const ImmediateAssistance = () => {
 
                 <div className="pt-3 border-t border-[#E6E1D8]/60 text-xs font-bold text-[#1F5948] flex items-center gap-1.5 group-hover:translate-x-0.5 transition">
                   <PhoneCall size={13} />
-                  <span>Tap to Call {item.number}</span>
+                  <span>{tapText}</span>
                 </div>
               </a>
             );

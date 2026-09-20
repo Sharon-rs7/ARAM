@@ -5,9 +5,11 @@ import { toast } from "sonner";
 import { AlertCircle, Lock, Eye, EyeOff, KeyRound, ShieldCheck, ArrowLeft } from "lucide-react";
 import Button from "@/components/common/Button";
 import Input from "@/components/common/Input";
+import { useLanguage } from "@/context/LanguageContext";
 
 const OTPForm = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [searchParams] = useSearchParams();
   const email = searchParams.get("email") || "";
 
@@ -171,7 +173,7 @@ const OTPForm = () => {
             className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#65736D] hover:text-[#163D32] transition cursor-pointer"
           >
             <ArrowLeft size={14} />
-            <span>Cancel</span>
+            <span>{t("auth.google.cancel", "Cancel")}</span>
           </Link>
           <span className="text-[10px] font-bold uppercase tracking-wider text-[#1F5948] bg-[#DCEBDD] px-2.5 py-0.5 rounded-full">
             Step 2 of 2
@@ -182,8 +184,8 @@ const OTPForm = () => {
           <div className="w-10 h-10 rounded-xl bg-[#DCEBDD] text-[#163D32] flex items-center justify-center mb-3">
             <ShieldCheck size={20} />
           </div>
-          <h2 className="text-2xl font-extrabold text-[#18332B] tracking-tight">Create New Password</h2>
-          <p className="text-xs text-[#65736D] mt-1">Set a secure password for your account.</p>
+          <h2 className="text-2xl font-extrabold text-[#18332B] tracking-tight">{t("auth.forgotPassword.title", "Create New Password")}</h2>
+          <p className="text-xs text-[#65736D] mt-1">{t("auth.forgotPassword.subtitle", "Set a secure password for your account.")}</p>
         </div>
 
         {error && (
@@ -196,7 +198,7 @@ const OTPForm = () => {
         <form onSubmit={handleResetPassword} className="space-y-4">
           <div className="space-y-1">
             <Input
-              label="New Password"
+              label={t("auth.register.password", "New Password")}
               id="newPassword"
               type={showPassword ? "text" : "password"}
               placeholder="••••••••••••"
@@ -219,7 +221,7 @@ const OTPForm = () => {
           </div>
 
           <Input
-            label="Confirm New Password"
+            label={t("auth.register.confirmPassword", "Confirm New Password")}
             id="confirmPassword"
             type={showConfirm ? "text" : "password"}
             placeholder="••••••••••••"
@@ -235,7 +237,7 @@ const OTPForm = () => {
             loading={loading}
             className="w-full mt-2"
           >
-            Save New Password & Sign In
+            {t("auth.login.signInBtn", "Save New Password & Sign In")}
           </Button>
         </form>
       </div>
@@ -250,7 +252,7 @@ const OTPForm = () => {
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#65736D] hover:text-[#163D32] transition cursor-pointer"
         >
           <ArrowLeft size={14} />
-          <span>Change Account</span>
+          <span>{t("auth.forgotPassword.backSignIn", "Change Account")}</span>
         </Link>
         <span className="text-[10px] font-bold uppercase tracking-wider text-[#1F5948] bg-[#DCEBDD] px-2.5 py-0.5 rounded-full">
           Step 1 of 2
@@ -261,9 +263,9 @@ const OTPForm = () => {
         <div className="w-10 h-10 rounded-xl bg-[#DCEBDD] text-[#163D32] flex items-center justify-center mb-3">
           <KeyRound size={20} />
         </div>
-        <h2 className="text-2xl font-extrabold text-[#18332B] tracking-tight">Enter Verification OTP</h2>
+        <h2 className="text-2xl font-extrabold text-[#18332B] tracking-tight">{t("auth.otp.title", "Enter Verification OTP")}</h2>
         <p className="text-xs text-[#65736D] mt-1">
-          Enter the 6-digit OTP code sent for <strong className="text-[#18332B]">{email || "your account"}</strong>.
+          {t("auth.otp.subtitle", "Enter the 6-digit OTP code sent for your account.")}
         </p>
       </div>
 
@@ -279,7 +281,7 @@ const OTPForm = () => {
                     to={`/register?email=${encodeURIComponent(email)}`}
                     className="inline-flex items-center gap-1 font-bold text-emerald-800 hover:underline"
                   >
-                    Create a new account now →
+                    {t("auth.forgotPassword.createNewAccount", "Create a new account now →")}
                   </Link>
                 </div>
               )}
@@ -309,20 +311,20 @@ const OTPForm = () => {
           loading={loading}
           className="w-full mt-2"
         >
-          Verify OTP Code
+          {t("auth.otp.verifyBtn", "Verify OTP Code")}
         </Button>
 
         <div className="flex items-center justify-between text-xs text-[#65736D] pt-2">
-          <span>Didn't receive code?</span>
+          <span>{t("auth.otp.resend", "Didn't receive code?")}</span>
           {resendDisabled ? (
-            <span className="text-[#8B9690] font-semibold">Resend in {timer}s</span>
+            <span className="text-[#8B9690] font-semibold">{t("auth.otp.resendIn", `Resend in ${timer}s`).replace("{seconds}", timer)}</span>
           ) : (
             <button
               type="button"
               onClick={handleResend}
               className="font-bold text-[#163D32] hover:underline cursor-pointer"
             >
-              Resend OTP
+              {t("auth.otp.resendBtn", "Resend OTP")}
             </button>
           )}
         </div>

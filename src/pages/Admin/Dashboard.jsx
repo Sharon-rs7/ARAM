@@ -62,7 +62,7 @@ const Dashboard = () => {
 
         // Format first 3 complaints for Review Queue
         const formatted = pending.slice(0, 3).map(c => ({
-          id: `ARAM-00${c.id}`,
+          id: c.complaintCustomId || `ARAM-00${c.id}`,
           rawId: c.id,
           title: c.title,
           category: c.categoryLabel || c.category || "General Dispute",
@@ -72,6 +72,24 @@ const Dashboard = () => {
         }));
         
         setReviewQueue(formatted);
+
+        // Derive real active issues requiring attention
+        const criticalOrUnassigned = filteredList.filter(c => 
+          c.priority === "CRITICAL" || c.priority === "HIGH" || (!c.assignedHelperId && (c.status === "UNDER_REVIEW" || c.status === "PENDING"))
+        ).slice(0, 4);
+
+        const realIssues = criticalOrUnassigned.map(c => ({
+          id: c.complaintCustomId || `ARAM-00${c.id}`,
+          rawId: c.id,
+          message: c.priority === "CRITICAL"
+            ? "Critical priority legal escalation"
+            : !c.assignedHelperId
+            ? "Awaiting designated legal guide assignment"
+            : "High priority case in ongoing review",
+          status: c.priority === "CRITICAL" ? "escalated" : "delayed"
+        }));
+
+        setActiveIssues(realIssues);
       } catch (err) {
         console.error("Failed to load admin stats:", err);
         toast.error("Error loading regional dashboard.");
@@ -105,9 +123,9 @@ const Dashboard = () => {
       <div className="max-w-4xl mx-auto space-y-8 pb-12">
         
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
               Welcome back, {user?.name || "Admin"}
             </h1>
             <p className="text-xs text-slate-500 font-semibold mt-1 flex items-center gap-1">
@@ -116,52 +134,60 @@ const Dashboard = () => {
             </p>
           </div>
           
-          <div className="flex items-center gap-3">
-            <button className="p-2.5 rounded-full border border-slate-200/50 hover:bg-slate-100 transition text-slate-650 cursor-pointer">
-              <Bell size={18} />
+          <div className="flex items-center gap-2 self-start sm:self-auto">
+            <button 
+              onClick={() => navigate("/admin/complaints")}
+              className="px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition shadow-2xs flex items-center gap-1.5 cursor-pointer"
+            >
+              <FileText size={14} />
+              <span>Complaints</span>
             </button>
-            <button className="p-2.5 rounded-full border border-slate-200/50 hover:bg-slate-100 transition text-slate-650 cursor-pointer">
-              <User size={18} />
+            <button 
+              onClick={() => navigate("/admin/profile")}
+              className="p-2 rounded-xl border border-slate-200 hover:bg-slate-100 transition text-slate-650 cursor-pointer"
+              title="Admin Profile"
+            >
+              <User size={16} />
             </button>
           </div>
         </div>
 
         {/* Region Indicator Card */}
         {adminDistrict !== "GLOBAL" && (
-          <div className="p-4 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-between">
+          <div className="p-3.5 sm:p-4 rounded-2xl bg-indigo-50 border border-indigo-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <MapPin className="text-indigo-700" size={18} />
-              <span className="text-xs font-bold text-indigo-900"> Chennai Admin Control Active: Grid & queue filtered to {adminDistrict} district.</span>
+              <MapPin className="text-indigo-700 shrink-0" size={16} />
+              <span className="text-xs font-bold text-indigo-900"> Active Control Scope: Filtered to {adminDistrict} district.</span>
             </div>
-            <span className="text-[10px] font-extrabold uppercase bg-indigo-200 text-indigo-700 px-2 py-0.5 rounded">Regional Scope</span>
+            <span className="text-[10px] font-extrabold uppercase bg-indigo-200 text-indigo-700 px-2 py-0.5 rounded self-start sm:self-auto">Regional Scope</span>
           </div>
         )}
 
         {/* 3 Stats Cards row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <div className="glass-panel p-6 border-l-4 border-amber-500">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="glass-panel p-4 sm:p-6 border-l-4 border-amber-500">
             <span className="text-[10px] font-extrabold text-slate-450 uppercase tracking-widest block">
               Awaiting Review ({adminDistrict})
             </span>
-            <span className="text-3xl font-black text-slate-900 mt-2 block tracking-tight">
+            <span className="text-2xl sm:text-3xl font-black text-slate-900 mt-1.5 block tracking-tight">
               {stats.awaitingReview}
             </span>
           </div>
 
-          <div className="glass-panel p-6 border-l-4 border-red-500">
+          <div className="glass-panel p-4 sm:p-6 border-l-4 border-red-500">
             <span className="text-[10px] font-extrabold text-slate-450 uppercase tracking-widest block">
               High Priority ({adminDistrict})
             </span>
-            <span className="text-3xl font-black text-slate-900 mt-2 block tracking-tight">
+            <span className="text-2xl sm:text-3xl font-black text-slate-900 mt-1.5 block tracking-tight">
               {stats.highPriority}
             </span>
           </div>
 
-          <div className="glass-panel p-6 border-l-4 border-indigo-500">
+          <div className="glass-panel p-4 sm:p-6 border-l-4 border-indigo-500">
             <span className="text-[10px] font-extrabold text-slate-450 uppercase tracking-widest block">
               Need Guide ({adminDistrict})
             </span>
-            <span className="text-3xl font-black text-slate-900 mt-2 block tracking-tight">
+            <span className="text-2xl sm:text-3xl font-black text-slate-900 mt-1.5 block tracking-tight">
               {stats.needGuide}
             </span>
           </div>
@@ -287,32 +313,48 @@ const Dashboard = () => {
         </div>
 
         {/* Section 2: Active Cases Requiring Attention */}
-        <div className="glass-panel p-6 space-y-4">
-          <h3 className="text-sm font-bold text-slate-450 uppercase tracking-widest">
-            Active Cases Requiring Attention
-          </h3>
+        <div className="glass-panel p-5 sm:p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs sm:text-sm font-bold text-slate-450 uppercase tracking-widest">
+              Active Cases Requiring Attention ({activeIssues.length})
+            </h3>
+            <button
+              onClick={() => navigate("/admin/complaints")}
+              className="text-xs font-bold text-indigo-650 hover:underline cursor-pointer"
+            >
+              View All Cases →
+            </button>
+          </div>
 
-          <div className="space-y-3">
-            {activeIssues.map((issue) => (
-              <div
-                key={issue.id}
-                className="flex justify-between items-center p-4 rounded-xl border border-slate-100 bg-slate-50/50"
-              >
-                <div className="flex items-center gap-3">
-                  <ShieldAlert size={16} className={issue.status === "escalated" ? "text-red-500" : "text-amber-500"} />
-                  <span className="text-xs font-bold text-slate-700">
-                    {issue.id} <span className="font-medium text-slate-500">— {issue.message}</span>
-                  </span>
-                </div>
-
-                <button
-                  onClick={() => navigate(`/admin/complaints`)}
-                  className="text-[10px] font-bold text-indigo-650 hover:underline cursor-pointer"
-                >
-                  Manage
-                </button>
+          <div className="space-y-2.5">
+            {activeIssues.length === 0 ? (
+              <div className="p-4 rounded-xl border border-emerald-100 bg-emerald-50/40 text-xs font-semibold text-emerald-800 text-center">
+                All active cases in {adminDistrict} are currently proceeding within normal SLA guidelines.
               </div>
-            ))}
+            ) : (
+              activeIssues.map((issue) => (
+                <div
+                  key={issue.id}
+                  className="flex items-center justify-between p-3.5 sm:p-4 rounded-xl border border-slate-100 bg-slate-50/70 hover:bg-slate-50 transition gap-3"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <ShieldAlert size={16} className={issue.status === "escalated" ? "text-red-500 shrink-0" : "text-amber-500 shrink-0"} />
+                    <div className="text-xs font-bold text-slate-700 truncate min-w-0">
+                      <span className="font-mono">{issue.id}</span>
+                      <span className="font-medium text-slate-500 hidden sm:inline"> — {issue.message}</span>
+                      <span className="block text-[10px] text-slate-500 font-normal sm:hidden">{issue.message}</span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => navigate(`/admin/complaints?search=${encodeURIComponent(issue.id)}`)}
+                    className="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-lg text-[10px] font-bold shrink-0 transition cursor-pointer"
+                  >
+                    Manage
+                  </button>
+                </div>
+              ))
+            )}
           </div>
         </div>
 

@@ -1,27 +1,30 @@
 import React, { useState, useEffect } from "react";
 import Logo from "@/components/common/Logo";
 import { Shield, Sparkles, Scale, Languages, CheckCircle2, FileCheck2, ArrowRight } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 const AuthBanner = () => {
+  const { t } = useLanguage();
+
   const slides = [
     {
-      badge: "Grounded AI Triage",
-      title: "Grounded Legal Guidance for Every Citizen",
-      desc: "Instant statutory triage powered by certified Indian legal knowledge, penal codes, and acts in Tamil, Tanglish, Hindi, and English.",
+      badge: t("auth.banner.slide1Badge", "Grounded AI Triage"),
+      title: t("auth.banner.slide1Title", "Grounded Legal Guidance for Every Citizen"),
+      desc: t("auth.banner.slide1Desc", "Instant statutory triage powered by certified Indian legal knowledge, penal codes, and acts in Tamil, Tanglish, Hindi, and English."),
       icon: Scale,
       color: "from-emerald-500/20 to-teal-500/10"
     },
     {
-      badge: "Institutional Security",
-      title: "Encrypted & Direct Authority Grievance Filing",
-      desc: "Connect seamlessly with local taluk offices, District Legal Services Authorities (DLSA), and verified advocates.",
+      badge: t("auth.banner.slide2Badge", "Institutional Security"),
+      title: t("auth.banner.slide2Title", "Encrypted & Direct Authority Grievance Filing"),
+      desc: t("auth.banner.slide2Desc", "Connect seamlessly with local taluk offices, District Legal Services Authorities (DLSA), and verified advocates."),
       icon: Shield,
       color: "from-teal-500/20 to-emerald-500/10"
     },
     {
-      badge: "Multilingual Engine",
-      title: "Voice-First Multilingual Accessibility",
-      desc: "Speak your grievance naturally in your native language with voice-first assistance in Tamil, Hindi, and English.",
+      badge: t("auth.banner.slide3Badge", "Multilingual Engine"),
+      title: t("auth.banner.slide3Title", "Voice-First Multilingual Accessibility"),
+      desc: t("auth.banner.slide3Desc", "Speak your grievance naturally in your native language with voice-first assistance in Tamil, Hindi, and English."),
       icon: Languages,
       color: "from-amber-500/20 to-emerald-500/10"
     }
@@ -40,9 +43,9 @@ const AuthBanner = () => {
   const Icon = active.icon;
 
   const trustPoints = [
-    "Zero Hallucination Grounded Legal Corpus",
-    "Verified DLSA & Taluk Escalation",
-    "Confidential 256-bit Encrypted Triage"
+    t("auth.banner.trust1", "Zero Hallucination Grounded Legal Corpus"),
+    t("auth.banner.trust2", "Verified DLSA & Taluk Escalation"),
+    t("auth.banner.trust3", "Confidential 256-bit Encrypted Triage")
   ];
 
   return (
@@ -67,11 +70,11 @@ const AuthBanner = () => {
           <Logo size="lg" light={true} />
           <div className="hidden xl:inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-[11px] font-semibold text-[#DCEBDD]">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-            Govt. of Tamil Nadu & Civic Aid
+            {t("auth.banner.govtTag", "Govt. of Tamil Nadu & Civic Aid")}
           </div>
         </div>
         <p className="mt-2 text-xs font-medium text-[#DCEBDD]/80 tracking-wide max-w-sm">
-          Accessible Rights & Assistance Management System • AI Legal Copilot
+          {t("auth.banner.copilotDesc", "Accessible Rights & Assistance Management System • AI Legal Copilot")}
         </p>
       </div>
 
@@ -115,7 +118,7 @@ const AuthBanner = () => {
               />
             ))}
             <span className="ml-auto text-[11px] font-semibold text-[#DCEBDD]/70">
-              {currentSlide + 1} of {slides.length}
+              {currentSlide + 1} {t("auth.banner.of", "of")} {slides.length}
             </span>
           </div>
         </div>
@@ -133,10 +136,10 @@ const AuthBanner = () => {
 
       {/* Bottom Footer Details */}
       <div className="relative z-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-[#DCEBDD]/70 font-medium">
-        <span>Official Support: <strong className="text-white">ouraramsupport@gmail.com</strong></span>
+        <span>{t("auth.banner.officialSupport", "Official Support:")} <strong className="text-white">ouraramsupport@gmail.com</strong></span>
         <div className="flex items-center gap-2">
           <FileCheck2 size={13} className="text-emerald-400" />
-          <span>Compliant with Indian IT Act & DPDP 2023</span>
+          <span>{t("auth.banner.compliance", "Compliant with Indian IT Act & DPDP 2023")}</span>
         </div>
       </div>
     </div>

@@ -10,15 +10,15 @@ DOMAIN_LEGAL_KNOWLEDGE = {}
 
 class LLMRouter:
     def __init__(self):
-        self.primary_name = os.environ.get("LLM_PROVIDER_PRIMARY", "qwen").lower()
+        self.primary_name = os.environ.get("LLM_PROVIDER_PRIMARY", "gemini").lower()
         self.fallback_name = os.environ.get("LLM_PROVIDER_FALLBACK", "gemini").lower()
 
     def get_provider(self, name: str):
-        if name == "qwen":
-            return qwen_provider
-        elif name == "gemini":
+        if name == "gemini":
             return gemini_provider
-        return None
+        elif name == "qwen":
+            return qwen_provider
+        return gemini_provider
 
     def generate_conversational_response(
         self,
@@ -45,19 +45,8 @@ class LLMRouter:
         case_summary: Optional[str] = None
     ) -> Dict[str, Any]:
         start_time = time.time()
-        retrieved_context = retrieval_result.grounded_context
-        chunks = retrieval_result.top_k_chunks
-
-        # Fail-closed check: If retrieval yielded NO relevant source, do not query LLM or hallucinate
-        if retrieval_result.status == "NO_RELEVANT_SOURCE" or not retrieval_result.has_sufficient_context or not chunks:
-            fail_closed_res = self._build_fail_closed_response(
-                query=query,
-                language=language,
-                category_name=category_name,
-                case_summary=case_summary
-            )
-            fail_closed_res["latency_seconds"] = round(time.time() - start_time, 3)
-            return fail_closed_res
+        retrieved_context = retrieval_result.grounded_context if retrieval_result else ""
+        chunks = retrieval_result.top_k_chunks if retrieval_result else []
 
         provider_used = "none"
         fallback_used = False

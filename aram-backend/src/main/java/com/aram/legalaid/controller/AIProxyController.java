@@ -70,8 +70,8 @@ public class AIProxyController {
     @PostMapping("/documents/verify")
     public ResponseEntity<AiDocumentVerifyResponse> verifyDocument(
             @RequestParam("file") MultipartFile file,
-            @RequestParam("expectedDocumentType") String expectedType,
-            @RequestParam("complaintCategory") String category
+            @RequestParam(value = "expectedDocumentType", required = false, defaultValue = "SUPPORTING_DOC") String expectedType,
+            @RequestParam(value = "complaintCategory", required = false, defaultValue = "GENERAL") String category
     ) {
         String orig = file.getOriginalFilename();
         UploadCategory cat = UploadCategory.DOCUMENT;

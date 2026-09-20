@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Logo from "@/components/common/Logo";
 import { 
@@ -13,6 +13,7 @@ const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [langMenuOpen, setLangMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const langMenuRef = useRef(null);
   const location = useLocation();
   const { user } = useAuth();
   const { resolvedTheme, setMode } = useTheme();
@@ -25,6 +26,24 @@ const Navbar = () => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  // Close menus on outside click or route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setLangMenuOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (langMenuRef.current && !langMenuRef.current.contains(e.target)) {
+        setLangMenuOpen(false);
+      }
+    };
+    if (langMenuOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [langMenuOpen]);
 
   const navLinks = [
     { name: t("nav.home", "Home"), href: "/" },
@@ -80,7 +99,7 @@ const Navbar = () => {
               className="px-4 py-2 rounded-full bg-[#12805A] hover:bg-[#0D6245] text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition hover:shadow-md cursor-pointer"
             >
               <Sparkles size={14} className="text-[#A3E5C9]" />
-              <span>Ask ARAM AI</span>
+              <span>{t("nav.askAi", "Ask ARAM AI")}</span>
             </Link>
 
             {/* Search Button */}
@@ -94,7 +113,7 @@ const Navbar = () => {
             </Link>
 
             {/* Language dropdown */}
-            <div className="relative">
+            <div className="relative" ref={langMenuRef}>
               <button
                 type="button"
                 onClick={() => setLangMenuOpen(!langMenuOpen)}
@@ -263,7 +282,7 @@ const Navbar = () => {
               className="w-full text-center text-xs py-3 min-h-[44px] rounded-full bg-[#12805A] hover:bg-[#0D6245] text-white font-bold flex items-center justify-center gap-2 shadow-sm transition"
             >
               <Sparkles size={15} className="text-[#A3E5C9]" />
-              <span>Ask ARAM AI</span>
+              <span>{t("nav.askAi", "Ask ARAM AI")}</span>
             </Link>
 
             {/* User Sign In / Dashboard CTA */}

@@ -73,6 +73,16 @@ const VoiceRecorder = ({ onTranscriptReady, currentLanguage = "en-IN" }) => {
   };
 
   const startMediaRecorder = async () => {
+    if (!navigator?.mediaDevices?.getUserMedia) {
+      if (!window.isSecureContext) {
+        toast.error("Microphone requires HTTPS on mobile! Please use the secure HTTPS link.", {
+          duration: 8000
+        });
+      } else {
+        toast.error("Audio recording is not supported on this device.");
+      }
+      return;
+    }
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       const mediaRecorder = new MediaRecorder(stream);

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { userService } from "@/services/userService";
+import { adminService } from "@/services/adminService";
 import { toast } from "sonner";
 
 const Profile = () => {
@@ -25,6 +26,12 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [avatarPreview, setAvatarPreview] = useState("");
+  const [adminStats, setAdminStats] = useState({
+    totalComplaints: 0,
+    resolvedComplaints: 0,
+    totalUsers: 0,
+    totalVolunteers: 0
+  });
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -55,7 +62,25 @@ const Profile = () => {
         }
       }
     };
+
+    const fetchStats = async () => {
+      try {
+        const d = await adminService.getDashboard();
+        if (d) {
+          setAdminStats({
+            totalComplaints: d.totalComplaints || 0,
+            resolvedComplaints: d.resolvedComplaints || 0,
+            totalUsers: d.totalUsers || 0,
+            totalVolunteers: d.totalVolunteers || 0
+          });
+        }
+      } catch (err) {
+        console.warn("Could not load dynamic admin stats:", err);
+      }
+    };
+
     fetchProfile();
+    fetchStats();
   }, [authUser]);
 
   const handleAvatarChange = async (e) => {
@@ -346,20 +371,24 @@ const Profile = () => {
 
           {/* System Info */}
           <div className="space-y-6">
-            <div className="rounded-3xl bg-white p-8 shadow-sm">
-              <h2 className="mb-6 text-2xl font-bold text-slate-900">Administrator Statistics</h2>
+            <div className="rounded-3xl bg-white p-6 sm:p-8 shadow-sm">
+              <h2 className="mb-6 text-xl sm:text-2xl font-bold text-slate-900">Administrator Statistics</h2>
               <div className="space-y-4">
                 <div className="flex items-center justify-between rounded-2xl bg-slate-50 p-4 border border-slate-100">
-                  <span className="text-slate-600 font-medium">Total Complaints Managed</span>
-                  <span className="text-2xl font-bold text-blue-600">1,286</span>
+                  <span className="text-slate-600 font-medium text-xs sm:text-sm">Total Complaints Managed</span>
+                  <span className="text-xl sm:text-2xl font-bold text-blue-600">{adminStats.totalComplaints.toLocaleString()}</span>
                 </div>
                 <div className="flex items-center justify-between rounded-2xl bg-slate-50 p-4 border border-slate-100">
-                  <span className="text-slate-600 font-medium">Registered Public Users</span>
-                  <span className="text-2xl font-bold text-green-600">2,356</span>
+                  <span className="text-slate-600 font-medium text-xs sm:text-sm">Resolved Grievances</span>
+                  <span className="text-xl sm:text-2xl font-bold text-emerald-600">{adminStats.resolvedComplaints.toLocaleString()}</span>
                 </div>
                 <div className="flex items-center justify-between rounded-2xl bg-slate-50 p-4 border border-slate-100">
-                  <span className="text-slate-600 font-medium">Active Legal Guides</span>
-                  <span className="text-2xl font-bold text-orange-600">128</span>
+                  <span className="text-slate-600 font-medium text-xs sm:text-sm">Registered Public Users</span>
+                  <span className="text-xl sm:text-2xl font-bold text-green-600">{adminStats.totalUsers.toLocaleString()}</span>
+                </div>
+                <div className="flex items-center justify-between rounded-2xl bg-slate-50 p-4 border border-slate-100">
+                  <span className="text-slate-600 font-medium text-xs sm:text-sm">Active Legal Guides</span>
+                  <span className="text-xl sm:text-2xl font-bold text-orange-600">{adminStats.totalVolunteers.toLocaleString()}</span>
                 </div>
               </div>
             </div>

@@ -13,15 +13,59 @@ def check_image_quality(file_path: str) -> dict:
         }
 
     file_size_kb = os.path.getsize(file_path) / 1024.0
-    if file_size_kb > 10240.0:  # 10MB
+    if file_size_kb > 25600.0:  # 25MB limit
         return {
             "isValid": False,
             "status": "REUPLOAD_REQUIRED",
-            "message": "File size exceeds 10MB limit.",
+            "message": "File size exceeds 25MB limit.",
             "blurScore": 0.0,
             "brightness": 0.0,
             "contrast": 0.0
         }
+
+    # Handle PDF documents
+    is_pdf = file_path.lower().endswith(".pdf")
+    if not is_pdf:
+        try:
+            with open(file_path, "rb") as f:
+                header = f.read(5)
+                if header.startswith(b"%PDF"):
+                    is_pdf = True
+        except Exception:
+            pass
+
+    if is_pdf:
+        try:
+            from pypdf import PdfReader
+            reader = PdfReader(file_path)
+            num_pages = len(reader.pages)
+            if num_pages == 0:
+                return {
+                    "isValid": False,
+                    "status": "REUPLOAD_REQUIRED",
+                    "message": "PDF document contains no readable pages.",
+                    "blurScore": 0.0,
+                    "brightness": 0.0,
+                    "contrast": 0.0
+                }
+            return {
+                "isValid": True,
+                "status": "UPLOADED",
+                "message": f"PDF document with {num_pages} page(s) is valid.",
+                "blurScore": 100.0,
+                "brightness": 128.0,
+                "contrast": 60.0
+            }
+        except Exception as pdf_err:
+            print(f"PDF check error: {pdf_err}")
+            return {
+                "isValid": False,
+                "status": "REUPLOAD_REQUIRED",
+                "message": "Corrupted or password-protected PDF document.",
+                "blurScore": 0.0,
+                "brightness": 0.0,
+                "contrast": 0.0
+            }
 
     try:
         with Image.open(file_path) as img:

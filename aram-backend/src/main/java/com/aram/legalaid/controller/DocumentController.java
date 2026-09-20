@@ -34,8 +34,8 @@ public class DocumentController {
     @PostMapping(value = "/api/documents/verify-ai", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<AiDocumentVerifyResponse> verifyAi(
             @RequestParam("file") MultipartFile file,
-            @RequestParam("expectedDocumentType") String expectedType,
-            @RequestParam("complaintCategory") String category
+            @RequestParam(value = "expectedDocumentType", required = false, defaultValue = "SUPPORTING_DOC") String expectedType,
+            @RequestParam(value = "complaintCategory", required = false, defaultValue = "GENERAL") String category
     ) {
         String orig = file.getOriginalFilename();
         UploadCategory cat = UploadCategory.DOCUMENT;
@@ -121,7 +121,7 @@ public class DocumentController {
         return ResponseEntity.ok(documentService.byComplaint(complaintId));
     }
 
-    @GetMapping("/api/admin/documents/{documentId}/verification")
+    @GetMapping({"/api/admin/documents/{documentId}/verification", "/api/documents/{documentId}/verification", "/api/citizen/documents/{documentId}/verification"})
     public ResponseEntity<DocumentVerificationResult> adminGetVerification(@PathVariable Long documentId) {
         return ResponseEntity.ok(documentService.getVerificationResult(documentId));
     }

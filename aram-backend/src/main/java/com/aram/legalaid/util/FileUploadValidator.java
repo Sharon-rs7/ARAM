@@ -64,17 +64,21 @@ public class FileUploadValidator {
             }
         }
 
-        // Count extensions to prevent double extensions (e.g. file.png.jsp)
-        int dotCount = 0;
-        for (int i = 0; i < cleanName.length(); i++) {
-            if (cleanName.charAt(i) == '.') dotCount++;
-        }
-        if (dotCount > 1) {
-            throw new BadRequestException("Double file extensions are not allowed.");
+        // Check to prevent real double extensions (e.g. file.png.pdf or file.php.jpg)
+        int lastDot = cleanName.lastIndexOf(".");
+        if (lastDot != -1) {
+            String prefix = cleanName.substring(0, lastDot);
+            int prevDot = prefix.lastIndexOf(".");
+            if (prevDot != -1) {
+                String middleExt = prefix.substring(prevDot + 1).trim();
+                Set<String> knownExts = Set.of("png", "jpg", "jpeg", "webp", "pdf", "gif", "bmp", "tiff", "svg", "exe", "jsp", "php", "sh", "bat", "cmd", "html", "js");
+                if (knownExts.contains(middleExt)) {
+                    throw new BadRequestException("Double file extensions are not allowed.");
+                }
+            }
         }
 
         String ext = "";
-        int lastDot = cleanName.lastIndexOf(".");
         if (lastDot != -1) {
             ext = cleanName.substring(lastDot + 1);
         }

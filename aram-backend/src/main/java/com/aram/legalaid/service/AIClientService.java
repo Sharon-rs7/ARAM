@@ -30,8 +30,8 @@ public class AIClientService {
 
     public AIClientService(AIServiceProperties properties, @Lazy UserService userService, @Lazy CitizenChatContextService citizenChatContextService) {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        requestFactory.setConnectTimeout(2000); // 2 seconds connect timeout
-        requestFactory.setReadTimeout(30000);   // 30 seconds read timeout (covers Whisper & heavy OCR models)
+        requestFactory.setConnectTimeout(5000); // 5 seconds connect timeout
+        requestFactory.setReadTimeout(45000);   // 45 seconds read timeout for LLM & heavy models
         this.restTemplate = new RestTemplate(requestFactory);
         this.properties = properties;
         this.userService = userService;
@@ -267,14 +267,15 @@ public class AIClientService {
                 enrichedBody.put("citizenContext", ctx);
             }
             HttpEntity<Map<String, Object>> entity = new HttpEntity<>(enrichedBody, getHeaders());
-            ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
+            ResponseEntity<Map> response = executeWithRetry("askCaseAssistant", () -> restTemplate.postForEntity(url, entity, Map.class));
             return response.getBody() != null ? response.getBody() : Map.of();
         } catch (Exception e) {
             System.err.println("Error calling AI Case Assistant: " + e.getMessage());
             return Map.of(
-                "answer", "Verified statutory information is currently being processed by the Legal Aid triage engine.",
-                "grounded", true,
-                "provider", "system_fallback",
+                "answer", "Our AI legal assistant is temporarily processing. Please try sending your query again in a moment.",
+                "reply", "Our AI legal assistant is temporarily processing. Please try sending your query again in a moment.",
+                "grounded", false,
+                "provider", "error_retry",
                 "citations", List.of()
             );
         }

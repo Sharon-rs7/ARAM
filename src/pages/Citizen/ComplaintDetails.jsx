@@ -30,6 +30,10 @@ import { toast } from "sonner";
 import ReadAloudButton from "@/components/common/voice/ReadAloudButton";
 import CaseChatPanel from "@/components/guide/CaseChatPanel";
 import AuthorityLocationCard from "@/components/citizen/AuthorityLocationCard";
+import PetitionGeneratorModal from "@/components/citizen/PetitionGeneratorModal";
+import Section12EligibilityModal from "@/components/citizen/Section12EligibilityModal";
+import ScheduleAppointmentModal from "@/components/citizen/ScheduleAppointmentModal";
+import CaseSatisfactionRatingCard from "@/components/citizen/CaseSatisfactionRatingCard";
 import { useLanguage } from "@/context/LanguageContext";
 
 const TRANSLATIONS = {
@@ -373,7 +377,7 @@ const GlossaryTip = ({ term }) => (
 const ComplaintDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const { language: activeGlobalLang } = useLanguage();
+  const { language: activeGlobalLang, t: langT } = useLanguage();
   const [complaint, setComplaint] = useState(null);
   const [loading, setLoading] = useState(true);
   const [actionPlan, setActionPlan] = useState(null);
@@ -391,6 +395,22 @@ const ComplaintDetails = () => {
   const [feedbackComment, setFeedbackComment] = useState("");
   const [feedbackHelpful, setFeedbackHelpful] = useState(true);
   const [submittingFlow, setSubmittingFlow] = useState(false);
+
+  // Advanced Civic & Connected Features State
+  const [showPetitionModal, setShowPetitionModal] = useState(false);
+  const [showSec12Modal, setShowSec12Modal] = useState(false);
+  const [showAppointmentModal, setShowAppointmentModal] = useState(false);
+  const [existingFeedback, setExistingFeedback] = useState(null);
+  const [isSec12Eligible, setIsSec12Eligible] = useState(false);
+  const [pdfLoading, setPdfLoading] = useState(false);
+  const [waLoading, setWaLoading] = useState(false);
+
+  const handleOpenAppealFromRating = (stars, commentText) => {
+    setReopenReason(
+      `Appeal against case resolution (Citizen Rating: ${stars}/5 Stars).\nObservations: ${commentText || "Resolution was unsatisfactory and requires District Admin review."}`
+    );
+    setShowReopenModal(true);
+  };
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -434,6 +454,11 @@ const ComplaintDetails = () => {
       try {
         const notesData = await complaintService.getCaseNotes(id);
         setCaseNotes(notesData || []);
+      } catch (e) {}
+
+      try {
+        const fbData = await complaintService.getFeedback(id);
+        setExistingFeedback(fbData);
       } catch (e) {}
 
       setLoading(false);
@@ -578,7 +603,11 @@ const ComplaintDetails = () => {
     : activeCode.includes("hindi") || activeCode.startsWith("hi")
     ? "hi-IN"
     : "en-IN";
-  const t = TRANSLATIONS[normalizedLang] || TRANSLATIONS["en-IN"];
+  const dict = TRANSLATIONS[normalizedLang] || TRANSLATIONS["en-IN"];
+  const t = Object.assign(
+    (key, fallback) => (typeof langT === "function" ? langT(key, fallback) : fallback),
+    dict
+  );
 
   const categoryRaw = complaint.categoryLabel || complaint.category || "GENERAL_LEGAL_AID";
   const category = getLocalizedCategory(categoryRaw, normalizedLang);
@@ -665,9 +694,6 @@ const ComplaintDetails = () => {
         return sla.low;
     }
   };
-
-  const [pdfLoading, setPdfLoading] = useState(false);
-  const [waLoading, setWaLoading] = useState(false);
 
   const handleDownloadStatusPdf = async () => {
     if (!complaint?.id) return;
@@ -935,6 +961,38 @@ const ComplaintDetails = () => {
           <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
+              onClick={() => setShowPetitionModal(true)}
+              className="flex items-center gap-1.5 text-xs font-bold text-amber-950 transition bg-amber-100 hover:bg-amber-200 px-3.5 py-2.5 rounded-xl border border-amber-300/80 cursor-pointer shadow-2xs"
+              title="Generate printable legal representation draft"
+            >
+              <FileText size={14} className="text-amber-800" />
+              <span>{t("civicFeatures.btnGeneratePetition", "Formal Petition Draft")}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowSec12Modal(true)}
+              className="flex items-center gap-1.5 text-xs font-bold text-emerald-950 transition bg-emerald-100 hover:bg-emerald-200 px-3.5 py-2.5 rounded-xl border border-emerald-300/80 cursor-pointer shadow-2xs"
+              title="Check NALSA Section 12 free legal aid eligibility"
+            >
+              <Scale size={14} className="text-emerald-800" />
+              <span>{isSec12Eligible ? "Sec. 12 Certified ✓" : t("civicFeatures.btnCheckSec12", "Free Legal Aid (Sec. 12)")}</span>
+            </button>
+
+            {complaint.assignedHelperId && (
+              <button
+                type="button"
+                onClick={() => setShowAppointmentModal(true)}
+                className="flex items-center gap-1.5 text-xs font-bold text-[#163D32] transition bg-[#DCEBDD] hover:bg-[#cbe2cd] px-3.5 py-2.5 rounded-xl border border-[#163D32]/30 cursor-pointer shadow-2xs"
+                title="Schedule a consultation call with assigned Legal Guide"
+              >
+                <PhoneCall size={14} className="text-[#163D32]" />
+                <span>{t("civicFeatures.btnRequestCall", "Request Guidance Call")}</span>
+              </button>
+            )}
+
+            <button
+              type="button"
               onClick={handleDownloadStatusPdf}
               disabled={pdfLoading}
               className="flex items-center gap-1.5 text-xs font-bold text-white transition bg-[#0D3B2E] hover:bg-[#165340] px-3.5 py-2.5 rounded-xl border border-[#0D3B2E] cursor-pointer shadow-sm disabled:opacity-50"
@@ -951,15 +1009,30 @@ const ComplaintDetails = () => {
               <MessageCircle size={14} className="text-[#25D366]" />
               <span>{waLoading ? "Sending..." : "Send to WhatsApp"}</span>
             </button>
-            <button
-              type="button"
-              onClick={() => window.print()}
-              className="flex items-center gap-1.5 text-xs font-bold text-[#4A5D54] transition bg-white hover:bg-slate-50 px-3 py-2.5 rounded-xl border border-[#DDE2DF] cursor-pointer"
-            >
-              <FileText size={14} /> Print Petition
-            </button>
           </div>
         </div>
+
+        {/* Lok Adalat Pre-Litigation Statutory Pathway Banner */}
+        {isLokAdalatEligible && (
+          <div className="p-4 rounded-2xl bg-indigo-50/80 border border-indigo-200 flex items-start gap-3 text-xs text-indigo-950 shadow-2xs">
+            <div className="w-8 h-8 rounded-xl bg-indigo-700 text-white flex items-center justify-center shrink-0 mt-0.5">
+              <Scale size={16} />
+            </div>
+            <div className="space-y-0.5">
+              <div className="flex items-center gap-2">
+                <span className="font-black text-indigo-950">
+                  {t("civicFeatures.lokAdalatTitle", "Eligible for Lok Adalat Pre-Litigation")}
+                </span>
+                <span className="text-[10px] uppercase font-black bg-indigo-200 text-indigo-800 px-2 py-0.5 rounded-full">
+                  Zero Court Fee
+                </span>
+              </div>
+              <p className="text-indigo-900/90 text-[11px] leading-relaxed">
+                {t("civicFeatures.lokAdalatDesc", "This dispute can be resolved amicably through the National / Taluk Lok Adalat with zero court fees and final decree status under Section 21 of LSA Act 1987.")}
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Visibility Alert if partial/hidden */}
         {visibility !== "VISIBLE" && (
@@ -1406,40 +1479,64 @@ const ComplaintDetails = () => {
           </div>
         )}
 
-        {/* Resolution Summary Card */}
-        {(complaint.resolutionSummary || status === "RESOLVED_BY_GUIDE") && (
-          <div className="rounded-2xl border border-emerald-200 bg-emerald-50/10 p-6 shadow-sm space-y-4 mt-6">
-            <div className="flex items-center gap-2 border-b border-emerald-100 pb-2">
-              <span className="text-lg">✅</span>
-              <h3 className="text-sm font-bold text-slate-800 uppercase tracking-wider">Case Resolution Shared</h3>
-            </div>
-            <div className="space-y-2">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Resolution Summary</span>
-              <p className="text-xs leading-relaxed text-slate-700 bg-white p-4 border border-emerald-100 rounded-xl whitespace-pre-line shadow-sm">
-                {complaint.resolutionSummary || "Legal Guide has confirmed this grievance is successfully resolved."}
-              </p>
-            </div>
-            {status === "RESOLVED_BY_GUIDE" && (
-              <div className="flex gap-3 pt-2">
-                <button
-                  onClick={() => setShowFeedbackModal(true)}
-                  className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold transition shadow cursor-pointer"
-                >
-                  Confirm & Close Case
-                </button>
-                <button
-                  onClick={() => setShowReopenModal(true)}
-                  className="px-4 py-2 border border-red-200 bg-white hover:bg-red-50 text-red-700 rounded-xl text-xs font-semibold transition cursor-pointer"
-                >
-                  Need More Help (Reopen)
-                </button>
+        {/* Official Action Taken Report (ATR) & Resolution Card */}
+        {(complaint.resolutionSummary || ["RESOLVED_BY_GUIDE", "RESOLVED", "CLOSED", "CLOSED_BY_USER"].includes(status)) && (
+          <div className="space-y-6 mt-6">
+            {/* Official ATR Document Container */}
+            <div className="rounded-3xl border-2 border-emerald-600/30 bg-gradient-to-b from-[#FAF8F2] to-white p-6 sm:p-7 shadow-xs space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-[#E6E1D8] pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-2xl bg-[#163D32] text-white flex items-center justify-center shadow-xs">
+                    <ShieldCheck size={22} className="text-amber-300" />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-black uppercase tracking-wider text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-200">
+                      {t("civicFeatures.atrVerified", "Statutory Verification Complete")}
+                    </span>
+                    <h3 className="text-base font-black text-[#163D32] tracking-tight mt-1">
+                      {t("civicFeatures.atrTitle", "Official Action Taken Report (ATR)")}
+                    </h3>
+                  </div>
+                </div>
+
+                <div className="text-left sm:text-right text-xs text-[#65736D] space-y-0.5 font-mono">
+                  <p><strong>ATR Ref:</strong> ATR-{formattedRefId}</p>
+                  <p><strong>Resolution Date:</strong> {new Date(complaint.resolvedAt || complaint.updatedAt || Date.now()).toLocaleDateString("en-IN")}</p>
+                </div>
               </div>
-            )}
-            {status === "CLOSED_BY_USER" && (
-              <span className="inline-block text-[10px] font-extrabold text-emerald-750 bg-emerald-100/60 px-3 py-1 rounded-full uppercase tracking-wider mt-2">
-                Closed by User ✓
-              </span>
-            )}
+
+              <div className="space-y-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-700 block">
+                  Action Taken & Redressal Findings:
+                </span>
+                <div className="text-xs sm:text-sm leading-relaxed text-slate-800 bg-white p-5 border border-[#E6E1D8] rounded-2xl whitespace-pre-line shadow-2xs">
+                  {complaint.resolutionSummary || "The assigned Legal Guide and District Authority have reviewed the statutory documents, conducted initial enquiry, and completed the legal redressal action plan for this grievance."}
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-2 text-xs text-[#65736D]">
+                <div className="flex items-center gap-2">
+                  <Building2 size={14} className="text-[#1F5948]" />
+                  <span>Certified under Tamil Nadu State Legal Services Authority Network</span>
+                </div>
+                {complaint.assignedHelperName && (
+                  <span className="font-bold text-[#163D32]">
+                    Legal Guide: {complaint.assignedHelperName}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Interactive Citizen Satisfaction & Appeal Review Gate */}
+            <CaseSatisfactionRatingCard
+              complaintId={complaint.id}
+              existingFeedback={existingFeedback}
+              onFeedbackSubmitted={(savedFb) => {
+                setExistingFeedback(savedFb);
+                setComplaint((prev) => ({ ...prev, status: "CLOSED_BY_USER" }));
+              }}
+              onOpenAppeal={handleOpenAppealFromRating}
+            />
           </div>
         )}
 
@@ -1665,6 +1762,31 @@ const ComplaintDetails = () => {
             <CaseChatPanel complaintId={complaint.id} userRole="CITIZEN" />
           </div>
         )}
+
+        {/* Ready-to-File Formal Petition Generator Modal */}
+        <PetitionGeneratorModal
+          isOpen={showPetitionModal}
+          onClose={() => setShowPetitionModal(false)}
+          complaint={complaint}
+          user={complaint.user}
+        />
+
+        {/* NALSA Section 12 Free Legal Aid Eligibility Modal */}
+        <Section12EligibilityModal
+          isOpen={showSec12Modal}
+          onClose={() => setShowSec12Modal(false)}
+          district={complaint.district || "Salem District"}
+          onMarkEligible={(eligible) => setIsSec12Eligible(eligible)}
+        />
+
+        {/* Legal Guide Phone Guidance Scheduler Modal */}
+        <ScheduleAppointmentModal
+          isOpen={showAppointmentModal}
+          onClose={() => setShowAppointmentModal(false)}
+          complaintId={complaint.id}
+          guideName={complaint.assignedHelperName}
+          onAppointmentCreated={(newApp) => setAppointments((prev) => [newApp, ...prev])}
+        />
       </div>
     </DashboardLayout>
   );

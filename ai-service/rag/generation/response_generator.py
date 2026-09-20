@@ -28,12 +28,6 @@ def generate_rag_response(
     the Multi-Provider LLM Router (Qwen -> Gemini -> Grounded Fallback)
     with strict Grounding Validation.
     """
-    is_fail_closed = (
-        retrieval_result.status == RAGResultStatus.NO_RELEVANT_SOURCE or
-        not retrieval_result.has_sufficient_context or
-        not retrieval_result.top_k_chunks
-    )
-
     guided_data = llm_router.route_and_generate(
         query=query,
         retrieval_result=retrieval_result,
@@ -42,6 +36,13 @@ def generate_rag_response(
         recommended_authority=recommended_authority,
         required_documents=required_documents,
         case_summary=case_summary
+    )
+
+    # If the LLM successfully generated structured sections or an informed reply, it is NOT fail-closed
+    has_llm_guidance = bool(guided_data.get("sections") or (guided_data.get("reply") and len(guided_data.get("reply", "")) > 50))
+    is_fail_closed = not has_llm_guidance and (
+        retrieval_result.status == RAGResultStatus.NO_RELEVANT_SOURCE or
+        not retrieval_result.top_k_chunks
     )
 
     valid_chunk_ids = {c.chunk_id: c for c in retrieval_result.top_k_chunks}

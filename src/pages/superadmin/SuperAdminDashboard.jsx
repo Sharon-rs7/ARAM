@@ -539,11 +539,11 @@ export default function SuperAdminDashboard() {
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 w-full lg:w-auto shrink-0">
             <button
               onClick={() => loadAllData(true)}
               disabled={refreshing}
-              className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/15 transition flex items-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50"
+              className="w-full sm:w-auto justify-center px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white text-xs font-bold border border-white/15 transition flex items-center gap-2 cursor-pointer active:scale-95 disabled:opacity-50"
             >
               <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
               <span>{refreshing ? "Syncing..." : "Live Refresh"}</span>
@@ -551,7 +551,7 @@ export default function SuperAdminDashboard() {
 
             <button
               onClick={() => setShowCreateAdminModal(true)}
-              className="px-4 py-2.5 rounded-xl bg-[#DCEBDD] hover:bg-emerald-100 text-[#163D32] text-xs font-black transition flex items-center gap-1.5 shadow-sm cursor-pointer active:scale-95"
+              className="w-full sm:w-auto justify-center px-4 py-2.5 rounded-xl bg-[#DCEBDD] hover:bg-emerald-100 text-[#163D32] text-xs font-black transition flex items-center gap-1.5 shadow-sm cursor-pointer active:scale-95"
             >
               <Plus size={15} />
               <span>+ Create District Admin</span>
@@ -559,7 +559,7 @@ export default function SuperAdminDashboard() {
 
             <button
               onClick={() => setShowCreateGuideModal(true)}
-              className="px-4 py-2.5 rounded-xl bg-emerald-800/80 hover:bg-emerald-700 text-white text-xs font-bold border border-emerald-600/50 transition flex items-center gap-1.5 cursor-pointer active:scale-95"
+              className="w-full sm:w-auto justify-center px-4 py-2.5 rounded-xl bg-emerald-800/80 hover:bg-emerald-700 text-white text-xs font-bold border border-emerald-600/50 transition flex items-center gap-1.5 cursor-pointer active:scale-95"
             >
               <UserCheck size={14} />
               <span>+ Onboard Legal Guide</span>
@@ -646,7 +646,7 @@ export default function SuperAdminDashboard() {
           </div>
 
           {/* Quick Module Switcher */}
-          <div className="flex flex-wrap items-center gap-1.5 bg-[#F7F1E6]/70 dark:bg-[#182C26] p-1.5 rounded-xl border border-[#E6E1D8] dark:border-emerald-800/40 text-xs font-bold">
+          <div className="flex items-center gap-1.5 bg-[#F7F1E6]/70 dark:bg-[#182C26] p-1.5 rounded-xl border border-[#E6E1D8] dark:border-emerald-800/40 text-xs font-bold overflow-x-auto no-scrollbar whitespace-nowrap max-w-full">
             {[
               { id: "analytics", label: "Statewide Analytics", icon: Activity },
               { id: "districts", label: "District Portals", icon: MapPin },
@@ -662,7 +662,7 @@ export default function SuperAdminDashboard() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold transition cursor-pointer ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-extrabold shrink-0 transition cursor-pointer ${
                     isActive
                       ? "bg-[#163D32] text-white shadow-xs"
                       : "text-[#65736D] dark:text-emerald-200/70 hover:text-[#18332B] dark:hover:text-white hover:bg-white/60 dark:hover:bg-emerald-900/40"

@@ -24,7 +24,7 @@ class CaseAssistantRequest(BaseModel):
     query: Optional[str] = None
     caseTitle: Optional[str] = None
     caseDescription: Optional[str] = None
-    userRole: Optional[str] = "GUIDE"
+    userRole: Optional[str] = "CITIZEN"
     language: Optional[str] = "en"
     district: Optional[str] = "Coimbatore"
     caseSummary: Optional[str] = None
@@ -42,14 +42,19 @@ def case_assistant_endpoint(
     x_user_district: Optional[str] = Header(None, alias="X-User-District")
 ):
     try:
-        user_role = x_user_role or request.userRole or "GUIDE"
+        user_role = x_user_role or request.userRole or "CITIZEN"
         user_district = x_user_district or request.district or "Coimbatore"
         query_msg = (request.message or request.userQuery or request.query or "").strip()
         if not query_msg:
             query_msg = f"Provide legal aid action guidance for: {request.caseTitle or ''} {request.caseDescription or ''}".strip()
         complaint_id = request.complaintId
 
-        if request.citizenContext or user_role == "CITIZEN":
+        # Detect greetings or general conversational queries
+        q_clean = query_msg.lower().strip().rstrip("?!.,")
+        greetings = {"hi", "hello", "hey", "vanakkam", "வணக்கம்", "namaste", "नमस्ते", "can u help me", "can you help me", "help me", "help"}
+        is_greeting = q_clean in greetings or any(q_clean.startswith(g) for g in ["hi ", "hello ", "vanakkam ", "வணக்கம் ", "namaste "])
+
+        if request.citizenContext or user_role == "CITIZEN" or is_greeting:
             return ask_chatbot_engine(
                 message=query_msg,
                 language=request.language,
@@ -86,7 +91,8 @@ def case_assistant_endpoint(
             language_override=request.language
         )
         rag_latency = int((time.time() - rag_start) * 1000)
-        is_grounded = bool(retrieval_res and len(retrieval_res) > 0)
+        chunks = retrieval_res.top_k_chunks if (retrieval_res and hasattr(retrieval_res, "top_k_chunks")) else []
+        is_grounded = bool(chunks and len(chunks) > 0)
         telemetry_service.record_event(
             op_type="RAG",
             latency_ms=rag_latency,
@@ -94,7 +100,7 @@ def case_assistant_endpoint(
             details={
                 "status": "GROUNDED" if is_grounded else "FALLBACK",
                 "category": category,
-                "matches": len(retrieval_res) if retrieval_res else 0
+                "matches": len(chunks)
             }
         )
 
@@ -231,4 +237,6 @@ def case_assistant_endpoint(
     except HTTPException as he:
         raise he
     except Exception as e:
+        import traceback
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))

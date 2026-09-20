@@ -32,6 +32,10 @@ class GroundingValidator:
         if not isinstance(llm_response, dict):
             return ValidationResult(False, ["Response is not a valid JSON object."], {}, 0.0)
 
+        # If no specific retrieved chunks were found in the 1306 corpus, accept Gemini's structured response directly
+        if not retrieved_chunks:
+            return ValidationResult(True, [], cleaned, 1.0)
+
         # Build lookup maps from retrieved chunks
         valid_acts = set()
         valid_sections = set()

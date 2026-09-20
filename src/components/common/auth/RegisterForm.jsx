@@ -5,6 +5,7 @@ import { authService } from "@/services/authService";
 import { toast } from "sonner";
 import Checkbox from "@/components/common/Checkbox";
 import { useTheme } from "@/context/ThemeContext";
+import { useLanguage } from "@/context/LanguageContext";
 import GoogleAuthModal from "@/components/common/auth/GoogleAuthModal";
 
 const TN_DISTRICTS = [
@@ -21,6 +22,7 @@ const TN_DISTRICTS = [
 const RegisterForm = () => {
   const navigate = useNavigate();
   const { resolvedTheme, setMode } = useTheme();
+  const { t } = useLanguage();
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -153,7 +155,7 @@ const RegisterForm = () => {
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#65736D] dark:text-slate-400 hover:text-[#163D32] dark:hover:text-emerald-400 transition cursor-pointer select-none active:opacity-70"
         >
           <ArrowLeft size={14} />
-          <span>Back to Home</span>
+          <span>{t("auth.login.backHome", "Back to Home")}</span>
         </Link>
 
         <button
@@ -170,13 +172,13 @@ const RegisterForm = () => {
       <div className="space-y-1.5 mb-5 sm:mb-6 text-left">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#DCEBDD] dark:bg-emerald-950/60 border border-[#C5DDC6] dark:border-emerald-800/40 text-[10px] sm:text-[11px] font-bold text-[#163D32] dark:text-emerald-300 uppercase tracking-wider">
           <Sparkles size={12} className="text-[#1F5948] dark:text-emerald-400" />
-          <span>ARAM Citizen Registration</span>
+          <span>{t("auth.register.badge", "Official Civic Registration")}</span>
         </div>
         <h2 className="text-2xl sm:text-3xl font-extrabold text-[#18332B] dark:text-white tracking-tight">
-          Create Citizen Account
+          {t("auth.register.title", "Create Citizen Profile")}
         </h2>
         <p className="text-xs sm:text-sm text-[#65736D] dark:text-slate-400">
-          Get free multilingual legal triage, statutory guidance, and grievance assistance.
+          {t("auth.register.subtitle", "Join the Tamil Nadu Legal Aid network for AI triage, case tracking, and legal guide escalation.")}
         </p>
       </div>
 
@@ -196,7 +198,7 @@ const RegisterForm = () => {
           <div className="grid gap-3.5 sm:grid-cols-2">
             <div>
               <label className="block text-[11px] font-bold text-slate-700 dark:text-emerald-200/90 uppercase tracking-wider mb-1.5 text-left">
-                Full Name <span className="text-rose-500">*</span>
+                {t("auth.register.fullName", "Full Name")} <span className="text-rose-500">*</span>
               </label>
               <div className="relative">
                 <User size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-emerald-400/60 pointer-events-none" />
@@ -206,7 +208,7 @@ const RegisterForm = () => {
                   value={form.fullName}
                   onChange={update}
                   required
-                  placeholder="e.g. Ramesh Kumar"
+                  placeholder={t("auth.register.fullNamePlaceholder", "e.g., Anbarasan K")}
                   className="h-12 w-full rounded-2xl border border-slate-300 dark:border-emerald-800/60 bg-[#F8FAFC] dark:bg-[#182C26] pl-10 pr-3.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-emerald-200/30 focus:border-[#163D32] dark:focus:border-emerald-400 focus:bg-white dark:focus:bg-[#1C352E] focus:ring-4 focus:ring-emerald-500/15 outline-none transition shadow-2xs"
                 />
               </div>
@@ -214,7 +216,7 @@ const RegisterForm = () => {
 
             <div>
               <label className="block text-[11px] font-bold text-slate-700 dark:text-emerald-200/90 uppercase tracking-wider mb-1.5 text-left">
-                Email Address <span className="text-rose-500">*</span>
+                {t("auth.register.email", "Email Address")} <span className="text-rose-500">*</span>
               </label>
               <div className="relative">
                 <Mail size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-emerald-400/60 pointer-events-none" />
@@ -228,7 +230,7 @@ const RegisterForm = () => {
                   value={form.email}
                   onChange={update}
                   required
-                  placeholder="ramesh@example.com"
+                  placeholder={t("auth.register.emailPlaceholder", "name@example.com")}
                   className="h-12 w-full rounded-2xl border border-slate-300 dark:border-emerald-800/60 bg-[#F8FAFC] dark:bg-[#182C26] pl-10 pr-3.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-emerald-200/30 focus:border-[#163D32] dark:focus:border-emerald-400 focus:bg-white dark:focus:bg-[#1C352E] focus:ring-4 focus:ring-emerald-500/15 outline-none transition shadow-2xs"
                 />
               </div>
@@ -238,7 +240,7 @@ const RegisterForm = () => {
           <div className="grid gap-3.5 sm:grid-cols-2">
             <div>
               <label className="block text-[11px] font-bold text-slate-700 dark:text-emerald-200/90 uppercase tracking-wider mb-1.5 text-left">
-                Mobile Number <span className="text-rose-500">*</span>
+                {t("auth.register.mobile", "Mobile Number")} <span className="text-rose-500">*</span>
               </label>
               <div className="relative">
                 <Phone size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-emerald-400/60 pointer-events-none" />
@@ -249,7 +251,7 @@ const RegisterForm = () => {
                   value={form.mobile}
                   onChange={update}
                   required
-                  placeholder="9876543210"
+                  placeholder={t("auth.register.mobilePlaceholder", "9876543210")}
                   className="h-12 w-full rounded-2xl border border-slate-300 dark:border-emerald-800/60 bg-[#F8FAFC] dark:bg-[#182C26] pl-10 pr-3.5 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-emerald-200/30 focus:border-[#163D32] dark:focus:border-emerald-400 focus:bg-white dark:focus:bg-[#1C352E] focus:ring-4 focus:ring-emerald-500/15 outline-none transition shadow-2xs"
                 />
               </div>
@@ -257,7 +259,7 @@ const RegisterForm = () => {
 
             <div>
               <label className="block text-[11px] font-bold text-slate-700 dark:text-emerald-200/90 uppercase tracking-wider mb-1.5 text-left">
-                District / Location <span className="text-rose-500">*</span>
+                {t("auth.register.district", "District / மாவட்டம்")} <span className="text-rose-500">*</span>
               </label>
               <div className="relative">
                 <MapPin size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-emerald-400/60 pointer-events-none" />
@@ -306,7 +308,7 @@ const RegisterForm = () => {
           <div className="grid gap-3.5 sm:grid-cols-2">
             <div>
               <label className="block text-[11px] font-bold text-slate-700 dark:text-emerald-200/90 uppercase tracking-wider mb-1.5 text-left">
-                Create Password <span className="text-rose-500">*</span>
+                {t("auth.register.password", "Create Password")} <span className="text-rose-500">*</span>
               </label>
               <div className="relative">
                 <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-emerald-400/60 pointer-events-none" />
@@ -332,7 +334,7 @@ const RegisterForm = () => {
 
             <div>
               <label className="block text-[11px] font-bold text-slate-700 dark:text-emerald-200/90 uppercase tracking-wider mb-1.5 text-left">
-                Confirm Password <span className="text-rose-500">*</span>
+                {t("auth.register.confirmPassword", "Confirm Password")} <span className="text-rose-500">*</span>
               </label>
               <div className="relative">
                 <Lock size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-emerald-400/60 pointer-events-none" />
@@ -383,7 +385,7 @@ const RegisterForm = () => {
             onChange={update}
             label={
               <span className="text-xs text-slate-600 dark:text-emerald-200/70 select-none">
-                I accept the <Link to="/terms" className="text-[#163D32] dark:text-emerald-400 font-bold hover:underline">Terms & Conditions</Link> and agree to the privacy policy.
+                {t("auth.register.terms", "I accept the Terms & Conditions and agree to the privacy policy.")}
               </span>
             }
           />
@@ -399,7 +401,7 @@ const RegisterForm = () => {
             <span className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
           ) : (
             <>
-              <span>Create Free Account</span>
+              <span>{t("auth.register.submitBtn", "Create Free Account")}</span>
               <Check size={16} />
             </>
           )}
@@ -410,7 +412,7 @@ const RegisterForm = () => {
       <div className="relative flex items-center justify-center my-5">
         <div className="w-full border-t border-slate-200 dark:border-emerald-900/50"></div>
         <span className="bg-white dark:bg-[#11201B] px-3 text-[10px] font-bold text-slate-400 dark:text-emerald-300/60 uppercase tracking-widest absolute">
-          or register with
+          {t("auth.login.orContinueWith", "or register with")}
         </span>
       </div>
 
@@ -441,14 +443,14 @@ const RegisterForm = () => {
             d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
           />
         </svg>
-        <span>Sign Up with Google</span>
+        <span>{t("auth.login.googleSignIn", "Sign Up with Google")}</span>
       </button>
 
       {/* 4. Login Redirect */}
       <p className="text-center text-xs text-slate-500 dark:text-emerald-200/70 pt-4">
-        Already registered?{" "}
+        {t("auth.register.alreadyAccount", "Already registered?")}{" "}
         <Link to="/login" className="font-bold text-[#163D32] dark:text-emerald-400 hover:underline">
-          Sign in here →
+          {t("auth.register.signInLink", "Sign in here →")}
         </Link>
       </p>
 

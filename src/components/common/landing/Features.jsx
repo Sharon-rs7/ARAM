@@ -59,13 +59,13 @@ const Features = () => {
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16 space-y-2">
           <span className="text-xs font-black uppercase tracking-widest text-[#1F5948] bg-[#DCEBDD] px-3.5 py-1.5 rounded-full inline-block shadow-2xs">
-            Engineered for Justice
+            {t("features.tag", "Engineered for Justice")}
           </span>
           <h2 className="text-2xl sm:text-4xl lg:text-5xl font-black text-[#163D32] tracking-tight">
-            Key ARAM Capabilities
+            {t("features.title", "Key ARAM Capabilities")}
           </h2>
           <p className="text-xs sm:text-sm text-[#65736D] max-w-xl mx-auto">
-            Practical, citizen-first legal tools designed to make rights understandable, accessible, and actionable.
+            {t("features.subtitle", "Practical, citizen-first legal tools designed to make rights understandable, accessible, and actionable.")}
           </p>
         </div>
 

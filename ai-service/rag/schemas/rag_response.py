@@ -98,3 +98,9 @@ class RAGRetrievalResult(BaseModel):
     has_sufficient_context: bool
     status: RAGResultStatus = RAGResultStatus.NO_RELEVANT_SOURCE
     diagnostics: Optional[Dict[str, Any]] = None
+
+    def __len__(self) -> int:
+        return len(self.top_k_chunks) if self.top_k_chunks is not None else 0
+
+    def __bool__(self) -> bool:
+        return bool(self.top_k_chunks)

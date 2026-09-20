@@ -38,16 +38,15 @@ const AIHumanBridge = () => {
             <div className="max-w-3xl text-left space-y-3">
               <div className="inline-flex items-center gap-2 rounded-full bg-[#DCEBDD]/20 border border-[#DCEBDD]/30 px-3.5 py-1.5 text-xs font-bold text-[#DCEBDD]">
                 <Scale size={14} />
-                <span>The Core ARAM Differentiator</span>
+                <span>{t("aiHuman.tag", "The Core ARAM Differentiator")}</span>
               </div>
 
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-tight">
-                AI When Possible. <br className="hidden sm:inline" />
-                Human When Necessary.
+                {t("aiHuman.title", "AI When Possible. Human When Necessary.")}
               </h2>
 
               <p className="text-xs sm:text-sm text-[#DCEBDD]/90 leading-relaxed max-w-2xl">
-                ARAM is designed to help citizens understand their situation, organize information, and reach the appropriate support pathway. AI assistance does not replace lawyers, authorities, emergency services, or professional legal representation.
+                {t("aiHuman.subtitle", "ARAM is designed to help citizens understand their situation, organize information, and reach the appropriate support pathway. AI assistance does not replace lawyers, authorities, emergency services, or professional legal representation.")}
               </p>
             </div>
 
@@ -62,8 +61,12 @@ const AIHumanBridge = () => {
                       <Bot size={20} />
                     </div>
                     <div>
-                      <h3 className="text-base font-black text-white">AI Assistance</h3>
-                      <p className="text-[11px] text-[#DCEBDD]/80">Immediate 24/7 Digital First-Aid</p>
+                      <h3 className="text-base font-black text-white">
+                        {t("aiHuman.aiTitle", "AI Assistance")}
+                      </h3>
+                      <p className="text-[11px] text-[#DCEBDD]/80">
+                        {t("aiHuman.aiSubtitle", "Immediate 24/7 Digital First-Aid")}
+                      </p>
                     </div>
                   </div>
 
@@ -82,7 +85,7 @@ const AIHumanBridge = () => {
                     to="/citizen/chatbot"
                     className="w-full py-3 px-5 rounded-2xl bg-white hover:bg-[#DCEBDD] text-[#163D32] font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer"
                   >
-                    <span>Start AI Assessment</span>
+                    <span>{t("aiHuman.startAi", "Start AI Assessment")}</span>
                     <ArrowRight size={14} />
                   </Link>
                 </div>
@@ -96,8 +99,12 @@ const AIHumanBridge = () => {
                       <UserCheck size={20} />
                     </div>
                     <div>
-                      <h3 className="text-base font-black text-white">Human Support</h3>
-                      <p className="text-[11px] text-[#DCEBDD]/80">Accredited DLSA & Legal Guides</p>
+                      <h3 className="text-base font-black text-white">
+                        {t("aiHuman.humanTitle", "Human Support")}
+                      </h3>
+                      <p className="text-[11px] text-[#DCEBDD]/80">
+                        {t("aiHuman.humanSubtitle", "Accredited DLSA & Legal Guides")}
+                      </p>
                     </div>
                   </div>
 
@@ -116,7 +123,7 @@ const AIHumanBridge = () => {
                     to="/citizen/submit-complaint"
                     className="w-full py-3 px-5 rounded-2xl bg-[#165A46] hover:bg-[#1A6C54] text-white border border-white/20 font-bold text-xs flex items-center justify-center gap-2 transition cursor-pointer"
                   >
-                    <span>Request Legal Guide</span>
+                    <span>{t("aiHuman.requestGuide", "Request Legal Guide")}</span>
                     <ArrowRight size={14} />
                   </Link>
                 </div>

@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { Mail, Lock, LogIn, Loader2, AlertCircle, ArrowRight, Eye, EyeOff, Shield, ArrowLeft, Sun, Moon, Sparkles, UserCheck } from "lucide-react";
+import { Mail, Lock, LogIn, Loader2, AlertCircle, ArrowRight, Eye, EyeOff, Shield, ArrowLeft, Sun, Moon, Sparkles, UserCheck, Globe, ChevronDown, Check } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { useTheme } from "@/context/ThemeContext";
+import { useLanguage } from "@/context/LanguageContext";
 import { authService } from "@/services/authService";
 import { toast } from "sonner";
 import Checkbox from "@/components/common/Checkbox";
@@ -13,6 +14,7 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const { resolvedTheme, setMode } = useTheme();
+  const { language, changeLanguage, availableLanguages, t } = useLanguage();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,11 +24,12 @@ const LoginForm = () => {
   const [error, setError] = useState("");
   const [googleModalOpen, setGoogleModalOpen] = useState(false);
   const [showDemoBox, setShowDemoBox] = useState(false);
+  const [langMenuOpen, setLangMenuOpen] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email.trim() || !password.trim()) {
-      setError("Please enter both your email and password.");
+      setError(t("auth.login.emailPasswordRequired", "Please enter both your email and password."));
       return;
     }
     setError("");
@@ -39,7 +42,7 @@ const LoginForm = () => {
         password: password
       });
       login(res);
-      toast.success("Welcome back to ARAM AI Legal Aid!");
+      toast.success(t("auth.login.loginSuccess", "Welcome back to ARAM AI Legal Aid!"));
 
       const role = String(res?.user?.role || res?.role || "").toUpperCase();
       if (role === "SUPER_ADMIN") {
@@ -58,7 +61,7 @@ const LoginForm = () => {
       if (validationErrs && typeof validationErrs === "object") {
         errorMsg = Object.values(validationErrs).join(", ");
       }
-      setError(errorMsg || "Invalid email or password. Please verify your credentials.");
+      setError(errorMsg || t("auth.login.invalidCredentials", "Invalid email or password. Please verify your credentials."));
     } finally {
       setLoading(false);
     }
@@ -78,38 +81,81 @@ const LoginForm = () => {
   return (
     <div className="w-full max-w-[460px] mx-auto rounded-2xl sm:rounded-3xl bg-white dark:bg-[#11201B] p-5 sm:p-9 border border-slate-200 dark:border-emerald-500/25 shadow-[0_15px_45px_rgba(16,45,37,0.08)] dark:shadow-[0_25px_60px_rgba(0,0,0,0.55)] transition-all">
       
-      {/* Top Controls: Back link & Theme toggle */}
+      {/* Top Controls: Back link, Language selector & Theme toggle */}
       <div className="flex items-center justify-between pb-3.5 sm:pb-4 border-b border-slate-100 dark:border-emerald-900/40 mb-5 sm:mb-6">
         <Link 
           to="/" 
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-emerald-200/70 hover:text-[#163D32] dark:hover:text-emerald-300 transition cursor-pointer select-none active:opacity-70"
         >
           <ArrowLeft size={14} />
-          <span>Back to Home</span>
+          <span>{t("auth.login.backHome", "Back to Home")}</span>
         </Link>
 
-        <button
-          type="button"
-          onClick={() => setMode(resolvedTheme === "dark" ? "LIGHT" : "DARK")}
-          className="rounded-xl bg-slate-100 dark:bg-[#182C26] p-2.5 text-slate-600 dark:text-emerald-300 hover:text-[#163D32] dark:hover:text-emerald-200 transition cursor-pointer flex items-center justify-center border border-slate-200 dark:border-emerald-700/40 active:scale-95"
-          title="Toggle theme"
-          aria-label="Toggle theme"
-        >
-          {resolvedTheme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Language Selector Dropdown */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setLangMenuOpen(!langMenuOpen)}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-emerald-700/40 bg-slate-50 dark:bg-[#182C26] text-xs font-bold text-slate-700 dark:text-emerald-300 hover:bg-slate-100 dark:hover:bg-[#1F3A32] transition cursor-pointer shadow-2xs"
+              title="Change Language"
+            >
+              <Globe size={13} className="text-[#163D32] dark:text-emerald-400" />
+              <span>{availableLanguages.find(l => l.code === language)?.label || "English"}</span>
+              <ChevronDown size={11} className={`transition-transform duration-200 ${langMenuOpen ? "rotate-180" : ""}`} />
+            </button>
+
+            {langMenuOpen && (
+              <div className="absolute right-0 mt-2 w-44 rounded-2xl bg-white dark:bg-[#162923] border border-slate-200 dark:border-emerald-700/50 shadow-xl py-1.5 z-50 animate-in fade-in zoom-in-95 duration-150">
+                <div className="px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-emerald-400/70 border-b border-slate-100 dark:border-emerald-800/40">
+                  Language / மொழி
+                </div>
+                {availableLanguages.map((l) => (
+                  <button
+                    key={l.code}
+                    type="button"
+                    onClick={() => {
+                      changeLanguage(l.code);
+                      setLangMenuOpen(false);
+                    }}
+                    className={`w-full text-left px-3.5 py-2 text-xs font-medium transition flex items-center justify-between cursor-pointer ${
+                      language === l.code
+                        ? "bg-[#DCEBDD] dark:bg-emerald-900/60 text-[#163D32] dark:text-emerald-200 font-bold"
+                        : "text-slate-700 dark:text-emerald-200/80 hover:bg-slate-100 dark:hover:bg-[#1E3830]"
+                    }`}
+                  >
+                    <span>{l.nativeLabel}</span>
+                    {language === l.code && <Check size={13} className="text-[#163D32] dark:text-emerald-400 shrink-0" />}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Theme Toggle */}
+          <button
+            type="button"
+            onClick={() => setMode(resolvedTheme === "dark" ? "LIGHT" : "DARK")}
+            className="rounded-xl bg-slate-100 dark:bg-[#182C26] p-2 text-slate-600 dark:text-emerald-300 hover:text-[#163D32] dark:hover:text-emerald-200 transition cursor-pointer flex items-center justify-center border border-slate-200 dark:border-emerald-700/40 active:scale-95"
+            title="Toggle theme"
+            aria-label="Toggle theme"
+          >
+            {resolvedTheme === "dark" ? <Sun size={14} /> : <Moon size={14} />}
+          </button>
+        </div>
       </div>
 
       {/* Main Title & Role Pill */}
       <div className="text-left mb-5 sm:mb-6">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#DCEBDD] dark:bg-emerald-950/70 border border-[#B9D8BD] dark:border-emerald-700/50 text-[10px] sm:text-[11px] font-bold text-[#163D32] dark:text-emerald-300 uppercase tracking-wider mb-2">
           <Sparkles size={12} className="text-[#1F5948] dark:text-emerald-400 shrink-0" />
-          <span>Unified Civic Portal</span>
+          <span>{t("auth.login.portalBadge", "Unified Civic Portal")}</span>
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-          Sign In
+          {t("auth.login.title", "Sign In")}
         </h1>
         <p className="text-xs sm:text-sm text-slate-500 dark:text-emerald-200/60 mt-1">
-          Access your legal assistance records, grievances, and guidance cases.
+          {t("auth.login.subtitle", "Access your legal assistance records, grievances, and guidance cases.")}
         </p>
       </div>
 
@@ -127,7 +173,7 @@ const LoginForm = () => {
         {/* Email Field */}
         <div>
           <label className="block text-[11px] font-bold text-slate-700 dark:text-emerald-200/90 uppercase tracking-wider mb-1.5 text-left">
-            Email Address
+            {t("auth.login.emailLabel", "Email Address")}
           </label>
           <div className="relative">
             <Mail size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 dark:text-emerald-400/60 pointer-events-none" />
@@ -140,7 +186,7 @@ const LoginForm = () => {
               spellCheck={false}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="name@example.com"
+              placeholder={t("auth.login.emailPlaceholder", "name@example.com")}
               required
               autoComplete="email"
               className="h-12 w-full rounded-2xl border border-slate-300 dark:border-emerald-800/60 bg-[#F8FAFC] dark:bg-[#182C26] pl-10 pr-3.5 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-emerald-200/30 focus:border-[#163D32] dark:focus:border-emerald-400 focus:bg-white dark:focus:bg-[#1C352E] focus:ring-4 focus:ring-emerald-500/15 outline-none transition shadow-2xs"
@@ -152,13 +198,13 @@ const LoginForm = () => {
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <label className="block text-[11px] font-bold text-slate-700 dark:text-emerald-200/90 uppercase tracking-wider text-left">
-              Password
+              {t("auth.login.passwordLabel", "Password")}
             </label>
             <Link 
               to="/forgot-password" 
               className="text-[11px] font-bold text-[#1F5948] dark:text-emerald-400 hover:text-[#163D32] dark:hover:text-emerald-300 hover:underline cursor-pointer"
             >
-              Forgot Password?
+              {t("auth.login.forgotPassword", "Forgot Password?")}
             </Link>
           </div>
           <div className="relative">
@@ -196,7 +242,7 @@ const LoginForm = () => {
             onChange={(e) => setRememberMe(e.target.checked)}
             label={
               <span className="text-xs text-slate-600 dark:text-emerald-200/70 select-none">
-                Remember this device for 30 days
+                {t("auth.login.rememberMe", "Remember this device for 30 days")}
               </span>
             }
           />
@@ -212,7 +258,7 @@ const LoginForm = () => {
             <Loader2 className="h-5 w-5 animate-spin" />
           ) : (
             <>
-              <span>Sign In to Account</span>
+              <span>{t("auth.login.signInBtn", "Sign In to Account")}</span>
               <ArrowRight size={16} className="transition-transform group-hover:translate-x-0.5" />
             </>
           )}
@@ -223,7 +269,7 @@ const LoginForm = () => {
       <div className="relative flex items-center justify-center my-5">
         <div className="w-full border-t border-slate-200 dark:border-emerald-900/50"></div>
         <span className="bg-white dark:bg-[#11201B] px-3 text-[10px] font-bold text-slate-400 dark:text-emerald-300/60 uppercase tracking-widest absolute">
-          or continue with
+          {t("auth.login.orContinueWith", "or continue with")}
         </span>
       </div>
 
@@ -252,7 +298,7 @@ const LoginForm = () => {
             d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
           />
         </svg>
-        <span>Sign in with Google</span>
+        <span>{t("auth.login.googleSignIn", "Sign in with Google")}</span>
       </button>
 
       {/* 4. Quick Demo Helper */}
@@ -263,7 +309,7 @@ const LoginForm = () => {
           className="w-full text-center text-[11px] font-semibold text-slate-500 dark:text-emerald-300/70 hover:text-[#163D32] dark:hover:text-emerald-200 flex items-center justify-center gap-1.5 cursor-pointer py-1"
         >
           <UserCheck size={13} />
-          <span>{showDemoBox ? "Hide Demo Accounts" : "Quick Demo Credentials"}</span>
+          <span>{showDemoBox ? t("auth.login.hideDemo", "Hide Demo Accounts") : t("auth.login.quickDemo", "Quick Demo Credentials")}</span>
         </button>
 
         {showDemoBox && (
@@ -274,32 +320,32 @@ const LoginForm = () => {
                 onClick={() => fillDemo("citizen@gmail.com", "Citizen@123")}
                 className="py-2 px-1 rounded-xl bg-white dark:bg-[#1C352E] hover:bg-[#DCEBDD] dark:hover:bg-emerald-900/60 border border-slate-200 dark:border-emerald-700/50 text-[10px] font-bold text-slate-800 dark:text-emerald-100 transition cursor-pointer active:scale-95"
               >
-                Citizen
+                {t("auth.login.roleCitizen", "Citizen")}
               </button>
               <button
                 type="button"
                 onClick={() => fillDemo("salem.admin@gmail.com", "Admin@123")}
                 className="py-2 px-1 rounded-xl bg-white dark:bg-[#1C352E] hover:bg-[#DCEBDD] dark:hover:bg-emerald-900/60 border border-slate-200 dark:border-emerald-700/50 text-[10px] font-bold text-slate-800 dark:text-emerald-100 transition cursor-pointer active:scale-95"
               >
-                Salem Admin
+                {t("auth.login.roleAdmin", "Salem Admin")}
               </button>
               <button
                 type="button"
                 onClick={() => fillDemo("salem.guide1@gmail.com", "Admin@123")}
                 className="py-2 px-1 rounded-xl bg-white dark:bg-[#1C352E] hover:bg-[#DCEBDD] dark:hover:bg-emerald-900/60 border border-slate-200 dark:border-emerald-700/50 text-[10px] font-bold text-slate-800 dark:text-emerald-100 transition cursor-pointer active:scale-95"
               >
-                Salem Guide
+                {t("auth.login.roleGuide", "Salem Guide")}
               </button>
               <button
                 type="button"
                 onClick={() => fillDemo("superadmin@gmail.com", "Admin@123")}
                 className="py-2 px-1 rounded-xl bg-white dark:bg-[#1C352E] hover:bg-[#DCEBDD] dark:hover:bg-emerald-900/60 border border-slate-200 dark:border-emerald-700/50 text-[10px] font-bold text-slate-800 dark:text-emerald-100 transition cursor-pointer active:scale-95"
               >
-                Super Admin
+                {t("auth.login.roleSuperAdmin", "Super Admin")}
               </button>
             </div>
             <div className="text-[10px] text-slate-500 dark:text-emerald-300/60 text-left px-1">
-              💡 Any district works: <code>&lt;district&gt;.admin@gmail.com</code> / <code>Admin@123</code> & <code>&lt;district&gt;.guide1@gmail.com</code> / <code>Admin@123</code>
+              💡 {t("auth.login.demoHint", "Any district works: <district>.admin@gmail.com / Admin@123 & <district>.guide1@gmail.com / Admin@123")}
             </div>
           </div>
         )}
@@ -308,9 +354,9 @@ const LoginForm = () => {
       {/* 5. Create Account Link */}
       <div className="mt-4 text-center">
         <p className="text-xs text-slate-500 dark:text-emerald-200/70">
-          Don't have an account yet?{" "}
+          {t("auth.login.noAccount", "Don't have an account yet?")}{" "}
           <Link to="/register" className="font-bold text-[#163D32] dark:text-emerald-400 hover:underline cursor-pointer">
-            Create Free Citizen Profile →
+            {t("auth.login.createAccount", "Create Free Citizen Profile →")}
           </Link>
         </p>
       </div>

@@ -2,22 +2,42 @@ import os
 import re
 import json
 from typing import Dict, Any, List, Optional
+from dotenv import load_dotenv
+load_dotenv()
+
 from llm.base_provider import BaseLLMProvider
 from llm.prompts import STRICT_LEGAL_SYSTEM_PROMPT, STRICT_RETRY_SYSTEM_PROMPT, build_llm_prompt
 
+CANDIDATE_MODELS = [
+    "gemini-3.1-flash-lite",
+    "gemini-3.5-flash-lite",
+    "gemini-flash-lite-latest",
+    "gemini-flash-latest",
+    "gemini-3.7-flash",
+    "gemini-3.6-flash"
+]
+
 class GeminiProvider(BaseLLMProvider):
     """
-    Gemini API provider acting as the resilient secondary generator.
-    Never used directly without verified RAG context.
+    Gemini API provider acting as the intelligent legal generator.
+    Includes seamless multi-model fallback across candidate models to ensure uninterrupted operation.
     """
 
     def __init__(self):
+        load_dotenv()
         self.api_key = os.environ.get("GEMINI_API_KEY")
-        self.model_name = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash-lite")
+        self.model_name = os.environ.get("GEMINI_MODEL", "gemini-3.1-flash-lite")
+        if self.model_name in ["gemini-3.5-flash-lite-bad", "gemini-2.5-flash"]:
+            self.model_name = "gemini-3.1-flash-lite"
         self.client = None
         self._init_client()
 
     def _init_client(self):
+        load_dotenv()
+        if not self.api_key:
+            self.api_key = os.environ.get("GEMINI_API_KEY")
+        if not self.model_name or self.model_name in ["gemini-3.5-flash-lite-bad", "gemini-2.5-flash"]:
+            self.model_name = os.environ.get("GEMINI_MODEL", "gemini-3.1-flash-lite")
         if self.api_key:
             try:
                 import google.generativeai as genai
@@ -30,7 +50,34 @@ class GeminiProvider(BaseLLMProvider):
             self.client = None
 
     def is_available(self) -> bool:
+        if not self.client or not self.api_key:
+            self._init_client()
         return bool(self.api_key and self.client is not None)
+
+    def _generate_with_fallback(self, prompt: str, generation_config: Any) -> str:
+        """
+        Executes generation with automatic multi-model failover if quota (429) or unavailability occurs.
+        """
+        import google.generativeai as genai
+        models_to_try = [self.model_name] + [m for m in CANDIDATE_MODELS if m != self.model_name]
+        last_err = None
+        for m in models_to_try:
+            try:
+                client = genai.GenerativeModel(m)
+                resp = client.generate_content(prompt, generation_config=generation_config)
+                if resp and resp.text:
+                    self.model_name = m
+                    self.client = client
+                    return resp.text.strip()
+            except Exception as e:
+                last_err = e
+                err_str = str(e)
+                if any(k in err_str.lower() for k in ["429", "quota", "resourceexhausted", "not found", "404", "unavailable"]):
+                    print(f"[GEMINI ROTATION] Model {m} hit limit ({e}), rotating to next candidate...")
+                    continue
+                else:
+                    raise e
+        raise RuntimeError(f"All Gemini candidate models exhausted: {last_err}")
 
     def health_check(self) -> Dict[str, Any]:
         return {
@@ -83,8 +130,7 @@ class GeminiProvider(BaseLLMProvider):
         full_prompt = f"System Instruction: {sys_prompt}\n\nUser Request & Context:\n{prompt}"
 
         try:
-            response = self.client.generate_content(full_prompt, generation_config=generation_config)
-            raw_text = response.text.strip()
+            raw_text = self._generate_with_fallback(full_prompt, generation_config=generation_config)
             
             if raw_text.startswith("```json"):
                 raw_text = re.sub(r"^```json\s*", "", raw_text)
@@ -118,21 +164,18 @@ class GeminiProvider(BaseLLMProvider):
 
         import google.generativeai as genai
 
-        system_instruction = (
-            "You are ARAM AI (அறம் AI), an intelligent, empathetic, and official conversational legal aid assistant "
-            "for citizens of Tamil Nadu and India.\n\n"
-            "Key Capabilities & Persona:\n"
-            "1. You understand and communicate fluently in Tamil, Tanglish (Tamil in English letters), Hindi, Hinglish, and English.\n"
-            "2. When the user asks conversational questions such as:\n"
-            "   - 'unaku ennala epd help pana mudium' / 'how can you help me': explain that you analyze legal problems, give statutory guidance, provide evidence document checklists, break down complex multi-issue disputes, support Voice note STT and Document OCR, and route complaints to Regional Administrators and Legal Aid Advocates.\n"
-            "   - 'ethalang unaku therium' / 'what languages do you know': confirm that you support Tamil, Tanglish, Hindi, and English fluently.\n"
-            "   - 'inth system epd work aaguthu' / 'how does this system work': clearly describe the Citizen -> AI Triage & Analysis -> Regional Admin & Advocate Resolution workflow.\n"
-            "3. Always match the user's language and style (e.g. if the user talks in Tanglish, reply in friendly, structured Tanglish with emoji bullets; if in Tamil, reply in Tamil; if in Hindi, reply in Hindi; if in English, reply in English).\n"
-            "4. Be friendly, structured, clear, and action-oriented. Keep the reply concise and easy to read on mobile."
+        prompt = (
+            f"You are ARAM AI (அறம் AI), the verified legal aid assistant for citizens of Tamil Nadu and India.\n"
+            f"You speak fluently in Tamil, Tanglish (Tamil written in Latin script), Hindi, and English.\n"
+            f"Respond directly and warmly to the citizen in their requested language: {language}.\n\n"
+            f"Instructions:\n"
+            f"1. If the user asks for help or how you can assist ('can u help me', 'what can you do', 'unaku enna panna mudiyum'): warmly explain that you provide statutory legal guidance under Indian & Tamil Nadu laws, checklist of required documents/evidence, breakdown of complex multi-issue complaints, audio voice note & document OCR analysis, and connect them with District Legal Aid / Regional Admins.\n"
+            f"2. If the user asks what languages you support: confirm Tamil, Tanglish, Hindi, and English.\n"
+            f"3. Speak directly to the citizen as their legal companion. Do NOT output analysis notes, checklists, or meta-commentary. Output ONLY your direct response to the citizen.\n\n"
         )
 
         generation_config = genai.types.GenerationConfig(
-            temperature=0.3,
+            temperature=0.7,
             max_output_tokens=600
         )
 
@@ -144,16 +187,14 @@ class GeminiProvider(BaseLLMProvider):
                 elif isinstance(turn, str):
                     history_text += f"• {turn}\n"
 
-        prompt = f"System Instruction: {system_instruction}\n\n"
         if history_text:
             prompt += f"Recent Chat History:\n{history_text}\n\n"
         if context_notes:
             prompt += f"Context Notes: {context_notes}\n\n"
-        prompt += f"User Language: {language}\nUser Message: {user_message}\n\nARAM AI Response:"
+        prompt += f"User Message: {user_message}\n\nARAM AI Reply to Citizen:"
 
         try:
-            response = self.client.generate_content(prompt, generation_config=generation_config)
-            return response.text.strip()
+            return self._generate_with_fallback(prompt, generation_config=generation_config)
         except Exception as e:
             print(f"[GEMINI CONVERSATIONAL ERROR] {e}")
             return self._build_conversational_fallback(user_message, language)

@@ -34,7 +34,7 @@ const Profile = () => {
   const [stats, setStats] = useState({
     assigned: 0,
     resolved: 0,
-    successRate: 95
+    successRate: 100
   });
 
   useEffect(() => {
@@ -79,14 +79,26 @@ const Profile = () => {
 
     const fetchStats = async () => {
       try {
-        const dashboard = await volunteerService.getDashboard();
-        if (dashboard && dashboard.stats) {
-          setStats({
-            assigned: dashboard.stats.assigned || 0,
-            resolved: dashboard.stats.resolved || 0,
-            successRate: dashboard.volunteer?.successRate || 95
-          });
-        }
+        const [dashboard, cases] = await Promise.all([
+          volunteerService.getDashboard().catch(() => null),
+          volunteerService.getAssignedCases().catch(() => [])
+        ]);
+
+        const assignedCases = (Array.isArray(cases) && cases.length > 0) ? cases : (dashboard?.assignedCases || []);
+        const assignedCount = assignedCases.length || dashboard?.stats?.assigned || 0;
+        const resolvedCount = assignedCases.filter(c => 
+          c.status === "RESOLVED" || c.status === "RESOLVED_BY_GUIDE" || c.status === "CLOSED" || c.status === "CLOSED_BY_USER"
+        ).length || dashboard?.stats?.resolved || 0;
+
+        const rate = assignedCount > 0 
+          ? Math.round((resolvedCount / assignedCount) * 100) 
+          : 100;
+
+        setStats({
+          assigned: assignedCount,
+          resolved: resolvedCount,
+          successRate: rate
+        });
       } catch (err) {
         console.warn("Failed to load volunteer stats dynamically", err);
       }

@@ -86,7 +86,15 @@ public class DocumentService {
 
     @Transactional
     public DocumentResponse upload(Long complaintId, MultipartFile file) {
-        String safeName = fileUploadValidator.validateAndGenerateSafeName(file, UploadCategory.DOCUMENT);
+        String orig = file.getOriginalFilename();
+        UploadCategory cat = UploadCategory.DOCUMENT;
+        if (orig != null) {
+            String lower = orig.toLowerCase();
+            if (lower.endsWith(".png") || lower.endsWith(".jpg") || lower.endsWith(".jpeg") || lower.endsWith(".webp")) {
+                cat = UploadCategory.IMAGE;
+            }
+        }
+        String safeName = fileUploadValidator.validateAndGenerateSafeName(file, cat);
         String contentType = file.getContentType();
         Complaint complaint = complaintService.findComplaint(complaintId);
         User user = userService.currentUser();
@@ -107,7 +115,69 @@ public class DocumentService {
             document.setVerificationStatus(VerificationStatus.UPLOADED);
             
             UploadedDocument saved = documentRepository.save(document);
-            notificationService.create(complaint.getUser(), "Document uploaded for complaint ID " + complaint.getId() + ". Status: UPLOADED.", NotificationType.IN_APP);
+
+            // Execute real AI OCR & Evidence verification and persist directly into database
+            try {
+                String expectedType = determineExpectedType(saved);
+                String catStr = complaint.getCategory() != null ? complaint.getCategory().name() : "GENERAL";
+                AiDocumentVerifyResponse aiRes = aiClientService.verifyDocument(file, expectedType, catStr);
+                if (aiRes != null) {
+                    if (aiRes.documentType() != null) {
+                        saved.setPredictedDocumentType(aiRes.documentType());
+                    }
+                    saved.setVerificationScore(aiRes.verificationScore());
+                    if (aiRes.status() != null) {
+                        saved.setVerificationStatus(mapStatus(aiRes.status()));
+                    }
+                    saved = documentRepository.save(saved);
+
+                    DocumentVerificationResult result = new DocumentVerificationResult();
+                    result.setDocumentId(saved.getId());
+                    result.setComplaintId(complaint.getId());
+                    String extracted = aiRes.exactText() != null ? aiRes.exactText() : (aiRes.ocrTextMasked() != null ? aiRes.ocrTextMasked() : "");
+                    result.setOcrText(extracted);
+                    result.setMaskedOcrText(extracted);
+                    result.setOcrConfidence(aiRes.ocrConfidence());
+                    result.setImageQualityScore(aiRes.imageQualityScore());
+                    result.setDocumentType(aiRes.documentType() != null ? aiRes.documentType() : "Supporting Evidence");
+                    result.setDocumentTypeConfidence(aiRes.ocrConfidence());
+                    result.setVerificationScore(aiRes.verificationScore());
+                    result.setStatus(aiRes.status());
+                    result.setEngine(aiRes.engine() != null ? aiRes.engine() : "gemini-vision");
+                    result.setModelVersion(aiRes.modelVersion() != null ? aiRes.modelVersion() : "1.0");
+
+                    try {
+                        Map<String, Object> fields = aiRes.extractedFields() != null ? new java.util.HashMap<>(aiRes.extractedFields()) : new java.util.HashMap<>();
+                        if (aiRes.legalRelevance() != null) {
+                            fields.put("legalRelevance", aiRes.legalRelevance());
+                        }
+                        if (aiRes.evidentiaryStrength() != null) {
+                            fields.put("evidentiaryStrength", aiRes.evidentiaryStrength());
+                        }
+                        if (aiRes.actionableAdvice() != null) {
+                            fields.put("actionableAdvice", aiRes.actionableAdvice());
+                        }
+                        if (aiRes.detectedDates() != null) {
+                            fields.put("detectedDates", aiRes.detectedDates());
+                        }
+                        if (aiRes.detectedReferenceNumbers() != null) {
+                            fields.put("detectedReferenceNumbers", aiRes.detectedReferenceNumbers());
+                        }
+                        if (aiRes.detectedParties() != null) {
+                            fields.put("detectedParties", aiRes.detectedParties());
+                        }
+                        result.setExtractedFieldsJson(objectMapper.writeValueAsString(fields));
+                        result.setReasonsJson(objectMapper.writeValueAsString(aiRes.reasons()));
+                        result.setErrorsJson(objectMapper.writeValueAsString(aiRes.errors()));
+                    } catch (Exception ignored) {}
+
+                    documentVerificationResultRepository.save(result);
+                }
+            } catch (Exception aiEx) {
+                System.err.println("Direct AI verification during upload warning: " + aiEx.getMessage());
+            }
+
+            notificationService.create(complaint.getUser(), "Document uploaded for complaint ID " + complaint.getId() + ". Status: " + saved.getVerificationStatus() + ".", NotificationType.IN_APP);
             return mapperService.toDocumentResponse(saved);
         } catch (IOException ex) {
             throw new BadRequestException("Unable to store file: " + ex.getMessage());

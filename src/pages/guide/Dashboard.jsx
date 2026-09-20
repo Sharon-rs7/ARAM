@@ -94,8 +94,8 @@ const Dashboard = () => {
       <div className="max-w-5xl mx-auto space-y-6 pb-8">
         
         {/* Top Header Card */}
-        <div className="bg-[#FFFDF8] border border-[#E6E1D8] rounded-3xl p-6 shadow-sm">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="bg-[#FFFDF8] border border-[#E6E1D8] rounded-3xl p-5 sm:p-6 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1.5">
               <div className="flex items-center gap-2 text-xs font-bold text-[#65736D] uppercase tracking-wider">
                 <span className="bg-[#DCEBDD] text-[#163D32] px-2.5 py-0.5 rounded-full font-black border border-[#c5ddc6]">
@@ -104,7 +104,7 @@ const Dashboard = () => {
                 <span>•</span>
                 <span>{guideInfo.levelName}</span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-black text-[#163D32] tracking-tight">
+              <h1 className="text-xl sm:text-3xl font-black text-[#163D32] tracking-tight">
                 Welcome back, {user?.name || "Legal Guide"} 👋
               </h1>
               <p className="text-xs text-[#65736D] font-medium">
@@ -113,13 +113,13 @@ const Dashboard = () => {
             </div>
 
             {/* XP & Level Status */}
-            <div className="flex items-center gap-3 bg-[#F7F1E6]/60 border border-[#E6E1D8] p-4 rounded-2xl shrink-0">
-              <div className="space-y-1">
-                <div className="flex justify-between items-center text-[10px] font-extrabold uppercase text-[#65736D]">
+            <div className="flex items-center justify-between sm:justify-start gap-3 bg-[#F7F1E6]/60 border border-[#E6E1D8] p-3.5 sm:p-4 rounded-2xl w-full sm:w-auto shrink-0">
+              <div className="space-y-1 flex-1 sm:flex-none">
+                <div className="flex justify-between items-center text-[10px] font-extrabold uppercase text-[#65736D] gap-2">
                   <span>Experience Rank</span>
                   <span className="text-[#1F5948] font-black">{guideInfo.creditScore} XP</span>
                 </div>
-                <div className="w-36 bg-[#E6E1D8] h-2 rounded-full overflow-hidden">
+                <div className="w-full sm:w-36 bg-[#E6E1D8] h-2 rounded-full overflow-hidden">
                   <div
                     className="bg-[#163D32] h-full rounded-full transition-all duration-500"
                     style={{ width: `${Math.min(100, Math.max(15, (guideInfo.creditScore / 1000) * 100))}%` }}
@@ -129,7 +129,7 @@ const Dashboard = () => {
               </div>
               <button
                 onClick={() => navigate("/guide/my-analytics")}
-                className="p-2 bg-[#FFFDF8] border border-[#E6E1D8] hover:bg-[#DCEBDD] transition rounded-xl text-[#163D32] text-xs font-bold"
+                className="px-3 py-2 bg-[#FFFDF8] border border-[#E6E1D8] hover:bg-[#DCEBDD] transition rounded-xl text-[#163D32] text-xs font-bold shrink-0 cursor-pointer shadow-2xs"
                 title="View Performance Analytics"
               >
                 Analytics
@@ -139,48 +139,48 @@ const Dashboard = () => {
         </div>
 
         {/* 3 Metric Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <div className="bg-[#FFFDF8] rounded-3xl p-6 border border-[#E6E1D8] shadow-sm flex items-center justify-between">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="bg-[#FFFDF8] rounded-3xl p-4 sm:p-6 border border-[#E6E1D8] shadow-sm flex items-center justify-between">
             <div>
               <span className="text-[10px] font-extrabold text-[#65736D] uppercase tracking-wider block">
                 Active Cases
               </span>
-              <span className="text-3xl font-black text-[#163D32] mt-1 block">
+              <span className="text-2xl sm:text-3xl font-black text-[#163D32] mt-1 block">
                 {stats.activeCases}
               </span>
               <span className="text-[11px] text-[#8B9690] font-medium mt-0.5 block">Under ongoing guidance</span>
             </div>
-            <div className="h-12 w-12 rounded-2xl bg-[#DCEBDD]/50 border border-[#c5ddc6] flex items-center justify-center text-[#163D32] font-black text-lg">
+            <div className="h-11 w-11 sm:h-12 sm:w-12 rounded-2xl bg-[#DCEBDD]/50 border border-[#c5ddc6] flex items-center justify-center text-[#163D32] font-black text-lg shrink-0">
               📂
             </div>
           </div>
 
-          <div className="bg-[#FFFDF8] rounded-3xl p-6 border border-[#E6E1D8] shadow-sm flex items-center justify-between">
+          <div className="bg-[#FFFDF8] rounded-3xl p-4 sm:p-6 border border-[#E6E1D8] shadow-sm flex items-center justify-between">
             <div>
               <span className="text-[10px] font-extrabold text-[#65736D] uppercase tracking-wider block">
                 Needs Your Response
               </span>
-              <span className="text-3xl font-black text-[#B96845] mt-1 block">
+              <span className="text-2xl sm:text-3xl font-black text-[#B96845] mt-1 block">
                 {stats.needsResponse}
               </span>
               <span className="text-[11px] text-[#8B9690] font-medium mt-0.5 block">Awaiting consultation review</span>
             </div>
-            <div className="h-12 w-12 rounded-2xl bg-[#F7F1E6] border border-[#E6E1D8] flex items-center justify-center text-[#B96845] font-black text-lg">
+            <div className="h-11 w-11 sm:h-12 sm:w-12 rounded-2xl bg-[#F7F1E6] border border-[#E6E1D8] flex items-center justify-center text-[#B96845] font-black text-lg shrink-0">
               ⏳
             </div>
           </div>
 
-          <div className="bg-[#FFFDF8] rounded-3xl p-6 border border-[#E6E1D8] shadow-sm flex items-center justify-between">
+          <div className="bg-[#FFFDF8] rounded-3xl p-4 sm:p-6 border border-[#E6E1D8] shadow-sm flex items-center justify-between">
             <div>
               <span className="text-[10px] font-extrabold text-[#65736D] uppercase tracking-wider block">
                 Resolved Grievances
               </span>
-              <span className="text-3xl font-black text-[#1F5948] mt-1 block">
+              <span className="text-2xl sm:text-3xl font-black text-[#1F5948] mt-1 block">
                 {stats.resolved}
               </span>
               <span className="text-[11px] text-[#8B9690] font-medium mt-0.5 block">Successfully closed cases</span>
             </div>
-            <div className="h-12 w-12 rounded-2xl bg-[#DCEBDD] border border-[#c5ddc6] flex items-center justify-center text-[#1F5948] font-black text-lg">
+            <div className="h-11 w-11 sm:h-12 sm:w-12 rounded-2xl bg-[#DCEBDD] border border-[#c5ddc6] flex items-center justify-center text-[#1F5948] font-black text-lg shrink-0">
               ✅
             </div>
           </div>
@@ -258,7 +258,46 @@ const Dashboard = () => {
             </button>
           </div>
 
-          <div className="overflow-x-auto">
+          {/* Mobile Card List (< sm) */}
+          <div className="sm:hidden divide-y divide-[#E6E1D8]">
+            {assignedList.length === 0 ? (
+              <div className="py-8 text-center text-[#65736D] font-medium text-xs">
+                No cases currently assigned. New cases from district admin will appear here.
+              </div>
+            ) : (
+              assignedList.slice(0, 5).map((c) => (
+                <div key={c.id} className="py-3.5 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-xs font-bold text-[#163D32]">
+                      {c.complaintCustomId || `ARAM-${c.id}`}
+                    </span>
+                    <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${
+                      c.priority === "CRITICAL" || c.priority === "HIGH"
+                        ? "bg-red-100 text-red-800"
+                        : "bg-[#DCEBDD] text-[#163D32]"
+                    }`}>
+                      {c.priority || "MEDIUM"}
+                    </span>
+                  </div>
+                  <p className="text-xs font-bold text-[#18332B] truncate">
+                    {c.title || c.categoryLabel || "Grievance Case"}
+                  </p>
+                  <div className="flex items-center justify-between text-[11px] text-[#65736D] pt-1">
+                    <span>Citizen: <strong className="text-[#18332B]">{c.citizenName || c.userName || "Applicant"}</strong></span>
+                    <button
+                      onClick={() => navigate(`/guide/complaint/${c.id}`)}
+                      className="px-3 py-1.5 bg-[#163D32] hover:bg-[#1F5948] text-white rounded-lg text-[10px] font-bold transition cursor-pointer"
+                    >
+                      Workspace →
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* Desktop Table View (>= sm) */}
+          <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="border-b border-[#E6E1D8] text-[#65736D] uppercase text-[10px] font-black tracking-wider bg-[#F7F1E6]/40">

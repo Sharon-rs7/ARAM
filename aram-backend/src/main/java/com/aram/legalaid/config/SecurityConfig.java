@@ -37,6 +37,7 @@ public class SecurityConfig {
                             "/api/chat/**",
                             "/api/ai/**",
                             "/api/speech/**",
+                            "/api/documents/verify-ai",
                             "/api/health",
                             "/h2-console/**",
                             "/swagger-ui.html",

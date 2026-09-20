@@ -2,12 +2,14 @@ import React, { useState } from 'react';
 import { X, Loader2, Sparkles, CheckCircle2, ShieldCheck, User } from 'lucide-react';
 import { authService } from '@/services/authService';
 import { useAuth } from '@/context/AuthContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import Avatar from '@/components/common/Avatar';
 
 export const GoogleAuthModal = ({ isOpen, onClose, defaultRole = 'CITIZEN', defaultDistrict = 'Coimbatore' }) => {
   const { login } = useAuth();
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('select'); // 'select' | 'custom'
@@ -153,8 +155,12 @@ export const GoogleAuthModal = ({ isOpen, onClose, defaultRole = 'CITIZEN', defa
               </svg>
             </div>
             <div>
-              <h3 className='text-sm font-bold text-slate-900 dark:text-white'>Sign in with Google</h3>
-              <p className='text-[11px] text-slate-500 dark:text-slate-400'>Choose an account to continue to ARAM</p>
+              <h3 className='text-sm font-bold text-slate-900 dark:text-white'>
+                {t('auth.google.title', 'Sign in with Google')}
+              </h3>
+              <p className='text-[11px] text-slate-500 dark:text-slate-400'>
+                {t('auth.google.subtitle', 'Choose an account to continue to ARAM')}
+              </p>
             </div>
           </div>
           <button 
@@ -177,7 +183,7 @@ export const GoogleAuthModal = ({ isOpen, onClose, defaultRole = 'CITIZEN', defa
                 : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400'
             )}
           >
-            Verified Profiles
+            {t('auth.google.verifiedProfiles', 'Verified Profiles')}
           </button>
           <button
             type='button'
@@ -188,7 +194,7 @@ export const GoogleAuthModal = ({ isOpen, onClose, defaultRole = 'CITIZEN', defa
                 : 'border-transparent text-slate-500 hover:text-slate-700 dark:text-slate-400'
             )}
           >
-            Enter Custom Google Email
+            {t('auth.google.customAccount', 'Enter Custom Google Email')}
           </button>
         </div>
 
@@ -202,36 +208,44 @@ export const GoogleAuthModal = ({ isOpen, onClose, defaultRole = 'CITIZEN', defa
 
           {activeTab === 'select' ? (
             <div className='space-y-2.5'>
-              {PRESET_GOOGLE_ACCOUNTS.map((acc, i) => (
-                <button
-                  key={i}
-                  type='button'
-                  disabled={loading}
-                  onClick={() => handlePerformGoogleAuth(acc)}
-                  className='w-full flex items-center justify-between p-3 rounded-2xl border border-slate-200 dark:border-emerald-900/40 hover:border-emerald-500/60 dark:hover:border-emerald-500/60 bg-slate-50/50 dark:bg-[#142620]/60 hover:bg-emerald-50/30 dark:hover:bg-[#16332A] transition group text-left cursor-pointer'
-                >
-                  <div className='flex items-center gap-3'>
-                    <Avatar
-                      src={acc.avatar}
-                      name={acc.name}
-                      role={acc.role}
-                      size="md"
-                      showRoleBadge={true}
-                    />
-                    <div>
-                      <div className='text-xs font-bold text-slate-800 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition'>
-                        {acc.name}
-                      </div>
-                      <div className='text-[11px] text-slate-500 dark:text-slate-400'>
-                        {acc.email}
+              {PRESET_GOOGLE_ACCOUNTS.map((acc, i) => {
+                let localizedBadge = acc.badge;
+                if (acc.badge === 'Verified Citizen') localizedBadge = t('auth.google.citizenBadge', acc.badge);
+                else if (acc.badge === 'Legal Guide') localizedBadge = t('auth.google.guideBadge', acc.badge);
+                else if (acc.badge === 'Regional Admin') localizedBadge = t('auth.google.adminBadge', acc.badge);
+                else if (acc.badge === 'State Administrator') localizedBadge = t('auth.google.superAdminBadge', acc.badge);
+
+                return (
+                  <button
+                    key={i}
+                    type='button'
+                    disabled={loading}
+                    onClick={() => handlePerformGoogleAuth(acc)}
+                    className='w-full flex items-center justify-between p-3 rounded-2xl border border-slate-200 dark:border-emerald-900/40 hover:border-emerald-500/60 dark:hover:border-emerald-500/60 bg-slate-50/50 dark:bg-[#142620]/60 hover:bg-emerald-50/30 dark:hover:bg-[#16332A] transition group text-left cursor-pointer'
+                  >
+                    <div className='flex items-center gap-3'>
+                      <Avatar
+                        src={acc.avatar}
+                        name={acc.name}
+                        role={acc.role}
+                        size="md"
+                        showRoleBadge={true}
+                      />
+                      <div>
+                        <div className='text-xs font-bold text-slate-800 dark:text-white group-hover:text-emerald-700 dark:group-hover:text-emerald-300 transition'>
+                          {acc.name}
+                        </div>
+                        <div className='text-[11px] text-slate-500 dark:text-slate-400'>
+                          {acc.email}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  <span className='text-[10px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-100/60 dark:bg-emerald-900/40 px-2 py-0.5 rounded-full'>
-                    {acc.badge}
-                  </span>
-                </button>
-              ))}
+                    <span className='text-[10px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-100/60 dark:bg-emerald-900/40 px-2 py-0.5 rounded-full'>
+                      {localizedBadge}
+                    </span>
+                  </button>
+                );
+              })}
 
               <div className='pt-2 text-center'>
                 <button
@@ -239,7 +253,7 @@ export const GoogleAuthModal = ({ isOpen, onClose, defaultRole = 'CITIZEN', defa
                   onClick={() => setActiveTab('custom')}
                   className='text-xs font-semibold text-emerald-700 dark:text-emerald-400 hover:underline inline-flex items-center gap-1 cursor-pointer'
                 >
-                  <User size={13} /> Use another Google account
+                  <User size={13} /> {t('auth.google.useAnother', 'Use another Google account')}
                 </button>
               </div>
             </div>
@@ -247,12 +261,12 @@ export const GoogleAuthModal = ({ isOpen, onClose, defaultRole = 'CITIZEN', defa
             <form onSubmit={handleCustomSubmit} className='space-y-3.5'>
               <div>
                 <label className='block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1'>
-                  Google Email Address
+                  {t('auth.google.emailLabel', 'Google Email Address')}
                 </label>
                 <input
                   type='email'
                   required
-                  placeholder='yourname@gmail.com'
+                  placeholder={t('auth.google.emailPlaceholder', 'yourname@gmail.com')}
                   value={customEmail}
                   onChange={(e) => setCustomEmail(e.target.value)}
                   className='w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-emerald-900/60 bg-white dark:bg-[#142620] text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500'
@@ -261,11 +275,11 @@ export const GoogleAuthModal = ({ isOpen, onClose, defaultRole = 'CITIZEN', defa
 
               <div>
                 <label className='block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1'>
-                  Full Name (Optional)
+                  {t('auth.google.nameLabel', 'Full Name (Optional)')}
                 </label>
                 <input
                   type='text'
-                  placeholder='e.g. Anandha Krishnan'
+                  placeholder={t('auth.google.namePlaceholder', 'e.g. Anandha Krishnan')}
                   value={customName}
                   onChange={(e) => setCustomName(e.target.value)}
                   className='w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-emerald-900/60 bg-white dark:bg-[#142620] text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500'
@@ -279,11 +293,11 @@ export const GoogleAuthModal = ({ isOpen, onClose, defaultRole = 'CITIZEN', defa
               >
                 {loading ? (
                   <>
-                    <Loader2 size={14} className='animate-spin' /> Verifying Google Account...
+                    <Loader2 size={14} className='animate-spin' /> {t('auth.google.verifyingBtn', 'Verifying Google Account...')}
                   </>
                 ) : (
                   <>
-                    <ShieldCheck size={15} /> Continue with this Google Account
+                    <ShieldCheck size={15} /> {t('auth.google.continueBtn', 'Continue with this Google Account')}
                   </>
                 )}
               </button>
@@ -294,7 +308,7 @@ export const GoogleAuthModal = ({ isOpen, onClose, defaultRole = 'CITIZEN', defa
           <div className='mt-5 pt-3 border-t border-slate-100 dark:border-emerald-900/30 text-center'>
             <p className='text-[11px] text-slate-500 dark:text-slate-400 flex items-center justify-center gap-1.5'>
               <ShieldCheck size={13} className='text-emerald-600' />
-              Grounded & encrypted under Indian IT Act & DPDP 2023
+              {t('auth.google.securityNote', 'Grounded & encrypted under Indian IT Act & DPDP 2023')}
             </p>
           </div>
         </div>

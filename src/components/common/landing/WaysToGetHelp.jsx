@@ -61,47 +61,47 @@ const WaysToGetHelp = () => {
     {
       id: "speak",
       icon: Mic,
-      title: "Speak",
-      subtitle: "Voice-First Assistance",
-      desc: "Describe your issue naturally in Tamil, English, or Hindi using your voice.",
-      actionLabel: isRecording ? "Listening..." : "Tap to Speak",
+      title: t("waysToGetHelp.speakTitle", "Speak"),
+      subtitle: t("waysToGetHelp.speakSubtitle", "Voice-First Assistance"),
+      desc: t("waysToGetHelp.speakDesc", "Describe your issue naturally in Tamil, English, or Hindi using your voice."),
+      actionLabel: isRecording ? t("waysToGetHelp.speakListening", "Listening...") : t("waysToGetHelp.speakAction", "Tap to Speak"),
       action: handleVoice,
       active: isRecording,
       color: "bg-[#DCEBDD] text-[#163D32]",
-      badge: "Tamil • Hindi • English"
+      badge: t("waysToGetHelp.speakBadge", "Tamil • Hindi • English")
     },
     {
       id: "type",
       icon: Keyboard,
-      title: "Type",
-      subtitle: "Interactive AI Chat",
-      desc: "Explain your issue in your own words. Receive statutory triage and legal clarity.",
-      actionLabel: "Chat with AI",
+      title: t("waysToGetHelp.typeTitle", "Type"),
+      subtitle: t("waysToGetHelp.typeSubtitle", "Interactive AI Chat"),
+      desc: t("waysToGetHelp.typeDesc", "Explain your issue in your own words. Receive statutory triage and legal clarity."),
+      actionLabel: t("waysToGetHelp.typeAction", "Chat with AI"),
       action: () => navigate("/citizen/chatbot"),
       color: "bg-[#F6D8C8] text-[#8C3B1E]",
-      badge: "24/7 Available"
+      badge: t("waysToGetHelp.typeBadge", "24/7 Available")
     },
     {
       id: "upload",
       icon: FileUp,
-      title: "Upload",
-      subtitle: "Document Evidence",
-      desc: "Share relevant documents, notices, sale deeds, or police complaint copies.",
-      actionLabel: "Inspect Documents",
+      title: t("waysToGetHelp.uploadTitle", "Upload"),
+      subtitle: t("waysToGetHelp.uploadSubtitle", "Document Evidence"),
+      desc: t("waysToGetHelp.uploadDesc", "Share relevant documents, notices, sale deeds, or police complaint copies."),
+      actionLabel: t("waysToGetHelp.uploadAction", "Inspect Documents"),
       action: () => navigate("/citizen/submit-complaint"),
       color: "bg-[#E8C978]/40 text-[#7A5A0A]",
-      badge: "Deep OCR Ready"
+      badge: t("waysToGetHelp.uploadBadge", "Deep OCR Ready")
     },
     {
       id: "connect",
       icon: Users,
-      title: "Connect",
-      subtitle: "Human Legal Guides",
-      desc: "Get connected with an accredited District Legal Guide when human support is needed.",
-      actionLabel: "Find a Guide",
+      title: t("waysToGetHelp.connectTitle", "Connect"),
+      subtitle: t("waysToGetHelp.connectSubtitle", "Human Legal Guides"),
+      desc: t("waysToGetHelp.connectDesc", "Get connected with an accredited District Legal Guide when human support is needed."),
+      actionLabel: t("waysToGetHelp.connectAction", "Find a Guide"),
       action: () => navigate("/citizen/submit-complaint"),
       color: "bg-[#E7E1F2] text-[#4F3F73]",
-      badge: "DLSA Accredited"
+      badge: t("waysToGetHelp.connectBadge", "DLSA Accredited")
     }
   ];
 
@@ -113,17 +113,17 @@ const WaysToGetHelp = () => {
         <div className="text-left mb-6 sm:mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-3">
           <div>
             <span className="text-[11px] font-black uppercase tracking-widest text-[#1F5948] bg-[#DCEBDD] px-3 py-1 rounded-full inline-block mb-2 shadow-2xs">
-              Ways to Get Help
+              {t("waysToGetHelp.tag", "Ways to Get Help")}
             </span>
             <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-[#163D32] tracking-tight">
-              Choose How You Want to Begin
+              {t("waysToGetHelp.title", "Choose How You Want to Begin")}
             </h2>
             <p className="text-xs sm:text-sm text-[#65736D] mt-1 max-w-xl">
-              Every citizen communicates differently. Select the method most comfortable for you.
+              {t("waysToGetHelp.subtitle", "Every citizen communicates differently. Select the method most comfortable for you.")}
             </p>
           </div>
           <span className="text-xs font-semibold text-[#12805A] hidden sm:block">
-            Free Civic Assistance • No Hidden Charges
+            {t("waysToGetHelp.civicAssistance", "Free Civic Assistance • No Hidden Charges")}
           </span>
         </div>
 

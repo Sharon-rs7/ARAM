@@ -968,12 +968,17 @@ def ask_chatbot_engine(
     resolved_lang = detect_language_smart(raw_message, current_session_lang=existing_state.get("language"), requested_lang=language)
     
     if intent_type == INTENTS["GREETING"]:
-        if resolved_lang == "ta":
-            greeting_reply = "வணக்கம்! 👋 நான் உங்கள் அறம் (ARAM) AI சட்ட உதவி உதவியாளர். உங்கள் சட்டப் பிரச்சனை அல்லது கேள்வியை விவரிக்கவும், தகுந்த சட்டப் பிரிவுகள் மற்றும் அடுத்த கட்ட நடவடிக்கை முறைகளை விளக்குகிறேன்."
-        elif resolved_lang == "hi":
-            greeting_reply = "नमस्ते! 👋 मैं आपका अराम (ARAM) AI कानूनी सहायक हूँ। आप अपनी किसी भी कानूनी समस्या का विवरण यहाँ दे सकते हैं।"
-        else:
-            greeting_reply = "Vanakkam! 👋 I am your ARAM AI Legal Assistant. You can describe any legal problem, dispute, notice, or question in Tamil, English, or Hindi to get legal guidance, required document checklists, and official redressal routing. How can I assist you today?"
+        from llm.gemini_provider import gemini_provider
+        greeting_prompt = (
+            f"The citizen sent a greeting: '{raw_message}'. "
+            f"Greet them warmly and politely in {resolved_lang} (Tamil, Tanglish, Hindi, or English based on their query) "
+            f"as ARAM AI (அறம் AI), the verified legal aid companion for Tamil Nadu and India. "
+            f"Invite them to describe what legal problem, notice, dispute, or question they need help with today. Keep it welcoming, empathetic, and concise."
+        )
+        greeting_reply = gemini_provider.generate_conversational_response(
+            user_message=greeting_prompt,
+            language=resolved_lang
+        )
 
         return {
             "responseType": "GREETING",
@@ -984,7 +989,7 @@ def ask_chatbot_engine(
             "reply": greeting_reply,
             "answer": greeting_reply,
             "disclaimer": DISCLAIMER,
-            "provider": "conversational",
+            "provider": "gemini_api",
             "grounded": True,
             "is_conversational": True,
             "is_greeting": True,
@@ -995,12 +1000,15 @@ def ask_chatbot_engine(
 
     # 3. Handle Thanks Intent
     if intent_type == INTENTS["THANKS"]:
-        if resolved_lang == "ta":
-            thx_reply = "மகிழ்ச்சி! 👍 உங்களுக்கு மேலும் சட்ட உதவி அல்லது புகார் பதிவு செய்ய உதவி தேவைப்பட்டால் தயங்காமல் கேளுங்கள்."
-        elif resolved_lang == "hi":
-            thx_reply = "आपका स्वागत है! यदि आपको किसी और कानूनी सहायता की आवश्यकता है, तो बेझिझक पूछें।"
-        else:
-            thx_reply = "You're very welcome! If you need further legal clarification or want to file a formal grievance, I am here to help."
+        from llm.gemini_provider import gemini_provider
+        thx_prompt = (
+            f"The citizen said thanks: '{raw_message}'. "
+            f"Reply warmly in {resolved_lang} letting them know they are welcome and you are here to assist with any legal aid, document checks, or complaint filing."
+        )
+        thx_reply = gemini_provider.generate_conversational_response(
+            user_message=thx_prompt,
+            language=resolved_lang
+        )
 
         return {
             "responseType": "THANKS",
@@ -1012,17 +1020,21 @@ def ask_chatbot_engine(
             "is_conversational": True,
             "is_greeting": False,
             "disclaimer": DISCLAIMER,
+            "provider": "gemini_api",
             "sessionId": session_key
         }
 
     # 4. Handle Goodbye Intent
     if intent_type == INTENTS["GOODBYE"]:
-        if resolved_lang == "ta":
-            bye_reply = "நன்றி, போய் வருகிறேன்! ஏதேனும் சட்ட உதவி தேவைப்படும்போது எப்போது வேண்டுமானாலும் அறம் (ARAM) தளத்திற்கு வரலாம். பாதுகாப்பாக இருங்கள்!"
-        elif resolved_lang == "hi":
-            bye_reply = "अलविदा! किसी भी कानूनी सहायता के लिए आप कभी भी अराम (ARAM) पर लौट सकते हैं। सुरक्षित रहें!"
-        else:
-            bye_reply = "Goodbye! Whenever you need legal aid or official guidance, ARAM is always here for you. Stay safe!"
+        from llm.gemini_provider import gemini_provider
+        bye_prompt = (
+            f"The citizen said goodbye: '{raw_message}'. "
+            f"Reply warmly in {resolved_lang} wishing them well and letting them know ARAM AI is always here if they need legal aid, rights info, or grievance filing."
+        )
+        bye_reply = gemini_provider.generate_conversational_response(
+            user_message=bye_prompt,
+            language=resolved_lang
+        )
 
         return {
             "responseType": "GOODBYE",
@@ -1031,6 +1043,7 @@ def ask_chatbot_engine(
             "understanding": bye_reply,
             "reply": bye_reply,
             "answer": bye_reply,
+            "provider": "gemini_api",
             "is_conversational": True,
             "is_greeting": False,
             "disclaimer": DISCLAIMER,
@@ -1203,6 +1216,7 @@ def ask_chatbot_engine(
                 "understanding": dynamic_reply,
                 "reply": dynamic_reply,
                 "answer": dynamic_reply,
+                "provider": "gemini_api",
                 "is_conversational": True,
                 "is_greeting": False,
                 "options": [],
@@ -1322,125 +1336,28 @@ def ask_chatbot_engine(
     ])
 
     if is_follow_up_action and prev_issues:
-        current_pref = provisional_case.get("languagePreference", resolved_lang)
-        is_tanglish = current_pref == "ta_tanglish" or resolved_lang == "ta_tanglish" or any(m in raw_message.lower() for m in ["panren", "kudukala", "irukku", "sollunga", "rendu", "pannina", "solve", "simple", "mudium"])
-        is_ta = (resolved_lang.startswith("ta") or current_pref == "ta") and not is_tanglish
-        is_hi = resolved_lang.startswith("hi") or current_pref in ["hi", "hi_hinglish"]
+        from llm.gemini_provider import gemini_provider
+        context_str = f"Citizen previous issues: {[i.get('name', 'Grievance') for i in prev_issues]}. Facts: {provisional_case.get('facts', [])}"
 
         if is_simplify_action:
-            if is_tanglish:
-                follow_up_reply = (
-                    "Ungaloda 2 issues-aiyum romba simple-ah puriyura maari solren paaru:\n\n"
-                    "1️⃣ **Salary Issue (சம்பள பாக்கி):**\n"
-                    "• Company 4 months-ah full salary tharala.\n"
-                    "• **First Step:** HR-ku 15-day time kuduthu official Demand Notice anuppunga. Panram kudukala na Coimbatore Labour Commissioner kitta Form-1 claim file pannunga.\n\n"
-                    "2️⃣ **Aadhaar / Bank Misuse (ஆதார் தவறான பயன்பாடு):**\n"
-                    "• Unga permission illama loan edukka try pannirukanga.\n"
-                    "• **First Step:** Udane mAadhaar app open panni Aadhaar Biometric-ah Lock pannunga, bank-ku letter kudunga, and 1930 call panni Cyber Crime-la complaint register pannunga.\n\n"
-                    "💡 Rendum separate complaint-ah ARAM vazhiya submit panna mudiyum. Ungalukku formal complaint submit panna start pannalama?"
-                )
-                resp_lang = "ta_tanglish"
-            elif is_ta:
-                follow_up_reply = (
-                    "உங்கள் 2 வழக்குகளையும் மிக எளிய தமிழில் விளக்குகிறேன்:\n\n"
-                    "1️⃣ **சம்பள பாக்கி:**\n"
-                    "• 4 மாத சம்பளம் முழுமையாக வரவில்லை.\n"
-                    "• **உடனடி நடவடிக்கை:** HR-க்கு 15 நாட்கள் அவகாசத்தில் கோரிக்கை கடிதம் அனுப்பவும்; தீர்வு கிடைக்காவிடில் மாவட்ட தொழிலாளர் ஆணையரிடம் முறையிடவும்.\n\n"
-                    "2️⃣ **ஆதார் தவறான பயன்பாடு:**\n"
-                    "• அனுமதியின்றி கடன் வாங்க முயற்சி.\n"
-                    "• **உடனடி நடவடிக்கை:** உடனடியாக mAadhaar மூலம் பயோமெட்ரிக் Lock செய்யவும், 1930 மூலம் சைபர் கிரைம் புகார் அளிக்கவும்.\n\n"
-                    "💡 அதிகாரப்பூர்வ புகார் பதிவு செய்ய 'Submit Complaint' என்று கூறலாம்."
-                )
-                resp_lang = "ta"
-            elif is_hi:
-                follow_up_reply = (
-                    "आपके 2 कानूनी मामलों का सरल और स्पष्ट सारांश:\n\n"
-                    "1️⃣ **वेतन विवाद:**\n"
-                    "• 4 महीने का बकाया वेतन और रोके गए दस्तावेज़।\n"
-                    "• **पहला कदम:** एचआर को 15 दिन का मांग नोटिस भेजें; समाधान न होने पर जिला श्रम आयुक्त के पास दावा दायर करें।\n\n"
-                    "2️⃣ **आधार / पहचान दुरुपयोग:**\n"
-                    "• अनधिकृत ऋण प्रसंस्करण का प्रयास।\n"
-                    "• **पहला कदम:** तुरंत UIDAI पोर्टल पर बायोमेट्रिक लॉक करें और 1930 / cybercrime.gov.in पर शिकायत दर्ज करें।"
-                )
-                resp_lang = "hi"
-            else:
-                follow_up_reply = (
-                    "Here is the simple, jargon-free summary for your two legal issues:\n\n"
-                    "1️⃣ **Salary Dispute:**\n"
-                    "• 4 months of unpaid salary and withheld documents.\n"
-                    "• **First Step:** Send a formal 15-day statutory demand notice to HR; file a Form-1 claim with the District Labour Commissioner if unpaid.\n\n"
-                    "2️⃣ **Aadhaar / Financial Misuse:**\n"
-                    "• Unauthorized financial/loan transaction attempt.\n"
-                    "• **First Step:** Lock your Aadhaar biometrics immediately on UIDAI/mAadhaar, notify your bank branch, and file a cyber fraud complaint at 1930 / cybercrime.gov.in."
-                )
-                resp_lang = "en"
+            task_desc = "Explain the citizen's legal matters in very simple, easy-to-understand, jargon-free words, clarifying the primary next step for each issue."
         elif is_recap_action:
-            if is_tanglish:
-                follow_up_reply = (
-                    "Namma ippo discuss panna case details-oda complete summary idho:\n\n"
-                    "📌 **Issue 1: Unpaid Salary & Document Withholding (Labour Dispute)**\n"
-                    "• Statute: Payment of Wages Act, 1936 (Sec 15)\n"
-                    "• Authority: District Labour Commissioner Office, Coimbatore\n"
-                    "• Evidence on hand: Employment agreement, salary slips, bank statements, HR emails\n\n"
-                    "📌 **Issue 2: Unauthorized Personal Document / Aadhaar Misuse (Cyber Crime)**\n"
-                    "• Statute: IT Act, 2000 (Sec 66C/66D) & BNS Sec 318(4)\n"
-                    "• Authority: National Cyber Crime Portal (1930 / cybercrime.gov.in)\n\n"
-                    "🚀 Neenga formal grievance submit panna 'Submit Complaint' nu sollaalam!"
-                )
-                resp_lang = "ta_tanglish"
-            else:
-                follow_up_reply = (
-                    "Here is the recap of our conversation regarding your two legal matters:\n\n"
-                    "📌 **Issue 1: Unpaid Salary & Document Withholding (Labour Dispute)**\n"
-                    "• Statute: Payment of Wages Act, 1936 (Section 15)\n"
-                    "• Authority: District Labour Commissioner Office, Coimbatore\n"
-                    "• Evidence on file: Employment agreement, salary slips, bank statements, HR emails\n\n"
-                    "📌 **Issue 2: Unauthorized Aadhaar & Financial Misuse (Cyber Crime)**\n"
-                    "• Statute: Information Technology Act, 2000 (Section 66C/66D) & BNS 318(4)\n"
-                    "• Authority: National Cyber Crime Portal (cybercrime.gov.in / Helpline 1930)\n\n"
-                    "🚀 Would you like to officially submit this complaint now?"
-                )
-                resp_lang = "en"
+            task_desc = "Provide a clean, structured recap and summary of what was discussed, relevant statutory acts, authorities, and essential evidence."
         else:
-            if is_hi:
-                follow_up_reply = (
-                    "आपके दोनों कानूनी मामलों को हल करने के लिए चरणबद्ध कार्ययोजना:\n\n"
-                    "🔹 **मुद्दा 1 (बकाया वेतन एवं मूल दस्तावेज़ वसूली):**\n"
-                    "1. **चरण 1:** एचआर को 15 दिनों का कानूनी मांग नोटिस (Demand Notice) भेजें।\n"
-                    "2. **चरण 2:** समाधान न होने पर Payment of Wages Act, धारा 15 के तहत जिला श्रम आयुक्त कार्यालय, कोयंबटूर में Form I दावा याचिका दायर करें।\n\n"
-                    "🔹 **मुद्दा 2 (आधार एवं बैंक विवरण का अनधिकृत दुरुपयोग रोकथाम):**\n"
-                    "1. **चरण 1:** तुरंत UIDAI पोर्टल (myaadhaar.uidai.gov.in) पर जाकर आधार बायोमेट्रिक लॉक करें।\n"
-                    "2. **चरण 2:** राष्ट्रीय साइबर अपराध पोर्टल (cybercrime.gov.in) या हेल्पलाइन **1930** पर शिकायत दर्ज करें।\n\n"
-                    "💡 क्या आप ARAM पोर्टल के माध्यम से आधिकारिक शिकायत दर्ज करना चाहते हैं?"
-                )
-                resp_lang = "hi"
-            elif is_ta:
-                follow_up_reply = (
-                    "உங்கள் இரண்டு வழக்குகளையும் தீர்ப்பதற்கான படிநிலைகள்:\n\n"
-                    "1. **தொழிலாளர் ஊதிய பாக்கி:** மனிதவள மேலாளருக்கு (HR) 15 நாட்கள் அவகாசத்தில் கோரிக்கை கடிதம் அனுப்பவும்; தீர்வு கிடைக்காவிடில் மாவட்ட தொழிலாளர் ஆணையரிடம் மனு தாக்கல் செய்யவும்.\n"
-                    "2. **ஆதார் தவறான பயன்பாடு:** உடனடியாக ஆதார் பயோமெட்ரிக் பூட்டவும் (Lock Aadhaar) மற்றும் 1930 / cybercrime.gov.in மூலம் புகார் பதிவு செய்யவும்."
-                )
-                resp_lang = "ta"
-            elif is_tanglish:
-                follow_up_reply = (
-                    "Neenga mention panna **2 separate issues**-aiyum step-by-step solve panradhukana immediate action plan idho:\n\n"
-                    "🔹 **Issue 1 (Unpaid Salary & Original Documents Recovery):**\n"
-                    "1. **Step 1:** HR-ku oru official Written Demand Letter / Email anuppunga (15-day deadline to release pending 4-month wages & return original documents).\n"
-                    "2. **Step 2:** Response illana, Coimbatore District Labour Commissioner Office-la Form I Claim Petition file pannunga under Payment of Wages Act, Section 15.\n\n"
-                    "🔹 **Issue 2 (Unauthorized Aadhaar & Bank Details Misuse Prevention):**\n"
-                    "1. **Step 1:** Udane UIDAI website (myaadhaar.uidai.gov.in) or mAadhaar app open panni **Aadhaar Biometric Lock** pannunga.\n"
-                    "2. **Step 2:** National Cyber Crime Portal (`cybercrime.gov.in`) or Helpline **1930** call panni unauthorized loan processing attempt pathi complaint log pannunga.\n\n"
-                    "💡 Neenga indha complaints-ai official-ah ARAM portal vazhiya submit panna virumbureengala, or initial demand notice draft panna guidance venuma?"
-                )
-                resp_lang = "ta_tanglish"
-            else:
-                follow_up_reply = (
-                    "Here is the immediate step-by-step action plan for your two legal issues:\n\n"
-                    "1. **Salary Dispute:** Send a formal 15-day statutory demand notice to HR; if unresolved, file a Form I claim with the District Labour Commissioner under Section 15 of Payment of Wages Act.\n"
-                    "2. **Aadhaar / Financial Misuse:** Immediately lock your Aadhaar biometrics on the UIDAI portal and register an online complaint at cybercrime.gov.in (1930 helpline).\n\n"
-                    "Would you like to draft a formal notice or submit a grievance through ARAM?"
-                )
-                resp_lang = "en"
+            task_desc = "Provide structured, step-by-step actionable procedural guidance and roadmap tailored specifically to their issue."
+
+        prompt_instruction = (
+            f"The citizen asks: '{raw_message}'.\n"
+            f"Task: {task_desc}\n"
+            f"Context of their dispute: {context_str}\n"
+            f"Respond empathetically and clearly in {resolved_lang} (Tamil, Tanglish, Hindi, or English matching the user). Provide personalized, realistic advice without generic unrelated placeholders."
+        )
+        follow_up_reply = gemini_provider.generate_conversational_response(
+            user_message=prompt_instruction,
+            language=resolved_lang,
+            context_notes=context_str
+        )
+        resp_lang = resolved_lang
 
         return {
             "responseType": "FOLLOW_UP_ACTION_GUIDANCE",
@@ -1568,10 +1485,10 @@ def ask_chatbot_engine(
 
     laws_list = res_dict.get("laws") or []
     is_fail_closed = (
-        res_dict.get("rag_status") == "NO_RELEVANT_SOURCE" or
-        not laws_list or
-        not retrieval_res.has_sufficient_context
+        res_dict.get("rag_status") == "NO_RELEVANT_SOURCE" and
+        not laws_list
     )
+    res_dict["provider"] = "gemini_api"
 
     if is_fail_closed:
         res_dict["applicableLaw"] = None

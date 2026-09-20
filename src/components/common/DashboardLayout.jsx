@@ -4,6 +4,8 @@ import CitizenSidebar from "@/components/citizen/CitizenSidebar";
 import GuideSidebar from "@/components/guide/GuideSidebar";
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import SuperAdminSidebar from "@/components/superadmin/SuperAdminSidebar";
+import MobileDrawer from "@/components/common/MobileDrawer";
+import MobileBottomNav from "@/components/common/MobileBottomNav";
 import { useAuth } from "@/context/AuthContext";
 
 const DashboardLayout = ({ children, role }) => {
@@ -19,6 +21,7 @@ const DashboardLayout = ({ children, role }) => {
   
   const [sidebarWidth, setSidebarWidth] = useState(260);
   const [isMobile, setIsMobile] = useState(false);
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 1024);
@@ -29,7 +32,14 @@ const DashboardLayout = ({ children, role }) => {
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-[#F7F1E6] text-[#18332B]" data-role={currentRole}>
-      {/* Sidebar */}
+      {/* Slide-out Mobile Navigation Drawer (For small screens < 1024px) */}
+      <MobileDrawer
+        isOpen={mobileDrawerOpen}
+        onClose={() => setMobileDrawerOpen(false)}
+        role={currentRole}
+      />
+
+      {/* Desktop Sidebar (For screens >= 1024px) */}
       {!isMobile && (
         <aside style={{ width: `${sidebarWidth}px` }} className="shrink-0 h-full">
           {currentRole === "superadmin" && <SuperAdminSidebar />}
@@ -40,12 +50,18 @@ const DashboardLayout = ({ children, role }) => {
       )}
 
       {/* Main Container */}
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <Topbar role={currentRole} />
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-[#F7F1E6]">
+      <div className="flex flex-1 flex-col overflow-hidden min-w-0">
+        <Topbar 
+          role={currentRole} 
+          onToggleSidebar={() => setMobileDrawerOpen((prev) => !prev)} 
+        />
+        <main className="flex-1 overflow-y-auto p-3 sm:p-6 lg:p-8 pb-24 lg:pb-8 bg-[#F7F1E6]">
           {children}
         </main>
       </div>
+
+      {/* Modern Sticky Bottom Navigation Bar (For mobile screens < 1024px) */}
+      <MobileBottomNav role={currentRole} />
     </div>
   );
 };

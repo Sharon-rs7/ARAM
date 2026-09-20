@@ -12,15 +12,15 @@ const CTA = () => {
         
         <div className="inline-flex items-center gap-2 rounded-full bg-[#DCEBDD] border border-[#B8D7BC] px-3.5 py-1.5 text-xs font-black text-[#163D32] shadow-2xs">
           <Sparkles size={14} />
-          <span>Begin Your Legal Resolution</span>
+          <span>{t("cta.tag", "Begin Your Legal Resolution")}</span>
         </div>
 
         <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#163D32] tracking-tight">
-          Not sure where to start?
+          {t("cta.heading", "Not sure where to start?")}
         </h2>
 
         <p className="text-sm sm:text-base text-[#4A5D54] max-w-xl mx-auto leading-relaxed">
-          Tell ARAM what happened. We'll help you understand your rights, prepare your documents, and find the next step.
+          {t("cta.desc", "Tell ARAM what happened. We'll help you understand your rights, prepare your documents, and find the next step.")}
         </p>
 
         <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3.5">
@@ -30,7 +30,7 @@ const CTA = () => {
             className="w-full sm:w-auto px-8 py-3.5 rounded-full bg-[#0D3B2E] hover:bg-[#165340] text-white font-bold text-sm shadow-md hover:shadow-lg transition inline-flex items-center justify-center gap-2.5 min-h-[48px]"
           >
             <MessageSquare size={16} />
-            <span>Ask ARAM AI</span>
+            <span>{t("cta.askAi", "Ask ARAM AI")}</span>
             <ArrowRight size={15} />
           </Link>
 
@@ -40,12 +40,12 @@ const CTA = () => {
             className="w-full sm:w-auto px-7 py-3.5 rounded-full bg-white border border-[#12805A] hover:border-[#0D3B2E] text-[#12805A] hover:bg-[#E8F3ED] font-bold text-sm shadow-2xs transition inline-flex items-center justify-center gap-2 min-h-[48px]"
           >
             <FileText size={16} />
-            <span>File a Grievance</span>
+            <span>{t("cta.fileGrievance", "File a Grievance")}</span>
           </Link>
         </div>
 
         <p className="text-xs text-[#65736D] pt-2">
-          Free Public Service • Confidential • Grounded in Indian Law
+          {t("cta.footerNote", "Free Public Service • Confidential • Grounded in Indian Law")}
         </p>
 
       </div>

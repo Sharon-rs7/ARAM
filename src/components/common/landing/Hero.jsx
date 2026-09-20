@@ -32,7 +32,7 @@ const Hero = () => {
 
             {/* Supporting Scannable Text */}
             <p className="text-sm sm:text-base text-[#4A5D54] leading-relaxed max-w-xl">
-              ARAM helps citizens understand legal information, identify <strong className="text-[#163D32] font-semibold">the right authorities</strong>, organize supporting evidence, and connect with verified <strong className="text-[#163D32] font-semibold">legal guides</strong> — in Tamil, English, and Hindi.
+              {t("hero.subtitle", "ARAM helps citizens understand legal information, identify the right authorities, organize supporting evidence, and connect with verified legal guides — in Tamil, English, and Hindi.")}
             </p>
 
             {/* Structured CTAs with Clear Dominance Hierarchy */}
@@ -73,17 +73,17 @@ const Hero = () => {
             <div className="pt-3 flex items-center gap-4 text-xs font-semibold text-[#65736D]">
               <span className="flex items-center gap-1">
                 <CheckCircle2 size={13} className="text-[#12805A]" />
-                No Legal Fees
+                {t("hero.noLegalFees", "No Legal Fees")}
               </span>
               <span>•</span>
               <span className="flex items-center gap-1">
                 <CheckCircle2 size={13} className="text-[#12805A]" />
-                Strict PII Privacy
+                {t("hero.piiPrivacy", "Strict PII Privacy")}
               </span>
               <span>•</span>
               <span className="flex items-center gap-1">
                 <CheckCircle2 size={13} className="text-[#12805A]" />
-                Tamil Nadu DLSA Aligned
+                {t("hero.dlsaAligned", "Tamil Nadu DLSA Aligned")}
               </span>
             </div>
 
