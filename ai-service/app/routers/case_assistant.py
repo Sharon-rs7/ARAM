@@ -32,6 +32,8 @@ class CaseAssistantRequest(BaseModel):
     evidenceFindings: Optional[List[Dict[str, Any]]] = None
     conversationHistory: Optional[List[Dict[str, Any]]] = None
     citizenContext: Optional[Dict[str, Any]] = None
+    conversationId: Optional[str] = None
+    sessionId: Optional[str] = None
 
 @router.post("/ai/case-assistant", dependencies=[Depends(verify_internal_token)])
 @router.post("/case-assistant", dependencies=[Depends(verify_internal_token)])
@@ -55,13 +57,16 @@ def case_assistant_endpoint(
         is_greeting = q_clean in greetings or any(q_clean.startswith(g) for g in ["hi ", "hello ", "vanakkam ", "வணக்கம் ", "namaste "])
 
         if request.citizenContext or user_role == "CITIZEN" or is_greeting:
+            session_key = request.sessionId or request.conversationId or (f"user_{x_user_id}" if x_user_id and x_user_id != "ANONYMOUS" else None)
             return ask_chatbot_engine(
                 message=query_msg,
                 language=request.language,
                 user_role=user_role,
                 complaint_id=complaint_id,
                 citizen_context=request.citizenContext,
-                complaint_custom_id=request.complaintCustomId
+                complaint_custom_id=request.complaintCustomId,
+                conversation_id=request.conversationId,
+                session_id=session_key
             )
 
         # 1. Fetch Case Context from Mongo if complaintId provided

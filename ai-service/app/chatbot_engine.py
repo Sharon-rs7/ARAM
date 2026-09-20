@@ -712,7 +712,9 @@ def ask_chatbot_engine(
         }
 
     raw_message = message.strip()
-    session_key = session_id or f"sess_{int(time.time()*1000)}"
+    user_prof = citizen_context.get("user") if (citizen_context and isinstance(citizen_context, dict)) else {}
+    user_id = (user_prof.get("userId") or user_prof.get("id")) if isinstance(user_prof, dict) else None
+    session_key = session_id or conversation_id or (f"user_{user_id}" if user_id else None) or f"sess_{int(time.time()*1000)}"
     existing_state = conversation_manager.get_or_create_state(session_key, language=language or "en")
     
     # Classify intent first
@@ -1054,11 +1056,15 @@ def ask_chatbot_engine(
     if citizen_context:
         matched_id = citizen_context.get("matchedCaseId")
         if matched_id == "UNAUTHORIZED":
-            unauth_msg = (
-                "மன்னிக்கவும், உங்கள் கணக்குடன் தொடர்புடைய இந்த புகார் எண் காணப்படவில்லை. தயவுசெய்து உங்கள் சரியான புகார் எண்ணை சரிபார்க்கவும்."
-                if resolved_lang.startswith("ta") else
-                "I could not find any complaint with that ID associated with your account. Please verify the complaint ID or refer to your active registered complaints."
-            )
+            if resolved_lang == "ta_tanglish":
+                unauth_msg = "Mannikavum, indha complaint ID ungaloda verified account-la associate aagala. Ungaloda correct complaint ID-ah verify pannunga or ungaloda active complaints list-ah check pannunga."
+            elif resolved_lang.startswith("ta"):
+                unauth_msg = "மன்னிக்கவும், உங்கள் கணக்குடன் தொடர்புடைய இந்த புகார் எண் காணப்படவில்லை. தயவுசெய்து உங்கள் சரியான புகார் எண்ணை சரிபார்க்கவும் அல்லது உங்கள் பதிவு செய்யப்பட்ட புகார்களைப் பார்க்கவும்."
+            elif resolved_lang.startswith("hi"):
+                unauth_msg = "माफ़ कीजिए, आपके सत्यापित खाते से जुड़ी इस शिकायत संख्या का कोई रिकॉर्ड नहीं मिला। कृपया अपनी सही शिकायत संख्या जांचें।"
+            else:
+                unauth_msg = "Access Restricted: I could not find any complaint with that ID associated with your verified citizen account. Please verify the complaint ID or refer to your active registered complaints."
+
             return {
                 "responseType": "UNAUTHORIZED_CASE",
                 "language": resolved_lang,
@@ -1069,6 +1075,7 @@ def ask_chatbot_engine(
                 "is_conversational": True,
                 "is_greeting": False,
                 "disclaimer": DISCLAIMER,
+                "options": ["Show My Complaints", "File New Grievance", "Talk to Legal Guide"],
                 "sessionId": session_key
             }
 
@@ -1082,20 +1089,23 @@ def ask_chatbot_engine(
 
         msg_lower = raw_message.lower()
         
-        # Only treat as explicit case status query if user explicitly asks for status/updates of their past complaint or provides a complaint ID
-        is_explicit_status_query = bool(re.search(
+        # Check if an explicit complaint ID or case number is mentioned
+        complaint_id_match = re.search(r"ARAM-(?:[0-9]{2,4}-[A-Z]{2,3}-[A-Z]{2,4}-[0-9]{3,8}|[0-9]{4}-[0-9]{3,8}|[0-9]{6,10})|\b(?:case|complaint)\s*#?\s*([0-9]{1,8})\b", raw_message, re.IGNORECASE)
+        is_complaint_id_present = bool(complaint_id_match)
+
+        is_explicit_status_query = is_complaint_id_present or bool(re.search(
             r"\b(status of (my|this|the)|check my complaint|complaint status|case status|track my complaint|"
             r"what happened to my complaint|en complaint status|en case status|புகார் நிலை|வழக்கின் நிலை|"
             r"show my complaint|my complaint details|uploaded documents for my complaint|what did my guide ask)\b",
             msg_lower
-        )) or bool(re.search(r"ARAM-[0-9]{2}-[A-Z]{2,3}-[A-Z]{2,4}-[0-9]{4,8}", raw_message, re.IGNORECASE))
+        ))
 
-        # Check if the user is describing a substantive new legal issue/dispute
+        # Check if the user is describing a substantive legal issue/dispute
         has_substantive_legal_facts = any(k in msg_lower for k in [
             "salary", "wages", "sambalam", "unpaid", "company", "employer", "aadhaar", "bank", "scam", "fraud",
             "loan", "deposit", "tenant", "landlord", "rent", "patta", "land", "property", "boundary",
-            "violence", "threat", "police", "defective", "refund", "bribe", "harassment", "cheated"
-        ]) and len(raw_message.split()) > 7
+            "violence", "threat", "police", "defective", "refund", "bribe", "harassment", "cheated", "encroach"
+        ])
 
         if not targeted_case and is_explicit_status_query and not has_substantive_legal_facts:
             # Check if an explicit ID in the message matches a case
@@ -1105,7 +1115,7 @@ def ask_chatbot_engine(
                 if (cid_str and cid_str.lower() in msg_lower) or (id_num and (f"#{id_num}" in msg_lower or f"case {id_num}" in msg_lower or f"complaint {id_num}" in msg_lower)):
                     targeted_case = c
                     break
-            if not targeted_case and len(active_cases) == 1:
+            if not targeted_case and len(active_cases) == 1 and is_explicit_status_query:
                 targeted_case = active_cases[0]
 
         if targeted_case and (is_explicit_status_query or matched_id):
@@ -1541,5 +1551,20 @@ def ask_chatbot_engine(
         "summary": res_dict.get("understanding")
     }
     conversation_manager.save_state(sess_state.get("sessionId"), sess_state)
+
+    # Save provisional case context so follow-up prompts ("how can i solve this", "what next") remember this issue
+    conversation_manager.set_provisional_issues(
+        session_key,
+        issues=[{
+            "type": cat_name,
+            "name": res_dict.get("applicableLaw") or cat_name,
+            "law": res_dict.get("applicableLaw") or tax_info.get("act_en"),
+            "section": res_dict.get("section") or tax_info.get("section_en"),
+            "authority": res_dict.get("recommendedAuthority") or tax_info.get("authority"),
+            "documents": res_dict.get("documents_required", req_docs)
+        }],
+        evidence=res_dict.get("documents_required", req_docs),
+        language=resolved_lang
+    )
 
     return res_dict

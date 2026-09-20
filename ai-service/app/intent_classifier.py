@@ -15,6 +15,7 @@ INTENTS = {
     "COMPLAINT_PREPARATION": "COMPLAINT_PREPARATION",
     "DOCUMENT_QUESTION": "DOCUMENT_QUESTION",
     "EMERGENCY": "EMERGENCY",
+    "CASE_LOOKUP": "CASE_LOOKUP",
     "UNCLEAR": "UNCLEAR"
 }
 
@@ -102,6 +103,13 @@ def classify_intent(text: str) -> Tuple[str, Dict[str, Any]]:
         for pat in SUBMIT_COMPLAINT_PATTERNS:
             if re.search(pat, clean_lower, re.IGNORECASE):
                 return INTENTS["SUBMIT_COMPLAINT"], {"confidence": 0.99}
+
+    # 2.5 Check Explicit Complaint ID / Case Lookup
+    complaint_match = re.search(r"\b(ARAM-(?:[0-9]{2,4}-[A-Z]{2,3}-[A-Z]{2,4}-[0-9]{3,8}|[0-9]{4}-[0-9]{3,8}|[0-9]{6,10}))\b", clean, re.IGNORECASE)
+    if complaint_match:
+        return INTENTS["CASE_LOOKUP"], {"confidence": 0.99, "complaint_id": complaint_match.group(1).upper()}
+    if re.search(r"^(?:case|complaint)\s*#?\s*([0-9]{1,8})\??$", clean_lower):
+        return INTENTS["CASE_LOOKUP"], {"confidence": 0.99, "case_number": re.search(r"^(?:case|complaint)\s*#?\s*([0-9]{1,8})\??$", clean_lower).group(1)}
 
     # 3. Check Explicit Language Requests (only for short language switches, not long grievance descriptions)
     if word_count <= 8 and not (has_legal_keyword and word_count > 4):

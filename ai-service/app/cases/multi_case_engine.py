@@ -11,14 +11,14 @@ CASE_INDICATORS = [
         "LABOUR_DISPUTE",
         [
             r"\b(salary|sambalam|wages|unpaid|pending salary|velai panam|employment|employer|manager|office|work panren|working in|company)\b",
-            r"\b(not paid|credit aagala|kudukala|tharala|varala|varale|kidaikala|balance|owner|withheld|original documents|certificates|deduction|arrears)\b"
+            r"\b(not paid|refused|refused to pay|not paying|non-payment|credit aagala|kudukala|tharala|varala|varale|kidaikala|balance|owner|withheld|original documents|certificates|deduction|arrears|did not pay|didn't pay)\b"
         ]
     ),
     (
         "CYBER_CRIME",
         [
             r"\b(aadhaar|pan card|bank details|otp|bank account|personal documents|identity|unauthorized|permission illama|financial transaction|loan)\b",
-            r"\b(misuse|misused|fraud|scam|process panna|phishing|hacked|forgery|debited|without permission|unauthorized use)\b"
+            r"\b(misuse|misused|fraud|scam|process panna|phishing|hacked|forgery|debited|without permission|unauthorized use|unauthorized|fake|stolen|theft|impersonat)\b"
         ]
     ),
     (

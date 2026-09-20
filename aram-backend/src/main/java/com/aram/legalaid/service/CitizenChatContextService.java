@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Service
 public class CitizenChatContextService {
 
-    private static final Pattern COMPLAINT_ID_PATTERN = Pattern.compile("(?i)ARAM-[0-9]{2}-[A-Z]{2,3}-[A-Z]{2,4}-[0-9]{4,8}");
+    private static final Pattern COMPLAINT_ID_PATTERN = Pattern.compile("(?i)ARAM-(?:[0-9]{2,4}-[A-Z]{2,3}-[A-Z]{2,4}-[0-9]{3,8}|[0-9]{4}-[0-9]{3,8}|[0-9]{6,10})");
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     private final UserService userService;
@@ -84,6 +84,17 @@ public class CitizenChatContextService {
             Matcher matcher = COMPLAINT_ID_PATTERN.matcher(userMessage);
             if (matcher.find()) {
                 detectedCustomId = matcher.group().toUpperCase();
+            } else {
+                Matcher numMatcher = Pattern.compile("(?i)\\b(?:case|complaint)\\s*#?\\s*([0-9]{1,8})\\b").matcher(userMessage);
+                if (numMatcher.find()) {
+                    try {
+                        Long numId = Long.parseLong(numMatcher.group(1));
+                        Optional<Complaint> cOpt = complaintRepository.findById(numId);
+                        if (cOpt.isPresent()) {
+                            detectedCustomId = cOpt.get().getComplaintCustomId();
+                        }
+                    } catch (Exception ignored) {}
+                }
             }
         }
 
@@ -116,9 +127,13 @@ public class CitizenChatContextService {
             }
         } else if (activeComplaintEntities.size() == 1) {
             String msgLower = userMessage != null ? userMessage.toLowerCase() : "";
-            if (msgLower.contains("status") || msgLower.contains("complaint") || msgLower.contains("case") ||
-                msgLower.contains("புகார்") || msgLower.contains("நிலை") || msgLower.contains("guide") ||
-                msgLower.contains("document") || msgLower.contains("ஆவணம்") || msgLower.contains("update")) {
+            boolean isExplicitStatus = msgLower.contains("status of") || msgLower.contains("complaint status") ||
+                msgLower.contains("case status") || msgLower.contains("track my") || msgLower.contains("புகார் நிலை") ||
+                msgLower.contains("வழக்கின் நிலை") || msgLower.contains("guide updates") || msgLower.contains("my uploaded documents");
+            boolean hasGrievanceFacts = msgLower.contains("salary") || msgLower.contains("wages") || msgLower.contains("unpaid") ||
+                msgLower.contains("patta") || msgLower.contains("land") || msgLower.contains("tenant") || msgLower.contains("rent") ||
+                msgLower.contains("cheated") || msgLower.contains("scam") || msgLower.contains("fraud") || msgLower.contains("threat");
+            if (isExplicitStatus && !hasGrievanceFacts) {
                 targetEntity = activeComplaintEntities.get(0);
                 matchedCaseId = targetEntity.getComplaintCustomId();
             }
