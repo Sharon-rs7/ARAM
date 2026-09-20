@@ -121,9 +121,10 @@ public class BlockchainService {
         boolean hashMatches = expectedComplaintHash.equals(block.getComplaintHash());
 
         java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String timestampStr = block.getTimestamp().format(formatter);
-        String baseData = block.getBlockIndex() + "|" + timestampStr + "|" + block.getPreviousHash() + "|" + block.getComplaintId() + "|" + block.getComplaintHash() + "|";
-        String expectedBlockHash = sha256(baseData + block.getNonce());
+        String dataToHash = (block.getBlockData() != null && !block.getBlockData().isEmpty())
+                ? block.getBlockData()
+                : (block.getBlockIndex() + "|" + block.getTimestamp().format(formatter) + "|" + block.getPreviousHash() + "|" + block.getComplaintId() + "|" + block.getComplaintHash() + "|" + block.getNonce());
+        String expectedBlockHash = sha256(dataToHash);
         boolean blockHashMatches = expectedBlockHash.equals(block.getBlockHash());
 
         boolean verified = hashMatches && blockHashMatches;
@@ -151,9 +152,10 @@ public class BlockchainService {
         if (genesis.getBlockIndex() != 0) {
             return false;
         }
-        String genesisTimestampStr = genesis.getTimestamp().format(formatter);
-        String genesisBaseData = genesis.getBlockIndex() + "|" + genesisTimestampStr + "|" + genesis.getPreviousHash() + "|" + genesis.getComplaintId() + "|" + genesis.getComplaintHash() + "|";
-        if (!sha256(genesisBaseData + genesis.getNonce()).equals(genesis.getBlockHash())) {
+        String genesisDataToHash = (genesis.getBlockData() != null && !genesis.getBlockData().isEmpty())
+                ? genesis.getBlockData()
+                : (genesis.getBlockIndex() + "|" + genesis.getTimestamp().format(formatter) + "|" + genesis.getPreviousHash() + "|" + genesis.getComplaintId() + "|" + genesis.getComplaintHash() + "|" + genesis.getNonce());
+        if (!sha256(genesisDataToHash).equals(genesis.getBlockHash())) {
             return false;
         }
         
@@ -167,9 +169,10 @@ public class BlockchainService {
             if (!current.getPreviousHash().equals(previous.getBlockHash())) {
                 return false;
             }
-            String timestampStr = current.getTimestamp().format(formatter);
-            String baseData = current.getBlockIndex() + "|" + timestampStr + "|" + current.getPreviousHash() + "|" + current.getComplaintId() + "|" + current.getComplaintHash() + "|";
-            if (!sha256(baseData + current.getNonce()).equals(current.getBlockHash())) {
+            String currentDataToHash = (current.getBlockData() != null && !current.getBlockData().isEmpty())
+                    ? current.getBlockData()
+                    : (current.getBlockIndex() + "|" + current.getTimestamp().format(formatter) + "|" + current.getPreviousHash() + "|" + current.getComplaintId() + "|" + current.getComplaintHash() + "|" + current.getNonce());
+            if (!sha256(currentDataToHash).equals(current.getBlockHash())) {
                 return false;
             }
         }

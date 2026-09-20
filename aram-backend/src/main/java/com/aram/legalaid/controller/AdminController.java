@@ -197,7 +197,7 @@ public class AdminController {
         return ResponseEntity.ok(mapperService.toUserResponse(saved));
     }
 
-    @GetMapping("/helpers")
+    @GetMapping({"/helpers", "/volunteers"})
     public ResponseEntity<List<UserResponse>> helpers(Principal principal) {
         String email = principal != null ? principal.getName() : "admin@gmail.com";
         User admin = userRepository.findByEmail(email).orElse(null);

@@ -301,7 +301,7 @@ public class VolunteerPerformanceController {
 
     private User requireAdmin() {
         User user = userService.currentUser();
-        if (user.getRole() != Role.ADMIN) throw new ForbiddenException("Admin role required");
+        if (user.getRole() != Role.ADMIN && user.getRole() != Role.SUPER_ADMIN) throw new ForbiddenException("Admin role required");
         return user;
     }
 }
