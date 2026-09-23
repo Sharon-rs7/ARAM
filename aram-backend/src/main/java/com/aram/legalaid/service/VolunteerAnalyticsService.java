@@ -173,6 +173,16 @@ public class VolunteerAnalyticsService {
             }
         }
 
+        for (Complaint c : cases) {
+            if (c.getUpdatedAt() != null) {
+                String dateStr = c.getUpdatedAt().format(formatter);
+                dateCounts.put(dateStr, dateCounts.getOrDefault(dateStr, 0L) + 1);
+            } else if (c.getCreatedAt() != null) {
+                String dateStr = c.getCreatedAt().format(formatter);
+                dateCounts.put(dateStr, dateCounts.getOrDefault(dateStr, 0L) + 1);
+            }
+        }
+
         for (Map.Entry<String, Long> entry : dateCounts.entrySet()) {
             Map<String, Object> item = new HashMap<>();
             item.put("date", entry.getKey());

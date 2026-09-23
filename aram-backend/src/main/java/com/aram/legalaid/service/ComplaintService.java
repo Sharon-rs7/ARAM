@@ -34,12 +34,16 @@ public class ComplaintService {
     private final CommunicationGateway communicationGateway;
     private final ComplaintPdfService complaintPdfService;
     private final WhatsAppService whatsAppService;
+    private final AuditLogService auditLogService;
+    private final FallbackAIAnalysisService fallbackAIAnalysisService;
+    private final VolunteerActivityService volunteerActivityService;
 
     public ComplaintService(ComplaintRepository complaintRepository, AIResultRepository aiResultRepository, UserService userService,
                             AIAnalysisService aiAnalysisService, NotificationService notificationService, MapperService mapperService,
                             BlockchainService blockchainService, AIClientService aiClientService, ProfileCompletionService profileCompletionService,
                             EmailService emailService, UserRepository userRepository, JobService jobService, RedisNotificationPublisher redisNotificationPublisher,
-                            CommunicationGateway communicationGateway, ComplaintPdfService complaintPdfService, WhatsAppService whatsAppService) {
+                            CommunicationGateway communicationGateway, ComplaintPdfService complaintPdfService, WhatsAppService whatsAppService,
+                            AuditLogService auditLogService, FallbackAIAnalysisService fallbackAIAnalysisService, VolunteerActivityService volunteerActivityService) {
         this.complaintRepository = complaintRepository;
         this.aiResultRepository = aiResultRepository;
         this.userService = userService;
@@ -56,6 +60,9 @@ public class ComplaintService {
         this.communicationGateway = communicationGateway;
         this.complaintPdfService = complaintPdfService;
         this.whatsAppService = whatsAppService;
+        this.auditLogService = auditLogService;
+        this.fallbackAIAnalysisService = fallbackAIAnalysisService;
+        this.volunteerActivityService = volunteerActivityService;
     }
 
     @Transactional
@@ -114,21 +121,45 @@ public class ComplaintService {
                 complaint.setCategory(com.aram.legalaid.enums.ComplaintCategory.valueOf(request.category().toUpperCase()));
             } catch (Exception e) {}
         }
+        if (complaint.getCategory() == null) {
+            complaint.setCategory(com.aram.legalaid.enums.ComplaintCategory.GENERAL_LEGAL_AID);
+        }
         if (request.priority() != null) {
             try {
                 complaint.setPriority(com.aram.legalaid.enums.PriorityLevel.valueOf(request.priority().toUpperCase()));
             } catch (Exception e) {}
         }
+        if (complaint.getPriority() == null) {
+            complaint.setPriority(com.aram.legalaid.enums.PriorityLevel.MEDIUM);
+        }
         complaint.setStatus(ComplaintStatus.SUBMITTED);
 
         Complaint savedComplaint = complaintRepository.save(complaint);
-        java.util.concurrent.CompletableFuture.runAsync(() -> {
+        try {
+            auditLogService.log("COMPLAINT_FILED", user.getEmail(), "New complaint registered: " + savedComplaint.getComplaintCustomId() + " in district " + savedComplaint.getDistrict());
+        } catch (Exception alEx) {
+            System.err.println("Audit log error on complaint submit: " + alEx.getMessage());
+        }
+        Runnable mineTask = () -> {
             try {
                 blockchainService.mineBlock(savedComplaint);
             } catch (Exception bex) {
                 System.err.println("Async blockchain mine failed: " + bex.getMessage());
             }
-        });
+        };
+
+        if (org.springframework.transaction.support.TransactionSynchronizationManager.isActualTransactionActive()) {
+            org.springframework.transaction.support.TransactionSynchronizationManager.registerSynchronization(
+                new org.springframework.transaction.support.TransactionSynchronization() {
+                    @Override
+                    public void afterCommit() {
+                        java.util.concurrent.CompletableFuture.runAsync(mineTask);
+                    }
+                }
+            );
+        } else {
+            java.util.concurrent.CompletableFuture.runAsync(mineTask);
+        }
         
         notificationService.create(user, "Your complaint has been submitted successfully. Complaint Custom ID: " + savedComplaint.getComplaintCustomId(), NotificationType.IN_APP);
 
@@ -198,6 +229,19 @@ public class ComplaintService {
         } catch (Exception ignored) {}
 
         jobService.createJob(savedComplaint.getId(), user.getId(), "COMPLAINT_ANALYSIS", "complaint_" + savedComplaint.getId(), metadataJson);
+
+        java.util.concurrent.CompletableFuture.runAsync(() -> {
+            try {
+                aiAnalysisService.analyzeAndSave(savedComplaint);
+            } catch (Exception ex) {
+                System.err.println("Async AI analysis failed, falling back to local heuristic: " + ex.getMessage());
+                try {
+                    fallbackAIAnalysisService.analyzeAndSave(savedComplaint);
+                } catch (Exception fex) {
+                    System.err.println("Fallback AI analysis error: " + fex.getMessage());
+                }
+            }
+        });
 
         return mapperService.toComplaintResponse(savedComplaint, null);
     }
@@ -380,6 +424,23 @@ public class ComplaintService {
             }
         }
 
+        if (user.getRole() == Role.HELPER) {
+            try {
+                volunteerActivityService.logActivity(
+                    user.getId(),
+                    request.status() == ComplaintStatus.RESOLVED || request.status() == ComplaintStatus.RESOLVED_BY_GUIDE ? "COMPLAINT_RESOLVED" : "STATUS_UPDATED",
+                    "Updated status of " + saved.getComplaintCustomId() + " to " + request.status(),
+                    "COMPLAINT",
+                    String.valueOf(saved.getId()),
+                    "/volunteer/cases",
+                    null,
+                    "{\"status\":\"" + request.status() + "\"}"
+                );
+            } catch (Exception vEx) {
+                System.err.println("Volunteer activity log error: " + vEx.getMessage());
+            }
+        }
+
         return mapperService.toComplaintResponse(saved, aiResultRepository.findByComplaint(saved).orElse(null));
     }
 
@@ -404,7 +465,7 @@ public class ComplaintService {
         User currentUser = userService.currentUser();
         List<Complaint> list;
         if (currentUser.getRole() == Role.SUPER_ADMIN || currentUser.getDistrict() == null || currentUser.getDistrict().equalsIgnoreCase("GLOBAL")) {
-            list = complaintRepository.findAll();
+            list = complaintRepository.findAllByOrderByCreatedAtDesc();
         } else {
             list = complaintRepository.findByDistrictOrderByCreatedAtDesc(currentUser.getDistrict());
         }

@@ -25,7 +25,7 @@ public class AIClientService {
     private final UserService userService;
     private final CitizenChatContextService citizenChatContextService;
 
-    @Value("${ai.internal.token:aram-secret-token-2026}")
+    @Value("${ai.internal.token:${internal.api.token:}}")
     private String internalToken;
 
     public AIClientService(AIServiceProperties properties, @Lazy UserService userService, @Lazy CitizenChatContextService citizenChatContextService) {
@@ -41,7 +41,9 @@ public class AIClientService {
     private HttpHeaders getHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.set("X-Internal-Token", internalToken != null ? internalToken : "aram-secret-token-2026");
+        if (internalToken != null && !internalToken.trim().isEmpty()) {
+            headers.set("X-Internal-Token", internalToken.trim());
+        }
         try {
             if (userService != null) {
                 com.aram.legalaid.model.User user = userService.currentUser();
@@ -140,24 +142,23 @@ public class AIClientService {
     public Map<String, Object> askChatbot(AiChatRequest request) {
         String url = properties.getUrl() + "/chat/ask";
         try {
-            AiChatRequest enrichedRequest = request;
-            if (request.citizenContext() == null && citizenChatContextService != null) {
-                CitizenChatContextDTO ctx = citizenChatContextService.buildContext(
-                        request.message(),
-                        request.complaintId(),
-                        request.complaintCustomId()
-                );
-                enrichedRequest = new AiChatRequest(
-                        request.message(),
-                        request.language(),
-                        request.userRole(),
-                        request.complaintId(),
-                        request.complaintCustomId(),
-                        request.conversationId(),
-                        request.sessionId(),
-                        ctx
-                );
-            }
+            CitizenChatContextDTO ctx = citizenChatContextService != null
+                    ? citizenChatContextService.buildContext(
+                            request.message(),
+                            request.complaintId(),
+                            request.complaintCustomId()
+                    )
+                    : null;
+            AiChatRequest enrichedRequest = new AiChatRequest(
+                    request.message(),
+                    request.language(),
+                    request.userRole(),
+                    request.complaintId(),
+                    request.complaintCustomId(),
+                    request.conversationId(),
+                    request.sessionId(),
+                    ctx
+            );
             HttpEntity<AiChatRequest> entity = new HttpEntity<>(enrichedRequest, getHeaders());
             ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
             return (Map<String, Object>) response.getBody();

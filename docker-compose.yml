@@ -2,12 +2,14 @@ version: '3.8'
 
 services:
   # --------------------------------------------------------------------------
-  # 1. Primary Self-Hosted LLM Inference (vLLM / Qwen)
+  # 1. Primary Self-Hosted LLM Inference (vLLM / Qwen) - Optional GPU Profile
   # --------------------------------------------------------------------------
   qwen-inference:
     image: vllm/vllm-openai:latest
     container_name: aram-qwen-inference
     restart: unless-stopped
+    profiles:
+      - gpu
     runtime: nvidia
     environment:
       - MODEL=Qwen/Qwen3-30B-A3B-Instruct
@@ -29,12 +31,18 @@ services:
     container_name: aram-mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: aram_db
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?DB_ROOT_PASSWORD must be set}
+      MYSQL_DATABASE: ${DB_NAME:-aram_db}
     ports:
       - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$${MYSQL_ROOT_PASSWORD} || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     networks:
       - aram-internal
 
@@ -46,6 +54,12 @@ services:
       - "27017:27017"
     volumes:
       - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --eval \"db.adminCommand('ping')\" || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
     networks:
       - aram-internal
 
@@ -57,6 +71,12 @@ services:
       - "6379:6379"
     volumes:
       - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+      start_period: 3s
     networks:
       - aram-internal
 
@@ -73,20 +93,28 @@ services:
       - "8000:8000"
     environment:
       - PORT=8000
-      - LLM_PROVIDER_PRIMARY=qwen
+      - LLM_PROVIDER_PRIMARY=${LLM_PROVIDER_PRIMARY:-gemini}
       - LLM_PROVIDER_FALLBACK=gemini
       - QWEN_BASE_URL=http://qwen-inference:8005/v1
       - QWEN_MODEL=Qwen/Qwen3-30B-A3B-Instruct
-      - GEMINI_API_KEY=${GEMINI_API_KEY}
-      - GEMINI_MODEL=gemini-1.5-flash
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - GEMINI_MODEL=${GEMINI_MODEL:-gemini-1.5-flash}
       - REDIS_HOST=redis
       - REDIS_PORT=6379
       - MONGO_URI=mongodb://mongodb:27017
       - MONGO_DB=aram_logs
+      - INTERNAL_API_TOKEN=${INTERNAL_API_TOKEN:?INTERNAL_API_TOKEN must be set}
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\" || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
     depends_on:
-      - qwen-inference
-      - redis
-      - mongodb
+      redis:
+        condition: service_healthy
+      mongodb:
+        condition: service_healthy
     networks:
       - aram-internal
       - aram-public
@@ -100,12 +128,13 @@ services:
     ports:
       - "8081:8081"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/aram_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=root
-      - JWT_SECRET=ARAMLegalAidJwtSecretKeyMustBe32CharactersOrLonger2026!
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/${DB_NAME:-aram_db}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME:-root}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-${DB_ROOT_PASSWORD:?DB_PASSWORD or DB_ROOT_PASSWORD must be set}}
+      - JWT_SECRET=${JWT_SECRET:?JWT_SECRET must be set}
     depends_on:
-      - mysql-db
+      mysql-db:
+        condition: service_healthy
     networks:
       - aram-internal
       - aram-public
@@ -119,16 +148,19 @@ services:
     ports:
       - "8082:8082"
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/aram_db?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=root
-      - JWT_SECRET=ARAMLegalAidJwtSecretKeyMustBe32CharactersOrLonger2026!
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/${DB_NAME:-aram_db}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=${DB_USERNAME:-root}
+      - SPRING_DATASOURCE_PASSWORD=${DB_PASSWORD:-${DB_ROOT_PASSWORD:?DB_PASSWORD or DB_ROOT_PASSWORD must be set}}
+      - JWT_SECRET=${JWT_SECRET:?JWT_SECRET must be set}
+      - INTERNAL_API_TOKEN=${INTERNAL_API_TOKEN:?INTERNAL_API_TOKEN must be set}
       - AI_SERVICE_URL=http://ai-service:8000
-      - SMTP_USERNAME=${SMTP_USERNAME}
-      - SMTP_PASSWORD=${SMTP_PASSWORD}
+      - SMTP_USERNAME=${SPRING_MAIL_USERNAME:-}
+      - SMTP_PASSWORD=${SPRING_MAIL_PASSWORD:-}
     depends_on:
-      - mysql-db
-      - ai-service
+      mysql-db:
+        condition: service_healthy
+      ai-service:
+        condition: service_healthy
     networks:
       - aram-internal
       - aram-public

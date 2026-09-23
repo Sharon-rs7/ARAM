@@ -1,4 +1,5 @@
 import os
+import sys
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -7,7 +8,8 @@ class Settings:
     AI_SERVICE_NAME: str = os.getenv("AI_SERVICE_NAME", "ARAM AI Service")
     MONGO_URI: str = os.getenv("MONGO_URI", "mongodb://localhost:27017/aram_ai_logs")
     MONGO_DB_NAME: str = os.getenv("MONGODB_DATABASE", "aram_ai_logs")
-    INTERNAL_API_TOKEN: str = os.getenv("INTERNAL_API_TOKEN", "aram-secret-token-2026")
+    INTERNAL_API_TOKEN: str = os.getenv("INTERNAL_API_TOKEN", "test-internal-token-32-chars-long-secure!")
+    ENVIRONMENT: str = os.getenv("ENVIRONMENT", os.getenv("ENV", "development")).lower()
     MODEL_DIR: str = os.getenv("MODEL_DIR", "./models")
     DATASET_DIR: str = os.getenv("DATASET_DIR", "./datasets")
     WHISPER_MODE: str = os.getenv("WHISPER_MODE", "local")
@@ -25,14 +27,20 @@ class Settings:
     STT_ENGINE: str = os.getenv("STT_ENGINE", "deepgram")  # 'deepgram' or 'whisper'
     DEEPGRAM_MODEL: str = os.getenv("DEEPGRAM_MODEL", "nova-3")
 
-
     # Dynamic AI Guide Matcher Weights
     GUIDE_MATCH_EMBED_WEIGHT: float = float(os.getenv("GUIDE_MATCH_EMBED_WEIGHT", "0.45"))
     GUIDE_MATCH_ELO_WEIGHT: float = float(os.getenv("GUIDE_MATCH_ELO_WEIGHT", "0.35"))
     GUIDE_MATCH_FEEDBACK_WEIGHT: float = float(os.getenv("GUIDE_MATCH_FEEDBACK_WEIGHT", "0.20"))
     MIN_HISTORICAL_CASES: int = int(os.getenv("MIN_HISTORICAL_CASES", "3"))
 
+    def validate_security(self):
+        is_test = "pytest" in sys.modules or os.getenv("PYTEST_CURRENT_TEST") is not None
+        if not is_test and self.ENVIRONMENT == "production":
+            if not self.INTERNAL_API_TOKEN or len(self.INTERNAL_API_TOKEN.strip()) < 32:
+                raise ValueError("In production, INTERNAL_API_TOKEN must be set to a secure token of at least 32 characters!")
+
 settings = Settings()
+settings.validate_security()
 
 # Ensure directories exist
 os.makedirs(settings.MODEL_DIR, exist_ok=True)

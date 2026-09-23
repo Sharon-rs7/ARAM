@@ -1,3 +1,4 @@
+import os
 import json
 import urllib.request
 import urllib.error
@@ -7,9 +8,10 @@ def test_citizen_ai_flows():
 
     # 1. Test AI direct endpoint with synthetic citizenContext
     url = "http://localhost:8000/chat/ask"
+    token = os.getenv("INTERNAL_API_TOKEN", "aram-secret-token-2026")
     headers = {
         "Content-Type": "application/json",
-        "X-Internal-Token": "aram-secret-token-2026",
+        "X-Internal-Token": token,
         "X-User-Id": "101",
         "X-User-Role": "CITIZEN",
         "X-User-District": "Coimbatore"

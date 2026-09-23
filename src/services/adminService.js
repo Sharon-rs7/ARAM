@@ -186,7 +186,7 @@ export const adminService = {
 
   getAiTelemetry: async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8000/telemetry/stats");
+      const res = await fetch("/telemetry/stats");
       if (res.ok) {
         return await res.json();
       }

@@ -156,7 +156,9 @@ public class StatewideAnalyticsService {
             }).count();
 
             Map<String, Object> stageItem = new LinkedHashMap<>();
-            stageItem.put("stage", stageCode);
+            stageItem.put("stage", stageLabel);
+            stageItem.put("stageCode", stageCode);
+            stageItem.put("statusCode", stageCode);
             stageItem.put("label", stageLabel);
             stageItem.put("count", count);
             stageItem.put("percentage", totalCases == 0 ? 0 : Math.round((count * 100.0) / totalCases));
@@ -200,14 +202,20 @@ public class StatewideAnalyticsService {
             Map<String, Object> dm = new LinkedHashMap<>();
             dm.put("district", dist);
             dm.put("totalCases", dTotal);
+            dm.put("totalGrievances", dTotal);
             dm.put("activeCases", dActive);
+            dm.put("assigned", dActive);
             dm.put("pendingCases", dPending);
+            dm.put("underReview", dPending);
             dm.put("resolvedCases", dResolved);
+            dm.put("resolved", dResolved);
             dm.put("criticalCases", dCritical);
             dm.put("overdueCases", dSlaBreached);
+            dm.put("slaBreached", dSlaBreached);
             dm.put("slaCompliance", dSlaCompliance);
             dm.put("totalGuides", dTotalGuides);
             dm.put("availableGuides", dAvailableGuides);
+            dm.put("activeGuides", dAvailableGuides);
             dm.put("hasAdmin", dAdmin != null);
             dm.put("adminName", dAdmin != null ? dAdmin.getName() : "Unassigned");
             dm.put("capacityWarning", dPending > (dAvailableGuides * 5));
@@ -240,6 +248,7 @@ public class StatewideAnalyticsService {
 
             Map<String, Object> cm = new LinkedHashMap<>();
             cm.put("category", catName);
+            cm.put("categoryCode", catName);
             cm.put("label", formatCategoryLabel(catName));
             cm.put("count", count);
             cm.put("percentage", totalCases == 0 ? 0 : Math.round((count * 100.0) / totalCases));

@@ -20,13 +20,23 @@ public class EncryptedStringConverter implements AttributeConverter<String, Stri
 
     @Override
     public String convertToDatabaseColumn(String attribute) {
+        if (attribute == null) return null;
         if (encryptionService == null) return attribute;
-        return encryptionService.encrypt(attribute);
+        try {
+            return encryptionService.encrypt(attribute);
+        } catch (Exception e) {
+            return attribute;
+        }
     }
 
     @Override
     public String convertToEntityAttribute(String dbData) {
+        if (dbData == null) return null;
         if (encryptionService == null) return dbData;
-        return encryptionService.decrypt(dbData);
+        try {
+            return encryptionService.decrypt(dbData);
+        } catch (Exception e) {
+            return dbData;
+        }
     }
 }

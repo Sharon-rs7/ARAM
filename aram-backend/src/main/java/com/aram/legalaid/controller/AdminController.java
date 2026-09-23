@@ -124,12 +124,25 @@ public class AdminController {
     }
 
     @GetMapping("/complaints")
-    public ResponseEntity<List<ComplaintResponse>> allComplaints() {
+    public ResponseEntity<List<ComplaintResponse>> allComplaints(Principal principal) {
         return ResponseEntity.ok(complaintService.allComplaints());
     }
 
-    @RequestMapping(value = "/complaints/{id}/status", method = {RequestMethod.PUT, RequestMethod.PATCH})
+
+    @RequestMapping(value = "/complaints/{id}/status", method = {RequestMethod.PUT, RequestMethod.PATCH, RequestMethod.POST})
     public ResponseEntity<ComplaintResponse> updateStatus(@PathVariable Long id, @Valid @RequestBody StatusUpdateRequest request, Principal principal) {
+        if (principal != null) {
+            User admin = userRepository.findByEmail(principal.getName()).orElse(null);
+            if (admin != null && admin.getRole() == Role.ADMIN) {
+                if (admin.getDistrict() != null && !admin.getDistrict().isEmpty() && !"GLOBAL".equalsIgnoreCase(admin.getDistrict())) {
+                    Complaint complaint = complaintRepository.findById(id)
+                            .orElseThrow(() -> new com.aram.legalaid.exception.ResourceNotFoundException("Complaint not found"));
+                    if (complaint.getDistrict() != null && !admin.getDistrict().equalsIgnoreCase(complaint.getDistrict())) {
+                        throw new com.aram.legalaid.exception.ForbiddenException("Access Denied: You cannot modify complaints outside your assigned district (" + admin.getDistrict() + ")");
+                    }
+                }
+            }
+        }
         ComplaintResponse response = complaintService.updateStatus(id, request);
         String adminName = principal != null ? principal.getName() : "admin@gmail.com";
         auditLogService.log("COMPLAINT_STATUS_UPDATED", adminName, "Updated status of complaint ID " + id + " to " + request.status());
@@ -245,6 +258,21 @@ public class AdminController {
         Complaint saved = complaintRepository.save(complaint);
         String adminName = principal != null ? principal.getName() : "admin@gmail.com";
         auditLogService.log("COMPLAINT_ASSIGNED", adminName, "Assigned helper " + helper.getEmail() + " to complaint ID " + id);
+
+        try {
+            volunteerActivityService.logActivity(
+                helper.getId(),
+                "CASE_ASSIGNED",
+                "Assigned to complaint " + (saved.getComplaintCustomId() != null ? saved.getComplaintCustomId() : String.valueOf(saved.getId())),
+                "COMPLAINT",
+                String.valueOf(saved.getId()),
+                "/volunteer/cases",
+                null,
+                "{\"district\":\"" + saved.getDistrict() + "\"}"
+            );
+        } catch (Exception vEx) {
+            System.err.println("Volunteer activity log error: " + vEx.getMessage());
+        }
 
         // Record GuideAssignmentDecisionLog
         try {
@@ -678,8 +706,19 @@ public class AdminController {
     }
 
     @GetMapping("/complaints/{id}/recommend-volunteers")
-    public ResponseEntity<List<Map<String, Object>>> recommendVolunteersForComplaint(@PathVariable Long id) {
+    public ResponseEntity<List<Map<String, Object>>> recommendVolunteersForComplaint(@PathVariable Long id, Principal principal) {
         Complaint complaint = complaintRepository.findById(id).orElseThrow(() -> new com.aram.legalaid.exception.ResourceNotFoundException("Complaint not found"));
+        
+        if (principal != null) {
+            User admin = userRepository.findByEmail(principal.getName()).orElse(null);
+            if (admin != null && admin.getRole() == Role.ADMIN) {
+                if (admin.getDistrict() != null && !admin.getDistrict().isEmpty() && !"GLOBAL".equalsIgnoreCase(admin.getDistrict())) {
+                    if (complaint.getDistrict() != null && !admin.getDistrict().equalsIgnoreCase(complaint.getDistrict())) {
+                        throw new com.aram.legalaid.exception.ForbiddenException("Access Denied: You cannot recommend volunteers for complaints outside your assigned district (" + admin.getDistrict() + ")");
+                    }
+                }
+            }
+        }
         
         String district = complaint.getDistrict();
         List<User> activeVolunteers = userRepository.findByRole(Role.HELPER).stream()
@@ -746,12 +785,46 @@ public class AdminController {
             Principal principal) {
         Complaint complaint = complaintRepository.findById(id).orElseThrow(() -> new com.aram.legalaid.exception.ResourceNotFoundException("Complaint not found"));
         
+        if (principal != null) {
+            User admin = userRepository.findByEmail(principal.getName()).orElse(null);
+            if (admin != null && admin.getRole() == Role.ADMIN) {
+                if (admin.getDistrict() != null && !admin.getDistrict().isEmpty() && !"GLOBAL".equalsIgnoreCase(admin.getDistrict())) {
+                    if (complaint.getDistrict() != null && !admin.getDistrict().equalsIgnoreCase(complaint.getDistrict())) {
+                        throw new com.aram.legalaid.exception.ForbiddenException("Access Denied: You cannot assign volunteers to complaints outside your assigned district (" + admin.getDistrict() + ")");
+                    }
+                }
+            }
+        }
+
         Long volunteerId = ((Number) body.get("volunteerId")).longValue();
         User volunteer = userRepository.findById(volunteerId).orElseThrow(() -> new com.aram.legalaid.exception.ResourceNotFoundException("Volunteer not found"));
         
+        if (volunteer.getStatus() != UserStatus.ACTIVE) {
+            throw new com.aram.legalaid.exception.BadRequestException("Selected volunteer is not active (status: " + volunteer.getStatus() + ").");
+        }
+
+        if (volunteer.getAvailabilityStatus() != null && !"AVAILABLE".equalsIgnoreCase(volunteer.getAvailabilityStatus())) {
+            throw new com.aram.legalaid.exception.BadRequestException("Selected volunteer is currently unavailable (" + volunteer.getAvailabilityStatus() + ").");
+        }
+
+        String overrideReason = (String) body.get("overrideReason");
+
+        // Check volunteer capacity
+        if (volunteer.getCurrentActiveCases() >= volunteer.getMaxActiveCases()) {
+            if (overrideReason == null || overrideReason.trim().isEmpty()) {
+                throw new com.aram.legalaid.exception.BadRequestException("Volunteer has reached maximum case capacity (" + volunteer.getMaxActiveCases() + " cases). An override reason is required.");
+            }
+        }
+
+        // Check cross-district assignment
+        if (complaint.getDistrict() != null && volunteer.getDistrict() != null && !complaint.getDistrict().equalsIgnoreCase(volunteer.getDistrict())) {
+            if (overrideReason == null || overrideReason.trim().isEmpty()) {
+                throw new com.aram.legalaid.exception.BadRequestException("Volunteer is registered in " + volunteer.getDistrict() + " but complaint is in " + complaint.getDistrict() + ". Cross-district assignment requires an override reason.");
+            }
+        }
+
         boolean isSensitiveCase = complaint.isSensitive() || complaint.isWomenSensitive() || com.aram.legalaid.enums.HelperGender.FEMALE == complaint.getPreferredHelperGender();
         if (isSensitiveCase && !"FEMALE".equalsIgnoreCase(volunteer.getGender())) {
-            String overrideReason = (String) body.get("overrideReason");
             if (overrideReason == null || overrideReason.trim().isEmpty()) {
                 throw new com.aram.legalaid.exception.BadRequestException("Gender preference override requires a specified reason.");
             }
@@ -759,6 +832,11 @@ public class AdminController {
             String adminName = principal != null ? principal.getName() : "admin@gmail.com";
             auditLogService.log("VOLUNTEER_GENDER_OVERRIDE", adminName, 
                 "Admin assigned male volunteer " + volunteer.getEmail() + " to sensitive complaint ID " + id + ". Reason: " + overrideReason);
+        } else if (overrideReason != null && !overrideReason.trim().isEmpty()) {
+            complaint.setAssignmentOverrideReason(overrideReason);
+            String adminName = principal != null ? principal.getName() : "admin@gmail.com";
+            auditLogService.log("VOLUNTEER_ASSIGNMENT_OVERRIDE", adminName,
+                "Admin override applied for assignment of volunteer " + volunteer.getEmail() + " to complaint ID " + id + ". Reason: " + overrideReason);
         }
         
         if (complaint.getAssignedHelper() != null) {

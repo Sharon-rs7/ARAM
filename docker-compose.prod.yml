@@ -7,16 +7,16 @@ services:
     container_name: aram-prod-mysql
     restart: unless-stopped
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-Root@Aram2026}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:?DB_ROOT_PASSWORD must be set}
       MYSQL_DATABASE: ${DB_NAME:-aram_db}
       MYSQL_USER: ${DB_USERNAME:-aram_user}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-AramSecurePassword2026!}
+      MYSQL_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set}
     ports:
       - "3306:3306"
     volumes:
       - aram_mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-Root@Aram2026}"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:?DB_ROOT_PASSWORD must be set}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -28,13 +28,13 @@ services:
     image: redis:7-alpine
     container_name: aram-prod-redis
     restart: unless-stopped
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-RedisSecurePassword2026!}
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:?REDIS_PASSWORD must be set}
     ports:
       - "6379:6379"
     volumes:
       - aram_redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-RedisSecurePassword2026!}", "ping"]
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:?REDIS_PASSWORD must be set}", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -78,13 +78,13 @@ services:
       SERVER_PORT: 8081
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${DB_NAME:-aram_db}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME:-aram_user}
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-AramSecurePassword2026!}
-      JWT_SECRET: ${JWT_SECRET:-ARAMLegalAidJwtSecretKeyForProductionDeployment2026!}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set}
       JWT_EXPIRATION_MS: 3600000
       JWT_REFRESH_EXPIRATION_MS: 604800000
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      REDIS_PASSWORD: ${REDIS_PASSWORD:-RedisSecurePassword2026!}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?REDIS_PASSWORD must be set}
     networks:
       - aram-internal-network
 
@@ -109,14 +109,14 @@ services:
       SPRING_PROFILES_ACTIVE: mysql
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${DB_NAME:-aram_db}?createDatabaseIfNotExist=true&useSSL=false&allowPublicKeyRetrieval=true
       SPRING_DATASOURCE_USERNAME: ${DB_USERNAME:-aram_user}
-      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:-AramSecurePassword2026!}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD must be set}
       SPRING_DATA_MONGODB_URI: mongodb://mongodb:27017/${MONGO_DB:-aram_logs}
-      JWT_SECRET: ${JWT_SECRET:-ARAMLegalAidJwtSecretKeyForProductionDeployment2026!}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set}
       AI_SERVICE_URL: http://ai-service:8000
-      AI_INTERNAL_TOKEN: ${AI_INTERNAL_TOKEN:-aram-secret-token-2026}
+      AI_INTERNAL_TOKEN: ${AI_INTERNAL_TOKEN:?AI_INTERNAL_TOKEN must be set}
       SMTP_HOST: ${SMTP_HOST:-smtp.gmail.com}
       SMTP_PORT: ${SMTP_PORT:-587}
-      SMTP_USERNAME: ${SMTP_USERNAME:-ouraramsupport@gmail.com}
+      SMTP_USERNAME: ${SMTP_USERNAME:-}
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
       APP_UPLOAD_DIR: /app/uploads
     volumes:
@@ -140,13 +140,13 @@ services:
       - "8000:8000"
     environment:
       PORT: 8000
-      GEMINI_API_KEY: ${GEMINI_API_KEY}
-      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-3.6-flash}
-      AI_INTERNAL_TOKEN: ${AI_INTERNAL_TOKEN:-aram-secret-token-2026}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-1.5-flash}
+      AI_INTERNAL_TOKEN: ${AI_INTERNAL_TOKEN:?AI_INTERNAL_TOKEN must be set}
       MONGO_URI: mongodb://mongodb:27017
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      REDIS_PASSWORD: ${REDIS_PASSWORD:-RedisSecurePassword2026!}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:?REDIS_PASSWORD must be set}
       RAG_INDEX_PATH: data/vector_index
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]

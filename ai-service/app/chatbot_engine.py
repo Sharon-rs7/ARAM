@@ -1241,6 +1241,8 @@ def ask_chatbot_engine(
             "responseType": "EMERGENCY",
             "language": resolved_lang,
             "problemSummary": "Urgent Safety / Protection Alert",
+            "understanding": em_msg,
+            "problemUnderstanding": "Urgent Safety / Protection Alert",
             "reply": em_msg,
             "answer": em_msg,
             "category": "WOMEN_SAFETY_DOMESTIC_VIOLENCE",
@@ -1248,6 +1250,7 @@ def ask_chatbot_engine(
             "human_review_required": True,
             "emergency": True,
             "where_to_complain": ["Police Emergency: 112", "Women Helpline: 181", "Protection Officer"],
+            "recommendedAuthority": "Police Emergency: 112 / Women Helpline: 181 / Protection Officer",
             "what_you_can_do_now": ["Contact Emergency 112 immediately", "Reach safe shelter", "Request DLSA emergency legal aid"],
             "disclaimer": DISCLAIMER,
             "sessionId": session_key
@@ -1450,8 +1453,11 @@ def ask_chatbot_engine(
             "is_greeting": False,
             "sessionId": sess_state.get("sessionId"),
             "suggestedActions": options[:3],
+            "procedure": options[:3] if options else ["Explain your legal problem in more detail", "Identify the parties involved", "Keep any supporting receipts or documents ready"],
+            "nextSteps": options[:3] if options else ["Explain your legal problem in more detail", "Identify the parties involved", "Keep any supporting receipts or documents ready"],
             "disclaimer": DISCLAIMER
         }
+
 
     # 9. Jurisdiction-Aware RAG Retrieval with Legal Relevance Gating
     history_summary = " ".join(sess_state.get("facts", []))

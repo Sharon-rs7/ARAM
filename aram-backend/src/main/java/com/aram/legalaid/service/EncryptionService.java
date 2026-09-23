@@ -3,6 +3,7 @@ package com.aram.legalaid.service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import javax.crypto.AEADBadTagException;
 import javax.crypto.Cipher;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
@@ -51,19 +52,27 @@ public class EncryptionService {
 
             return Base64.getEncoder().encodeToString(encryptedIvAndText);
         } catch (Exception e) {
-            System.err.println("Encryption failed: " + e.getMessage());
-            return plainText; // Fallback in case of exceptions
+            throw new IllegalStateException("CRITICAL ENCRYPTION FAILURE: Failed to encrypt sensitive data", e);
         }
     }
 
     public String decrypt(String cipherText) {
         if (cipherText == null) return null;
-        try {
-            byte[] decoded = Base64.getDecoder().decode(cipherText);
-            if (decoded.length < IV_LENGTH_BYTE) {
-                return cipherText;
-            }
 
+        byte[] decoded;
+        try {
+            decoded = Base64.getDecoder().decode(cipherText);
+        } catch (IllegalArgumentException e) {
+            // Not a valid Base64 string -> legacy unencrypted plain text
+            return cipherText;
+        }
+
+        // AES-GCM ciphertext must have at least IV (12 bytes) + 16 bytes auth tag = 28 bytes
+        if (decoded == null || decoded.length < IV_LENGTH_BYTE + 16) {
+            return cipherText;
+        }
+
+        try {
             byte[] iv = new byte[IV_LENGTH_BYTE];
             System.arraycopy(decoded, 0, iv, 0, IV_LENGTH_BYTE);
 
@@ -76,9 +85,10 @@ public class EncryptionService {
 
             byte[] plainTextBytes = cipher.doFinal(cipherBytes);
             return new String(plainTextBytes, StandardCharsets.UTF_8);
+        } catch (AEADBadTagException e) {
+            throw new IllegalStateException("CRITICAL DECRYPTION FAILURE: Authentication tag verification failed or invalid decryption key!", e);
         } catch (Exception e) {
-            // Gracefully return plain text string if not encrypted
-            return cipherText;
+            throw new IllegalStateException("CRITICAL DECRYPTION FAILURE: Failed to decrypt record: " + e.getMessage(), e);
         }
     }
 }

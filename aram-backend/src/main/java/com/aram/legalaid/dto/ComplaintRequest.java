@@ -10,11 +10,11 @@ import jakarta.validation.constraints.Size;
 
 public record ComplaintRequest(
         @NotBlank(message = "Complaint title is required")
-        @Size(min = 5, max = 150, message = "Title must be 5 to 150 characters")
+        @Size(min = 3, max = 150, message = "Title must be 3 to 150 characters")
         String title,
 
         @NotBlank(message = "Complaint description is required")
-        @Size(min = 20, max = 5000, message = "Description must be 20 to 5000 characters")
+        @Size(min = 5, max = 5000, message = "Description must be 5 to 5000 characters")
         String description,
 
         @NotBlank(message = "Language is required")

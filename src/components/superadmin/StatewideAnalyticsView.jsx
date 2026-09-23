@@ -260,10 +260,12 @@ export default function StatewideAnalyticsView({ onNavigateToComplaints }) {
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2.5 pt-2">
           {funnel.map((stage, idx) => {
             const pct = kpis.totalCases > 0 ? Math.round((stage.count * 100) / kpis.totalCases) : 0;
+            const stageCode = stage.statusCode || stage.stageCode || stage.stage;
+            const stageLabel = stage.label || stage.stage || stageCode;
             return (
               <button
-                key={stage.statusCode}
-                onClick={() => handleStageClick(stage.statusCode)}
+                key={stageCode || idx}
+                onClick={() => handleStageClick(stageCode)}
                 className="group p-3 rounded-2xl bg-white dark:bg-[#182C26] border border-slate-200 dark:border-emerald-800/50 hover:border-[#163D32] dark:hover:border-emerald-400 transition-all text-left flex flex-col justify-between hover:shadow-md cursor-pointer relative overflow-hidden"
               >
                 <div className="flex items-center justify-between">
@@ -280,7 +282,7 @@ export default function StatewideAnalyticsView({ onNavigateToComplaints }) {
                     {stage.count}
                   </div>
                   <div className="text-[11px] font-bold text-[#163D32] dark:text-emerald-200 line-clamp-1 mt-0.5">
-                    {stage.stage}
+                    {stageLabel}
                   </div>
                 </div>
 
@@ -368,28 +370,28 @@ export default function StatewideAnalyticsView({ onNavigateToComplaints }) {
                     <span>{d.district}</span>
                   </td>
                   <td className="py-3 px-3 font-extrabold text-[#18332B] dark:text-white">
-                    {d.totalGrievances}
+                    {d.totalGrievances ?? d.totalCases ?? 0}
                   </td>
                   <td className="py-3 px-3 font-semibold text-amber-600 dark:text-amber-400">
-                    {d.underReview}
+                    {d.underReview ?? d.pendingCases ?? 0}
                   </td>
                   <td className="py-3 px-3 font-semibold text-[#1F5948] dark:text-emerald-300">
-                    {d.assigned}
+                    {d.assigned ?? d.activeCases ?? 0}
                   </td>
                   <td className="py-3 px-3 font-bold text-emerald-700 dark:text-emerald-300">
-                    {d.resolved}
+                    {d.resolved ?? d.resolvedCases ?? 0}
                   </td>
                   <td className="py-3 px-3 font-extrabold">
-                    {d.slaBreached > 0 ? (
+                    {(d.slaBreached ?? d.overdueCases ?? 0) > 0 ? (
                       <span className="px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 text-[10px]">
-                        {d.slaBreached} Overdue
+                        {d.slaBreached ?? d.overdueCases} Overdue
                       </span>
                     ) : (
                       <span className="text-slate-400 dark:text-emerald-400/50">0</span>
                     )}
                   </td>
                   <td className="py-3 px-3 text-slate-700 dark:text-emerald-200">
-                    {d.activeGuides} Guides
+                    {d.activeGuides ?? d.availableGuides ?? d.totalGuides ?? 0} Guides
                   </td>
                   <td className="py-3 px-3">
                     {d.hasAdmin ? (
@@ -436,10 +438,11 @@ export default function StatewideAnalyticsView({ onNavigateToComplaints }) {
           </div>
 
           <div className="space-y-3 pt-2">
-            {categoryAnalytics.map(cat => {
+            {categoryAnalytics.map((cat, idx) => {
               const pct = kpis.totalCases > 0 ? Math.round((cat.count * 100) / kpis.totalCases) : 0;
+              const catKey = cat.categoryCode || cat.category || idx;
               return (
-                <div key={cat.categoryCode} className="p-3 rounded-2xl bg-white dark:bg-[#182C26] border border-slate-100 dark:border-emerald-800/40 flex flex-col gap-1.5">
+                <div key={catKey} className="p-3 rounded-2xl bg-white dark:bg-[#182C26] border border-slate-100 dark:border-emerald-800/40 flex flex-col gap-1.5">
                   <div className="flex items-center justify-between text-xs">
                     <span className="font-bold text-[#18332B] dark:text-white">
                       {cat.label}

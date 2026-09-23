@@ -79,14 +79,42 @@ LEGAL_QUESTION_KEYWORDS = [
 ]
 
 LEGAL_DOMAIN_KEYWORDS = [
+    # English keywords
     "land", "property", "patta", "chitta", "sale deed", "boundary", "encroachment", "survey", "tslr",
-    "rent", "tenant", "landlord", "advance", "deposit", "eviction", "lease", "vacate",
-    "salary", "wage", "employer", "company", "unpaid", "gratuity", "pf", "provident fund", "termination",
-    "consumer", "product", "defective", "warranty", "refund", "flipkart", "amazon", "service deficiency",
+    "rent", "tenant", "landlord", "advance", "deposit", "eviction", "lease", "vacate", "tenancy",
+    "salary", "wage", "employer", "employee", "company", "unpaid", "gratuity", "pf", "provident fund", "termination",
+    "consumer", "product", "defective", "warranty", "refund", "flipkart", "amazon", "service deficiency", "dealer",
     "cyber", "scam", "fraud", "otp", "phishing", "upi", "unauthorized", "bank", "hacked", "account debited",
-    "police", "fir", "complaint", "court", "lawyer", "advocate", "dlsa", "notice", "case", "bribe",
-    "accident", "insurance", "hospital", "cheated", "document", "forgery", "fake"
+    "police", "fir", "complaint", "court", "lawyer", "advocate", "dlsa", "notice", "case", "bribe", "corruption",
+    "accident", "insurance", "hospital", "cheated", "document", "forgery", "fake", "negligence",
+    "issue", "problem", "dispute", "grievance", "legal", "rights",
+
+    # Tamil keywords (தமிழ்)
+    "சம்பளம்", "ஊதியம்", "முதலாளி", "தொழிலாளர்", "வேலை", "வேலைநீக்கம்",
+    "நிலம்", "சொத்து", "பட்டா", "சிட்டா", "பத்திரம்", "ஆக்கிரமிப்பு", "வேலி", "எல்லை",
+    "வாடகை", "குடியிருப்பு", "முன்வைப்பு", "ஒப்பந்தம்", "வீட்டு உரிமையாளர்", "வாடகைதாரர்",
+    "நுகர்வோர்", "ரசீது", "பழுது", "பொருட்கள்", "பணம் திரும்ப", "விற்பனையாளர்",
+    "மோசடி", "சைபர்", "வங்கி", "பணம் பறிப்பு", "ஹேக்", "கணக்கு",
+    "காவல்துறை", "வழக்கு", "நீதிமன்றம்", "வழக்கறிஞர்", "புகார்", "லஞ்சம்", "ஊழல்",
+    "கணவர்", "மனைவி", "குடும்பம்", "வரதட்சணை", "கொடுமை", "துன்புறுத்தல்",
+    "விபத்து", "காப்பீடு", "மருத்துவமனை", "அலட்சியம்",
+    "தகவல் அறியும் உரிமை", "ரேஷன்", "முதியோர்", "குழந்தை", "பிரச்சனை", "சிக்கல்",
+
+    # Hindi keywords (हिंदी)
+    "वेतन", "मजदूरी", "नियोक्ता", "मालिक", "कर्मचारी", "नौकरी",
+    "जमीन", "संपत्ति", "कब्जा", "पट्टा", "विवाद",
+    "किराया", "मकान मालिक", "किरायेदार",
+    "धोखाधड़ी", "ऑनलाइन फ्रॉड", "बैंक", "ठगी",
+    "पुलिस", "शिकायत", "अदालत", "वकील", "घूस", "रिश्वत",
+    "दहेज", "घरेलू हिंसा", "प्रताड़ना", "मारपीट",
+    "हादसा", "दुर्घटना", "बीमा", "अस्पताल", "लापरवाही",
+    "मुद्दा", "समस्या", "परेशानी",
+
+    # Tanglish keywords
+    "sambalam", "velai", "mudhalali", "kudukala", "kudukkala", "sothu", "patta", 
+    "vaadagai", "vadagai", "mosadi", "kodumai", "prachanai", "sikkal"
 ]
+
 
 def classify_intent(text: str) -> Tuple[str, Dict[str, Any]]:
     clean = text.strip()

@@ -769,24 +769,42 @@ const SubmitComplaint = () => {
         console.warn("Citizen profile sync notice:", uErr);
       }
 
-      const finalTitle = title.trim() || aiHeadline || "Legal Aid Complaint";
+      let finalTitle = (title || "").trim();
+      if (!finalTitle) {
+        finalTitle = (aiHeadline || "").trim();
+      }
+      if (!finalTitle || finalTitle.length < 3) {
+        finalTitle = "Legal Aid Grievance";
+      }
+
+      let finalDescription = (description || "").trim();
+      if (!finalDescription || finalDescription.length < 5) {
+        toast.dismiss(toastId);
+        toast.error("Please provide a complaint description (at least 5 characters).");
+        setLoading(false);
+        return;
+      }
+
+      const rawLang = (aiDetectedLanguage || "English").toString().trim().toUpperCase();
+      const finalLang = ["TAMIL", "ENGLISH", "HINDI", "TANGLISH"].includes(rawLang) ? rawLang : "ENGLISH";
+      const finalDistrict = (location || "Ariyalur").trim();
       
       const payload = {
         title: finalTitle,
-        category: aiCategory,
-        location: location,
-        district: location,
-        description: description,
-        priority: aiPriority,
-        language: aiDetectedLanguage.toUpperCase(),
+        category: aiCategory || "GENERAL_LEGAL_AID",
+        location: finalDistrict,
+        district: finalDistrict,
+        description: finalDescription,
+        priority: aiPriority || "MEDIUM",
+        language: finalLang,
         identityVisibility: "VISIBLE",
         inputMode: "TEXT",
-        sensitive: aiSensitive,
-        preferredHelperGender: aiPreferredGuideGender,
+        sensitive: Boolean(aiSensitive),
+        preferredHelperGender: aiPreferredGuideGender || "ANY",
         disclaimerAccepted: true,
-        citizenOpinion: citizenOpinion.trim(),
-        additionalDetails: additionalDetails.trim(),
-        submissionMode: mode.toUpperCase()
+        citizenOpinion: (citizenOpinion || "").trim(),
+        additionalDetails: (additionalDetails || "").trim(),
+        submissionMode: (mode || "SIMPLE").toUpperCase()
       };
       
       const res = await complaintService.createComplaint(payload);
@@ -816,8 +834,12 @@ const SubmitComplaint = () => {
       toast.success("Complaint successfully registered!");
     } catch (err) {
       toast.dismiss(toastId);
+      const validationErrors = err.response?.data?.validationErrors;
       const serverMessage = err.response?.data?.message;
-      if (serverMessage) {
+      if (validationErrors && typeof validationErrors === "object" && Object.keys(validationErrors).length > 0) {
+        const errorDetails = Object.values(validationErrors).join(" • ");
+        toast.error(`Validation Error: ${errorDetails}`);
+      } else if (serverMessage) {
         toast.error(serverMessage);
       } else {
         toast.error("Failed to register complaint. Please check your network and try again.");

@@ -64,7 +64,7 @@ class GeminiProvider(BaseLLMProvider):
         for m in models_to_try:
             try:
                 client = genai.GenerativeModel(m)
-                resp = client.generate_content(prompt, generation_config=generation_config)
+                resp = client.generate_content(prompt, generation_config=generation_config, request_options={"timeout": 10.0})
                 if resp and resp.text:
                     self.model_name = m
                     self.client = client

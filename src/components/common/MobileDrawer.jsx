@@ -82,10 +82,10 @@ const MobileDrawer = ({ isOpen, onClose, role = "citizen" }) => {
           {
             title: "State Command Center",
             links: [
-              { label: "Master Dashboard", href: "/superadmin/dashboard", icon: LayoutDashboard },
-              { label: "Control Center", href: "/superadmin/control-center", icon: ShieldAlert },
-              { label: "All State Grievances", href: "/superadmin/complaints", icon: FolderCheck },
-              { label: "Platform Settings", href: "/superadmin/settings", icon: Settings },
+              { label: "Statewide Analytics", href: "/superadmin/dashboard?tab=analytics", icon: LayoutDashboard },
+              { label: "Regional Control", href: "/superadmin/dashboard?tab=districts", icon: ShieldAlert },
+              { label: "All State Grievances", href: "/superadmin/dashboard?tab=complaints", icon: FolderCheck },
+              { label: "Immutable Audit Logs", href: "/superadmin/audit-logs", icon: FileText },
             ],
           },
         ];
@@ -181,7 +181,10 @@ const MobileDrawer = ({ isOpen, onClose, role = "citizen" }) => {
               <nav className="space-y-1">
                 {section.links.map((link) => {
                   const Icon = link.icon;
-                  const isActive = location.pathname === link.href;
+                  const fullCurrentPath = location.pathname + location.search;
+                  const isActive = link.href.includes("?")
+                    ? (fullCurrentPath === link.href || (location.pathname === "/superadmin/dashboard" && (!location.search || location.search === "?tab=analytics") && link.href.includes("tab=analytics")))
+                    : (location.pathname === link.href);
 
                   return (
                     <Link

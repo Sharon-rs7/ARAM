@@ -36,3 +36,25 @@ def test_analyze_complaint_empty_description():
         headers={"X-Internal-Token": settings.INTERNAL_API_TOKEN}
     )
     assert response.status_code in [400, 422, 200]
+
+def test_analyze_complaint_missing_internal_token_returns_401():
+    payload = {
+        "description": "Valid complaint description about labor wages",
+        "language": "ENGLISH"
+    }
+    response = client.post("/complaint/analyze", json=payload)
+    assert response.status_code == 401
+    assert "Unauthorized" in response.json().get("detail", "")
+
+def test_analyze_complaint_invalid_internal_token_returns_401():
+    payload = {
+        "description": "Valid complaint description about labor wages",
+        "language": "ENGLISH"
+    }
+    response = client.post(
+        "/complaint/analyze",
+        json=payload,
+        headers={"X-Internal-Token": "completely-invalid-internal-token-1234"}
+    )
+    assert response.status_code == 401
+    assert "Unauthorized" in response.json().get("detail", "")

@@ -1,44 +1,9 @@
 import sys
-import types
 from dotenv import load_dotenv
 load_dotenv()
 
-# Inject mock modules for ML dependencies if not installed
-for mod_name in ['numpy', 'joblib', 'easyocr', 'cv2', 'pandas', 'sklearn', 'sentence_transformers', 'tensorflow', 'keras', 'scipy', 'pytesseract', 'faster_whisper']:
-    try:
-        __import__(mod_name)
-    except ImportError:
-        mock_mod = types.ModuleType(mod_name)
-        if mod_name == 'numpy':
-            mock_mod.zeros = lambda shape: [0] * (shape[1] if len(shape) > 1 else shape[0])
-            mock_mod.argmax = lambda arr: 0
-            mock_mod.array = lambda arr: arr
-        elif mod_name == 'joblib':
-            mock_mod.load = lambda path: None
-        elif mod_name == 'easyocr':
-            mock_mod.Reader = lambda *args, **kwargs: None
-        elif mod_name == 'scipy':
-            mock_sparse = types.ModuleType('scipy.sparse')
-            mock_sparse.csr_matrix = lambda *args, **kwargs: None
-            mock_sparse.hstack = lambda *args, **kwargs: None
-            mock_mod.sparse = mock_sparse
-            sys.modules['scipy.sparse'] = mock_sparse
-        elif mod_name == 'pandas':
-            class MockDataFrame:
-                def __init__(self, *args, **kwargs): pass
-            mock_mod.DataFrame = MockDataFrame
-        elif mod_name == 'pytesseract':
-            mock_mod.image_to_string = lambda *args, **kwargs: ""
-            mock_mod.get_tesseract_version = lambda *args, **kwargs: "4.0.0"
-        elif mod_name == 'faster_whisper':
-            class MockWhisperModel:
-                def __init__(self, *args, **kwargs): pass
-                def transcribe(self, *args, **kwargs):
-                    return [], type('Info', (object,), {'language': 'en', 'language_probability': 0.85})()
-            mock_mod.WhisperModel = MockWhisperModel
-        sys.modules[mod_name] = mock_mod
-
 import os
+
 import shutil
 import tempfile
 from fastapi import FastAPI, UploadFile, File, Form, HTTPException, Depends, Header

@@ -31,7 +31,7 @@ public class JobController {
     private final ObjectMapper objectMapper;
     private final com.aram.legalaid.service.AIAnalysisService aiAnalysisService;
 
-    @Value("${app.internal-token:aram-secret-token-2026}")
+    @Value("${app.internal-token:${internal.api.token:}}")
     private String internalToken;
 
     public JobController(JobService jobService, UserService userService,
@@ -104,8 +104,11 @@ public class JobController {
             @RequestHeader(value = "X-Internal-Token", required = false) String token,
             @RequestBody Map<String, String> payload
     ) {
-        // Authenticate FastAPI request using internal token
-        if (token == null || !token.equals(internalToken)) {
+        // Authenticate FastAPI request using internal token with constant-time comparison
+        if (token == null || internalToken == null || internalToken.trim().isEmpty() ||
+                !java.security.MessageDigest.isEqual(
+                        token.getBytes(java.nio.charset.StandardCharsets.UTF_8),
+                        internalToken.getBytes(java.nio.charset.StandardCharsets.UTF_8))) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Forbidden"));
         }
 

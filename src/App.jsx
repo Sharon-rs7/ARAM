@@ -226,7 +226,13 @@ function App() {
             <Route element={<ProtectedRoute allowedRoles={["SUPER_ADMIN", "ADMIN"]} />}>
               <Route path="/superadmin/dashboard" element={<SuperAdminDashboard />} />
               <Route path="/superadmin/audit-logs" element={<AuditLogs />} />
+              <Route path="/superadmin/audit" element={<Navigate to="/superadmin/audit-logs" replace />} />
               <Route path="/superadmin/regions/:district" element={<RegionalControlCenter />} />
+              <Route path="/superadmin/district/:district" element={<RegionalControlCenter />} />
+              <Route path="/superadmin/control-center" element={<Navigate to="/superadmin/dashboard?tab=districts" replace />} />
+              <Route path="/superadmin/complaints" element={<Navigate to="/superadmin/dashboard?tab=complaints" replace />} />
+              <Route path="/superadmin/complaints/:id" element={<RegionalComplaintDetails />} />
+              <Route path="/superadmin/complaint/:id" element={<RegionalComplaintDetails />} />
             </Route>
 
             {/* Role-based Dashboard redirects */}

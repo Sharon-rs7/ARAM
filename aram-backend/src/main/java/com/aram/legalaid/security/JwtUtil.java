@@ -26,13 +26,26 @@ public class JwtUtil {
     @Value("${app.jwt.refresh-token-expiry-days}")
     private long refreshTokenExpiryDays;
 
+    @Value("${spring.profiles.active:dev}")
+    private String activeProfile;
+
     @PostConstruct
     public void validateSecret() {
-        if ("ARAMLegalAidJwtSecretKeyForDevelopmentOnly2026".equals(secret)) {
-            System.err.println("==========================================================================");
-            System.err.println("WARNING: Running on default JWT secret key! This is insecure for production.");
-            System.err.println("Please configure the JWT_SECRET environment variable.");
-            System.err.println("==========================================================================");
+        boolean isProduction = "prod".equalsIgnoreCase(activeProfile) || "production".equalsIgnoreCase(activeProfile);
+        if (isProduction) {
+            if (secret == null || secret.trim().length() < 32 || "ARAMLegalAidJwtSecretKeyForDevelopmentOnly2026".equals(secret)) {
+                throw new IllegalStateException("CRITICAL SECURITY ERROR: In production, JWT secret key must be configured with a unique, cryptographically strong key of at least 32 characters! Configure JWT_SECRET.");
+            }
+        } else {
+            if (secret == null || secret.trim().length() < 32) {
+                secret = "ARAMLegalAidJwtSecretKeyForDevelopmentOnly2026";
+            }
+            if ("ARAMLegalAidJwtSecretKeyForDevelopmentOnly2026".equals(secret)) {
+                System.err.println("==========================================================================");
+                System.err.println("WARNING: Running on default JWT secret key! This is insecure for production.");
+                System.err.println("Please configure the JWT_SECRET environment variable.");
+                System.err.println("==========================================================================");
+            }
         }
     }
 

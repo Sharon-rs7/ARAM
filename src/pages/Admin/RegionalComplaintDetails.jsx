@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { complaintService } from "@/services/complaintService";
+import { useAuth } from "@/context/AuthContext";
 import SensitiveCasePanel from "@/components/admin/SensitiveCasePanel";
 import GuideAssignmentPanel from "@/components/admin/GuideAssignmentPanel";
 import {
@@ -22,6 +23,10 @@ import {
 export default function RegionalComplaintDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === "SUPER_ADMIN" || user?.role?.toUpperCase() === "SUPER_ADMIN";
+  const dashboardUrl = isSuperAdmin ? "/superadmin/dashboard?tab=complaints" : "/admin/dashboard";
+  const dashboardTitle = isSuperAdmin ? "Super Admin Grievance Queue" : "Regional Admin Dashboard";
   const [complaint, setComplaint] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -71,10 +76,10 @@ export default function RegionalComplaintDetails() {
           </p>
           <div className="flex gap-3 justify-center pt-2">
             <Link
-              to="/admin/dashboard"
+              to={dashboardUrl}
               className="px-4 py-2.5 bg-[#163D32] hover:bg-[#1F5948] text-white rounded-xl text-xs font-bold transition shadow-sm"
             >
-              Go to Dashboard
+              {isSuperAdmin ? "Return to Command Center" : "Go to Dashboard"}
             </Link>
             <button
               onClick={() => {
@@ -128,8 +133,8 @@ export default function RegionalComplaintDetails() {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 text-xs text-[#65736D] font-bold uppercase tracking-wider">
-              <Link to="/admin/dashboard" className="hover:text-[#163D32] flex items-center gap-1 transition">
-                <ArrowLeft size={14} /> Regional Admin Dashboard
+              <Link to={dashboardUrl} className="hover:text-[#163D32] flex items-center gap-1 transition">
+                <ArrowLeft size={14} /> {dashboardTitle}
               </Link>
               <span>/</span>
               <span className="text-[#163D32]">Case #{complaint.id}</span>

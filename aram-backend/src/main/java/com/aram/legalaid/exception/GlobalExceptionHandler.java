@@ -19,7 +19,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest request) {
         Map<String, String> errors = new LinkedHashMap<>();
         ex.getBindingResult().getFieldErrors().forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
-        return build(HttpStatus.BAD_REQUEST, "Validation failed", request, errors);
+        String detailedMessage = errors.isEmpty()
+                ? "Validation failed"
+                : "Validation failed: " + String.join("; ", errors.values());
+        System.err.println("[BACKEND VALIDATION FAILED] " + errors);
+        return build(HttpStatus.BAD_REQUEST, detailedMessage, request, errors);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
@@ -27,14 +31,19 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.NOT_FOUND, ex.getMessage(), request, null);
     }
 
-    @ExceptionHandler(BadRequestException.class)
-    public ResponseEntity<ApiError> handleBadRequest(BadRequestException ex, HttpServletRequest request) {
+    @ExceptionHandler({BadRequestException.class, org.springframework.http.converter.HttpMessageNotReadableException.class})
+    public ResponseEntity<ApiError> handleBadRequest(Exception ex, HttpServletRequest request) {
         return build(HttpStatus.BAD_REQUEST, ex.getMessage(), request, null);
     }
 
-    @ExceptionHandler({ForbiddenException.class, AuthorizationDeniedException.class})
-    public ResponseEntity<ApiError> handleForbidden(RuntimeException ex, HttpServletRequest request) {
+    @ExceptionHandler({ForbiddenException.class, AuthorizationDeniedException.class, org.springframework.security.access.AccessDeniedException.class})
+    public ResponseEntity<ApiError> handleForbidden(Exception ex, HttpServletRequest request) {
         return build(HttpStatus.FORBIDDEN, ex.getMessage(), request, null);
+    }
+
+    @ExceptionHandler(org.springframework.web.HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ApiError> handleMethodNotSupported(org.springframework.web.HttpRequestMethodNotSupportedException ex, HttpServletRequest request) {
+        return build(HttpStatus.METHOD_NOT_ALLOWED, ex.getMessage(), request, null);
     }
 
     @ExceptionHandler(BadCredentialsException.class)

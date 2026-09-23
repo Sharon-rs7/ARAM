@@ -92,6 +92,13 @@ const SuperAdminSidebar = () => {
           href: "/superadmin/dashboard?tab=ai_audit",
           tab: "ai_audit",
           icon: Bot
+        },
+        {
+          id: "audit_logs",
+          label: "Immutable Audit Logs",
+          href: "/superadmin/audit-logs",
+          icon: ShieldCheck,
+          badge: "SHA-256"
         }
       ]
     }
@@ -149,7 +156,9 @@ const SuperAdminSidebar = () => {
             <nav className="space-y-1">
               {group.items.map((item) => {
                 const Icon = item.icon;
-                const isActive = isDashboard && currentTab === item.tab;
+                const isActive = item.tab
+                  ? (isDashboard && currentTab === item.tab)
+                  : (location.pathname === item.href);
 
                 return (
                   <Link

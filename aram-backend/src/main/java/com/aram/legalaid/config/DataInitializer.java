@@ -31,11 +31,20 @@ import com.aram.legalaid.model.Region;
 
 @Configuration
 public class DataInitializer {
-    @org.springframework.beans.factory.annotation.Value("${app.jwt.secret}")
+    @org.springframework.beans.factory.annotation.Value("${app.jwt.secret:}")
     private String jwtSecret;
 
     @org.springframework.beans.factory.annotation.Value("${spring.profiles.active:}")
     private String activeProfile;
+
+    @org.springframework.beans.factory.annotation.Value("${app.seed.enabled:false}")
+    private boolean seedEnabled;
+
+    @org.springframework.beans.factory.annotation.Value("${SUPERADMIN_EMAIL:}")
+    private String superAdminEmail;
+
+    @org.springframework.beans.factory.annotation.Value("${SUPERADMIN_PASSWORD:}")
+    private String superAdminPassword;
 
     @Bean
     CommandLineRunner seed(
@@ -59,28 +68,55 @@ public class DataInitializer {
             boolean isJUnitTest = java.util.Arrays.stream(Thread.currentThread().getStackTrace())
                     .anyMatch(element -> element.getClassName().startsWith("org.junit.") || element.getClassName().startsWith("org.springframework.test."));
 
-            if (!isJUnitTest && ("mysql".equalsIgnoreCase(activeProfile) || "prod".equalsIgnoreCase(activeProfile))) {
-                if ("ARAMLegalAidJwtSecretKeyForDevelopmentOnly2026".equals(jwtSecret)) {
-                    System.err.println("WARNING: Running with default development JWT secret in MySQL mode.");
+            if (!isJUnitTest && ("prod".equalsIgnoreCase(activeProfile) || "production".equalsIgnoreCase(activeProfile))) {
+                if (jwtSecret == null || jwtSecret.trim().length() < 32 ||
+                        jwtSecret.contains("DevelopmentOnly") ||
+                        jwtSecret.contains("MustBe32Characters") ||
+                        "ARAMLegalAidJwtSecretKeyForDevelopmentOnly2026".equals(jwtSecret)) {
+                    throw new IllegalStateException("CRITICAL SECURITY ERROR: Production profile active without a cryptographically secure JWT_SECRET (minimum 32 characters required)!");
                 }
             }
 
-            try {
-                jdbcTemplate.execute("ALTER SEQUENCE complaint_seq RESTART WITH 15");
-            } catch (Exception e) {
-                System.out.println("Could not alter sequence: " + e.getMessage());
-            }
+            boolean shouldSeedDemoData = seedEnabled || "dev".equalsIgnoreCase(activeProfile) || "demo".equalsIgnoreCase(activeProfile) || isJUnitTest;
 
-            // Seed Admin User
-            if (!userRepository.existsByEmail("admin@gmail.com")) {
-                User admin = new User();
-                admin.setName("ARAM Admin");
-                admin.setEmail("admin@gmail.com");
-                admin.setMobile("9876543210");
-                admin.setPasswordHash(passwordEncoder.encode("Admin@123"));
-                admin.setRole(Role.ADMIN);
-                admin.setStatus(UserStatus.ACTIVE);
-                saveUserSafely(userRepository, admin);
+            if (shouldSeedDemoData) {
+                try {
+                    jdbcTemplate.execute("ALTER SEQUENCE complaint_seq RESTART WITH 15");
+                } catch (Exception e) {
+                    // Ignored on non-supporting databases
+                }
+
+                // Seed Admin User
+                if (!userRepository.existsByEmail("admin@gmail.com")) {
+                    User admin = new User();
+                    admin.setName("ARAM Admin");
+                    admin.setEmail("admin@gmail.com");
+                    admin.setMobile("9876543210");
+                    admin.setPasswordHash(passwordEncoder.encode("Admin@123"));
+                    admin.setRole(Role.ADMIN);
+                    admin.setStatus(UserStatus.ACTIVE);
+                    saveUserSafely(userRepository, admin);
+                }
+            } else {
+                // Production bootstrap: Seed Super Admin if credentials supplied via environment
+                if (superAdminEmail != null && !superAdminEmail.trim().isEmpty() &&
+                        superAdminPassword != null && !superAdminPassword.trim().isEmpty()) {
+                    if (!userRepository.existsByEmail(superAdminEmail.trim())) {
+                        String pass = superAdminPassword.trim();
+                        if (pass.length() < 8) {
+                            throw new IllegalStateException("SUPERADMIN_PASSWORD must be at least 8 characters long!");
+                        }
+                        User sa = new User();
+                        sa.setName("Super Admin");
+                        sa.setEmail(superAdminEmail.trim());
+                        sa.setMobile("9999999999");
+                        sa.setPasswordHash(passwordEncoder.encode(pass));
+                        sa.setRole(Role.SUPER_ADMIN);
+                        sa.setStatus(UserStatus.ACTIVE);
+                        saveUserSafely(userRepository, sa);
+                        System.out.println("Initialized bootstrap Super Admin account: " + superAdminEmail.trim());
+                    }
+                }
             }
             
             // Seed Authority mappings
@@ -243,8 +279,9 @@ public class DataInitializer {
                 }
             }
 
-            // Seed Advocate and Authority accounts
-            if (!userRepository.existsByEmail("advocate@gmail.com")) {
+            if (shouldSeedDemoData) {
+                // Seed Advocate and Authority accounts
+                if (!userRepository.existsByEmail("advocate@gmail.com")) {
                 User advocate = new User();
                 advocate.setName("ARAM Advocate");
                 advocate.setEmail("advocate@gmail.com");
@@ -606,6 +643,7 @@ public class DataInitializer {
                         performanceProfileRepository.save(pp);
                     }
                 }
+            }
             }
         };
     }

@@ -2,7 +2,7 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { 
   Home, MessageSquare, Plus, Clock, Bell, 
-  FolderCheck, BarChart3, User, ShieldAlert, Users, LayoutDashboard, Settings
+  FolderCheck, BarChart3, User, ShieldAlert, Users, LayoutDashboard, Settings, FileText
 } from "lucide-react";
 import { useNotifications } from "@/context/NotificationContext";
 import { useLanguage } from "@/context/LanguageContext";
@@ -31,10 +31,10 @@ const MobileBottomNav = ({ role = "citizen" }) => {
         ];
       case "superadmin":
         return [
-          { id: "dashboard", label: "Master", href: "/superadmin/dashboard", icon: LayoutDashboard },
-          { id: "control", label: "Control", href: "/superadmin/control-center", icon: ShieldAlert },
-          { id: "complaints", label: "Grievances", href: "/superadmin/complaints", icon: FolderCheck },
-          { id: "settings", label: "Settings", href: "/superadmin/settings", icon: Settings },
+          { id: "dashboard", label: "Analytics", href: "/superadmin/dashboard?tab=analytics", icon: LayoutDashboard },
+          { id: "control", label: "Regions", href: "/superadmin/dashboard?tab=districts", icon: ShieldAlert },
+          { id: "complaints", label: "Grievances", href: "/superadmin/dashboard?tab=complaints", icon: FolderCheck },
+          { id: "audit", label: "Audit Logs", href: "/superadmin/audit-logs", icon: FileText },
         ];
       case "citizen":
       default:
@@ -85,8 +85,10 @@ const MobileBottomNav = ({ role = "citizen" }) => {
       <div className="flex items-center justify-around max-w-md mx-auto">
         {navItems.map((item) => {
           const Icon = item.icon;
-          const isActive = location.pathname === item.href || 
-            (item.href !== "/citizen/dashboard" && location.pathname.startsWith(item.href));
+          const fullCurrentPath = location.pathname + location.search;
+          const isActive = item.href.includes("?")
+            ? (fullCurrentPath === item.href || (location.pathname === "/superadmin/dashboard" && (!location.search || location.search === "?tab=analytics") && item.href.includes("tab=analytics")))
+            : (location.pathname === item.href || (item.href !== "/citizen/dashboard" && location.pathname.startsWith(item.href)));
 
           // Center elevated FAB button for filing new grievances
           if (item.isFab) {

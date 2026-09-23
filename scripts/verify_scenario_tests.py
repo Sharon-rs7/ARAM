@@ -1,4 +1,4 @@
-﻿import urllib.request
+import urllib.request
 import json
 import sys
 
@@ -9,11 +9,14 @@ print("=" * 80)
 print("         ARAM AI — 4 CRITICAL SCENARIO EMPIRICAL VERIFICATION SUITE")
 print("=" * 80)
 
+import os
+TOKEN = os.getenv("INTERNAL_API_TOKEN", "aram-secret-token-2026")
+
 def post_chat(msg, lang):
     req = urllib.request.Request(
         "http://localhost:8000/chat/ask",
         data=json.dumps({"message": msg, "language": lang}).encode("utf-8"),
-        headers={"Content-Type": "application/json", "X-Internal-Token": "aram-secret-token-2026"}
+        headers={"Content-Type": "application/json", "X-Internal-Token": TOKEN}
     )
     with urllib.request.urlopen(req) as resp:
         return json.loads(resp.read().decode("utf-8"))
