@@ -10,27 +10,27 @@ import { documentService } from "@/services/documentService";
 import ErrorBoundary from "@/components/common/ErrorBoundary";
 
 /* Landing & Auth */
-const LandingPage = lazy(() => import("./pages/landing/LandingPage"));
-const Login = lazy(() => import("./pages/auth/Login"));
-const Register = lazy(() => import("./pages/auth/Register"));
-const ForgotPassword = lazy(() => import("./pages/auth/ForgotPassword"));
-const OTPVerification = lazy(() => import("./pages/auth/OTPVerification"));
-const ActivateAccount = lazy(() => import("./pages/auth/ActivateAccount"));
+const LandingPage = lazy(() => import("./pages/Landing/LandingPage"));
+const Login = lazy(() => import("./pages/Auth/Login"));
+const Register = lazy(() => import("./pages/Auth/Register"));
+const ForgotPassword = lazy(() => import("./pages/Auth/ForgotPassword"));
+const OTPVerification = lazy(() => import("./pages/Auth/OTPVerification"));
+const ActivateAccount = lazy(() => import("./pages/Auth/ActivateAccount"));
 
 /* Citizen */
-const Dashboard = lazy(() => import("./pages/citizen/Dashboard"));
-const SubmitComplaint = lazy(() => import("./pages/citizen/SubmitComplaint"));
-const AIAnalysis = lazy(() => import("./pages/citizen/AIAnalysis"));
-const ComplaintHistory = lazy(() => import("./pages/citizen/ComplaintHistory"));
-const ComplaintDetails = lazy(() => import("./pages/citizen/ComplaintDetails"));
-const Notifications = lazy(() => import("./pages/citizen/Notifications"));
-const Chatbot = lazy(() => import("./pages/citizen/Chatbot"));
-const MessagesInbox = lazy(() => import("./pages/citizen/MessagesInbox"));
-const Profile = lazy(() => import("./pages/citizen/Profile"));
-const Settings = lazy(() => import("./pages/citizen/Settings"));
-const CitizenDocuments = lazy(() => import("./pages/citizen/CitizenDocuments"));
-const TrackComplaint = lazy(() => import("./pages/citizen/TrackComplaint"));
-const HelpCenter = lazy(() => import("./pages/citizen/HelpCenter"));
+const Dashboard = lazy(() => import("./pages/Citizen/Dashboard"));
+const SubmitComplaint = lazy(() => import("./pages/Citizen/SubmitComplaint"));
+const AIAnalysis = lazy(() => import("./pages/Citizen/AIAnalysis"));
+const ComplaintHistory = lazy(() => import("./pages/Citizen/ComplaintHistory"));
+const ComplaintDetails = lazy(() => import("./pages/Citizen/ComplaintDetails"));
+const Notifications = lazy(() => import("./pages/Citizen/Notifications"));
+const Chatbot = lazy(() => import("./pages/Citizen/Chatbot"));
+const MessagesInbox = lazy(() => import("./pages/Citizen/MessagesInbox"));
+const Profile = lazy(() => import("./pages/Citizen/Profile"));
+const Settings = lazy(() => import("./pages/Citizen/Settings"));
+const CitizenDocuments = lazy(() => import("./pages/Citizen/CitizenDocuments"));
+const TrackComplaint = lazy(() => import("./pages/Citizen/TrackComplaint"));
+const HelpCenter = lazy(() => import("./pages/Citizen/HelpCenter"));
 
 /* Volunteer */
 const VolunteerDashboard = lazy(() => import("./pages/guide/Dashboard"));
@@ -42,40 +42,40 @@ const VolunteerSettings = lazy(() => import("./pages/guide/Settings"));
 const MyAnalytics = lazy(() => import("./pages/guide/MyAnalytics"));
 
 /* Admin */
-const AdminDashboard = lazy(() => import("./pages/admin/Dashboard"));
-const ManageUsers = lazy(() => import("./pages/admin/ManageUsers"));
-const ManageComplaints = lazy(() => import("./pages/admin/ManageComplaints"));
-const AdminComplaintDetails = lazy(() => import("./pages/admin/ComplaintDetails"));
-const ManageVolunteers = lazy(() => import("./pages/admin/ManageVolunteers"));
-const Departments = lazy(() => import("./pages/admin/Departments"));
-const Analytics = lazy(() => import("./pages/admin/Analytics"));
-const Reports = lazy(() => import("./pages/admin/Reports"));
-const AdminProfile = lazy(() => import("./pages/admin/Profile"));
-const AdminSettings = lazy(() => import("./pages/admin/Settings"));
+const AdminDashboard = lazy(() => import("./pages/Admin/Dashboard"));
+const ManageUsers = lazy(() => import("./pages/Admin/ManageUsers"));
+const ManageComplaints = lazy(() => import("./pages/Admin/ManageComplaints"));
+const AdminComplaintDetails = lazy(() => import("./pages/Admin/ComplaintDetails"));
+const ManageVolunteers = lazy(() => import("./pages/Admin/ManageVolunteers"));
+const Departments = lazy(() => import("./pages/Admin/Departments"));
+const Analytics = lazy(() => import("./pages/Admin/Analytics"));
+const Reports = lazy(() => import("./pages/Admin/Reports"));
+const AdminProfile = lazy(() => import("./pages/Admin/Profile"));
+const AdminSettings = lazy(() => import("./pages/Admin/Settings"));
 const AuditLogs = lazy(() => import("./pages/superadmin/AuditLogs"));
 const SuperAdminDashboard = lazy(() => import("./pages/superadmin/SuperAdminDashboard"));
 
 /* Regional Admin */
-const RegionalAdminDashboard = lazy(() => import("./pages/admin/RegionalAdminDashboard"));
-const RegionalComplaints = lazy(() => import("./pages/admin/RegionalComplaints"));
-const RegionalComplaintDetails = lazy(() => import("./pages/admin/RegionalComplaintDetails"));
-const RegionalCitizens = lazy(() => import("./pages/admin/RegionalCitizens"));
-const RegionalGuides = lazy(() => import("./pages/admin/RegionalGuides"));
-const RegionalAnalytics = lazy(() => import("./pages/admin/RegionalAnalytics"));
-const RegionalGuideRequests = lazy(() => import("./pages/admin/RegionalGuideRequests"));
+const RegionalAdminDashboard = lazy(() => import("./pages/Admin/RegionalAdminDashboard"));
+const RegionalComplaints = lazy(() => import("./pages/Admin/RegionalComplaints"));
+const RegionalComplaintDetails = lazy(() => import("./pages/Admin/RegionalComplaintDetails"));
+const RegionalCitizens = lazy(() => import("./pages/Admin/RegionalCitizens"));
+const RegionalGuides = lazy(() => import("./pages/Admin/RegionalGuides"));
+const RegionalAnalytics = lazy(() => import("./pages/Admin/RegionalAnalytics"));
+const RegionalGuideRequests = lazy(() => import("./pages/Admin/RegionalGuideRequests"));
 const RegionalControlCenter = lazy(() => import("./pages/superadmin/RegionalControlCenter"));
-const VolunteerActivityOverview = lazy(() => import("./pages/admin/VolunteerActivityOverview"));
-const VolunteerActivityDetails = lazy(() => import("./pages/admin/VolunteerActivityDetails"));
-const VolunteerAnalytics = lazy(() => import("./pages/admin/VolunteerAnalytics"));
+const VolunteerActivityOverview = lazy(() => import("./pages/Admin/VolunteerActivityOverview"));
+const VolunteerActivityDetails = lazy(() => import("./pages/Admin/VolunteerActivityDetails"));
+const VolunteerAnalytics = lazy(() => import("./pages/Admin/VolunteerAnalytics"));
 
 /* Legal & Errors */
-const TermsConditions = lazy(() => import("./pages/legal/TermsConditions"));
-const PrivacyPolicy = lazy(() => import("./pages/legal/PrivacyPolicy"));
-const Disclaimer = lazy(() => import("./pages/legal/Disclaimer"));
-const CookiePolicy = lazy(() => import("./pages/legal/CookiePolicy"));
-const NotFound = lazy(() => import("./pages/errors/NotFound"));
-const ServerError = lazy(() => import("./pages/errors/ServerError"));
-const Unauthorized = lazy(() => import("./pages/errors/Unauthorized"));
+const TermsConditions = lazy(() => import("./pages/Legal/TermsConditions"));
+const PrivacyPolicy = lazy(() => import("./pages/Legal/PrivacyPolicy"));
+const Disclaimer = lazy(() => import("./pages/Legal/Disclaimer"));
+const CookiePolicy = lazy(() => import("./pages/Legal/CookiePolicy"));
+const NotFound = lazy(() => import("./pages/Errors/NotFound"));
+const ServerError = lazy(() => import("./pages/Errors/ServerError"));
+const Unauthorized = lazy(() => import("./pages/Errors/Unauthorized"));
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-slate-900 text-slate-100">

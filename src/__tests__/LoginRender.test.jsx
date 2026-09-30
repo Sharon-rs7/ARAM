@@ -2,7 +2,7 @@ import React from "react";
 import { render } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { describe, it } from "vitest";
-import Login from "@/pages/auth/Login";
+import Login from "@/pages/Auth/Login";
 import { AuthProvider } from "@/context/AuthContext";
 import { LanguageProvider } from "@/context/LanguageContext";
 
@@ -41,7 +41,7 @@ describe("Login Render Test Suite", () => {
   });
 
   it("renders Forgot Password page in Tamil when ta-IN is chosen", async () => {
-    const ForgotPassword = (await import("@/pages/auth/ForgotPassword")).default;
+    const ForgotPassword = (await import("@/pages/Auth/ForgotPassword")).default;
     localStorage.setItem("aram_lang", "ta-IN");
     const { getByText } = render(
       <MemoryRouter>
@@ -59,7 +59,7 @@ describe("Login Render Test Suite", () => {
   });
 
   it("renders Register page in Tamil when ta-IN is chosen", async () => {
-    const Register = (await import("@/pages/auth/Register")).default;
+    const Register = (await import("@/pages/Auth/Register")).default;
     localStorage.setItem("aram_lang", "ta-IN");
     const { getByText, getAllByText } = render(
       <MemoryRouter>
