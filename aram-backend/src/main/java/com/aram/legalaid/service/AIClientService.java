@@ -27,6 +27,20 @@ public class AIClientService {
     @Value("${ai.internal.token:aram-secret-token-2026}")
     private String internalToken;
 
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private org.springframework.core.env.Environment environment;
+
+    @jakarta.annotation.PostConstruct
+    public void validateToken() {
+        if (environment != null && environment.acceptsProfiles(org.springframework.core.env.Profiles.of("prod", "production"))) {
+            if (internalToken == null || internalToken.trim().length() < 16 ||
+                    "aram-secret-token-2026".equals(internalToken) ||
+                    "test-internal-token-32-chars-long-secure!".equals(internalToken)) {
+                throw new IllegalStateException("CRITICAL SECURITY ERROR: In production, INTERNAL_API_TOKEN must be configured with a secure token!");
+            }
+        }
+    }
+
     public AIClientService(AIServiceProperties properties, @Lazy UserService userService) {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setConnectTimeout(2000); // 2 seconds connect timeout

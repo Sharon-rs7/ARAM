@@ -29,9 +29,14 @@ public class JwtUtil {
     @Value("${spring.profiles.active:dev}")
     private String activeProfile;
 
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private org.springframework.core.env.Environment environment;
+
     @PostConstruct
     public void validateSecret() {
-        boolean isProduction = "prod".equalsIgnoreCase(activeProfile) || "production".equalsIgnoreCase(activeProfile);
+        boolean isProduction = (environment != null && environment.acceptsProfiles(org.springframework.core.env.Profiles.of("prod", "production")))
+                || "prod".equalsIgnoreCase(activeProfile) || "production".equalsIgnoreCase(activeProfile)
+                || (activeProfile != null && (activeProfile.contains("prod") || activeProfile.contains("production")));
         if (isProduction) {
             if (secret == null || secret.trim().length() < 32 || "ARAMLegalAidJwtSecretKeyForDevelopmentOnly2026".equals(secret)) {
                 throw new IllegalStateException("CRITICAL SECURITY ERROR: In production, JWT secret key must be configured with a unique, cryptographically strong key of at least 32 characters! Configure JWT_SECRET.");

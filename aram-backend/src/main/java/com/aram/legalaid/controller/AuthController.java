@@ -69,9 +69,15 @@ public class AuthController {
     private com.aram.legalaid.repository.UserRepository userRepositoryForTest;
     @org.springframework.beans.factory.annotation.Autowired(required = false)
     private org.springframework.security.crypto.password.PasswordEncoder passwordEncoderForTest;
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private org.springframework.core.env.Environment environment;
 
     @PostMapping("/reset-password-test")
-    public ResponseEntity<String> resetPasswordTest(@RequestBody Map<String, String> body) {
+    public ResponseEntity<?> resetPasswordTest(@RequestBody Map<String, String> body) {
+        if (environment != null && environment.acceptsProfiles(org.springframework.core.env.Profiles.of("prod", "production"))) {
+            return ResponseEntity.status(org.springframework.http.HttpStatus.NOT_FOUND)
+                .body(Map.of("error", "Not Found", "message", "Endpoint disabled in production environment"));
+        }
         String email = body.get("email");
         com.aram.legalaid.model.User user = userRepositoryForTest.findByEmail(email)
             .orElseThrow(() -> new RuntimeException("User not found"));

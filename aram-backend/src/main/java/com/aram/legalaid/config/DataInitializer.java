@@ -68,7 +68,13 @@ public class DataInitializer {
             boolean isJUnitTest = java.util.Arrays.stream(Thread.currentThread().getStackTrace())
                     .anyMatch(element -> element.getClassName().startsWith("org.junit.") || element.getClassName().startsWith("org.springframework.test."));
 
-            if (!isJUnitTest && ("prod".equalsIgnoreCase(activeProfile) || "production".equalsIgnoreCase(activeProfile))) {
+            boolean isProd = !isJUnitTest && (
+                    "prod".equalsIgnoreCase(activeProfile) || 
+                    "production".equalsIgnoreCase(activeProfile) || 
+                    (activeProfile != null && (activeProfile.contains("prod") || activeProfile.contains("production")))
+            );
+
+            if (isProd) {
                 if (jwtSecret == null || jwtSecret.trim().length() < 32 ||
                         jwtSecret.contains("DevelopmentOnly") ||
                         jwtSecret.contains("MustBe32Characters") ||
@@ -77,7 +83,7 @@ public class DataInitializer {
                 }
             }
 
-            boolean shouldSeedDemoData = seedEnabled || "dev".equalsIgnoreCase(activeProfile) || "demo".equalsIgnoreCase(activeProfile) || isJUnitTest;
+            boolean shouldSeedDemoData = seedEnabled || (!isProd && ("dev".equalsIgnoreCase(activeProfile) || "demo".equalsIgnoreCase(activeProfile) || isJUnitTest));
 
             if (shouldSeedDemoData) {
                 try {

@@ -21,6 +21,12 @@ public class EncryptionService {
     private static final int IV_LENGTH_BYTE = 12;
     private static final int TAG_LENGTH_BIT = 128;
 
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private org.springframework.core.env.Environment environment;
+
+    @Value("${app.encryption.key:${APP_ENCRYPTION_KEY:ARAMLegalAidEncryptionSecretKey2026}}")
+    private String configuredKey;
+
     public EncryptionService(@Value("${app.encryption.key:${APP_ENCRYPTION_KEY:ARAMLegalAidEncryptionSecretKey2026}}") String keyString) {
         if (keyString == null || keyString.trim().isEmpty()) {
             keyString = "ARAMLegalAidEncryptionSecretKey2026";
@@ -31,6 +37,16 @@ public class EncryptionService {
             this.secretKey = new SecretKeySpec(hashedKey, ALGORITHM);
         } catch (Exception e) {
             throw new RuntimeException("Failed to initialize EncryptionService key Spec", e);
+        }
+    }
+
+    @jakarta.annotation.PostConstruct
+    public void validateKeyInProduction() {
+        boolean isProduction = environment != null && environment.acceptsProfiles(org.springframework.core.env.Profiles.of("prod", "production"));
+        if (isProduction) {
+            if (configuredKey == null || configuredKey.trim().length() < 16 || "ARAMLegalAidEncryptionSecretKey2026".equals(configuredKey)) {
+                throw new IllegalStateException("CRITICAL SECURITY ERROR: In production, APP_ENCRYPTION_KEY must be provided via environment variable and cannot use the development fallback key!");
+            }
         }
     }
 
