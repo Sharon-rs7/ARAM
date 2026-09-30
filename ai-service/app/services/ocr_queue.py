@@ -16,10 +16,11 @@ from app.mongo_logger import log_ai_action
 
 REDIS_HOST = os.getenv("REDIS_HOST", "127.0.0.1")
 REDIS_PORT = int(os.getenv("REDIS_PORT", "6379"))
+REDIS_PASSWORD = os.getenv("REDIS_PASSWORD", None) or None
 
 def get_redis_client():
     try:
-        r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, socket_timeout=1, protocol=2)
+        r = redis.Redis(host=REDIS_HOST, port=REDIS_PORT, password=REDIS_PASSWORD, socket_timeout=1, protocol=2)
         if r.ping():
             return r
     except Exception:

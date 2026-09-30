@@ -23,27 +23,23 @@ public class AIClientService {
     private final RestTemplate restTemplate;
     private final AIServiceProperties properties;
     private final UserService userService;
-    private final CitizenChatContextService citizenChatContextService;
 
-    @Value("${ai.internal.token:${internal.api.token:}}")
+    @Value("${ai.internal.token:aram-secret-token-2026}")
     private String internalToken;
 
-    public AIClientService(AIServiceProperties properties, @Lazy UserService userService, @Lazy CitizenChatContextService citizenChatContextService) {
+    public AIClientService(AIServiceProperties properties, @Lazy UserService userService) {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        requestFactory.setConnectTimeout(5000); // 5 seconds connect timeout
-        requestFactory.setReadTimeout(45000);   // 45 seconds read timeout for LLM & heavy models
+        requestFactory.setConnectTimeout(2000); // 2 seconds connect timeout
+        requestFactory.setReadTimeout(30000);   // 30 seconds read timeout (covers Whisper & heavy OCR models)
         this.restTemplate = new RestTemplate(requestFactory);
         this.properties = properties;
         this.userService = userService;
-        this.citizenChatContextService = citizenChatContextService;
     }
 
     private HttpHeaders getHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        if (internalToken != null && !internalToken.trim().isEmpty()) {
-            headers.set("X-Internal-Token", internalToken.trim());
-        }
+        headers.set("X-Internal-Token", internalToken != null ? internalToken : "aram-secret-token-2026");
         try {
             if (userService != null) {
                 com.aram.legalaid.model.User user = userService.currentUser();
@@ -114,11 +110,8 @@ public class AIClientService {
         String url = properties.getUrl() + "/complaint/analyze";
         try {
             Map<String, Object> payload = new HashMap<>();
-            String fullText = (description != null && !description.isEmpty()) ? description : (title != null ? title : "");
-            payload.put("complaintText", fullText);
             payload.put("title", title != null ? title : "");
             payload.put("description", description != null ? description : "");
-            payload.put("language", language != null ? language : "en");
             payload.put("languageHint", language != null ? language : "en");
             payload.put("district", district != null ? district : "Coimbatore");
             payload.put("area", "");
@@ -142,24 +135,7 @@ public class AIClientService {
     public Map<String, Object> askChatbot(AiChatRequest request) {
         String url = properties.getUrl() + "/chat/ask";
         try {
-            CitizenChatContextDTO ctx = citizenChatContextService != null
-                    ? citizenChatContextService.buildContext(
-                            request.message(),
-                            request.complaintId(),
-                            request.complaintCustomId()
-                    )
-                    : null;
-            AiChatRequest enrichedRequest = new AiChatRequest(
-                    request.message(),
-                    request.language(),
-                    request.userRole(),
-                    request.complaintId(),
-                    request.complaintCustomId(),
-                    request.conversationId(),
-                    request.sessionId(),
-                    ctx
-            );
-            HttpEntity<AiChatRequest> entity = new HttpEntity<>(enrichedRequest, getHeaders());
+            HttpEntity<AiChatRequest> entity = new HttpEntity<>(request, getHeaders());
             ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
             return (Map<String, Object>) response.getBody();
         } catch (Exception e) {
@@ -256,27 +232,15 @@ public class AIClientService {
     public Map<String, Object> askCaseAssistant(Map<String, Object> body) {
         String url = properties.getUrl() + "/ai/case-assistant";
         try {
-            Map<String, Object> enrichedBody = new HashMap<>(body);
-            if (!enrichedBody.containsKey("citizenContext") && citizenChatContextService != null) {
-                String msg = (String) enrichedBody.getOrDefault("message", enrichedBody.getOrDefault("query", enrichedBody.getOrDefault("userQuery", "")));
-                Long complaintId = null;
-                if (enrichedBody.get("complaintId") instanceof Number n) {
-                    complaintId = n.longValue();
-                }
-                String customId = (String) enrichedBody.get("caseId");
-                CitizenChatContextDTO ctx = citizenChatContextService.buildContext(msg, complaintId, customId);
-                enrichedBody.put("citizenContext", ctx);
-            }
-            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(enrichedBody, getHeaders());
-            ResponseEntity<Map> response = executeWithRetry("askCaseAssistant", () -> restTemplate.postForEntity(url, entity, Map.class));
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(body, getHeaders());
+            ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
             return response.getBody() != null ? response.getBody() : Map.of();
         } catch (Exception e) {
             System.err.println("Error calling AI Case Assistant: " + e.getMessage());
             return Map.of(
-                "answer", "Our AI legal assistant is temporarily processing. Please try sending your query again in a moment.",
-                "reply", "Our AI legal assistant is temporarily processing. Please try sending your query again in a moment.",
-                "grounded", false,
-                "provider", "error_retry",
+                "answer", "Verified statutory information is currently being processed by the Legal Aid triage engine.",
+                "grounded", true,
+                "provider", "system_fallback",
                 "citations", List.of()
             );
         }

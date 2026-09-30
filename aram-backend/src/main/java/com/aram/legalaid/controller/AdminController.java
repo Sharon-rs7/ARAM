@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.aram.legalaid.repository.GuideInvitationRepository;
@@ -76,6 +77,9 @@ public class AdminController {
 
     @Autowired
     private com.aram.legalaid.service.CommunicationGateway communicationGateway;
+
+    @Value("${app.frontend.url:http://localhost:5173}")
+    private String frontendUrl;
 
     public AdminController(AdminService adminService, ComplaintService complaintService, UserRepository userRepository,
                            ComplaintRepository complaintRepository, MapperService mapperService,
@@ -680,7 +684,7 @@ public class AdminController {
         perf.setCreditScore(0);
         performanceProfileRepository.save(perf);
 
-        String inviteLink = "http://localhost:5173/accept-invitation?token=" + token;
+        String inviteLink = frontendUrl + "/accept-invitation?token=" + token;
         
         // Send invitation link via email
         try {
@@ -1192,7 +1196,7 @@ public class AdminController {
         admin.setPasswordHash(passwordEncoder.encode(UUID.randomUUID().toString())); // Scrambled initial hash
         userRepository.save(admin);
 
-        String inviteLink = "http://localhost:5173/activate-account?token=" + token;
+        String inviteLink = frontendUrl + "/activate-account?token=" + token;
         try {
             emailService.sendAdminInvitationEmail(admin.getEmail(), admin.getName(), admin.getDistrict(), inviteLink);
         } catch (Exception e) {
@@ -1261,8 +1265,8 @@ public class AdminController {
         guideInvitationRepository.save(newInvite);
 
         String inviteLink = targetUser.getRole() == Role.ADMIN
-                ? "http://localhost:5173/activate-account?token=" + token
-                : "http://localhost:5173/accept-invitation?token=" + token;
+                ? frontendUrl + "/activate-account?token=" + token
+                : frontendUrl + "/accept-invitation?token=" + token;
 
         try {
             if (targetUser.getRole() == Role.ADMIN) {

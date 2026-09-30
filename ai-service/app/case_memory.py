@@ -35,7 +35,8 @@ class CaseMemoryManager:
             import redis
             host = os.environ.get("REDIS_HOST", "localhost")
             port = int(os.environ.get("REDIS_PORT", "6379"))
-            self._redis_client = redis.Redis(host=host, port=port, db=0, socket_timeout=2.0)
+            password = os.environ.get("REDIS_PASSWORD", None) or None
+            self._redis_client = redis.Redis(host=host, port=port, password=password, db=0, socket_timeout=2.0)
             self._redis_client.ping()
             print("[CASE MEMORY] Connected to Redis for session context caching.")
         except Exception:
